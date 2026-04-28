@@ -1,4 +1,4 @@
-module.exports = (options) => ({
+export default (options) => ({
   ...options,
   externals: [
     ({ request }, callback) => {
