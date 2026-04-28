@@ -1,0 +1,63 @@
+{
+  "name": "HSM Dev",
+  "dockerComposeFile": [
+    "../docker/docker-compose.yaml",
+    "docker-compose.yaml"
+  ],
+  "service": "workspace",
+  "workspaceFolder": "/workspace",
+  "runServices": [
+    "workspace",
+    "postgres",
+    "redis",
+    "minio"
+  ],
+  "forwardPorts": [
+    3000,
+    4200
+  ],
+  "portsAttributes": {
+    "3000": {
+      "label": "Api"
+    },
+    "4200": {
+      "label": "Web"
+    }
+  },
+  "containerEnv": {
+    "COREPACK_ENABLE_DOWNLOAD_PROMPT": "0"
+  },
+  "postCreateCommand": "script/post-create.sh",
+  "postStartCommand": "script/post-start.sh",
+  "waitFor": "postStartCommand",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "task.allowAutomaticTasks": "on",
+        "terminal.integrated.showExitAlert": false
+      },
+      "extensions": [
+        "biomejs.biome",
+        "ms-vscode.vscode-typescript-next",
+        "orta.vscode-jest",
+        "ms-azuretools.vscode-docker",
+        "eamodio.gitlens",
+        "angular.ng-template",
+        "imgildev.vscode-auto-barrel",
+        "steoates.autoimport",
+        "aaron-bond.better-comments",
+        "dbcode.dbcode",
+        "jmkrivocapich.drawfolderstructure",
+        "usernamehw.errorlens",
+        "greenbyte.handlebars-preview",
+        "ctf0.inline-fold-new",
+        "firsttris.vscode-jest-runner",
+        "christian-kohler.path-intellisense",
+        "yoavbls.pretty-ts-errors",
+        "ms-vscode.test-adapter-converter",
+        "anthropic.claude-code",
+        "usernamehw.errorlens"
+      ]
+    }
+  }
+}

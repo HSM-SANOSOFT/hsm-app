@@ -1,7 +1,6 @@
 {
   "editor.formatOnSave": true,
-  "typescript.suggest.paths": false,
-  "javascript.suggest.paths": false,
+  "js/ts.suggest.paths": false,
   // Auto fix
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
@@ -35,19 +34,43 @@
   "[javascriptreact]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
-  "javascript.updateImportsOnFileMove.enabled": "always",
-  "javascript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
-  "javascript.inlayHints.variableTypes.enabled": true,
-  "typescript.updateImportsOnFileMove.enabled": "always",
-  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
+  "js/ts.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
+  "js/ts.inlayHints.variableTypes.enabled": true,
+  "js/ts.updateImportsOnFileMove.enabled": "always",
   "inlineFold.regex": "(class|className)=[`'{\"](https://github.com/ctf0/vscode-inline-fold/blob/HEAD/[^`'\"}]{30,})[`'\"}]",
   "inlineFold.regexFlags": "g",
   "inlineFold.regexGroup": 2,
   "inlineFold.unfoldedOpacity": 0.6,
   "inlineFold.maskChar": "…",
   "inlineFold.maskCss": "color:#000;",
-  "inlineFold.supportedLanguages": ["javascriptreact", "typescriptreact"],
+  "inlineFold.supportedLanguages": [
+    "javascriptreact",
+    "typescriptreact"
+  ],
   "inlineFold.unfoldOnLineSelect": true,
   "inlineFold.autoFoldOnOpen": true,
-  "python-envs.defaultEnvManager": "ms-python.python:system"
+  "python-envs.defaultEnvManager": "ms-python.python:system",
+  "dbcode.connections": [
+    {
+      "connectionId": "OXibkh7WNhi03gaK3CsyT",
+      "name": "pg",
+      "driver": "postgres",
+      "connectionType": "host",
+      "host": "hsm-app-postgres-1",
+      "port": 5432,
+      "ssl": false,
+      "authMethod": "password",
+      "username": "postgres",
+      "password": "",
+      "savePassword": "secretStorage",
+      "database": "hsm",
+      "readOnly": false,
+      "postConnectionSqlType": "inline",
+      "connectionTimeout": 30,
+      "pinnedConnectionTimeout": "0",
+      "introspection": {
+        "progressive": false
+      }
+    }
+  ]
 }

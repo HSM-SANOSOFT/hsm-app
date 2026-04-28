@@ -1,0 +1,70 @@
+import { DocumentCodesEnum } from '../enums';
+
+export const DocumentCodesDescriptionMap: Record<DocumentCodesEnum, string> = {
+  [DocumentCodesEnum.HCU_001]: 'HCU-001: Admisión y Alta/Egreso',
+  [DocumentCodesEnum.HCU_002]: 'HCU-002: Consulta Externa',
+  [DocumentCodesEnum.HCU_003]: 'HCU-003: Anamnesis y Examen Físico',
+  [DocumentCodesEnum.HCU_005]: 'HCU-005: Evolución y Prescripciones',
+  [DocumentCodesEnum.HCU_006]: 'HCU-006: Epicrisis',
+  [DocumentCodesEnum.HCU_007]: 'HCU-007: Interconsulta',
+  [DocumentCodesEnum.HCU_008]: 'HCU-008: Emergencia',
+  [DocumentCodesEnum.HCU_010_A]: 'HCU-010-A: Laboratorio Clínico - Solicitud',
+  [DocumentCodesEnum.HCU_010_B]: 'HCU-010-B: Laboratorio Clínico - Informe',
+  [DocumentCodesEnum.HCU_012_A]: 'HCU-012-A: Imagenología - Solicitud',
+  [DocumentCodesEnum.HCU_012_B]: 'HCU-012-B: Imagenología - Informe',
+  [DocumentCodesEnum.HCU_013_A]: 'HCU-013-A: Histopatología - Solicitud',
+  [DocumentCodesEnum.HCU_013_B]: 'HCU-013-B: Histopatología - Informe',
+  [DocumentCodesEnum.HCU_016]: 'HCU-016: Atención Inmediata al Recién Nacido',
+  [DocumentCodesEnum.HCU_017]: 'HCU-017: Protocolo Quirúrgico',
+  [DocumentCodesEnum.HCU_018]: 'HCU-018: Preanestesia',
+  [DocumentCodesEnum.HCU_018_A]: 'HCU-018-A: Transanestesia',
+  [DocumentCodesEnum.HCU_019]: 'HCU-019: Cuidado Postanestésico',
+  [DocumentCodesEnum.HCU_020]: 'HCU-020: Signos Vitales y Balance Hídrico',
+  [DocumentCodesEnum.HCU_022]: 'HCU-022: Administración de Medicamentos',
+  [DocumentCodesEnum.HCU_024]: 'HCU-024: Autorización y Consentimiento',
+  [DocumentCodesEnum.HCU_028]: 'HCU-028: Test de Denver II',
+  [DocumentCodesEnum.HCU_028_A]:
+    'HCU-028-A: Atención Niño/Niña Menor de 2 Meses',
+  [DocumentCodesEnum.HCU_028_A_1]:
+    'HCU-028-A-1: Curva Niño/Niña Menor de 2 Meses',
+  [DocumentCodesEnum.HCU_028_B]:
+    'HCU-028-B: Atención Niño/Niña Menor de 2 Meses a 5 Años',
+  [DocumentCodesEnum.HCU_028_B_1]:
+    'HCU-028-B-1: Curva Niño Menor de 2 Meses a 5 Años',
+  [DocumentCodesEnum.HCU_028_B_2]:
+    'HCU-028-B-2: Curva Niña Menor de 2 Meses a 5 Años',
+  [DocumentCodesEnum.HCU_028_C]:
+    'HCU-028-C: Atención Niño/Niña de 5 Años a 9 Años',
+  [DocumentCodesEnum.HCU_028_C_1]: 'HCU-028-C-1: Curva Niño de 5 Años a 9 Años',
+  [DocumentCodesEnum.HCU_028_C_2]: 'HCU-028-C-2: Curva Niña de 5 Años a 9 Años',
+  [DocumentCodesEnum.HCU_033]: 'HCU-033: Odontología',
+  [DocumentCodesEnum.HCU_038]: 'HCU-038: Trabajador Social',
+  [DocumentCodesEnum.HCU_051]: 'HCU-051: Materna Perinatal',
+  [DocumentCodesEnum.HCU_052]: 'HCU-052: Planificación Familiar',
+  [DocumentCodesEnum.HCU_053]: 'HCU-053: Referencia y Contrarreferencia',
+  [DocumentCodesEnum.HCU_054]: 'HCU-054: Concentrado de Laboratorio',
+  [DocumentCodesEnum.HCU_055]: 'HCU-055: Concentrado de Exámenes Especiales',
+  [DocumentCodesEnum.HCU_056]: 'HCU-056: Atención Adolescentes',
+  [DocumentCodesEnum.HCU_056_A]: 'HCU-056-A: Curvas Adolescente Masculino',
+  [DocumentCodesEnum.HCU_056_B]: 'HCU-056-B: Curvas Adolescente Femenino',
+  [DocumentCodesEnum.HCU_057]: 'HCU-057: Atención Adultos Mayor',
+  [DocumentCodesEnum.HCU_057_A]: 'HCU-057-A: Escalas Geriátricas',
+  [DocumentCodesEnum.HCU_058]: 'HCU-058: Cuidados Paliativos',
+  [DocumentCodesEnum.HCU_058_A]:
+    'HCU-058-A: Escalas de Valoración para Cuidados Paliativos',
+  [DocumentCodesEnum.HCU_060]: 'HCU-060: Lista de Verificación Cirugía Segura',
+  [DocumentCodesEnum.HCU_113]: 'HCU-113: Bitácora de UCI Adulto',
+  [DocumentCodesEnum.HCU_114]: 'HCU-114: Bitácora de UCI Neonatal',
+  [DocumentCodesEnum.HCU_115]: 'HCU-115: Bitácora de UCI Pediátrico',
+  [DocumentCodesEnum.HCU_116]:
+    'HCU-116: Certificado de Discapacidad - Condición Discapacitante',
+  [DocumentCodesEnum.HCU_117]: 'HCU-117: Certificado Médico',
+  [DocumentCodesEnum.HCU_118]: 'HCU-118: Solicitud de Sangre',
+  [DocumentCodesEnum.HCU_119]: 'HCU-119: Transferencia',
+  [DocumentCodesEnum.HCU_120]: 'HCU-120: Intervenciones de Enfermería',
+  [DocumentCodesEnum.HCU_121]: 'HCU-121: Psicología Clínica',
+  [DocumentCodesEnum.HCU_122]:
+    'HCU-122: Transfusión Sanguínea - Registro Seguimiento',
+  [DocumentCodesEnum.ANEXO_1]: 'ANEXO-1: Ficha Familiar',
+  [DocumentCodesEnum.ANEXO_2]: 'ANEXO-2: Atención Prehospitalaria',
+};

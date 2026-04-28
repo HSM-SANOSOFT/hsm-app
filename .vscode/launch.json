@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Attach: API",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "restart": true,
+      "sourceMaps": true,
+      "outFiles": ["${workspaceFolder}/apps/backend/api/dist/**/*.js"]
+    },
+    {
+      "name": "Attach: Worker",
+      "type": "node",
+      "request": "attach",
+      "port": 9230,
+      "restart": true,
+      "sourceMaps": true,
+      "outFiles": ["${workspaceFolder}/apps/backend/worker/dist/**/*.js"]
+    }
+  ]
+}

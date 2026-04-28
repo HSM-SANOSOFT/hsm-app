@@ -1,0 +1,18 @@
+volumes:
+  claude_home:
+    name: hsm-app-claude-home
+
+services:
+  workspace:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      - ..:/workspace:cached
+      - /workspace/node_modules
+      - claude_home:/root/.claude
+    networks:
+      - hsm-app-network
+    env_file:
+      - ../.env
+    command: sleep infinity

@@ -1,0 +1,9 @@
+{
+  "name": "@hsm/web",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "echo \"TODO: initialize Angular app\"",
+    "dev": "echo \"TODO: initialize Angular app\""
+  }
+}

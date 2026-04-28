@@ -1,0 +1,33 @@
+{
+  "name": "@hsm/database",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./src/index.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.lib.json",
+    "generator:entity": "ts-node -r tsconfig-paths/register src/generator/generators/entity.generator.ts",
+    "generator:schema": "ts-node -r tsconfig-paths/register src/generator/generators/schema.generator.ts",
+    "generator:test:query": "ts-node -r tsconfig-paths/register src/generator/tests/query.test.ts"
+  },
+  "dependencies": {
+    "@hsm/common": "workspace:*",
+    "@hsm/config": "workspace:*",
+    "@nestjs/common": "^11.1.19",
+    "@nestjs/core": "^11.1.19",
+    "@nestjs/typeorm": "^11.0.1",
+    "mssql": "^12.2.2",
+    "mysql2": "^3.22.0",
+    "oracledb": "^6.10.0",
+    "pg": "^8.20.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "sqlite3": "^5.1.7",
+    "typeorm": "^0.3.28"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.9.2"
+  }
+}

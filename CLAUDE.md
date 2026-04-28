@@ -1,0 +1,143 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Per-workspace context
+
+Each app and package has its own `CLAUDE.md` with details specific to that workspace. **Read it before working in that directory** — it covers conventions, module wiring, and gotchas this root file doesn't repeat.
+
+| Workspace | File |
+| --------- | ---- |
+| `@hsm/api` | [`apps/backend/api/CLAUDE.md`](apps/backend/api/CLAUDE.md) |
+| `@hsm/worker` | [`apps/backend/worker/CLAUDE.md`](apps/backend/worker/CLAUDE.md) |
+| `@hsm/web` | [`apps/frontend/web/CLAUDE.md`](apps/frontend/web/CLAUDE.md) |
+| `@hsm/mobile` | [`apps/frontend/mobile/CLAUDE.md`](apps/frontend/mobile/CLAUDE.md) |
+| `@hsm/common` | [`packages/common/CLAUDE.md`](packages/common/CLAUDE.md) |
+| `@hsm/config` | [`packages/config/CLAUDE.md`](packages/config/CLAUDE.md) |
+| `@hsm/database` | [`packages/database/CLAUDE.md`](packages/database/CLAUDE.md) |
+| `@hsm/queue` | [`packages/queue/CLAUDE.md`](packages/queue/CLAUDE.md) |
+| `@hsm/storage` | [`packages/storage/CLAUDE.md`](packages/storage/CLAUDE.md) |
+
+## Commands
+
+Everything runs inside Docker. Source is volume-mounted so hot reload works without rebuilding.
+
+```bash
+# Start full stack (api + worker + postgres + redis + minio + consoles)
+docker compose -f docker/docker-compose.yaml up
+
+# Start only infra (no app containers)
+docker compose -f docker/docker-compose.yaml up hsm-app-db-postgres hsm-app-db-redis hsm-app-db-minio
+
+# Exec into running containers
+docker exec -it hsm-app-be-api sh      # api container
+docker exec -it hsm-app-be-worker sh   # worker container
+
+# Install deps (run inside container — regenerates pnpm-lock.yaml)
+pnpm install
+
+# Lint / format (run inside container, from monorepo root)
+pnpm lint
+pnpm lint:fix
+pnpm check:fix            # lint + format together
+
+# Tests (run inside container)
+pnpm --filter @hsm/api test
+pnpm --filter @hsm/api test:watch
+pnpm --filter @hsm/api test:cov
+pnpm --filter @hsm/api test:e2e
+pnpm --filter @hsm/api test -- --testPathPattern=coms.service   # single file
+
+# Build (inside container)
+pnpm --filter @hsm/api build
+pnpm --filter @hsm/worker build
+# Or build everything via Turborepo:
+pnpm build
+
+# Entity/schema generators (run inside container)
+pnpm --filter @hsm/database generator:entity -- --driver=oracle --host=... --user=... --pass=... --db=... --table=... --schema=... --save
+pnpm --filter @hsm/database generator:schema
+```
+
+### Port map
+
+| Service | Host port |
+| --------- | ----------- |
+| API | 10001 |
+| worker | 10002 |
+| Postgres | 10003 |
+| Redis | 10004 |
+| MinIO (S3) | 10005 |
+| MinIO console | 10006 |
+| RedisInsight | 10007 |
+| pgAdmin | 10008 |
+
+## Architecture
+
+Turborepo monorepo. Backend: two NestJS apps. Frontend: placeholder (Angular coming). Five shared packages.
+
+### Structure
+
+```text
+apps/
+  backend/
+    api/      (@hsm/api)     HTTP API — port 3000, URI versioning (default v1), Swagger at /api
+    worker/   (@hsm/worker)  BullMQ job processor, no HTTP, consumes queues from Redis
+  frontend/
+    web/      (@hsm/web)     Angular (not yet initialized)
+    mobile/   (@hsm/mobile)  Mobile (not yet initialized)
+packages/
+  common/    (@hsm/common)
+  config/    (@hsm/config)
+  database/  (@hsm/database)
+  queue/     (@hsm/queue)
+  storage/   (@hsm/storage)
+```
+
+### Packages (`@hsm/*`)
+
+| Package | What it exports |
+| ------- | -------------- |
+| `@hsm/config` | `envs` — frozen, Joi-validated env vars. Import this everywhere instead of `process.env`. |
+| `@hsm/database` | Global `DatabaseModule`. Two TypeORM data sources: `hsm-db-postgres` (Postgres) and `hsm-db-oracle` (Oracle). Contains codegen CLI to introspect Oracle DB and emit TypeORM entities. |
+| `@hsm/queue` | Global `QueueModule`. BullMQ wired to Redis. Queues: `coms`, `document`, `notification`, `templates`. 3 attempts, 1 s delay, 2 s backoff. |
+| `@hsm/common` | Shared DTOs, interfaces, enums, errors, types. Imported via subpaths (`@hsm/common/dtos`, `@hsm/common/enums`, …) — the package root index is empty by design. |
+| `@hsm/storage` | S3-compatible storage (`S3Service` under `S3Module`, plus a placeholder `StorageService`). Path-style (self-hosted) and AWS-native modes via `STRG_S3_FORCE_PATH_STYLE`. |
+
+### API module tree (`apps/backend/api`)
+
+```text
+MainModule
+├── CoreModule
+│   ├── UsersModule
+│   ├── ComsModule        (email/notification comms)
+│   ├── DocsModule        (document generation/management)
+│   └── TemplatesModule   (email/doc templates)
+├── SecurityModule
+│   ├── AuthModule        (JWT AT+RT, Passport local)
+│   └── RolesModule
+└── ClinicalModule
+    ├── PatientsModule
+    └── AppointmentsModule
+```
+
+### Database patterns
+
+- Inject repositories with `@InjectRepository(Entity, Databases.HsmDbPostgres)` or `Databases.HsmDbOracle`.
+- `synchronize: true` only in `dev`. Never in production.
+- Entity files live in `packages/database/src/entities/modules/<domain>/`. Autogenerated Oracle entities go in `entities/autogenerated/oracle/`.
+
+### Request/response flow
+
+Every response is wrapped by `ResponseInterceptor` into `SuccessResponseDto`. TypeORM exceptions caught by `TypeOrmExceptionFilter` (in `@hsm/database`). HTTP errors use `ResponseFilter`. Rate limits: 3/s, 20/10 s, 100/min (ThrottlerGuard global).
+
+Auth uses two JWTs: access token (`JWT_AT_SECRET`) and refresh token (`JWT_RT_SECRET`). Protected routes use `AuthJwtAtGuard` exported from `AuthModule`.
+
+### Tooling
+
+- **Monorepo**: Turborepo (`turbo.json`). Build order: packages → apps.
+- **Linter/formatter**: Biome (not ESLint/Prettier). Config in `biome.json` at root. Single quotes, 2-space indent, trailing commas, `noExplicitAny` error.
+- **Pre-commit**: Husky + lint-staged.
+- **Package manager**: pnpm with workspaces (`pnpm-workspace.yaml`).
+- **Each app**: standalone NestJS CLI (`nest-cli.json` per app, no shared monorepo nest config).
+- **TypeScript**: root `tsconfig.json` is base. Each app/package extends it and adds its own `paths` for `@hsm/*` resolution pointing to package sources.

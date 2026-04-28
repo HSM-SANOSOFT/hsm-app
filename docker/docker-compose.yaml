@@ -6,146 +6,90 @@ networks:
     driver: bridge
 
 volumes:
-  pgdata:
-    name: hsm-app-postgres-data
-  redisdata:
-    name: hsm-app-redis-data
-  miniodata:
-    name: hsm-app-minio-data
-services:
-  hsm-app-be-base:
-    container_name: hsm-app-be-base
-    image: hsm-app-be-base
-    build:
-      context: ../
-      dockerfile: ./docker/dockerFile.base
+  db_postgres_data:
+    name: hsm-app-db_postgres-data
+  db_redis_data:
+    name: hsm-app-db_redis-data
+  db_minio_data:
+    name: hsm-app-db_minio-data
 
-  hsm-app-be-server:
-    container_name: hsm-app-be-server
-    image: hsm-app-be-server
+services:
+  api:
+    image: hsm-app-be-api
     build:
       context: ../
-      args:
-        - APP_TYPE=server
-      dockerfile: ./docker/dockerFile.dev
+      dockerfile: apps/backend/api/Dockerfile
     networks:
       - hsm-app-network
     ports:
       - 10001:3000
-    volumes:
-      - ../:/app
-      - /app/node_modules
     env_file:
       - ../.env
-    environment:
-      SECRET_PATH: /app/be
     restart: unless-stopped
     depends_on:
-      - hsm-app-be-base
-      - hsm-app-db-postgres
-      - hsm-app-db-redis
-      - hsm-app-db-minio
-      - hsm-app-be-worker
+      - postgres
+      - redis
+      - minio
+      - worker
 
-  hsm-app-be-worker:
-    container_name: hsm-app-be-worker
+  worker:
     image: hsm-app-be-worker
     build:
       context: ../
-      args:
-        - APP_TYPE=worker
-      dockerfile: ./docker/dockerFile.dev
+      dockerfile: apps/backend/worker/Dockerfile
     networks:
       - hsm-app-network
     ports:
       - 10002:3001
-    volumes:
-      - ../:/app
-      - /app/node_modules
     env_file:
       - ../.env
-    environment:
-      SECRET_PATH: /app/be
     depends_on:
-      - hsm-app-be-base
-      - hsm-app-db-postgres
-      - hsm-app-db-redis
-      - hsm-app-db-minio
+      - postgres
+      - redis
+      - minio
     restart: unless-stopped
 
-  hsm-app-db-postgres:
-    container_name: hsm-app-db-postgres
-    image: postgres:17-bookworm
+  postgres:
+    image: postgres:18-bookworm
     networks:
       - hsm-app-network
     ports:
-      - 10003:5432
+      - 10004:5432
     volumes:
-      - ./postgres/init-schemas.sql:/docker-entrypoint-initdb.d/postgres.schemas.sql:ro
-      - pgdata:/var/lib/postgresql/data
+      - db_postgres_data:/var/lib/postgresql
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: hsm
     restart: unless-stopped
 
-  hsm-app-db-redis:
-    container_name: hsm-app-db-redis
+  redis:
     image: redis:8-bookworm
     networks:
       - hsm-app-network
     ports:
-      - 10004:6379
+      - 10005:6379
     volumes:
       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
       - ./redis/users.acl:/usr/local/etc/redis/users.acl:ro
-      - redisdata:/data
+      - db_redis_data:/data
     environment:
       REDIS_USER: redis
       REDIS_PASSWORD: redis
     command: [redis-server, /usr/local/etc/redis/redis.conf]
     restart: unless-stopped
 
-  hsm-app-db-minio:
-    container_name: hsm-app-db-minio
+  minio:
     image: minio/minio:latest
     networks:
       - hsm-app-network
     ports:
-      - 10005:9000
-      - 10006:9001
+      - 10006:9000
+      - 10007:9001
     environment:
       MINIO_ROOT_USER: minio_user
       MINIO_ROOT_PASSWORD: minio_password
     volumes:
-      - miniodata:/data
+      - db_minio_data:/data
     command: server /data --console-address ":9001"
     restart: unless-stopped
-
-  hsm-app-db-console-redis:
-    container_name: hsm-app-db-console-redis
-    image: redis/redisinsight:latest
-    networks:
-      - hsm-app-network
-    ports:
-      - 10007:5540
-    environment:
-      RI_ACCEPT_TERMS_AND_CONDITIONS: true
-      RI_REDIS_HOST: hsm-app-db-redis
-      RI_REDIS_PORT: 6379
-      RI_REDIS_USERNAME: redis
-      RI_REDIS_PASSWORD: redis
-    restart: unless-stopped
-
-  hsm-app-db-console-pgadmin:
-    container_name: hsm-app-db-console-pgadmin
-    image: dpage/pgadmin4:latest
-    networks:
-      - hsm-app-network
-    ports:
-      - 10008:80
-    volumes:
-      - ./postgres/servers.json:/pgadmin4/servers.json:ro
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@example.com
-      PGADMIN_DEFAULT_PASSWORD: secret

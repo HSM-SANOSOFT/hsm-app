@@ -1,0 +1,38 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@hsm/common": [
+        "../../../packages/common/src"
+      ],
+      "@hsm/common/*": [
+        "../../../packages/common/src/*"
+      ],
+      "@hsm/config": [
+        "../../../packages/config/src"
+      ],
+      "@hsm/config/*": [
+        "../../../packages/config/src/*"
+      ],
+      "@hsm/database": [
+        "../../../packages/database/src"
+      ],
+      "@hsm/database/*": [
+        "../../../packages/database/src/*"
+      ],
+      "@hsm/queue": [
+        "../../../packages/queue/src"
+      ],
+      "@hsm/queue/*": [
+        "../../../packages/queue/src/*"
+      ],
+      "@hsm/storage": [
+        "../../../packages/storage/src"
+      ],
+      "@hsm/storage/*": [
+        "../../../packages/storage/src/*"
+      ]
+    }
+  }
+}
