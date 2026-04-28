@@ -3,6 +3,8 @@ dist
 node_modules
 build
 .pnpm-store
+pnpm-lock.yaml
+
 # Logs
 logs
 *.log
