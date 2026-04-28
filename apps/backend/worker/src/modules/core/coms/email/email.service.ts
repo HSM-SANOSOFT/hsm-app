@@ -1,7 +1,5 @@
 import { Readable } from 'node:stream';
 import { SendEmailPayloadDto } from '@hsm/common/dtos';
-
-import { envs } from '@hsm/config';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import nodemailer from 'nodemailer';
 import { Attachment } from 'nodemailer/lib/mailer';
@@ -52,13 +50,13 @@ export class EmailService {
           }
         }
       }
-      const { subject, html } = this.templateService.getEmailTemplate(
-        payload.emailTemplate,
-        payload.data,
-      );
+      const { subject, html } = {
+        subject: `Email from }`,
+        html: `<p>This is a test email from.</p>`,
+      };
 
       const mailOptions: nodemailer.SendMailOptions = {
-        from: payload.fromEmail || envs.SMTP_FROM_EMAIL,
+        from: payload.fromEmail,
         to: payload.toEmails,
         subject: subject,
         html: html,
