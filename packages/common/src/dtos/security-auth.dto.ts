@@ -1,12 +1,9 @@
-import {
-  CreateUserIntegrationPayloadDto,
-  CreateUserPayloadDto,
-} from '@hsm/common/dtos';
-import { PinPurposeEnum, RolesEnum } from '@hsm/common/enums';
-import { ITokens } from '@hsm/common/interfaces';
-import { RolesType } from '@hsm/common/types';
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { CreateUserIntegrationPayloadDto, CreateUserPayloadDto } from '../dtos';
+import { PinPurposeEnum, RolesEnum } from '../enums';
+import { ITokens } from '../interfaces';
+import { RolesType } from '../types';
 
 @ApiSchema({ name: 'Login Payload' })
 export class LoginPayloadDto {

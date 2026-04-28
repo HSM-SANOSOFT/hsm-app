@@ -8,6 +8,7 @@ import {
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 import { TemplateComEmailEntity } from './template-com-email.entity';
 import { TemplateComSmsEntity } from './template-com-sms.entity';
@@ -16,6 +17,7 @@ import { TemplateDocEntity } from './template-doc.entity';
 @Check(
   `(category = '${TemplateCategoriesEnum.BASE}' AND base_template IS NULL) OR (category != '${TemplateCategoriesEnum.BASE}' AND base_template IS NOT NULL)`,
 )
+@Unique(['name'])
 @Entity({ name: 'templates', schema: DatabasePostgresSchemasEnum.TEMPLATES })
 export class TemplatesEntity {
   @PrimaryGeneratedColumn('uuid')

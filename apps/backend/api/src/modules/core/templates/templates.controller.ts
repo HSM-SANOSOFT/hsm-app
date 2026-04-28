@@ -1,44 +1,82 @@
-import { GetTemplateRequestDto } from '@hsm/common/dtos';
+import {
+  CreateTemplatePayloadDto,
+  GetTemplateRequestDto,
+  ParseTemplatePayloadDto,
+  ParseTemplateResponseDto,
+  TemplateResponseDto,
+  UpdateTemplatePayloadDto,
+} from '@hsm/common/dtos';
+import { TemplateParseTriggerEnum } from '@hsm/common/enums';
+import type { ISignedUser } from '@hsm/common/interfaces';
 import {
   Body,
   Controller,
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
+  Req,
 } from '@nestjs/common';
-import { ApiDocumentation, Public } from '../../../decorator';
+import type { Request } from 'express';
+import { ApiDocumentation } from '../../../decorator';
+import { Roles } from '../../security/roles/roles.decorator';
 import { TemplatesService } from './templates.service';
 
 @Controller('templates')
 export class TemplatesController {
   constructor(private readonly templatesService: TemplatesService) {}
 
-  @ApiDocumentation(GetTemplateRequestDto)
+  @ApiDocumentation(TemplateResponseDto)
+  @Roles()
   @Get(':identifier')
-  async getTemplate(@Param() params: GetTemplateRequestDto) {
-    await this.templatesService.getTemplate(params.identifier);
+  getTemplate(@Param() params: GetTemplateRequestDto) {
+    return this.templatesService.findByIdentifier(params.identifier, {
+      withChildren: true,
+      withBase: true,
+    });
   }
 
-  @ApiDocumentation()
-  @Public()
+  @ApiDocumentation(TemplateResponseDto)
+  @Roles()
   @Post()
-  async addTemplate(@Body('payload') payload: unknown) {
-    await this.templatesService.addTemplate(payload);
+  addTemplate(@Body() payload: CreateTemplatePayloadDto) {
+    return this.templatesService.create(payload);
+  }
+
+  @ApiDocumentation(TemplateResponseDto)
+  @Roles()
+  @Put(':id')
+  updateTemplate(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() payload: UpdateTemplatePayloadDto,
+  ) {
+    return this.templatesService.update(id, payload);
   }
 
   @ApiDocumentation()
-  @Public()
-  @Put()
-  async updateTemplate(@Body('payload') payload: unknown) {
-    await this.templatesService.updateTemplate(payload);
-  }
-
-  @ApiDocumentation()
-  @Public()
+  @Roles()
   @Delete(':id')
-  async deleteTemplate(@Param('id') id: string) {
-    await this.templatesService.deleteTemplate(id);
+  async deleteTemplate(@Param('id', ParseUUIDPipe) id: string) {
+    await this.templatesService.delete(id);
+    return { id };
+  }
+
+  @ApiDocumentation(ParseTemplateResponseDto)
+  @Roles()
+  @Post('parse')
+  parseTemplate(
+    @Body() payload: ParseTemplatePayloadDto,
+    @Req() req: Request & { user?: ISignedUser },
+  ) {
+    return this.templatesService.parse({
+      identifier: payload.identifier,
+      data: payload.data,
+      context: {
+        userId: req.user?.id ?? null,
+        triggeredBy: TemplateParseTriggerEnum.Http,
+      },
+    });
   }
 }
