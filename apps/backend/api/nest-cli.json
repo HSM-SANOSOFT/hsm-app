@@ -4,7 +4,7 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "webpackConfigPath": "webpack.config.js",
+    "webpackConfigPath": "webpack.config.cjs",
     "tsConfigPath": "tsconfig.app.json"
   }
 }

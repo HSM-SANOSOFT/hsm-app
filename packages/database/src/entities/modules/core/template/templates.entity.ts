@@ -38,12 +38,12 @@ export class TemplatesEntity {
   @Column()
   content: string;
 
-  @Column({ nullable: true })
-  description: string;
+  @Column({ type: 'varchar', nullable: true })
+  description: string | null;
 
   @ManyToOne(() => TemplatesEntity, { nullable: true })
   @JoinColumn({ name: 'base_template' })
-  baseTemplate: TemplatesEntity;
+  baseTemplate: TemplatesEntity | null;
 
   @OneToOne(
     () => TemplateComEmailEntity,

@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@nestjs/common": "^11.1.19",
+    "dotenv": "^16.4.7",
     "joi": "^18.1.2",
     "reflect-metadata": "^0.2.2"
   },

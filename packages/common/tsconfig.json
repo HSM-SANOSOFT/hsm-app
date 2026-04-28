@@ -3,12 +3,12 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@hsm/common": ["../common/src"],
-      "@hsm/common/*": ["../common/src/*"],
+      "@hsm/common": ["src"],
+      "@hsm/common/*": ["src/*"],
       "@hsm/config": ["../config/src"],
       "@hsm/config/*": ["../config/src/*"],
-      "@hsm/database": ["src"],
-      "@hsm/database/*": ["src/*"],
+      "@hsm/database": ["../database/src"],
+      "@hsm/database/*": ["../database/src/*"],
       "@hsm/queue": ["../queue/src"],
       "@hsm/queue/*": ["../queue/src/*"],
       "@hsm/storage": ["../storage/src"],
