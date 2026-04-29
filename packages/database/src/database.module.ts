@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
-import { TypeOrmExceptionFilter } from './common/filter/typeorm-exeption.filter';
+import { TypeOrmExceptionFilter } from './filter/typeorm-exeption.filter';
 import { SeederModule } from './seeder/seeder.module';
 import { DatabaseSourcesModule } from './sources/database-sources.module';
 

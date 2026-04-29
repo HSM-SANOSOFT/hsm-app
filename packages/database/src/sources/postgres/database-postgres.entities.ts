@@ -1,4 +1,4 @@
-import { isEntity } from '../../common/utils';
+import { isEntity } from '@hsm/common/utils';
 import * as docsEntities from '../../entities/modules/core/docs';
 import * as templateEntities from '../../entities/modules/core/template';
 import * as userEntities from '../../entities/modules/core/users';
