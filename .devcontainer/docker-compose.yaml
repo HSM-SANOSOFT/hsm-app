@@ -11,6 +11,7 @@ services:
       - ..:/workspace:cached
       - /workspace/node_modules
       - claude_home:/root/.claude
+      - ~/.local/bin/claude:/root/.local/bin/claude:ro
     networks:
       - hsm-app-network
     env_file:
