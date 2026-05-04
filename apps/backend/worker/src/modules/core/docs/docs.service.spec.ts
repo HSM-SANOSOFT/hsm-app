@@ -1,3 +1,4 @@
+import { S3Service } from '@hsm/storage/s3/s3.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DocsService } from './docs.service';
 
@@ -6,7 +7,10 @@ describe('DocsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [DocsService],
+      providers: [
+        DocsService,
+        { provide: S3Service, useValue: { getFilesStreams: jest.fn() } },
+      ],
     }).compile();
 
     service = module.get<DocsService>(DocsService);

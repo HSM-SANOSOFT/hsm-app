@@ -4,6 +4,23 @@ export enum DocumentFormatsEnum {
   EXCEL = 'EXCEL',
 }
 
+export enum DocumentStatusEnum {
+  PENDING = 'PENDING',
+  PROCESSING = 'PROCESSING',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+}
+
+export enum DocumentTypeEnum {
+  GENERATED = 'GENERATED',
+  UPLOADED = 'UPLOADED',
+}
+
+export enum DocumentSourceEnum {
+  TEMPLATE = 'TEMPLATE',
+  MANUAL = 'MANUAL',
+}
+
 export enum DocumentOrientationsEnum {
   PORTRAIT = 'PORTRAIT',
   LANDSCAPE = 'LANDSCAPE',

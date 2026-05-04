@@ -16,6 +16,12 @@ export class TemplateNotFoundError extends NotFoundException {
   }
 }
 
+export class TemplateNotActiveError extends NotFoundException {
+  constructor(identifier: string) {
+    super(`Template '${identifier}' is not active`);
+  }
+}
+
 export class TemplateAlreadyExistsError extends ConflictException {
   constructor(name: string) {
     super(`Template with name '${name}' already exists`);
