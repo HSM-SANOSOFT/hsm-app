@@ -24,9 +24,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Queue } from 'bullmq';
 import { Repository } from 'typeorm';
 
-const DEFAULT_BUCKET = 'hsm-docs';
-const DEFAULT_FOLDER = 'generated';
-
 @Injectable()
 export class DocsService {
   constructor(
@@ -36,16 +33,14 @@ export class DocsService {
     private readonly docs: Repository<DocumentsEntity>,
   ) {}
 
-  async generateDocument(dto: GenerateDocumentRequestDto) {
-    const outputBucket = dto.outputBucket ?? DEFAULT_BUCKET;
-    const outputFolder = dto.outputFolder ?? DEFAULT_FOLDER;
-
+  async generateDocument(dto: GenerateDocumentRequestDto, userId?: string) {
     const doc = this.docs.create({
       title: dto.title,
       description: dto.description,
       type: DocumentTypeEnum.GENERATED,
       status: DocumentStatusEnum.PENDING,
       source: DocumentSourceEnum.TEMPLATE,
+      createdBy: userId,
     });
     await this.docs.save(doc);
 
@@ -53,25 +48,25 @@ export class DocsService {
       documentId: doc.id,
       templateIdentifier: dto.templateIdentifier,
       data: dto.data,
-      outputBucket,
-      outputFolder,
     };
 
     const job = await this.docsQueue.add('generate-document', jobPayload);
     return { documentId: doc.id, jobId: job.id };
   }
 
-  async getDocument(id: string) {
+  async getDocument(id: string, userId?: string) {
+    const where: Record<string, unknown> = { id };
+    if (userId) where.createdBy = userId;
     const doc = await this.docs.findOne({
-      where: { id },
+      where,
       relations: { versions: { storage: true } },
     });
     if (!doc) throw new NotFoundException(`Document '${id}' not found`);
     return doc;
   }
 
-  async getDocumentUrl(id: string) {
-    const doc = await this.getDocument(id);
+  async getDocumentUrl(id: string, userId?: string) {
+    const doc = await this.getDocument(id, userId);
 
     const latestVersion = doc.versions
       ?.slice()
@@ -110,9 +105,11 @@ export class DocsService {
     return { url };
   }
 
-  async deleteDocument(id: string) {
+  async deleteDocument(id: string, userId?: string) {
+    const where: Record<string, unknown> = { id };
+    if (userId) where.createdBy = userId;
     const doc = await this.docs.findOne({
-      where: { id },
+      where,
       relations: { versions: { storage: true } },
     });
     if (!doc) throw new NotFoundException(`Document '${id}' not found`);

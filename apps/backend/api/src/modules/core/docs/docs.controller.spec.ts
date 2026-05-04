@@ -13,10 +13,10 @@ describe('docsController', () => {
         {
           provide: DocsService,
           useValue: {
-            generateDocument: jest.fn(),
-            getDocument: jest.fn(),
-            getDocumentUrl: jest.fn(),
-            deleteDocument: jest.fn(),
+            generateDocument: jest.fn().mockResolvedValue({ documentId: 'doc-uuid', jobId: 'job-id' }),
+            getDocument: jest.fn().mockResolvedValue({}),
+            getDocumentUrl: jest.fn().mockResolvedValue({ url: 'https://s3.example.com/file' }),
+            deleteDocument: jest.fn().mockResolvedValue({ deleted: true }),
             getDocumentsUrl: jest.fn(),
             uploadDocuments: jest.fn(),
           },

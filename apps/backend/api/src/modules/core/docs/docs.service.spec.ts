@@ -110,30 +110,16 @@ describe('DocsService', () => {
       expect(result).toEqual({ documentId: 'doc-uuid', jobId: 'job-id' });
     });
 
-    it('uses default bucket and folder when not provided', async () => {
+    it('job payload only contains documentId, templateIdentifier, and data', async () => {
       await service.generateDocument(dto);
-      expect(mockDocsQueue.add).toHaveBeenCalledWith(
-        'generate-document',
-        expect.objectContaining({
-          outputBucket: 'hsm-docs',
-          outputFolder: 'generated',
-        }),
-      );
-    });
-
-    it('uses provided bucket and folder when supplied', async () => {
-      await service.generateDocument({
-        ...dto,
-        outputBucket: 'custom-bucket',
-        outputFolder: 'custom-folder',
+      const [, payload] = mockDocsQueue.add.mock.calls[0];
+      expect(payload).not.toHaveProperty('outputBucket');
+      expect(payload).not.toHaveProperty('outputFolder');
+      expect(payload).toMatchObject({
+        documentId: 'doc-uuid',
+        templateIdentifier: 'hcu_001',
+        data: { patientName: 'Ada' },
       });
-      expect(mockDocsQueue.add).toHaveBeenCalledWith(
-        'generate-document',
-        expect.objectContaining({
-          outputBucket: 'custom-bucket',
-          outputFolder: 'custom-folder',
-        }),
-      );
     });
   });
 

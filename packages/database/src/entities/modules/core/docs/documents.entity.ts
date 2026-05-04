@@ -32,6 +32,9 @@ export class DocumentsEntity {
   @Column()
   source: string;
 
+  @Column({ nullable: true })
+  createdBy?: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

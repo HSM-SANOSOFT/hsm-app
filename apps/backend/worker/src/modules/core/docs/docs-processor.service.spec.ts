@@ -7,6 +7,7 @@ import {
 } from '@hsm/common/enums';
 import { GenerateDocumentJobPayloadDto } from '@hsm/common/dtos';
 import {
+  TemplateNotActiveError,
   TemplateNotFoundError,
   TemplateSchemaValidationError,
 } from '@hsm/common/errors';
@@ -32,6 +33,7 @@ const FAKE_XLSX = Buffer.from('fake-xlsx');
 const mockTemplateEntity = {
   id: 'tmpl-uuid',
   name: 'hcu_001',
+  isActive: true,
   doc: {
     format: DocumentFormatsEnum.PDF,
     documentCode: DocumentCodesEnum.HCU_001,
@@ -43,6 +45,7 @@ const mockTemplateEntity = {
 const mockTemplateEntityXlsx = {
   id: 'tmpl-xlsx-uuid',
   name: 'hcu_report',
+  isActive: true,
   doc: {
     format: DocumentFormatsEnum.EXCEL,
     documentCode: DocumentCodesEnum.HCU_054,
@@ -62,6 +65,11 @@ const mockDocsRepo = {
     transaction: jest.fn((cb: (em: typeof mockManager) => Promise<void>) =>
       cb(mockManager),
     ),
+    createQueryBuilder: jest.fn().mockReturnValue({
+      select: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+      getRawOne: jest.fn().mockResolvedValue({ max: 0 }),
+    }),
   },
 };
 
@@ -96,8 +104,6 @@ describe('DocsProcessorService', () => {
     documentId: 'doc-uuid',
     templateIdentifier: 'hcu_001',
     data: { patientName: 'Ada' },
-    outputBucket: 'hsm-docs',
-    outputFolder: 'generated',
   };
 
   beforeEach(async () => {
@@ -166,11 +172,12 @@ describe('DocsProcessorService', () => {
       expect(mockGenerationService.generatePDF).toHaveBeenCalledWith('<html>test</html>');
     });
 
-    it('uploads to S3 with correct bucket, folder and contentType', async () => {
+    it('uploads to S3 with correct bucket, folder derived from documentCode, and contentType', async () => {
       await (service as any).handle({ name: 'generate-document', data: basePayload });
       const callArg = mockS3Service.uploadFiles.mock.calls[0][0];
       expect(callArg.payload[0].bucket).toBe('hsm-docs');
-      expect(callArg.payload[0].files[0].folderName).toBe('generated');
+      // Folder derived from DocumentCodesEnum.HCU_001 = 'HCU-001' → 'hcu-001'
+      expect(callArg.payload[0].files[0].folderName).toBe('hcu-001');
       expect(callArg.payload[0].files[0].fileInfo.contentType).toBe('application/pdf');
     });
 
@@ -223,6 +230,19 @@ describe('DocsProcessorService', () => {
       await expect(
         (service as any).handle({ name: 'generate-document', data: basePayload }),
       ).rejects.toBeInstanceOf(TemplateNotFoundError);
+      expect(mockDocsRepo.update).toHaveBeenLastCalledWith('doc-uuid', {
+        status: DocumentStatusEnum.FAILED,
+      });
+    });
+
+    it('inactive template → TemplateNotActiveError → status FAILED', async () => {
+      mockTemplatesService.findByIdentifier.mockResolvedValue({
+        ...mockTemplateEntity,
+        isActive: false,
+      });
+      await expect(
+        (service as any).handle({ name: 'generate-document', data: basePayload }),
+      ).rejects.toBeInstanceOf(TemplateNotActiveError);
       expect(mockDocsRepo.update).toHaveBeenLastCalledWith('doc-uuid', {
         status: DocumentStatusEnum.FAILED,
       });

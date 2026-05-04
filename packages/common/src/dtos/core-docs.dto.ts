@@ -89,14 +89,6 @@ export class GenerateDocumentJobPayloadDto {
 
   @IsObject()
   data: Record<string, unknown>;
-
-  @IsNotEmpty()
-  @IsString()
-  outputBucket: string;
-
-  @IsNotEmpty()
-  @IsString()
-  outputFolder: string;
 }
 
 @ApiSchema({ name: 'Generate Document Request' })
@@ -125,20 +117,4 @@ export class GenerateDocumentRequestDto {
   @IsString()
   @ApiProperty({ required: false, description: 'Descripción opcional' })
   description?: string;
-
-  @IsOptional()
-  @IsString()
-  @ApiProperty({
-    required: false,
-    description: 'Bucket S3 destino (por defecto: hsm-docs)',
-  })
-  outputBucket?: string;
-
-  @IsOptional()
-  @IsString()
-  @ApiProperty({
-    required: false,
-    description: 'Carpeta S3 destino (por defecto: generated)',
-  })
-  outputFolder?: string;
 }

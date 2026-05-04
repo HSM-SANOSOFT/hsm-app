@@ -10,7 +10,10 @@ import {
   DocumentsVersionEntity,
 } from '@hsm/database/entities';
 import { DatabasesEnum } from '@hsm/database/sources';
+import { TemplateNotActiveError } from '@hsm/common/errors';
 import { QueueEnum, QueueWorkerHost } from '@hsm/queue';
+
+const DOCS_BUCKET = 'hsm-docs';
 import { S3Service } from '@hsm/storage/s3/s3.service';
 import { Processor } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
@@ -51,6 +54,9 @@ export class DocsProcessorService extends QueueWorkerHost {
   private async processGenerateDocument(
     data: GenerateDocumentJobPayloadDto,
   ): Promise<void> {
+    // Tracked outside try so catch block can delete the S3 object if the DB transaction fails
+    let uploadedKey: string | undefined;
+    let uploadedBucket: string | undefined;
     try {
       await this.docsRepo.update(data.documentId, {
         status: DocumentStatusEnum.PROCESSING,
@@ -60,6 +66,10 @@ export class DocsProcessorService extends QueueWorkerHost {
         data.templateIdentifier,
         { withChildren: true },
       );
+
+      if (!template.isActive) {
+        throw new TemplateNotActiveError(data.templateIdentifier);
+      }
 
       const docMeta = template.doc;
       if (!docMeta) {
@@ -83,8 +93,13 @@ export class DocsProcessorService extends QueueWorkerHost {
         contentType = 'application/pdf';
         filename = `${docMeta.documentCode}-${timestamp}.pdf`;
       } else if (docMeta.format === DocumentFormatsEnum.EXCEL) {
-        const workbookDef = JSON.parse(html);
-        buffer = await this.excelService.generate(workbookDef);
+        const parsedDef = JSON.parse(html);
+        if (!parsedDef || !Array.isArray(parsedDef.sheets)) {
+          throw new Error(
+            `XLSX template '${data.templateIdentifier}' rendered invalid workbook definition — expected { sheets: [...] }`,
+          );
+        }
+        buffer = await this.excelService.generate(parsedDef);
         contentType =
           'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
         filename = `${docMeta.documentCode}-${timestamp}.xlsx`;
@@ -92,13 +107,15 @@ export class DocsProcessorService extends QueueWorkerHost {
         throw new Error(`Unsupported document format: ${docMeta.format}`);
       }
 
+      // Folder derived from documentCode (e.g. HCU-013-A → hcu-013-a) to group by form type
+      const outputFolder = docMeta.documentCode.toLowerCase();
       const uploadResult = await this.s3Service.uploadFiles({
         payload: [
           {
-            bucket: data.outputBucket,
+            bucket: DOCS_BUCKET,
             files: [
               {
-                folderName: data.outputFolder,
+                folderName: outputFolder,
                 fileInfo: {
                   fileName: filename,
                   fileBuffer: buffer,
@@ -111,10 +128,19 @@ export class DocsProcessorService extends QueueWorkerHost {
       });
 
       const { fileId, key } = uploadResult[0].files[0];
+      uploadedKey = key;
+      uploadedBucket = DOCS_BUCKET;
+
+      const nextVersion = await this.docsRepo.manager
+        .createQueryBuilder(DocumentsVersionEntity, 'v')
+        .select('COALESCE(MAX(v.version), 0)', 'max')
+        .where('v.documentId = :id', { id: data.documentId })
+        .getRawOne<{ max: number }>()
+        .then(r => (r?.max ?? 0) + 1);
 
       await this.docsRepo.manager.transaction(async manager => {
         const version = manager.create(DocumentsVersionEntity, {
-          version: 1,
+          version: nextVersion,
           filename,
           mimeType: contentType,
           size: buffer.length,
@@ -125,7 +151,7 @@ export class DocsProcessorService extends QueueWorkerHost {
         const storage = manager.create(DocumentStorageObjectEntity, {
           id: fileId,
           path: key,
-          bucket: data.outputBucket,
+          bucket: DOCS_BUCKET,
         });
         storage.version = version;
         await manager.save(DocumentStorageObjectEntity, storage);
@@ -142,6 +168,25 @@ export class DocsProcessorService extends QueueWorkerHost {
         status: DocumentStatusEnum.COMPLETED,
       });
     } catch (err) {
+      // Clean up orphaned S3 object if upload succeeded but DB transaction failed
+      if (uploadedKey && uploadedBucket) {
+        try {
+          await this.s3Service.deleteFiles({
+            documents: [
+              {
+                bucket: uploadedBucket,
+                files: [{ folderName: '', fileInfo: { fileId: uploadedKey } }],
+              },
+            ],
+          });
+        } catch (cleanupErr) {
+          this.logger.error(
+            `Failed to clean up orphaned S3 object key="${uploadedKey}"`,
+            cleanupErr instanceof Error ? cleanupErr.stack : String(cleanupErr),
+          );
+        }
+      }
+
       // Secondary failure (e.g. DB down) must not mask the original error
       try {
         await this.docsRepo.update(data.documentId, {

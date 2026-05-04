@@ -1,3 +1,4 @@
+import type { ISignedUser } from '@hsm/common/interfaces';
 import {
   DocumentsPayloadDto,
   GenerateDocumentRequestDto,
@@ -12,10 +13,12 @@ import {
   Param,
   Post,
   Query,
+  Req,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { Request } from 'express';
 import { ApiDocumentation } from '../../../decorator';
 import { DocsService } from '../../core/docs/docs.service';
 import { Roles } from '../../security/roles/roles.decorator';
@@ -27,31 +30,31 @@ export class DocsController {
 
   @ApiDocumentation()
   @Roles()
-  @Post('generate')
-  async generateDocument(@Body() dto: GenerateDocumentRequestDto) {
-    this.logger.debug(`Generating document from template '${dto.templateIdentifier}'`);
-    return await this.docsService.generateDocument(dto);
+  @Get(':id/url')
+  async getDocumentUrl(@Param('id') id: string, @Req() req: Request) {
+    return await this.docsService.getDocumentUrl(id, (req.user as ISignedUser)?.id);
   }
 
   @ApiDocumentation()
   @Roles()
   @Get(':id')
-  async getDocument(@Param('id') id: string) {
-    return await this.docsService.getDocument(id);
+  async getDocument(@Param('id') id: string, @Req() req: Request) {
+    return await this.docsService.getDocument(id, (req.user as ISignedUser)?.id);
   }
 
   @ApiDocumentation()
   @Roles()
-  @Get(':id/url')
-  async getDocumentUrl(@Param('id') id: string) {
-    return await this.docsService.getDocumentUrl(id);
+  @Post('generate')
+  async generateDocument(@Body() dto: GenerateDocumentRequestDto, @Req() req: Request) {
+    this.logger.debug(`Generating document from template '${dto.templateIdentifier}'`);
+    return await this.docsService.generateDocument(dto, (req.user as ISignedUser)?.id);
   }
 
   @ApiDocumentation()
   @Roles()
   @Delete(':id')
-  async deleteDocument(@Param('id') id: string) {
-    return await this.docsService.deleteDocument(id);
+  async deleteDocument(@Param('id') id: string, @Req() req: Request) {
+    return await this.docsService.deleteDocument(id, (req.user as ISignedUser)?.id);
   }
 
   @ApiDocumentation()
