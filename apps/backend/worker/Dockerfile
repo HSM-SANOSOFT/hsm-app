@@ -26,7 +26,6 @@ WORKDIR /app
 COPY --from=pruner /app/out/json/ .
 COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 RUN pnpm install --frozen-lockfile
-RUN pnpm dlx puppeteer browsers install chrome-headless-shell
 COPY --from=pruner /app/out/full/ .
 RUN pnpm --filter @hsm/worker build
 
@@ -43,7 +42,6 @@ COPY --from=builder /usr/lib/oracle                 /usr/lib/oracle
 RUN echo "/usr/lib/oracle/12.1/client64/lib" \
       > /etc/ld.so.conf.d/oracle-instantclient.conf && ldconfig
 
-COPY --from=builder /root/.cache/puppeteer          /root/.cache/puppeteer
 COPY --from=builder /app/node_modules               /app/node_modules
 COPY --from=builder /app/apps/backend/worker/dist   /app/dist
 
