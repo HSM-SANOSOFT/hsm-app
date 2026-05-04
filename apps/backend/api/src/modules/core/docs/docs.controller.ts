@@ -1,12 +1,15 @@
 import {
   DocumentsPayloadDto,
+  GenerateDocumentRequestDto,
   UploadDocumentPayloadDto,
 } from '@hsm/common/dtos';
 import {
   Body,
   Controller,
   Delete,
+  Get,
   Logger,
+  Param,
   Post,
   Query,
   UploadedFiles,
@@ -21,7 +24,35 @@ import { Roles } from '../../security/roles/roles.decorator';
 export class DocsController {
   private readonly logger = new Logger(DocsController.name);
   constructor(private readonly docsService: DocsService) {}
-  //TODO: Add endpoint creation, updating, deleting, fetching documents
+
+  @ApiDocumentation()
+  @Roles()
+  @Post('generate')
+  async generateDocument(@Body() dto: GenerateDocumentRequestDto) {
+    this.logger.debug(`Generating document from template '${dto.templateIdentifier}'`);
+    return await this.docsService.generateDocument(dto);
+  }
+
+  @ApiDocumentation()
+  @Roles()
+  @Get(':id')
+  async getDocument(@Param('id') id: string) {
+    return await this.docsService.getDocument(id);
+  }
+
+  @ApiDocumentation()
+  @Roles()
+  @Get(':id/url')
+  async getDocumentUrl(@Param('id') id: string) {
+    return await this.docsService.getDocumentUrl(id);
+  }
+
+  @ApiDocumentation()
+  @Roles()
+  @Delete(':id')
+  async deleteDocument(@Param('id') id: string) {
+    return await this.docsService.deleteDocument(id);
+  }
 
   @ApiDocumentation()
   @Roles()
@@ -68,7 +99,8 @@ export class DocsController {
   @Roles()
   @Delete()
   async deleteDocuments(
-    @Body() payload: Array<{
+    @Body()
+    payload: Array<{
       bucket: string;
       files: Array<{
         foldername: string;
