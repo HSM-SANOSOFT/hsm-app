@@ -1,5 +1,5 @@
 import type { SeedDefinition } from '@hsm/common/interfaces';
-import { TemplateComEmailEntity } from '@hsm/database/entities/modules/core/template';
+import { TemplateComEmailEntity } from '@hsm/database/entities';
 import { TEMPLATE_APPT_CONFIRM_ID } from './templates.seed';
 
 export const templateComEmailSeed: SeedDefinition<TemplateComEmailEntity> = {

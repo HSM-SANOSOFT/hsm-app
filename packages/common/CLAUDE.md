@@ -2,6 +2,12 @@
 
 Shared DTOs, interfaces, enums, errors, types. **Source-only** package (`main` points at `src/index.ts`) — no build step needed for consumers; TypeScript path mapping resolves it directly.
 
+## Commands
+
+```bash
+pnpm --filter @hsm/common build
+```
+
 ## Import via subpaths
 
 The root `src/index.ts` is intentionally empty. Always import from a subpath:

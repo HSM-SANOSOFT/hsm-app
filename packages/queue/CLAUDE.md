@@ -2,6 +2,12 @@
 
 Global `QueueModule`. BullMQ wired to Redis. Used as a **producer** in `@hsm/api` and a **consumer** in `@hsm/worker`.
 
+## Commands
+
+```bash
+pnpm --filter @hsm/queue build
+```
+
 ## What's exported
 
 ```ts

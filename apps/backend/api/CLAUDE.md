@@ -7,12 +7,16 @@ NestJS HTTP API. See repo-root `CLAUDE.md` for monorepo-wide conventions.
 Run inside `hsm-app-be-api` container.
 
 ```bash
-pnpm --filter @hsm/api start:dev      # nest start --watch
-pnpm --filter @hsm/api build          # nest build
+pnpm --filter @hsm/api start:dev      # STARTUP TEST — must reach DB connection phase with no DI errors
+pnpm --filter @hsm/api build
 pnpm --filter @hsm/api test
-pnpm --filter @hsm/api test -- --testPathPattern=coms.service
+pnpm --filter @hsm/api test:watch
+pnpm --filter @hsm/api test:cov
 pnpm --filter @hsm/api test:e2e
+pnpm --filter @hsm/api test -- --testPathPattern=coms.service   # single file
 ```
+
+`build` only catches TypeScript errors. NestJS DI failures (missing providers, circular deps) only surface at runtime — run `start:dev` after any module or entity change.
 
 Listens on port 3000 inside the container, exposed as **10001** on the host. Swagger UI at `http://localhost:10001/api`.
 

@@ -7,10 +7,16 @@ BullMQ job processor. No HTTP server. See repo-root `CLAUDE.md` for monorepo-wid
 Run inside `hsm-app-be-worker` container.
 
 ```bash
-pnpm --filter @hsm/worker start:dev
+pnpm --filter @hsm/worker start:dev   # STARTUP TEST — must reach DB connection phase with no DI errors
 pnpm --filter @hsm/worker build
 pnpm --filter @hsm/worker test
+pnpm --filter @hsm/worker test:watch
+pnpm --filter @hsm/worker test:cov
+pnpm --filter @hsm/worker test:e2e
+pnpm --filter @hsm/worker test -- --testPathPattern=coms.service   # single file
 ```
+
+`build` only catches TypeScript errors. NestJS DI failures (missing providers, circular deps) only surface at runtime — run `start:dev` after any module or entity change.
 
 Worker container is exposed as **10002** on the host (used for debug ports / metrics, not HTTP traffic).
 

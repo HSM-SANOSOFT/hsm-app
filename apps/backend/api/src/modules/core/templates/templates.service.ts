@@ -19,7 +19,7 @@ import {
   TemplateComEmailEntity,
   TemplateDocEntity,
   TemplatesEntity,
-} from '@hsm/database/entities/modules/core/template';
+} from '@hsm/database/entities';
 import { DatabasesEnum } from '@hsm/database/sources';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';

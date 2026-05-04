@@ -2,6 +2,12 @@
 
 S3-compatible object storage. Works against MinIO in dev and AWS S3 in prod.
 
+## Commands
+
+```bash
+pnpm --filter @hsm/storage build
+```
+
 ## What's exported
 
 ```ts

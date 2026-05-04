@@ -16,7 +16,7 @@ import { validateAgainstTemplateSchema } from '@hsm/common/utils';
 import {
   TemplateParseLogEntity,
   TemplatesEntity,
-} from '@hsm/database/entities/modules/core/template';
+} from '@hsm/database/entities';
 import { DatabasesEnum } from '@hsm/database/sources';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';

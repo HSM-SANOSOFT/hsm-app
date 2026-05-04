@@ -8,6 +8,12 @@ import { envs } from '@hsm/config';
 const port = envs.DB_POSTGRES_PORT;
 ```
 
+## Commands
+
+```bash
+pnpm --filter @hsm/config build
+```
+
 ## How it works
 
 `src/envs.ts`:

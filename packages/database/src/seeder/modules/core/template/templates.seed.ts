@@ -1,6 +1,6 @@
 import { TemplateCategoriesEnum } from '@hsm/common/enums';
 import type { SeedDefinition } from '@hsm/common/interfaces';
-import { TemplatesEntity } from '@hsm/database/entities/modules/core/template';
+import { TemplatesEntity } from '@hsm/database/entities';
 import { v5 as uuidv5 } from 'uuid';
 
 const NS = uuidv5('hsm.seed.templates', uuidv5.DNS);
