@@ -43,10 +43,7 @@
   "inlineFold.unfoldedOpacity": 0.6,
   "inlineFold.maskChar": "…",
   "inlineFold.maskCss": "color:#000;",
-  "inlineFold.supportedLanguages": [
-    "javascriptreact",
-    "typescriptreact"
-  ],
+  "inlineFold.supportedLanguages": ["javascriptreact", "typescriptreact"],
   "inlineFold.unfoldOnLineSelect": true,
   "inlineFold.autoFoldOnOpen": true,
   "python-envs.defaultEnvManager": "ms-python.python:system",

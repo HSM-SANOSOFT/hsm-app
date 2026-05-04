@@ -2,10 +2,11 @@ import { envs } from '@hsm/config';
 import { InternalServerErrorException, Module } from '@nestjs/common';
 import nodemailer from 'nodemailer';
 import { DocsModule } from '../../docs/docs.module';
-import { TemplateModule } from '../template/template.module';
+import { TemplatesModule } from '../../templates/templates.module';
 import { EmailService } from './email.service';
+
 @Module({
-  imports: [TemplateModule, DocsModule],
+  imports: [TemplatesModule, DocsModule],
   providers: [
     EmailService,
     {

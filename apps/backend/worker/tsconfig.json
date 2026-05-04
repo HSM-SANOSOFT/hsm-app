@@ -3,6 +3,7 @@
   "compilerOptions": {
     "outDir": "./dist",
     "baseUrl": ".",
+    "types": ["node", "jest"],
     "paths": {
       "@hsm/common": ["../../../packages/common/src"],
       "@hsm/common/*": ["../../../packages/common/src/*"],
