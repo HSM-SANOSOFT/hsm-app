@@ -2,12 +2,10 @@ import {
   CreateTemplatePayloadDto,
   GetTemplateRequestDto,
   ParseTemplatePayloadDto,
-  ParseTemplateResponseDto,
   TemplateResponseDto,
   UpdateTemplatePayloadDto,
+  ValidateTemplateResponseDto,
 } from '@hsm/common/dtos';
-import { TemplateParseTriggerEnum } from '@hsm/common/enums';
-import type { ISignedUser } from '@hsm/common/interfaces';
 import {
   Body,
   Controller,
@@ -17,9 +15,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
-  Req,
 } from '@nestjs/common';
-import type { Request } from 'express';
 import { ApiDocumentation } from '../../../decorator';
 import { Roles } from '../../security/roles/roles.decorator';
 import { TemplatesService } from './templates.service';
@@ -63,20 +59,13 @@ export class TemplatesController {
     return { id };
   }
 
-  @ApiDocumentation(ParseTemplateResponseDto)
+  @ApiDocumentation(ValidateTemplateResponseDto)
   @Roles()
-  @Post('parse')
-  parseTemplate(
-    @Body() payload: ParseTemplatePayloadDto,
-    @Req() req: Request & { user?: ISignedUser },
-  ) {
-    return this.templatesService.parse({
+  @Post('validate')
+  validateTemplate(@Body() payload: ParseTemplatePayloadDto) {
+    return this.templatesService.validate({
       identifier: payload.identifier,
       data: payload.data,
-      context: {
-        userId: req.user?.id ?? null,
-        triggeredBy: TemplateParseTriggerEnum.Http,
-      },
     });
   }
 }

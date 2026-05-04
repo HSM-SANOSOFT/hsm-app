@@ -13,7 +13,7 @@ describe('TemplatesController', () => {
       create: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
-      parse: jest.fn(),
+      validate: jest.fn(),
     } as unknown as jest.Mocked<TemplatesService>;
 
     const module: TestingModule = await Test.createTestingModule({
@@ -63,16 +63,11 @@ describe('TemplatesController', () => {
     expect(out).toEqual({ id: '11111111-1111-1111-1111-111111111111' });
   });
 
-  it('POST /parse forwards user id and HTTP trigger', () => {
-    const req = { user: { id: 'u-1' } } as never;
-    controller.parseTemplate(
-      { identifier: 'foo', data: {} },
-      req as never,
-    );
-    expect(service.parse).toHaveBeenCalledWith({
-      identifier: 'foo',
-      data: {},
-      context: { userId: 'u-1', triggeredBy: 'HTTP' },
+  it('POST /validate forwards identifier and data to service.validate', () => {
+    controller.validateTemplate({ identifier: 'welcome', data: { userName: 'Ada' } });
+    expect(service.validate).toHaveBeenCalledWith({
+      identifier: 'welcome',
+      data: { userName: 'Ada' },
     });
   });
 });

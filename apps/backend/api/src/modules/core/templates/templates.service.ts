@@ -2,23 +2,15 @@ import {
   CreateTemplatePayloadDto,
   UpdateTemplatePayloadDto,
 } from '@hsm/common/dtos';
-import {
-  TemplateCategoriesEnum,
-  TemplateParseErrorCodeEnum,
-  TemplateParseTriggerEnum,
-} from '@hsm/common/enums';
+import { TemplateCategoriesEnum } from '@hsm/common/enums';
 import {
   TemplateAlreadyExistsError,
   TemplateInUseError,
   TemplateInvalidHandlebarsError,
   TemplateInvalidShapeError,
   TemplateNotFoundError,
-  TemplateSchemaValidationError,
+  type TemplateSchemaIssue,
 } from '@hsm/common/errors';
-import type {
-  ParseTemplateInput,
-  ParseTemplateResult,
-} from '@hsm/common/types';
 import {
   isWellFormedTemplateSchema,
   validateAgainstTemplateSchema,
@@ -26,11 +18,10 @@ import {
 import {
   TemplateComEmailEntity,
   TemplateDocEntity,
-  TemplateParseLogEntity,
   TemplatesEntity,
 } from '@hsm/database/entities/modules/core/template';
 import { DatabasesEnum } from '@hsm/database/sources';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import Handlebars from 'handlebars';
 import { DataSource, EntityManager, Not, Repository } from 'typeorm';
@@ -38,19 +29,17 @@ import { DataSource, EntityManager, Not, Repository } from 'typeorm';
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+export interface ValidateTemplateResult {
+  valid: boolean;
+  templateId?: string;
+  issues?: TemplateSchemaIssue[];
+}
+
 @Injectable()
 export class TemplatesService {
-  private readonly logger = new Logger(TemplatesService.name);
-  private readonly compiledCache = new Map<
-    string,
-    HandlebarsTemplateDelegate
-  >();
-
   constructor(
     @InjectRepository(TemplatesEntity, DatabasesEnum.HsmDbPostgres)
     private readonly templates: Repository<TemplatesEntity>,
-    @InjectRepository(TemplateParseLogEntity, DatabasesEnum.HsmDbPostgres)
-    private readonly parseLogs: Repository<TemplateParseLogEntity>,
     @InjectDataSource(DatabasesEnum.HsmDbPostgres)
     private readonly dataSource: DataSource,
   ) {}
@@ -149,7 +138,10 @@ export class TemplatesService {
       if (clash) throw new TemplateAlreadyExistsError(dto.name);
     }
 
-    if (dto.baseTemplateId && dto.baseTemplateId !== existing.baseTemplate?.id) {
+    if (
+      dto.baseTemplateId &&
+      dto.baseTemplateId !== existing.baseTemplate?.id
+    ) {
       const base = await this.templates.findOne({
         where: { id: dto.baseTemplateId },
       });
@@ -179,8 +171,6 @@ export class TemplatesService {
       await this.upsertChildOnUpdate(manager, existing, dto);
     });
 
-    this.compiledCache.delete(existing.id);
-
     return this.findByIdentifier(existing.id, {
       withChildren: true,
       withBase: true,
@@ -197,98 +187,46 @@ export class TemplatesService {
     if (referenced > 0) throw new TemplateInUseError(id);
 
     await this.dataSource.transaction(async manager => {
-      if (target.category === TemplateCategoriesEnum.EMAIL_INTERNAL ||
-        target.category === TemplateCategoriesEnum.EMAIL_EXTERNAL) {
+      if (
+        target.category === TemplateCategoriesEnum.EMAIL_INTERNAL ||
+        target.category === TemplateCategoriesEnum.EMAIL_EXTERNAL
+      ) {
         await manager.delete(TemplateComEmailEntity, { id });
       } else if (target.category === TemplateCategoriesEnum.DOCS) {
         await manager.delete(TemplateDocEntity, { id });
       }
       await manager.delete(TemplatesEntity, { id });
     });
-
-    this.compiledCache.delete(id);
   }
 
-  async parse(input: ParseTemplateInput): Promise<ParseTemplateResult> {
-    const triggeredBy =
-      input.context?.triggeredBy ?? TemplateParseTriggerEnum.Internal;
-    const userId = input.context?.userId ?? null;
-
-    let template: TemplatesEntity;
-    try {
-      template = await this.findByIdentifier(input.identifier, {
-        withBase: true,
-      });
-    } catch (err) {
-      if (err instanceof TemplateNotFoundError) {
-        // Cannot reference a templateId we don't have; skip log row.
-        throw err;
-      }
-      throw err;
-    }
+  async validate(input: {
+    identifier: string;
+    data: Record<string, unknown>;
+  }): Promise<ValidateTemplateResult> {
+    const template = await this.findByIdentifier(input.identifier);
 
     const validation = validateAgainstTemplateSchema(
       template.schema,
       input.data,
     );
     if (!validation.valid) {
-      const error = new TemplateSchemaValidationError(validation.issues);
-      await this.writeLog({
-        template,
-        input: input.data,
-        success: false,
-        outputLength: null,
-        errorCode: TemplateParseErrorCodeEnum.Schema,
-        errorMessage: validation.issues
-          .map(i => `${i.path}: expected ${i.expected}, got ${i.received}`)
-          .join('; '),
-        userId,
-        triggeredBy,
-      });
-      throw error;
+      return { valid: false, templateId: template.id, issues: validation.issues };
     }
 
-    let html: string;
     try {
-      const childCompiled = this.getCompiled(template);
-      const childHtml = childCompiled(input.data);
-
-      if (
-        template.category !== TemplateCategoriesEnum.BASE &&
-        template.baseTemplate
-      ) {
-        const baseCompiled = this.getCompiled(template.baseTemplate);
-        html = baseCompiled({ ...input.data, body: childHtml });
-      } else {
-        html = childHtml;
-      }
+      Handlebars.precompile(template.content);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      await this.writeLog({
-        template,
-        input: input.data,
-        success: false,
-        outputLength: null,
-        errorCode: TemplateParseErrorCodeEnum.HbsRuntime,
-        errorMessage: message,
-        userId,
-        triggeredBy,
-      });
-      throw new TemplateInvalidHandlebarsError(err);
+      return {
+        valid: false,
+        templateId: template.id,
+        issues: [
+          { path: 'content', expected: 'compilable Handlebars', received: message },
+        ],
+      };
     }
 
-    await this.writeLog({
-      template,
-      input: input.data,
-      success: true,
-      outputLength: html.length,
-      errorCode: null,
-      errorMessage: null,
-      userId,
-      triggeredBy,
-    });
-
-    return { html, templateId: template.id };
+    return { valid: true, templateId: template.id };
   }
 
   private identifierWhere(identifier: string) {
@@ -410,47 +348,6 @@ export class TemplatesService {
         id: existing.id,
         ...dto.doc,
       });
-    }
-  }
-
-  private getCompiled(
-    template: TemplatesEntity,
-  ): HandlebarsTemplateDelegate {
-    const cached = this.compiledCache.get(template.id);
-    if (cached) return cached;
-    const compiled = Handlebars.compile(template.content, { noEscape: false });
-    this.compiledCache.set(template.id, compiled);
-    return compiled;
-  }
-
-  private async writeLog(args: {
-    template: TemplatesEntity;
-    input: object;
-    success: boolean;
-    outputLength: number | null;
-    errorCode: TemplateParseErrorCodeEnum | null;
-    errorMessage: string | null;
-    userId: string | null;
-    triggeredBy: TemplateParseTriggerEnum;
-  }): Promise<void> {
-    try {
-      await this.parseLogs.save({
-        templateId: args.template.id,
-        templateName: args.template.name,
-        category: args.template.category,
-        input: args.input,
-        outputLength: args.outputLength,
-        success: args.success,
-        errorCode: args.errorCode,
-        errorMessage: args.errorMessage,
-        userId: args.userId,
-        triggeredBy: args.triggeredBy,
-      });
-    } catch (err) {
-      this.logger.error(
-        `Failed to write template parse log for template ${args.template.id}`,
-        err instanceof Error ? err.stack : String(err),
-      );
     }
   }
 }

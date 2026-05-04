@@ -1,28 +1,20 @@
-import {
-  TemplateCategoriesEnum,
-  TemplateParseTriggerEnum,
-} from '@hsm/common/enums';
+import { TemplateCategoriesEnum } from '@hsm/common/enums';
 import {
   TemplateAlreadyExistsError,
   TemplateInUseError,
   TemplateInvalidHandlebarsError,
   TemplateInvalidShapeError,
   TemplateNotFoundError,
-  TemplateSchemaValidationError,
 } from '@hsm/common/errors';
-import {
-  TemplateParseLogEntity,
-  TemplatesEntity,
-} from '@hsm/database/entities/modules/core/template';
+import { TemplatesEntity } from '@hsm/database/entities/modules/core/template';
 import { DatabasesEnum } from '@hsm/database/sources';
-import { getDataSourceToken, getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
+import { getDataSourceToken, getRepositoryToken } from '@nestjs/typeorm';
 import { TemplatesService } from './templates.service';
 
 describe('TemplatesService', () => {
   let service: TemplatesService;
   let templatesRepo: { findOne: jest.Mock; count: jest.Mock };
-  let parseLogsRepo: { save: jest.Mock };
   let managerSave: jest.Mock;
   let managerUpdate: jest.Mock;
   let managerDelete: jest.Mock;
@@ -35,12 +27,11 @@ describe('TemplatesService', () => {
       findOne: jest.fn(),
       count: jest.fn().mockResolvedValue(0),
     };
-    parseLogsRepo = { save: jest.fn().mockResolvedValue(undefined) };
     managerSave = jest.fn(async (_entity, value) => value);
     managerUpdate = jest.fn().mockResolvedValue({ affected: 1 });
     managerDelete = jest.fn().mockResolvedValue({ affected: 1 });
     const manager = {
-      create: <T,>(_entity: unknown, value: T) => value,
+      create: <T>(_entity: unknown, value: T) => value,
       save: managerSave,
       update: managerUpdate,
       delete: managerDelete,
@@ -55,13 +46,6 @@ describe('TemplatesService', () => {
         {
           provide: getRepositoryToken(TemplatesEntity, DatabasesEnum.HsmDbPostgres),
           useValue: templatesRepo,
-        },
-        {
-          provide: getRepositoryToken(
-            TemplateParseLogEntity,
-            DatabasesEnum.HsmDbPostgres,
-          ),
-          useValue: parseLogsRepo,
         },
         {
           provide: getDataSourceToken(DatabasesEnum.HsmDbPostgres),
@@ -132,13 +116,11 @@ describe('TemplatesService', () => {
     });
 
     it('happy path: BASE template', async () => {
-      templatesRepo.findOne
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce({
-          id: 'id-1',
-          name: baseDto.name,
-          category: TemplateCategoriesEnum.BASE,
-        });
+      templatesRepo.findOne.mockResolvedValueOnce(null).mockResolvedValueOnce({
+        id: 'id-1',
+        name: baseDto.name,
+        category: TemplateCategoriesEnum.BASE,
+      });
       managerSave.mockResolvedValueOnce({ id: 'id-1', ...baseDto });
       const out = await service.create(baseDto);
       expect(out).toMatchObject({ id: 'id-1' });
@@ -178,80 +160,62 @@ describe('TemplatesService', () => {
     });
   });
 
-  describe('parse', () => {
-    const baseTemplate = {
-      id: 'base-id',
-      name: 'base',
-      category: TemplateCategoriesEnum.BASE,
-      schema: {},
-      content: '<wrap>{{{body}}}</wrap>',
-      baseTemplate: null,
+  describe('validate', () => {
+    const template = {
+      id: 'tmpl-1',
+      name: 'welcome',
+      schema: { userName: 'string' },
+      content: '<p>Hello {{userName}}</p>',
+      category: TemplateCategoriesEnum.EMAIL_EXTERNAL,
     } as unknown as TemplatesEntity;
 
-    const childTemplate = {
-      id: 'child-id',
-      name: 'child',
-      category: TemplateCategoriesEnum.EMAIL_INTERNAL,
-      schema: { name: 'string' },
-      content: '<p>Hi {{name}}</p>',
-      baseTemplate,
-    } as unknown as TemplatesEntity;
-
-    it('renders BASE template alone and writes a success log', async () => {
-      templatesRepo.findOne.mockResolvedValue({
-        ...baseTemplate,
-        schema: { greet: 'string' },
-        content: '<x>{{greet}}</x>',
+    it('returns valid:true when template exists, data matches schema, content compiles', async () => {
+      templatesRepo.findOne.mockResolvedValue(template);
+      const result = await service.validate({
+        identifier: 'welcome',
+        data: { userName: 'Ada' },
       });
-      const result = await service.parse({
-        identifier: 'base',
-        data: { greet: 'hi' },
-        context: { triggeredBy: TemplateParseTriggerEnum.Internal },
-      });
-      expect(result.html).toBe('<x>hi</x>');
-      expect(parseLogsRepo.save).toHaveBeenCalledWith(
-        expect.objectContaining({ success: true, outputLength: '<x>hi</x>'.length }),
-      );
+      expect(result).toEqual({ valid: true, templateId: 'tmpl-1' });
     });
 
-    it('wraps child output inside BASE {{{body}}} for non-BASE', async () => {
-      templatesRepo.findOne.mockResolvedValue(childTemplate);
-      const result = await service.parse({
-        identifier: 'child',
-        data: { name: 'Ada' },
-      });
-      expect(result.html).toBe('<wrap><p>Hi Ada</p></wrap>');
-      expect(parseLogsRepo.save).toHaveBeenCalledWith(
-        expect.objectContaining({ success: true }),
-      );
-    });
-
-    it('throws TemplateSchemaValidationError on schema mismatch and logs failure', async () => {
-      templatesRepo.findOne.mockResolvedValue({
-        ...childTemplate,
-        baseTemplate: null,
-        category: TemplateCategoriesEnum.BASE,
-      });
+    it('throws TemplateNotFoundError when identifier is missing', async () => {
+      templatesRepo.findOne.mockResolvedValue(null);
       await expect(
-        service.parse({ identifier: 'child', data: { name: 42 } }),
-      ).rejects.toBeInstanceOf(TemplateSchemaValidationError);
-      expect(parseLogsRepo.save).toHaveBeenCalledWith(
-        expect.objectContaining({ success: false, errorCode: 'SCHEMA' }),
-      );
+        service.validate({ identifier: 'ghost', data: {} }),
+      ).rejects.toBeInstanceOf(TemplateNotFoundError);
     });
 
-    it('does not crash when log write fails', async () => {
+    it('returns valid:false with issues when data fails schema validation', async () => {
+      templatesRepo.findOne.mockResolvedValue(template);
+      const result = await service.validate({
+        identifier: 'welcome',
+        data: {},
+      });
+      expect(result.valid).toBe(false);
+      expect(result.templateId).toBe('tmpl-1');
+      expect(result.issues?.length).toBeGreaterThan(0);
+    });
+
+    it('returns valid:false with content issue when template has malformed Handlebars', async () => {
       templatesRepo.findOne.mockResolvedValue({
-        ...baseTemplate,
-        schema: { x: 'string' },
-        content: '{{x}}',
+        ...template,
+        schema: {},
+        content: '{{#if x}}',
       });
-      parseLogsRepo.save.mockRejectedValue(new Error('db down'));
-      const result = await service.parse({
-        identifier: 'base',
-        data: { x: 'ok' },
+      const result = await service.validate({
+        identifier: 'welcome',
+        data: {},
       });
-      expect(result.html).toBe('ok');
+      expect(result.valid).toBe(false);
+      expect(result.issues?.[0]?.path).toBe('content');
+    });
+
+    it('does NOT write to parseLogs', async () => {
+      templatesRepo.findOne.mockResolvedValue(template);
+      await service.validate({ identifier: 'welcome', data: { userName: 'X' } });
+      // No parseLogs repo injected — build-level proof. Verify no DB side-effects
+      // by confirming only templatesRepo.findOne was called.
+      expect(templatesRepo.findOne).toHaveBeenCalledTimes(1);
     });
   });
 });

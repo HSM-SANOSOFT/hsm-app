@@ -21,6 +21,7 @@ import {
   DocumentSizesEnum,
 } from '../enums/core-docs.enum';
 import { TemplateCategoriesEnum } from '../enums/core-templates.enum';
+import type { TemplateSchemaIssue } from '../errors/core-templates.error';
 
 @ApiSchema({ name: 'Get Template Request' })
 export class GetTemplateRequestDto {
@@ -160,7 +161,8 @@ export class CreateTemplatePayloadDto {
   @IsUUID()
   @ApiProperty({
     required: false,
-    description: 'UUID de la plantilla BASE (requerido para categorías != BASE)',
+    description:
+      'UUID de la plantilla BASE (requerido para categorías != BASE)',
   })
   baseTemplateId?: string;
 
@@ -254,4 +256,16 @@ export class TemplateResponseDto {
 
   @ApiProperty({ required: false, type: () => DocTemplateFieldsDto })
   doc?: DocTemplateFieldsDto;
+}
+
+@ApiSchema({ name: 'Validate Template Response' })
+export class ValidateTemplateResponseDto {
+  @ApiProperty()
+  valid: boolean;
+
+  @ApiProperty({ required: false })
+  templateId?: string;
+
+  @ApiProperty({ required: false, type: 'array' })
+  issues?: TemplateSchemaIssue[];
 }
