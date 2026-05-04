@@ -56,6 +56,10 @@ pnpm build
 | RedisInsight | 10007 |
 | pgAdmin | 10008 |
 
+## Documented solutions
+
+`docs/solutions/` — past bugs, best practices, and workflow patterns, organized by category with YAML frontmatter (`module`, `tags`, `problem_type`). Relevant when debugging, adding entities, or working in an area that may have prior incidents.
+
 ## Architecture
 
 Turborepo monorepo. Backend: two NestJS apps. Frontend: placeholder (Angular coming). Five shared packages. See each workspace's `CLAUDE.md` for details.
