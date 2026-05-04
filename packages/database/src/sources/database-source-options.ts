@@ -1,6 +1,6 @@
 import { envs } from '@hsm/config';
-import { DatabaseLogger } from '@hsm/database/common/logger/database.logger';
 import type { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { DatabaseLogger } from '../database.logger';
 
 export const DatabaseSourceOptions: Pick<
   TypeOrmModuleOptions,
