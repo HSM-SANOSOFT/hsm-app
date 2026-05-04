@@ -1,3 +1,4 @@
+export * from './queue.enum';
 export * from './queue.module';
 export * from './queue.service';
 export * from './queue.worker-host';

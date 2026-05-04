@@ -10,12 +10,9 @@ import {
   DocumentStatusEnum,
   DocumentTypeEnum,
 } from '@hsm/common/enums';
-import {
-  DocumentsEntity,
-  DocumentStorageObjectEntity,
-  DocumentsVersionEntity,
-} from '@hsm/database/entities';
+import { DocumentsEntity } from '@hsm/database/entities';
 import { DatabasesEnum } from '@hsm/database/sources';
+import { QueueEnum } from '@hsm/queue';
 import { S3Service } from '@hsm/storage/s3/s3.service';
 import { InjectQueue } from '@nestjs/bullmq';
 import {
@@ -34,13 +31,9 @@ const DEFAULT_FOLDER = 'generated';
 export class DocsService {
   constructor(
     private readonly s3Service: S3Service,
-    @InjectQueue('document') private readonly docsQueue: Queue,
+    @InjectQueue(QueueEnum.Document) private readonly docsQueue: Queue,
     @InjectRepository(DocumentsEntity, DatabasesEnum.HsmDbPostgres)
     private readonly docs: Repository<DocumentsEntity>,
-    @InjectRepository(DocumentsVersionEntity, DatabasesEnum.HsmDbPostgres)
-    private readonly versions: Repository<DocumentsVersionEntity>,
-    @InjectRepository(DocumentStorageObjectEntity, DatabasesEnum.HsmDbPostgres)
-    private readonly storageObjects: Repository<DocumentStorageObjectEntity>,
   ) {}
 
   async generateDocument(dto: GenerateDocumentRequestDto) {
@@ -90,15 +83,14 @@ export class DocsService {
       );
     }
 
-    const { path, bucket } = latestVersion.storage;
-    const parts = path.split('/');
-    const fileId = parts[parts.length - 1];
-    const folderName = parts.slice(0, -1).join('/');
+    const { folderName, fileId } = this.splitStoragePath(
+      latestVersion.storage.path,
+    );
 
     const payload: DocumentsPayloadDto = {
       documents: [
         {
-          bucket,
+          bucket: latestVersion.storage.bucket,
           files: [{ folderName, fileInfo: { fileId } }],
         },
       ],
@@ -108,7 +100,14 @@ export class DocsService {
       contentDisposition: 'inline',
     });
 
-    return { url: result[0]?.files?.[0]?.url };
+    const url = result[0]?.files?.[0]?.url;
+    if (!url) {
+      throw new InternalServerErrorException(
+        `Presigned URL not returned for document '${id}'`,
+      );
+    }
+
+    return { url };
   }
 
   async deleteDocument(id: string) {
@@ -121,19 +120,15 @@ export class DocsService {
     await this.docs.softDelete(id);
 
     const storageEntries = doc.versions
-      ?.filter(v => v.storage)
-      .map(v => ({
-        folderName: '',
-        fileId: v.storage.path,
-        bucket: v.storage.bucket,
-      }));
+      ?.filter((v): v is typeof v & { storage: NonNullable<typeof v.storage> } => v.storage != null)
+      .map(v => this.splitStoragePath(v.storage.path, v.storage.bucket));
 
     if (storageEntries && storageEntries.length > 0) {
       const bucketGroups = storageEntries.reduce(
         (acc, entry) => {
-          acc[entry.bucket] = acc[entry.bucket] ?? [];
-          acc[entry.bucket].push({
-            folderName: '',
+          acc[entry.bucket!] = acc[entry.bucket!] ?? [];
+          acc[entry.bucket!].push({
+            folderName: entry.folderName,
             fileInfo: { fileId: entry.fileId },
           });
           return acc;
@@ -220,5 +215,16 @@ export class DocsService {
       );
     }
     return await this.s3Service.uploadFiles(data);
+  }
+
+  /** Decomposes an S3 storage path (e.g. "generated/uuid") into folderName and fileId. */
+  private splitStoragePath(
+    path: string,
+    bucket?: string,
+  ): { folderName: string; fileId: string; bucket?: string } {
+    const parts = path.split('/');
+    const fileId = parts[parts.length - 1];
+    const folderName = parts.slice(0, -1).join('/');
+    return { folderName, fileId, bucket };
   }
 }

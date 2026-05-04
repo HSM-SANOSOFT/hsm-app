@@ -1,11 +1,8 @@
 import { GenerateDocumentRequestDto } from '@hsm/common/dtos';
 import { DocumentStatusEnum } from '@hsm/common/enums';
-import {
-  DocumentsEntity,
-  DocumentStorageObjectEntity,
-  DocumentsVersionEntity,
-} from '@hsm/database/entities';
+import { DocumentsEntity } from '@hsm/database/entities';
 import { DatabasesEnum } from '@hsm/database/sources';
+import { QueueEnum } from '@hsm/queue';
 import { S3Service } from '@hsm/storage/s3/s3.service';
 import { getQueueToken } from '@nestjs/bullmq';
 import { NotFoundException } from '@nestjs/common';
@@ -41,9 +38,6 @@ const mockDocsRepo = {
   softDelete: jest.fn().mockResolvedValue(undefined),
 };
 
-const mockVersionsRepo = {};
-const mockStorageRepo = {};
-
 const mockDocsQueue = {
   add: jest.fn().mockResolvedValue({ id: 'job-id' }),
 };
@@ -76,26 +70,12 @@ describe('DocsService', () => {
         DocsService,
         { provide: S3Service, useValue: mockS3Service },
         {
-          provide: getQueueToken('document'),
+          provide: getQueueToken(QueueEnum.Document),
           useValue: mockDocsQueue,
         },
         {
           provide: getRepositoryToken(DocumentsEntity, DatabasesEnum.HsmDbPostgres),
           useValue: mockDocsRepo,
-        },
-        {
-          provide: getRepositoryToken(
-            DocumentsVersionEntity,
-            DatabasesEnum.HsmDbPostgres,
-          ),
-          useValue: mockVersionsRepo,
-        },
-        {
-          provide: getRepositoryToken(
-            DocumentStorageObjectEntity,
-            DatabasesEnum.HsmDbPostgres,
-          ),
-          useValue: mockStorageRepo,
         },
       ],
     }).compile();

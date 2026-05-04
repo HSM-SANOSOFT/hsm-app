@@ -10,10 +10,10 @@ import {
   DocumentsVersionEntity,
 } from '@hsm/database/entities';
 import { DatabasesEnum } from '@hsm/database/sources';
-import { QueueWorkerHost } from '@hsm/queue';
+import { QueueEnum, QueueWorkerHost } from '@hsm/queue';
 import { S3Service } from '@hsm/storage/s3/s3.service';
 import { Processor } from '@nestjs/bullmq';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Job } from 'bullmq';
 import { Repository } from 'typeorm';
@@ -22,8 +22,10 @@ import { ExcelGenerationService } from './generation/excel-generation.service';
 import { GenerationService } from './generation/generation.service';
 
 @Injectable()
-@Processor('document')
+@Processor(QueueEnum.Document)
 export class DocsProcessorService extends QueueWorkerHost {
+  private readonly logger = new Logger(DocsProcessorService.name);
+
   constructor(
     private readonly templatesService: TemplatesService,
     private readonly generationService: GenerationService,
@@ -49,11 +51,11 @@ export class DocsProcessorService extends QueueWorkerHost {
   private async processGenerateDocument(
     data: GenerateDocumentJobPayloadDto,
   ): Promise<void> {
-    await this.docsRepo.update(data.documentId, {
-      status: DocumentStatusEnum.PROCESSING,
-    });
-
     try {
+      await this.docsRepo.update(data.documentId, {
+        status: DocumentStatusEnum.PROCESSING,
+      });
+
       const template = await this.templatesService.findByIdentifier(
         data.templateIdentifier,
         { withChildren: true },
@@ -140,9 +142,17 @@ export class DocsProcessorService extends QueueWorkerHost {
         status: DocumentStatusEnum.COMPLETED,
       });
     } catch (err) {
-      await this.docsRepo.update(data.documentId, {
-        status: DocumentStatusEnum.FAILED,
-      });
+      // Secondary failure (e.g. DB down) must not mask the original error
+      try {
+        await this.docsRepo.update(data.documentId, {
+          status: DocumentStatusEnum.FAILED,
+        });
+      } catch (updateErr) {
+        this.logger.error(
+          `Failed to mark document ${data.documentId} as FAILED`,
+          updateErr instanceof Error ? updateErr.stack : String(updateErr),
+        );
+      }
       throw err;
     }
   }
