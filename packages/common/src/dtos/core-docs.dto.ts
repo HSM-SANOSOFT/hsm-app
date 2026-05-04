@@ -1,9 +1,12 @@
+import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { plainToInstance, Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsNotEmpty,
   IsObject,
+  IsOptional,
   IsString,
+  IsUUID,
   ValidateNested,
 } from 'class-validator';
 
@@ -74,4 +77,68 @@ export class UploadDocumentPayloadDto {
   @ValidateNested({ each: true })
   @Type(() => UploadDocument)
   payload: UploadDocument[];
+}
+
+export class GenerateDocumentJobPayloadDto {
+  @IsUUID()
+  documentId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  templateIdentifier: string;
+
+  @IsObject()
+  data: Record<string, unknown>;
+
+  @IsNotEmpty()
+  @IsString()
+  outputBucket: string;
+
+  @IsNotEmpty()
+  @IsString()
+  outputFolder: string;
+}
+
+@ApiSchema({ name: 'Generate Document Request' })
+export class GenerateDocumentRequestDto {
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({
+    description: 'UUID o nombre de la plantilla DOCS a usar',
+    example: 'hcu_001_admision',
+  })
+  templateIdentifier: string;
+
+  @IsObject()
+  @ApiProperty({
+    description: 'Datos para sustituir en la plantilla',
+    example: { patientName: 'Ada Lovelace', date: '2026-05-04' },
+  })
+  data: Record<string, unknown>;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({ description: 'Título del documento generado' })
+  title: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ required: false, description: 'Descripción opcional' })
+  description?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    required: false,
+    description: 'Bucket S3 destino (por defecto: hsm-docs)',
+  })
+  outputBucket?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    required: false,
+    description: 'Carpeta S3 destino (por defecto: generated)',
+  })
+  outputFolder?: string;
 }
