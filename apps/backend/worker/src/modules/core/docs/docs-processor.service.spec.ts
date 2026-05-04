@@ -54,9 +54,17 @@ const mockTemplateEntityXlsx = {
   },
 };
 
+const mockQueryBuilder = {
+  setLock: jest.fn().mockReturnThis(),
+  select: jest.fn().mockReturnThis(),
+  where: jest.fn().mockReturnThis(),
+  getRawOne: jest.fn().mockResolvedValue({ max: '0' }),
+};
+
 const mockManager = {
   create: jest.fn((_Entity: unknown, data: unknown) => ({ ...data })),
   save: jest.fn().mockResolvedValue({}),
+  createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
 };
 
 const mockDocsRepo = {
@@ -65,11 +73,6 @@ const mockDocsRepo = {
     transaction: jest.fn((cb: (em: typeof mockManager) => Promise<void>) =>
       cb(mockManager),
     ),
-    createQueryBuilder: jest.fn().mockReturnValue({
-      select: jest.fn().mockReturnThis(),
-      where: jest.fn().mockReturnThis(),
-      getRawOne: jest.fn().mockResolvedValue({ max: 0 }),
-    }),
   },
 };
 
@@ -89,6 +92,7 @@ const mockExcelService = {
 };
 
 const mockS3Service = {
+  deleteFiles: jest.fn().mockResolvedValue([]),
   uploadFiles: jest.fn().mockResolvedValue([
     {
       bucket: 'hsm-docs',
@@ -110,6 +114,8 @@ describe('DocsProcessorService', () => {
     jest.clearAllMocks();
     mockDocsRepo.update.mockResolvedValue(undefined);
     mockManager.save.mockResolvedValue({});
+    mockQueryBuilder.getRawOne.mockResolvedValue({ max: '0' });
+    mockS3Service.deleteFiles.mockResolvedValue([]);
     mockTemplatesService.findByIdentifier.mockResolvedValue(mockTemplateEntity);
     mockTemplatesService.parse.mockResolvedValue({
       html: '<html>test</html>',

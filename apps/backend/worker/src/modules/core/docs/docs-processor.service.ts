@@ -131,14 +131,18 @@ export class DocsProcessorService extends QueueWorkerHost {
       uploadedKey = key;
       uploadedBucket = DOCS_BUCKET;
 
-      const nextVersion = await this.docsRepo.manager
-        .createQueryBuilder(DocumentsVersionEntity, 'v')
-        .select('COALESCE(MAX(v.version), 0)', 'max')
-        .where('v.documentId = :id', { id: data.documentId })
-        .getRawOne<{ max: number }>()
-        .then(r => (r?.max ?? 0) + 1);
-
       await this.docsRepo.manager.transaction(async manager => {
+        // MAX query runs inside the transaction with a pessimistic lock to prevent
+        // concurrent jobs for the same document racing to the same nextVersion.
+        const raw = await manager
+          .createQueryBuilder(DocumentsVersionEntity, 'v')
+          .setLock('pessimistic_write')
+          .select('COALESCE(MAX(v.version), 0)', 'max')
+          .where('v.documentId = :id', { id: data.documentId })
+          .getRawOne<{ max: string }>();
+        // getRawOne returns PostgreSQL aggregates as strings — coerce explicitly.
+        const nextVersion = Number(raw?.max ?? 0) + 1;
+
         const version = manager.create(DocumentsVersionEntity, {
           version: nextVersion,
           filename,
