@@ -15,6 +15,10 @@ import {
   TemplateNotFoundError,
   TemplateSchemaValidationError,
 } from '@hsm/common/errors';
+import type {
+  ParseTemplateInput,
+  ParseTemplateResult,
+} from '@hsm/common/types';
 import {
   isWellFormedTemplateSchema,
   validateAgainstTemplateSchema,
@@ -33,22 +37,6 @@ import { DataSource, EntityManager, Not, Repository } from 'typeorm';
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-export interface ParseTemplateContext {
-  userId?: string | null;
-  triggeredBy?: TemplateParseTriggerEnum;
-}
-
-export interface ParseTemplateInput {
-  identifier: string;
-  data: Record<string, unknown>;
-  context?: ParseTemplateContext;
-}
-
-export interface ParseTemplateResult {
-  html: string;
-  templateId: string;
-}
 
 @Injectable()
 export class TemplatesService {
