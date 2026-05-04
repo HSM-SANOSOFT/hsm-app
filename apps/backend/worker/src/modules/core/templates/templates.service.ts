@@ -23,6 +23,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import Handlebars from 'handlebars';
 import { Repository } from 'typeorm';
 
+export interface ParseEmailResult {
+  subject: string;
+  html: string;
+  templateId: string;
+}
+
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -133,6 +139,35 @@ export class TemplatesService {
     });
 
     return { html, templateId: template.id };
+  }
+
+  async parseEmail(
+    identifier: string,
+    data: Record<string, unknown>,
+  ): Promise<ParseEmailResult> {
+    const template = await this.findByIdentifier(identifier, {
+      withChildren: true,
+      withBase: true,
+    });
+
+    if (!template.comEmail) {
+      throw new TemplateInvalidHandlebarsError(
+        new Error(`Template '${identifier}' is not an email template`),
+      );
+    }
+
+    // Compile subject first — fail fast before body render
+    let subject: string;
+    try {
+      subject = Handlebars.compile(template.comEmail.subject, {
+        noEscape: false,
+      })(data);
+    } catch (err) {
+      throw new TemplateInvalidHandlebarsError(err);
+    }
+
+    const { html, templateId } = await this.parse({ identifier, data });
+    return { subject, html, templateId };
   }
 
   private identifierWhere(identifier: string) {

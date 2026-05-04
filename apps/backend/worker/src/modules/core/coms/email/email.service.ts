@@ -16,61 +16,57 @@ export class EmailService {
   ) {}
 
   async sendEmail(payload: SendEmailPayloadDto) {
-    try {
-      const { documents } = payload;
-      const attachments: Attachment[] = [];
+    const { subject, html } = await this.templateService.parseEmail(
+      payload.emailTemplate,
+      payload.data as Record<string, unknown>,
+    );
 
-      if (documents?.length) {
-        const documentStream = await this.docsService.getDocumentsStreams({
-          documents,
-        });
+    const { documents } = payload;
+    const attachments: Attachment[] = [];
 
-        for (const doc of documentStream) {
-          for (const file of doc.files) {
-            if (!file.fileStream) {
-              this.logger.error(`File stream for ${file.fileId} is undefined`);
-              throw new Error(`File stream for ${file.fileId} is undefined`);
-            }
+    if (documents?.length) {
+      const documentStream = await this.docsService.getDocumentsStreams({
+        documents,
+      });
 
-            const fileContent = Readable.from(
-              file.fileStream.transformToWebStream(),
-            );
-
-            const attachment = {
-              filename: file.fileId,
-              content: fileContent,
-              contentType: file.fileContentType,
-            };
-
-            this.logger.debug(
-              `Attachment added: name: ${attachment.filename}, type: ${attachment.contentType}, content: `,
-            );
-
-            attachments.push(attachment);
+      for (const doc of documentStream) {
+        for (const file of doc.files) {
+          if (!file.fileStream) {
+            this.logger.error(`File stream for ${file.fileId} is undefined`);
+            throw new Error(`File stream for ${file.fileId} is undefined`);
           }
+
+          const fileContent = Readable.from(
+            file.fileStream.transformToWebStream(),
+          );
+
+          const attachment = {
+            filename: file.fileId,
+            content: fileContent,
+            contentType: file.fileContentType,
+          };
+
+          this.logger.debug(
+            `Attachment added: name: ${attachment.filename}, type: ${attachment.contentType}, content: `,
+          );
+
+          attachments.push(attachment);
         }
       }
-      const { subject, html } = {
-        subject: `Email from }`,
-        html: `<p>This is a test email from.</p>`,
-      };
-
-      const mailOptions: nodemailer.SendMailOptions = {
-        from: payload.fromEmail,
-        to: payload.toEmails,
-        subject: subject,
-        html: html,
-        attachments: attachments,
-      };
-
-      this.logger.log(
-        `Sending email to: ${mailOptions.to}, subject: ${mailOptions.subject}, attachments: ${attachments.length}`,
-      );
-
-      return await this.smtpClient.sendMail(mailOptions);
-    } catch (error) {
-      this.logger.error(`Error sending email: ${error}`);
-      throw new Error('Email Service', error);
     }
+
+    const mailOptions: nodemailer.SendMailOptions = {
+      from: payload.fromEmail,
+      to: payload.toEmails,
+      subject,
+      html,
+      attachments,
+    };
+
+    this.logger.log(
+      `Sending email to: ${mailOptions.to}, subject: ${mailOptions.subject}, attachments: ${attachments.length}`,
+    );
+
+    return await this.smtpClient.sendMail(mailOptions);
   }
 }

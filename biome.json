@@ -157,6 +157,18 @@
   },
   "overrides": [
     {
+      "includes": [
+        "packages/database/src/sources/postgres/index.ts"
+      ],
+      "assist": {
+        "actions": {
+          "source": {
+            "organizeImports": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
       "linter": {
         "rules": {
