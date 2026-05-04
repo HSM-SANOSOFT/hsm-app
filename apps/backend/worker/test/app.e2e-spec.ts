@@ -1,10 +1,8 @@
-import { Test } from '@nestjs/testing';
-import request from 'supertest';
-
-import { WorkerModule } from './../src/worker.module';
-
 import type { INestApplication } from '@nestjs/common';
 import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
+import request from 'supertest';
+import { WorkerModule } from './../src/worker.module';
 
 describe('WorkerController (e2e)', () => {
   let app: INestApplication;

@@ -29,9 +29,9 @@ describe('validateAgainstTemplateSchema', () => {
   });
 
   it('treats trailing ? as optional', () => {
-    expect(
-      validateAgainstTemplateSchema({ nick: 'string?' }, {}),
-    ).toEqual({ valid: true });
+    expect(validateAgainstTemplateSchema({ nick: 'string?' }, {})).toEqual({
+      valid: true,
+    });
     expect(
       validateAgainstTemplateSchema({ nick: 'string?' }, { nick: 'foo' }),
     ).toEqual({ valid: true });

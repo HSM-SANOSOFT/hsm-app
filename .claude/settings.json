@@ -1,4 +1,23 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(git checkout *)",
+      "Bash(pnpm --filter @hsm/api build)",
+      "Bash(pnpm --filter @hsm/api test)",
+      "Bash(pnpm --filter @hsm/api test -- --testPathPattern=templates)",
+      "Bash(pnpm --filter @hsm/api test -- --testPathPattern=\"core/templates\")",
+      "Bash(pnpm --filter @hsm/api test -- --testPathPattern=\"coms.service\")",
+      "Bash(pnpm --filter @hsm/api test -- --testNamePattern=\"TemplatesService\")",
+      "Bash(pnpm --filter @hsm/api test -- --testPathPatterns=\"templates\")",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(pnpm --filter @hsm/worker test)",
+      "Bash(pnpm --filter @hsm/worker build)",
+      "Bash(git rm *)",
+      "Bash(pnpm check:fix)",
+      "Bash(pnpm lint *)"
+    ]
+  },
   "enabledPlugins": {
     "code-review@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,

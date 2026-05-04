@@ -1,9 +1,7 @@
+import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
-
 import { WorkerController } from './worker.controller';
 import { WorkerService } from './worker.service';
-
-import type { TestingModule } from '@nestjs/testing';
 
 describe('workerController', () => {
   let workerController: WorkerController;

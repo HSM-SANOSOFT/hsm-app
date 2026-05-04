@@ -13,8 +13,8 @@ import {
   TemplatesEntity,
 } from '@hsm/database/entities/modules/core/template';
 import { DatabasesEnum } from '@hsm/database/sources';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import Handlebars from 'handlebars';
 import { TemplatesService } from './templates.service';
 
@@ -48,11 +48,17 @@ describe('TemplatesService (worker)', () => {
       providers: [
         TemplatesService,
         {
-          provide: getRepositoryToken(TemplatesEntity, DatabasesEnum.HsmDbPostgres),
+          provide: getRepositoryToken(
+            TemplatesEntity,
+            DatabasesEnum.HsmDbPostgres,
+          ),
           useValue: templatesRepo,
         },
         {
-          provide: getRepositoryToken(TemplateParseLogEntity, DatabasesEnum.HsmDbPostgres),
+          provide: getRepositoryToken(
+            TemplateParseLogEntity,
+            DatabasesEnum.HsmDbPostgres,
+          ),
           useValue: parseLogsRepo,
         },
       ],

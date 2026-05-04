@@ -1,21 +1,10 @@
 {
   "name": "HSM Dev",
-  "dockerComposeFile": [
-    "../docker/docker-compose.yaml",
-    "docker-compose.yaml"
-  ],
+  "dockerComposeFile": ["../docker/docker-compose.yaml", "docker-compose.yaml"],
   "service": "workspace",
   "workspaceFolder": "/workspace",
-  "runServices": [
-    "workspace",
-    "postgres",
-    "redis",
-    "minio"
-  ],
-  "forwardPorts": [
-    3000,
-    4200
-  ],
+  "runServices": ["workspace", "postgres", "redis", "minio"],
+  "forwardPorts": [3000, 4200],
   "portsAttributes": {
     "3000": {
       "label": "Api"

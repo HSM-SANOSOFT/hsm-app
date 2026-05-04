@@ -6,10 +6,7 @@ import { v5 as uuidv5 } from 'uuid';
 const NS = uuidv5('hsm.seed.templates', uuidv5.DNS);
 
 export const TEMPLATE_BASE_LAYOUT_ID = uuidv5('base_layout', NS);
-export const TEMPLATE_APPT_CONFIRM_ID = uuidv5(
-  'appointment_confirmation',
-  NS,
-);
+export const TEMPLATE_APPT_CONFIRM_ID = uuidv5('appointment_confirmation', NS);
 
 export const templatesSeed: SeedDefinition<TemplatesEntity> = {
   entity: TemplatesEntity,
