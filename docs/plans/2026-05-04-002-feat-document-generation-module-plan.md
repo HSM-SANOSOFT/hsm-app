@@ -1,7 +1,7 @@
 ---
 title: "feat: Document Generation Module (PDF + XLSX)"
 type: feat
-status: active
+status: completed
 date: 2026-05-04
 origin: docs/brainstorms/document-generation-requirements.md
 ---
