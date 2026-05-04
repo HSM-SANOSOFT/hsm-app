@@ -4,14 +4,14 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import nodemailer from 'nodemailer';
 import { Attachment } from 'nodemailer/lib/mailer';
 import { DocsService } from '../../docs/docs.service';
-import { TemplateService } from '../template/template.service';
+import { TemplatesService } from '../../templates/templates.service';
 
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
   constructor(
     @Inject('SMTP_CLIENT') private readonly smtpClient: nodemailer.Transporter,
-    private readonly templateService: TemplateService,
+    private readonly templateService: TemplatesService,
     private readonly docsService: DocsService,
   ) {}
 

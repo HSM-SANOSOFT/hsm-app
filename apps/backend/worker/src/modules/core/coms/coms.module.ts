@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
+import { TemplatesModule } from '../templates/templates.module';
 import { ComsService } from './coms.service';
 import { EmailModule } from './email/email.module';
 import { SmsModule } from './sms/sms.module';
-import { TemplateModule } from './template/template.module';
 
 @Module({
-  imports: [EmailModule, SmsModule, TemplateModule],
+  imports: [EmailModule, SmsModule, TemplatesModule],
   providers: [ComsService],
 })
 export class ComsModule {}
