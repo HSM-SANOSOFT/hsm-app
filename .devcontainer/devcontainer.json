@@ -15,6 +15,9 @@
     "redis",
     "minio"
   ],
+  "mounts": [
+    "source=claude-code-config,target=/root/.claude,type=volume"
+  ],
   "forwardPorts": [
     3000,
     4200

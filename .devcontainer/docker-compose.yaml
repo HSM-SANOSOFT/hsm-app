@@ -1,7 +1,3 @@
-volumes:
-  claude:
-    name: claude
-
 services:
   workspace:
     build:
@@ -10,7 +6,6 @@ services:
     volumes:
       - ..:/workspace:cached
       - /workspace/node_modules
-      - claude:/root/.claude
     networks:
       - hsm-app-network
     env_file:
