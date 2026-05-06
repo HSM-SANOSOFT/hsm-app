@@ -8,7 +8,7 @@ import { ResponseFilter } from './filters';
 import { ResponseInterceptor } from './interceptors';
 import { MainController } from './main.controller';
 import { MainService } from './main.service';
-import { ClinicalModule, CoreModule, SecurityModule } from './modules';
+import { CoreModule, SecurityModule } from './modules';
 import { EmailTemplateDataValidator } from './validators';
 
 @Module({
@@ -36,7 +36,6 @@ import { EmailTemplateDataValidator } from './validators';
     QueueModule,
     CoreModule,
     SecurityModule,
-    ClinicalModule,
     TerminusModule,
   ],
   controllers: [MainController],
