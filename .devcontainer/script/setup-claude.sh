@@ -1,8 +1,6 @@
 #!/bin/sh
 set -eu
 
-script/get-secrets-infisical.sh
-
 target=/root/.claude/claude.json
 link=/root/.claude.json
 
@@ -22,3 +20,5 @@ fi
 # parallel with this script.
 ln -sf "$target" "$link.new"
 mv -f "$link.new" "$link"
+
+echo "[claude] config symlink ok."

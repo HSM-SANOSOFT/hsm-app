@@ -17,8 +17,9 @@ RUN curl -1sLf 'https://artifacts-cli.infisical.com/setup.deb.sh' | bash \
 COPY docker/oracle /tmp/oracle
 RUN bash /tmp/oracle/install_oracle_client.sh && rm -rf /tmp/oracle
 
-#RUN curl -fsSL https://claude.ai/install.sh | bash
-ENV PATH="/root/.local/bin:${PATH}"
+COPY .devcontainer/script/install-claude.sh /tmp/install-claude.sh
+RUN bash /tmp/install-claude.sh && rm /tmp/install-claude.sh
 
+ENV PATH="/root/.local/bin:${PATH}"
 
 RUN corepack enable

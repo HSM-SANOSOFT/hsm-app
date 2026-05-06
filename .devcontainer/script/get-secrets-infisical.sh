@@ -17,7 +17,7 @@ SECRETS_DOTENV=$(infisical export \
   --env dev \
   --format dotenv)
 
-WORKSPACE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+WORKSPACE_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 
 # @hsm/config does `import 'dotenv/config'`, which reads .env from process.cwd().
 # pnpm -F runs scripts from each app's package dir, so write per-app .env files.

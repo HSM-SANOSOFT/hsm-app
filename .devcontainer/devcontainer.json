@@ -16,8 +16,8 @@
   "containerEnv": {
     "COREPACK_ENABLE_DOWNLOAD_PROMPT": "0"
   },
-  "postCreateCommand": "script/post-create.sh",
-  "postStartCommand": "script/post-start.sh",
+  "postCreateCommand": ".devcontainer/script/post-create.sh",
+  "postStartCommand": ".devcontainer/script/post-start.sh",
   "waitFor": "postStartCommand",
   "customizations": {
     "vscode": {
