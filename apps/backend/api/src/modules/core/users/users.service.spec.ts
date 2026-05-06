@@ -1,13 +1,13 @@
-import { NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
+import { RolesEnum } from '@hsm/common/enums';
 import {
   UserEntity,
   UserIntegrationEntity,
   UserRoleEntity,
 } from '@hsm/database/entities';
 import { DatabasesEnum } from '@hsm/database/sources';
-import { RolesEnum } from '@hsm/common/enums';
+import { NotFoundException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { RolesService } from '../../security/roles/roles.service';
 import { UsersService } from './users.service';
 
@@ -49,9 +49,24 @@ describe('UsersService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UsersService,
-        { provide: getRepositoryToken(UserEntity, DatabasesEnum.HsmDbPostgres), useValue: userRepo },
-        { provide: getRepositoryToken(UserIntegrationEntity, DatabasesEnum.HsmDbPostgres), useValue: userIntegrationRepo },
-        { provide: getRepositoryToken(UserRoleEntity, DatabasesEnum.HsmDbPostgres), useValue: userRoleRepo },
+        {
+          provide: getRepositoryToken(UserEntity, DatabasesEnum.HsmDbPostgres),
+          useValue: userRepo,
+        },
+        {
+          provide: getRepositoryToken(
+            UserIntegrationEntity,
+            DatabasesEnum.HsmDbPostgres,
+          ),
+          useValue: userIntegrationRepo,
+        },
+        {
+          provide: getRepositoryToken(
+            UserRoleEntity,
+            DatabasesEnum.HsmDbPostgres,
+          ),
+          useValue: userRoleRepo,
+        },
         { provide: RolesService, useValue: rolesService },
       ],
     }).compile();
@@ -74,7 +89,9 @@ describe('UsersService', () => {
 
     it('throws NotFoundException when user not found', async () => {
       userRepo.findOne.mockResolvedValue(null);
-      await expect(service.findOneByUsername('ghost')).rejects.toBeInstanceOf(NotFoundException);
+      await expect(service.findOneByUsername('ghost')).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
     });
   });
 
@@ -83,25 +100,32 @@ describe('UsersService', () => {
       userRepo.findOne.mockResolvedValue(mockUser);
       const result = await service.findOneById('user-uuid', false);
       expect(result).toBe(mockUser);
-      expect(userRepo.findOne).toHaveBeenCalledWith({ where: { id: 'user-uuid' } });
+      expect(userRepo.findOne).toHaveBeenCalledWith({
+        where: { id: 'user-uuid' },
+      });
     });
 
     it('returns integration user when integration=true', async () => {
       userIntegrationRepo.findOne.mockResolvedValue(mockIntegrationUser);
       const result = await service.findOneById('integration-uuid', true);
       expect(result).toBe(mockIntegrationUser);
-      expect(userIntegrationRepo.findOne).toHaveBeenCalledWith({ where: { id: 'integration-uuid' } });
+      expect(userIntegrationRepo.findOne).toHaveBeenCalledWith({
+        where: { id: 'integration-uuid' },
+      });
     });
 
     it('throws NotFoundException when user not found', async () => {
       userRepo.findOne.mockResolvedValue(null);
-      await expect(service.findOneById('missing-id', false)).rejects.toBeInstanceOf(NotFoundException);
+      await expect(
+        service.findOneById('missing-id', false),
+      ).rejects.toBeInstanceOf(NotFoundException);
     });
   });
 
   describe('createUser', () => {
     it('saves user and roles via queryRunner', async () => {
-      const managerSave = jest.fn()
+      const managerSave = jest
+        .fn()
         .mockResolvedValueOnce({ ...mockUser, id: 'user-uuid' })
         .mockResolvedValue({});
       const queryRunner = { manager: { save: managerSave } } as never;
@@ -120,8 +144,14 @@ describe('UsersService', () => {
 
       const result = await service.createUser(dto, queryRunner);
 
-      expect(managerSave).toHaveBeenCalledWith(UserEntity, expect.objectContaining({ username: 'jdoe' }));
-      expect(managerSave).toHaveBeenCalledWith(UserRoleEntity, expect.objectContaining({ role: RolesEnum.System.Admin }));
+      expect(managerSave).toHaveBeenCalledWith(
+        UserEntity,
+        expect.objectContaining({ username: 'jdoe' }),
+      );
+      expect(managerSave).toHaveBeenCalledWith(
+        UserRoleEntity,
+        expect.objectContaining({ role: RolesEnum.System.Admin }),
+      );
       expect(result).toMatchObject({ id: 'user-uuid' });
     });
   });
@@ -136,7 +166,9 @@ describe('UsersService', () => {
         queryRunner,
       );
 
-      expect(managerSave).toHaveBeenCalledWith(UserIntegrationEntity, { name: 'TestIntegration' });
+      expect(managerSave).toHaveBeenCalledWith(UserIntegrationEntity, {
+        name: 'TestIntegration',
+      });
       expect(result).toBe(mockIntegrationUser);
     });
   });
@@ -146,7 +178,10 @@ describe('UsersService', () => {
       userRepo.update.mockResolvedValue({ affected: 1 });
       userRepo.findOne.mockResolvedValue({ ...mockUser, firstName: 'Jane' });
 
-      const result = await service.updateUser({ id: 'user-uuid', firstName: 'Jane' } as never);
+      const result = await service.updateUser({
+        id: 'user-uuid',
+        firstName: 'Jane',
+      } as never);
 
       expect(result).toMatchObject({ firstName: 'Jane' });
     });
