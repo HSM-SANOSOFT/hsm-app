@@ -60,6 +60,6 @@ pnpm build
 
 `docs/solutions/` — past bugs, best practices, and workflow patterns, organized by category with YAML frontmatter (`module`, `tags`, `problem_type`). Relevant when debugging, adding entities, or working in an area that may have prior incidents.
 
-## Architecture
+## Oracle database constraint
 
-Turborepo monorepo. Backend: two NestJS apps. Frontend: placeholder (Angular coming). Five shared packages. See each workspace's `CLAUDE.md` for details.
+The Oracle database (`DB_ORACLE_*`) is the **production legacy system**. You may only issue `SELECT` or `UPDATE` queries against it. **Never issue `DELETE`, `DROP`, `ALTER`, `CREATE`, or any DDL/destructive statement** against Oracle. No schema changes, no new tables, no migrations targeting Oracle.

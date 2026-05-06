@@ -1,23 +1,36 @@
-import type { TestingModule } from '@nestjs/testing';
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
+import { HealthCheckService, HttpHealthIndicator } from '@nestjs/terminus';
 import { MainController } from './main.controller';
 import { MainService } from './main.service';
 
-describe('mainController', () => {
-  let mainController: MainController;
+const healthService = { check: jest.fn().mockResolvedValue({ status: 'ok' }) };
+const httpIndicator = { pingCheck: jest.fn() };
+
+describe('MainController', () => {
+  let controller: MainController;
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [MainController],
-      providers: [MainService],
+      providers: [
+        MainService,
+        { provide: HealthCheckService, useValue: healthService },
+        { provide: HttpHealthIndicator, useValue: httpIndicator },
+      ],
     }).compile();
 
-    mainController = app.get<MainController>(MainController);
+    controller = app.get<MainController>(MainController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(mainController.getHello()).toBe('Hello World!');
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
+  });
+
+  describe('check', () => {
+    it('returns health check result', async () => {
+      const result = await controller.check();
+      expect(healthService.check).toHaveBeenCalled();
+      expect(result).toEqual({ status: 'ok' });
     });
   });
 });

@@ -84,6 +84,7 @@
     "collectCoverageFrom": ["src/**/*.(t|j)s"],
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
+    "setupFiles": ["<rootDir>/src/test-setup.ts"],
     "roots": ["<rootDir>/src/"],
     "moduleNameMapper": {
       "^@hsm/common(|/.*)$": "<rootDir>/../../../packages/common/src/$1",

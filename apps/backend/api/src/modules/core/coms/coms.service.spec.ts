@@ -1,13 +1,21 @@
-import type { TestingModule } from '@nestjs/testing';
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
+import { getQueueToken } from '@nestjs/bullmq';
+import { QueueEnum } from '@hsm/queue';
 import { ComsService } from './coms.service';
 
-describe('comsService', () => {
+const comsQueue = { add: jest.fn() };
+
+describe('ComsService', () => {
   let service: ComsService;
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ComsService],
+      providers: [
+        ComsService,
+        { provide: getQueueToken(QueueEnum.Coms), useValue: comsQueue },
+      ],
     }).compile();
 
     service = module.get<ComsService>(ComsService);
@@ -15,5 +23,29 @@ describe('comsService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('sendEmail', () => {
+    it('enqueues a send-email job and returns a string with the job id', async () => {
+      comsQueue.add.mockResolvedValue({ id: 'job-123' });
+      const payload = { templateIdentifier: 'welcome', data: {} } as never;
+
+      const result = await service.sendEmail(payload);
+
+      expect(comsQueue.add).toHaveBeenCalledWith('send-email', payload);
+      expect(result).toContain('job-123');
+    });
+  });
+
+  describe('resendEmail', () => {
+    it('resolves without throwing (implementation pending)', async () => {
+      await expect(service.resendEmail()).resolves.toBeUndefined();
+    });
+  });
+
+  describe('sendSms', () => {
+    it('resolves without throwing (implementation pending)', async () => {
+      await expect(service.sendSms()).resolves.toBeUndefined();
+    });
   });
 });

@@ -83,3 +83,4 @@ Don't wrap successful responses by hand — the interceptor does it.
 - `*.spec.ts` colocated with source. Jest config inline in `package.json`.
 - `moduleNameMapper` rewrites `@hsm/*` to package sources — no build step needed for tests.
 - E2E specs live in `test/`, run via `pnpm --filter @hsm/api test:e2e`.
+- **Env shim:** `src/test-setup.ts` runs before every test file (jest `setupFiles`). It sets dummy `process.env` values so `@hsm/config` Joi validation passes without real infrastructure. **When adding a new required env var to `@hsm/config`, also add a dummy value in this file** — omitting it causes a `Config validation error` at test startup.
