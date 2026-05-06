@@ -1,10 +1,24 @@
 {
   "name": "HSM Dev",
-  "dockerComposeFile": ["../docker/docker-compose.yaml", "docker-compose.yaml"],
+  "features": {
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
+  },
+  "dockerComposeFile": [
+    "../docker/docker-compose.yaml",
+    "docker-compose.yaml"
+  ],
   "service": "workspace",
   "workspaceFolder": "/workspace",
-  "runServices": ["workspace", "postgres", "redis", "minio"],
-  "forwardPorts": [3000, 4200],
+  "runServices": [
+    "workspace",
+    "postgres",
+    "redis",
+    "minio"
+  ],
+  "forwardPorts": [
+    3000,
+    4200
+  ],
   "portsAttributes": {
     "3000": {
       "label": "Api"
@@ -43,7 +57,6 @@
         "christian-kohler.path-intellisense",
         "yoavbls.pretty-ts-errors",
         "ms-vscode.test-adapter-converter",
-        "anthropic.claude-code",
         "usernamehw.errorlens"
       ]
     }
