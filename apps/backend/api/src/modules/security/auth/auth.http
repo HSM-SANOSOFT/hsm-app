@@ -1,6 +1,3 @@
-@host = http://127.0.0.1:3000/v1
-@contentType = application/json
-
 ### Signup
 POST {{host}}/auth/signup
 Content-Type: {{contentType}}
@@ -27,34 +24,53 @@ Content-Type: {{contentType}}
 
 ### Logout
 GET {{host}}/auth/logout
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNmJjMWUyNC1kMWY2LTQ4MDktYjEwNi1mM2U4MWY5M2UyZTciLCJpZCI6ImQ2YmMxZTI0LWQxZjYtNDgwOS1iMTA2LWYzZTgxZjkzZTJlNyIsInVzZXJuYW1lIjoicnNhbnRhbWFyaWEiLCJlbWFpbCI6InJzYW50YW1hcmlhb0Bob3NwaXRhbHNhbnRhbWFyaWEuY29tLmVjIiwiZmlyc3ROYW1lIjoiUmF1bCIsImZpcnN0TGFzdE5hbWUiOiJTYW50YW1hcmlhIiwicm9sZXMiOlsiYWRtaW4iXSwiaWF0IjoxNzYyNDQyODczLCJleHAiOjE3NjI0NDM3NzN9.WLxdWv08yhlEftyFanJqyiUntQItHqHez1iN0O-jk7Y
+Authorization: Bearer {{token}}
 
 ### Profile
 GET {{host}}/auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmMTMzZWQxOC05OTVmLTQ0ZWQtYTUxZC1jY2Y1MjY1MmE2MzgiLCJpZCI6ImYxMzNlZDE4LTk5NWYtNDRlZC1hNTFkLWNjZjUyNjUyYTYzOCIsInVzZXJuYW1lIjoicnNhbnRhbWFyaWEiLCJlbWFpbCI6InJzYW50YW1hcmlhb0Bob3NwaXRhbHNhbnRhbWFyaWEuY29tLmVjIiwiZmlyc3ROYW1lIjoiUmF1bCIsImZpcnN0TGFzdE5hbWUiOiJTYW50YW1hcmlhIiwicm9sZXMiOlsiYWRtaW4iXSwiaWF0IjoxNzYzMDU1MTMyLCJleHAiOjE3NjMwNTYwMzJ9.rABf6pnyLhkq366gX3OBLfD3znNvSY0MfqyDgmDuE6M
+Authorization: Bearer {{token}}
 
 ### Refresh
 GET {{host}}/auth/refresh
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmMTMzZWQxOC05OTVmLTQ0ZWQtYTUxZC1jY2Y1MjY1MmE2MzgiLCJpZCI6ImYxMzNlZDE4LTk5NWYtNDRlZC1hNTFkLWNjZjUyNjUyYTYzOCIsInVzZXJuYW1lIjoicnNhbnRhbWFyaWEiLCJlbWFpbCI6InJzYW50YW1hcmlhb0Bob3NwaXRhbHNhbnRhbWFyaWEuY29tLmVjIiwiZmlyc3ROYW1lIjoiUmF1bCIsImZpcnN0TGFzdE5hbWUiOiJTYW50YW1hcmlhIiwicm9sZXMiOlsiYWRtaW4iXSwiaWF0IjoxNzYzMDU1MDkyLCJleHAiOjE3NjMxNDE0OTJ9.lD4fY4OoPwTmyZnfPuO5JxRSyhb2BPYu-TLPmuCBg6A
+Authorization: Bearer {{token}}
 
 ### Signup Integration Token
 POST {{host}}/auth/signup/integration
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNmJjMWUyNC1kMWY2LTQ4MDktYjEwNi1mM2U4MWY5M2UyZTciLCJpZCI6ImQ2YmMxZTI0LWQxZjYtNDgwOS1iMTA2LWYzZTgxZjkzZTJlNyIsInVzZXJuYW1lIjoicnNhbnRhbWFyaWEiLCJlbWFpbCI6InJzYW50YW1hcmlhb0Bob3NwaXRhbHNhbnRhbWFyaWEuY29tLmVjIiwiZmlyc3ROYW1lIjoiUmF1bCIsImZpcnN0TGFzdE5hbWUiOiJTYW50YW1hcmlhIiwicm9sZXMiOlsiYWRtaW4iXSwiaWF0IjoxNzYyNDQ2OTg1LCJleHAiOjE3NjI0NDc4ODV9.w9KYW3ZcOFwsiYpUoqA1tUOX_iOwQDwBao8cGS78098
+Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
   "name": "raul",
   "description": "test",
   "functionality": "dev"
-
 }
 
 ### Logout Integration Token
 POST {{host}}/auth/logout/integration
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkNmJjMWUyNC1kMWY2LTQ4MDktYjEwNi1mM2U4MWY5M2UyZTciLCJpZCI6ImQ2YmMxZTI0LWQxZjYtNDgwOS1iMTA2LWYzZTgxZjkzZTJlNyIsInVzZXJuYW1lIjoicnNhbnRhbWFyaWEiLCJlbWFpbCI6InJzYW50YW1hcmlhb0Bob3NwaXRhbHNhbnRhbWFyaWEuY29tLmVjIiwiZmlyc3ROYW1lIjoiUmF1bCIsImZpcnN0TGFzdE5hbWUiOiJTYW50YW1hcmlhIiwicm9sZXMiOlsiYWRtaW4iXSwiaWF0IjoxNzYyNDQ2OTg1LCJleHAiOjE3NjI0NDc4ODV9.w9KYW3ZcOFwsiYpUoqA1tUOX_iOwQDwBao8cGS78098
+Authorization: Bearer {{token}}
 Content-Type: {{contentType}}
 
 {
-  "token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3NWIxNjRhNy0xZmE3LTRjMzYtOTM3MS03ODhjYjZlZGIzOGQiLCJpZCI6Ijc1YjE2NGE3LTFmYTctNGMzNi05MzcxLTc4OGNiNmVkYjM4ZCIsIm5hbWUiOiJyYXVsIiwicm9sZXMiOlsiaW50ZWdyYXRpb24iXSwiaWF0IjoxNzYyNDQ1NDY2LCJleHAiOjE3NjUwMzc0NjZ9.4nHs1rkfUskcYkELEhvkqvuUFbP2gv-p-gu2GeTSQ_0"
+  "token": "<integration-token>"
+}
 
+### Generate PIN
+POST {{host}}/auth/pin/generate
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "purpose": "email_verification",
+  "target": "example@example.com"
+}
+
+### Validate PIN
+POST {{host}}/auth/pin/validate
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "purpose": "email_verification",
+  "target": "example@example.com",
+  "code": 123456
 }

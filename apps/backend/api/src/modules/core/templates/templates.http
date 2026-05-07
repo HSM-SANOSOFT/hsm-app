@@ -1,0 +1,47 @@
+### Get Template
+GET {{host}}/templates/123e4567-e89b-12d3-a456-426614174000
+Authorization: Bearer {{token}}
+
+### Create Template
+POST {{host}}/templates
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "category": "EMAIL_EXTERNAL",
+  "name": "welcome_email",
+  "description": "Correo de bienvenida",
+  "isActive": true,
+  "schema": {
+    "patientName": "string",
+    "appointmentDate": "string?"
+  },
+  "content": "<p>Hola {{patientName}}</p>",
+  "baseTemplateId": "123e4567-e89b-12d3-a456-426614174000"
+}
+
+### Update Template
+PUT {{host}}/templates/123e4567-e89b-12d3-a456-426614174000
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "description": "Descripción actualizada",
+  "isActive": true
+}
+
+### Delete Template
+DELETE {{host}}/templates/123e4567-e89b-12d3-a456-426614174000
+Authorization: Bearer {{token}}
+
+### Validate Template
+POST {{host}}/templates/validate
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "identifier": "welcome_email",
+  "data": {
+    "patientName": "Ada Lovelace"
+  }
+}
