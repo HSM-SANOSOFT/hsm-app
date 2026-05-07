@@ -33,6 +33,12 @@ import * as bcrypt from 'bcrypt';
 import { DataSource, Repository, UpdateResult } from 'typeorm';
 import { UsersService } from '../../core/users/users.service';
 
+/**
+ * Authentication Service
+ * Handles user authentication, token generation, refresh token management, and PIN generation/validation.
+ * Integrates with UsersService for user validation and database operations for token management.
+ * Provides methods for user signup, login, logout, and token refresh functionality.
+ */
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
@@ -50,10 +56,21 @@ export class AuthService {
     private readonly dataSource: DataSource,
   ) {}
 
+  /**
+   * Hashes the provided data using bcrypt with a salt round of 10.
+   * @param data - The string data to be hashed
+   * @returns A promise that resolves to the hashed string
+   */
   async hashData(data: string): Promise<string> {
     return await bcrypt.hash(data, 10);
   }
 
+  /**
+   * Handles the refresh token logic by deactivating any existing active refresh tokens for the user and saving the new hashed refresh token in the database.
+   * @param user - The user for whom the refresh token is being managed
+   * @param refreshToken - The new refresh token to be saved (hashed before saving)
+   * @returns A promise that resolves when the operation is complete
+   */
   async refreshToken(
     user: IUnsignedUser | IUnsignedUserIntegration,
     refreshToken: string,
@@ -104,6 +121,12 @@ export class AuthService {
     }
   }
 
+  /**
+   * Validates the user credentials (username and password).
+   * @param username - The username provided by the client
+   * @param password - The password provided by the client
+   * @returns A promise that resolves to an unsigned user object if valid; otherwise throws an exception
+   */
   async validateUser(username: string, pass: string): Promise<IUnsignedUser> {
     const user = await this.usersService.findOneByUsername(username);
     const passwordValid = await bcrypt.compare(pass, user.password);
@@ -121,6 +144,11 @@ export class AuthService {
     };
   }
 
+  /**
+   * Validates the JWT payload and extracts user information along with the refresh token.
+   * @param user - The refresh user object containing user information and the refresh token
+   * @returns An object representing the unsigned user if valid; otherwise throws an exception
+   */
   async validateRefreshToken(
     user: IRefreshUser,
   ): Promise<IUnsignedUser | IUnsignedUserIntegration> {
@@ -159,6 +187,12 @@ export class AuthService {
     return userData;
   }
 
+  /**
+   * Generates JWT access and refresh tokens for the authenticated user.
+   * Access token expires in 15 minutes for regular users and 1 day for integrations, while refresh token expires in 1 day for regular users and 30 days for integrations.
+   * @param user - The unsigned user object containing user information to be included in the token payload
+   * @returns An object containing the generated access token and refresh token
+   */
   async generateTokens(
     user: IUnsignedUser | IUnsignedUserIntegration,
   ): Promise<ITokens> {
@@ -182,6 +216,11 @@ export class AuthService {
     return { access_token, refresh_token };
   }
 
+  /**
+   * Handles user signup by creating a new user in the database, generating JWT tokens for the new user, and saving the hashed refresh token in the database.
+   * @param newUser - The payload containing the new user's information for signup
+   * @returns An object containing the generated access token and refresh token for the newly created user
+   */
   async signup(newUser: SignupPayloadDto): Promise<ITokens> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -220,6 +259,11 @@ export class AuthService {
     }
   }
 
+  /**
+   * Handles user login by validating the user credentials, generating JWT tokens for the authenticated user, and saving the hashed refresh token in the database.
+   * @param user - The unsigned user object containing user information for login
+   * @returns An object containing the generated access token and refresh token for the authenticated user
+   */
   async login(user: IUnsignedUser): Promise<ITokens> {
     const tokens: ITokens = await this.generateTokens(user);
     const refreshToken = await this.hashData(tokens.refresh_token);
@@ -227,6 +271,11 @@ export class AuthService {
     return tokens;
   }
 
+  /**
+   * Handles user logout by validating the provided token, determining if it's an access token or refresh token, and deactivating the corresponding refresh token in the database to prevent further use.
+   * @param token - The JWT token provided in the logout request (can be either access token or refresh token)
+   * @returns A promise that resolves when the logout process is complete; otherwise throws an exception if the token is invalid or not found
+   */
   async logout(token: string | undefined): Promise<void> {
     if (!token) {
       throw new UnauthorizedException('Token not found');
@@ -263,6 +312,12 @@ export class AuthService {
     }
   }
 
+
+  /**
+   * Handles the signup process for integrations by creating a new integration user in the database, generating JWT tokens for the new integration, and saving the hashed refresh token in the database.
+   * @param payload - The payload containing the new integration's information for signup
+   * @returns An object containing the generated access token and refresh token for the newly created integration
+   */
   async signupIntegration(
     payload: SignupIntegrationTokenPayloadDto,
   ): Promise<ITokens> {
@@ -299,6 +354,11 @@ export class AuthService {
     }
   }
 
+  /**
+   * Handles integration logout by validating the provided token, determining if it's an access token or refresh token, and deactivating the corresponding refresh token in the database to prevent further use.
+   * @param token - The JWT token provided in the logout request (can be either access token or refresh token)
+   * @returns A promise that resolves when the logout process is complete; otherwise throws an exception if the token is invalid or not found
+   */
   async logoutIntegration(token: string): Promise<void> {
     let decoded: ISignedUserIntegration;
     try {
@@ -344,6 +404,11 @@ export class AuthService {
     }
   }
 
+  /**
+   * Handles the refresh token process by validating the provided refresh token, generating new JWT tokens, and updating the hashed refresh token in the database.
+   * @param user - The user object containing information for refresh token validation
+   * @returns An object containing the newly generated access token and refresh token
+   */
   async refresh(user: IRefreshUser): Promise<ITokens> {
     const userToSign = await this.validateRefreshToken(user);
     const tokens: ITokens = await this.generateTokens(userToSign);
@@ -352,9 +417,13 @@ export class AuthService {
     return tokens;
   }
 
-  // TODO: Implement PIN generation and validation methods
-
+  /**
+   * Generates a PIN code for the specified purpose and target, and handles the logic for storing and sending the PIN.
+   * @param payload - The payload containing the purpose and target for the PIN generation
+   * @param ip - The IP address from which the request originated (for logging purposes)
+   */
   async generatePin(payload: PinGenerationPayloadDto, ip: string) {
+    // TODO: Implement PIN generation and validation methods for functionalities like email verification and password reset
     const { purpose: pinPurpose, target: pinTarget } = payload;
 
     const pinLength = 6;
@@ -370,6 +439,10 @@ export class AuthService {
     // Todo: Send the PIN to the target (e.g., via email or SMS) based on the purpose
   }
 
+  /**
+   * Validates the provided PIN code for the specified purpose and target, and handles the logic for checking the PIN against stored values.
+   * @param payload - The payload containing the purpose, target, and code for PIN validation
+   */
   async validatePin(payload: PinValidationPayloadDto) {
     const { purpose: pinPurpose, target: pinTarget, code: pinCode } = payload;
 

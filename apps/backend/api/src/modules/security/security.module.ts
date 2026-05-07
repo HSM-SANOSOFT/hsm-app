@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
-
+import { AuthJwtAtGuard } from '../../guards';
 import { AuthModule } from './auth/auth.module';
-import { AuthJwtAtGuard } from './auth/guard';
 import { RolesGuard } from './roles/roles.guard';
 import { RolesModule } from './roles/roles.module';
 

@@ -22,9 +22,9 @@ import {
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { ApiDocumentation, Public } from '../../../decorator';
+import { AuthJwtRtGuard, AuthLocalGuard } from '../../../guards';
 import { Roles } from '../../security/roles/roles.decorator';
 import { AuthService } from './auth.service';
-import { AuthJwtRtGuard, AuthLocalGuard } from './guard';
 
 @Controller('auth')
 export class AuthController {
