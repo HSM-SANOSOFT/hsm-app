@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsArray, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
-import { documentDtoFactory } from './core-docs.dto';
+import { documentDtoFactory } from './docs.dto';
 
 class S3FileInfoUploadDto {
   @IsNotEmpty()

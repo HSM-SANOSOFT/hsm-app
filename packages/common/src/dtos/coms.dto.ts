@@ -10,7 +10,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { DocumentsPayloadDto } from './core-docs.dto';
+import { DocumentsPayloadDto } from './docs.dto';
 
 @ApiSchema({ name: 'Send Email Payload' })
 export class SendEmailPayloadDto extends PartialType(DocumentsPayloadDto) {

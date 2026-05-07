@@ -1,4 +1,4 @@
 export * from './common-utils.type';
-export * from './core-coms.type';
-export * from './core-templates.type';
-export * from './security-roles.type';
+export * from './coms.type';
+export * from './templates.type';
+export * from './roles.type';

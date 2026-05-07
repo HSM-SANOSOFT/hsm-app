@@ -1,4 +1,4 @@
-import type { TemplateSchemaIssue } from '../errors/core-templates.error';
+import type { TemplateSchemaIssue } from '../errors/templates.error';
 
 const PRIMITIVE_TYPES = ['string', 'number', 'boolean', 'date', 'any'] as const;
 type PrimitiveTag = (typeof PRIMITIVE_TYPES)[number];

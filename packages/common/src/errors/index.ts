@@ -1,1 +1,1 @@
-export * from './core-templates.error';
+export * from './templates.error';

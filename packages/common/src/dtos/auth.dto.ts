@@ -1,9 +1,9 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
-import { CreateUserIntegrationPayloadDto, CreateUserPayloadDto } from '../dtos';
 import { PinPurposeEnum, RolesEnum } from '../enums';
 import { ITokens } from '../interfaces';
 import { RolesType } from '../types';
+import { CreateUserIntegrationPayloadDto, CreateUserPayloadDto } from '.';
 
 @ApiSchema({ name: 'Login Payload' })
 export class LoginPayloadDto {

@@ -19,9 +19,9 @@ import {
   DocumentFormatsEnum,
   DocumentOrientationsEnum,
   DocumentSizesEnum,
-} from '../enums/core-docs.enum';
-import { TemplateCategoriesEnum } from '../enums/core-templates.enum';
-import type { TemplateSchemaIssue } from '../errors/core-templates.error';
+} from '../enums/docs.enum';
+import { TemplateCategoriesEnum } from '../enums/templates.enum';
+import type { TemplateSchemaIssue } from '../errors/templates.error';
 
 @ApiSchema({ name: 'Get Template Request' })
 export class GetTemplateRequestDto {
