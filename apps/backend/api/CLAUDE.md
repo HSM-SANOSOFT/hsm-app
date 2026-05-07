@@ -44,9 +44,6 @@ MainModule
 ├── SecurityModule       (registers AuthJwtAtGuard + RolesGuard as APP_GUARDs)
 │   ├── AuthModule       (JWT AT+RT, Passport local)
 │   └── RolesModule
-└── ClinicalModule
-    ├── PatientsModule
-    └── AppointmentsModule
 ```
 
 `AdministrativeModule` / `SchedulingModule` were removed — don't re-add without a real use case.
@@ -84,3 +81,26 @@ Don't wrap successful responses by hand — the interceptor does it.
 - `moduleNameMapper` rewrites `@hsm/*` to package sources — no build step needed for tests.
 - E2E specs live in `test/`, run via `pnpm --filter @hsm/api test:e2e`.
 - **Env shim:** `src/test-setup.ts` runs before every test file (jest `setupFiles`). It sets dummy `process.env` values so `@hsm/config` Joi validation passes without real infrastructure. **When adding a new required env var to `@hsm/config`, also add a dummy value in this file** — omitting it causes a `Config validation error` at test startup.
+
+## HTTP test files
+
+Every controller has a co-located `.http` file (e.g. `auth.controller.ts` → `auth.http`) for manual endpoint testing with the VS Code [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) extension.
+
+**Convention — mirrors the test file rule:**
+- **New endpoint** → add a request block to that controller's `.http` file
+- **New controller** → create a co-located `.http` file at the same time, covering all endpoints
+
+**Shared environment variables** live in `.vscode/settings.json` under `rest-client.environmentVariables`. All `.http` files use `{{host}}`, `{{contentType}}`, and `{{token}}` — no per-file variable declarations.
+
+```jsonc
+// .vscode/settings.json
+"rest-client.environmentVariables": {
+  "local": {
+    "host": "http://127.0.0.1:3000/v1",   // container-internal port
+    "contentType": "application/json",
+    "token": ""  // paste your JWT here after login
+  }
+}
+```
+
+Select the active environment with `Ctrl+Alt+E` in VS Code. Update `token` once after `POST /auth/login` — all files pick it up automatically.

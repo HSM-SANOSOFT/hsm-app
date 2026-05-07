@@ -62,7 +62,8 @@
         "christian-kohler.path-intellisense",
         "yoavbls.pretty-ts-errors",
         "ms-vscode.test-adapter-converter",
-        "usernamehw.errorlens"
+        "usernamehw.errorlens",
+        "humao.rest-client"
       ]
     }
   }

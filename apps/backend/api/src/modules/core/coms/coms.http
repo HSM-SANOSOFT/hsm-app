@@ -1,6 +1,3 @@
-@host = http://127.0.0.1:3000/v1
-@contentType = application/json
-
 ### send email
 POST {{host}}/coms/send/email
 Content-Type: {{contentType}}

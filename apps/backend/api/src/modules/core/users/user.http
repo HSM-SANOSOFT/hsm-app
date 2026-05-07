@@ -1,0 +1,20 @@
+### Create User
+POST {{host}}/user/create
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{}
+
+### Update User
+POST {{host}}/user/update
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{}
+
+### Delete User
+POST {{host}}/user/delete
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{}
