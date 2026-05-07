@@ -16,7 +16,7 @@ Authorization: Bearer {{token}}
     "patientName": "string",
     "appointmentDate": "string?"
   },
-  "content": "<p>Hola {{patientName}}</p>",
+  "content": "<p>Hola [patientName]</p>",
   "baseTemplateId": "123e4567-e89b-12d3-a456-426614174000"
 }
 
