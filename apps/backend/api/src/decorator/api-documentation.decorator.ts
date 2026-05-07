@@ -19,7 +19,7 @@ import {
   ReferenceObject,
   SchemaObject,
 } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
-import { AuthJwtRtGuard } from '../guards/auth.jwt.rt.guard';
+import { AuthJwtRtGuard } from '../guards';
 import { IS_PUBLIC_KEY } from './public.decorator';
 
 type ClassType = new (...args: unknown[]) => unknown;

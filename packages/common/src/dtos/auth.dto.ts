@@ -3,7 +3,10 @@ import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { PinPurposeEnum, RolesEnum } from '../enums';
 import { ITokens } from '../interfaces';
 import { RolesType } from '../types';
-import { CreateUserIntegrationPayloadDto, CreateUserPayloadDto } from '.';
+import {
+  CreateUserIntegrationPayloadDto,
+  CreateUserPayloadDto,
+} from './user.dto';
 
 @ApiSchema({ name: 'Login Payload' })
 export class LoginPayloadDto {

@@ -4,6 +4,7 @@ import {
   SuccessResponseDto,
 } from '@hsm/common/dtos';
 import { ISuccessResponse } from '@hsm/common/interfaces';
+import { extractApiVersion } from '@hsm/common/utils';
 import {
   CallHandler,
   ExecutionContext,
@@ -12,7 +13,6 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { map, Observable } from 'rxjs';
-import { extractApiVersion } from '../utils';
 
 @Injectable()
 export class ResponseInterceptor<T>

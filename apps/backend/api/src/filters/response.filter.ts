@@ -1,6 +1,6 @@
 import { MetadataDto, UnsuccessResponseDto } from '@hsm/common/dtos';
 import { IUnsuccessResponse } from '@hsm/common/interfaces';
-
+import { extractApiVersion } from '@hsm/common/utils';
 import {
   ArgumentsHost,
   Catch,
@@ -8,9 +8,7 @@ import {
   HttpException,
   Logger,
 } from '@nestjs/common';
-
 import { Request, Response } from 'express';
-import { extractApiVersion } from '../utils';
 
 /**
  * Type guards

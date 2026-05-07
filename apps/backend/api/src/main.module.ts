@@ -9,7 +9,6 @@ import { ResponseInterceptor } from './interceptors';
 import { MainController } from './main.controller';
 import { MainService } from './main.service';
 import { CoreModule, SecurityModule } from './modules';
-import { EmailTemplateDataValidator } from './validators';
 
 @Module({
   imports: [
@@ -53,8 +52,7 @@ import { EmailTemplateDataValidator } from './validators';
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor,
     },
-    EmailTemplateDataValidator,
   ],
-  exports: [EmailTemplateDataValidator],
+  exports: [],
 })
 export class MainModule {}

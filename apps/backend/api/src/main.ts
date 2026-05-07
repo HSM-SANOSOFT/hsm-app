@@ -1,10 +1,10 @@
+import { freePort } from '@hsm/common/utils';
 import { envs } from '@hsm/config';
 import { ConsoleLogger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpLoggingInterceptor } from './interceptors';
 import { MainModule } from './main.module';
-import { freePort } from './utils';
 
 async function bootstrap() {
   const app = await NestFactory.create(MainModule, {
