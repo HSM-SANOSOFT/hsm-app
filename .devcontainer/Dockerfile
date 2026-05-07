@@ -33,9 +33,26 @@ RUN curl -1sLf 'https://artifacts-cli.infisical.com/setup.deb.sh' | bash \
 COPY docker/oracle /tmp/oracle
 RUN bash /tmp/oracle/install_oracle_client.sh && rm -rf /tmp/oracle
 
-ENV PATH="/root/.local/bin:${PATH}"
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+RUN if getent group ${USER_GID} >/dev/null 2>&1; then \
+      groupmod -n vscode $(getent group ${USER_GID} | cut -d: -f1); \
+    else \
+      groupadd --gid ${USER_GID} vscode; \
+    fi \
+  && if getent passwd ${USER_UID} >/dev/null 2>&1; then \
+      usermod -l vscode -d /home/vscode -m $(getent passwd ${USER_UID} | cut -d: -f1); \
+    else \
+      useradd --uid ${USER_UID} --gid ${USER_GID} -m --shell /bin/bash vscode; \
+    fi
+
+ENV PATH="/home/vscode/.local/bin:${PATH}"
 
 RUN corepack enable
 
+RUN mkdir -p /home/vscode/.claude && chown -R vscode:vscode /home/vscode/.claude
+
 WORKDIR /workspace
+RUN chown vscode:vscode /workspace
 

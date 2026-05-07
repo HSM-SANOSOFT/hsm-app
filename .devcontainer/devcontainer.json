@@ -15,8 +15,9 @@
     "redis",
     "minio"
   ],
+  "remoteUser": "vscode",
   "mounts": [
-    "source=claude-code-config,target=/root/.claude,type=volume"
+    "source=claude-code-config-${devcontainerId},target=/home/vscode/.claude,type=volume"
   ],
   "forwardPorts": [
     3000,
@@ -31,7 +32,8 @@
     }
   },
   "containerEnv": {
-    "COREPACK_ENABLE_DOWNLOAD_PROMPT": "0"
+    "COREPACK_ENABLE_DOWNLOAD_PROMPT": "0",
+    "CLAUDE_CONFIG_DIR": "/home/vscode/.claude"
   },
   "postCreateCommand": ".devcontainer/script/post-create.sh",
   "postStartCommand": ".devcontainer/script/post-start.sh",
