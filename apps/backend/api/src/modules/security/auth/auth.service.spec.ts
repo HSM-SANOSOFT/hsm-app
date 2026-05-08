@@ -1,17 +1,26 @@
 import { RolesEnum } from '@hsm/common/enums';
+import { envs } from '@hsm/config';
 import type { IUnsignedUser } from '@hsm/common/interfaces';
 import {
   RefreshTokenUserEntity,
   RefreshTokenUserIntegrationEntity,
 } from '@hsm/database/entities';
 import { DatabasesEnum } from '@hsm/database/sources';
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getDataSourceToken, getRepositoryToken } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../../core/users/users.service';
 import { AuthService } from './auth.service';
+
+jest.mock('@hsm/config', () => ({
+  envs: {
+    ENVIRONMENT: 'test',
+    JWT_AT_SECRET: 'test-at-secret-32-chars-padding!!',
+    JWT_RT_SECRET: 'test-rt-secret-32-chars-padding!!',
+  },
+}));
 
 jest.mock('bcrypt', () => ({
   hash: jest.fn().mockResolvedValue('hashed-value'),
@@ -465,6 +474,65 @@ describe('AuthService', () => {
           code: 123456,
         } as never),
       ).resolves.not.toThrow();
+    });
+  });
+
+  describe('onModuleInit', () => {
+    let loggerLogSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      loggerLogSpy = jest
+        .spyOn(Logger.prototype, 'log')
+        .mockImplementation(() => undefined);
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('is a no-op when ENVIRONMENT is not dev', async () => {
+      (envs as { ENVIRONMENT: string }).ENVIRONMENT = 'test';
+
+      await service.onModuleInit();
+
+      expect(mockJwtService.signAsync).not.toHaveBeenCalled();
+      expect(loggerLogSpy).not.toHaveBeenCalled();
+    });
+
+    describe('when ENVIRONMENT is dev', () => {
+      beforeEach(() => {
+        (envs as { ENVIRONMENT: string }).ENVIRONMENT = 'dev';
+      });
+
+      afterEach(() => {
+        (envs as { ENVIRONMENT: string }).ENVIRONMENT = 'test';
+      });
+
+      it('signs AT and RT with 30d expiry using dev payload', async () => {
+        await service.onModuleInit();
+
+        expect(mockJwtService.signAsync).toHaveBeenCalledTimes(2);
+        const calls = mockJwtService.signAsync.mock.calls;
+        expect(calls[0][0]).toMatchObject({
+          sub: 'dev',
+          username: 'dev',
+          email: 'dev@localhost',
+          roles: [RolesEnum.System.Developer],
+        });
+        expect(calls[0][1]).toMatchObject({ expiresIn: '30d' });
+        expect(calls[1][1]).toMatchObject({ expiresIn: '30d' });
+      });
+
+      it('logs DEV_AT and DEV_RT via NestJS Logger', async () => {
+        mockJwtService.signAsync
+          .mockResolvedValueOnce('mock-at')
+          .mockResolvedValueOnce('mock-rt');
+
+        await service.onModuleInit();
+
+        expect(loggerLogSpy).toHaveBeenCalledWith('DEV_AT=mock-at');
+        expect(loggerLogSpy).toHaveBeenCalledWith('DEV_RT=mock-rt');
+      });
     });
   });
 });

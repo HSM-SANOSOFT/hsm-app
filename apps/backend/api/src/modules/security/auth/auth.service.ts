@@ -26,6 +26,7 @@ import {
   ForbiddenException,
   Injectable,
   Logger,
+  OnModuleInit,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -41,7 +42,7 @@ import { UsersService } from '../../core/users/users.service';
  * Provides methods for user signup, login, logout, and token refresh functionality.
  */
 @Injectable()
-export class AuthService {
+export class AuthService implements OnModuleInit {
   private readonly logger = new Logger(AuthService.name);
   constructor(
     private usersService: UsersService,
@@ -56,6 +57,33 @@ export class AuthService {
     @InjectDataSource(DatabasesEnum.HsmDbPostgres)
     private readonly dataSource: DataSource,
   ) {}
+
+  async onModuleInit(): Promise<void> {
+    if (envs.ENVIRONMENT !== 'dev') return;
+
+    const payload = {
+      sub: 'dev',
+      username: 'dev',
+      email: 'dev@localhost',
+      firstName: 'Dev',
+      firstLastName: 'User',
+      roles: [RolesEnum.System.Developer],
+    };
+
+    const [at_token, rt_token] = await Promise.all([
+      this.jwtService.signAsync(payload, {
+        expiresIn: '30d',
+        secret: envs.JWT_AT_SECRET,
+      }),
+      this.jwtService.signAsync(payload, {
+        expiresIn: '30d',
+        secret: envs.JWT_RT_SECRET,
+      }),
+    ]);
+
+    this.logger.log(`DEV_AT=${at_token}`);
+    this.logger.log(`DEV_RT=${rt_token}`);
+  }
 
   /**
    * Hashes the provided data using bcrypt with a salt round of 10.
