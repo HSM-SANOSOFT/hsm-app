@@ -10,6 +10,7 @@ import {
   AuthJwtRTStrategy,
   AuthLocalStrategy,
 } from './auth.strategy';
+import { AuthDevService } from './auth-dev.service';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import {
   controllers: [AuthController],
   providers: [
     AuthService,
+    AuthDevService,
     AuthLocalStrategy,
     AuthJwtATStrategy,
     AuthJwtRTStrategy,
