@@ -1,5 +1,6 @@
 ### Get Template
 GET {{host}}/templates/123e4567-e89b-12d3-a456-426614174000
+content-Type: {{contentType}}
 Authorization: Bearer {{at_token}}
 
 ### Create Template
