@@ -1,4 +1,3 @@
-import { envs } from '@hsm/config';
 import {
   type ExecutionContext,
   Injectable,
@@ -45,19 +44,11 @@ export class AuthJwtAtGuard extends AuthGuard('jwt-at') {
     return user;
   }
 
-  /**
-   * Determines if the request can be activated
-   * @param context - Execution context
-   * @returns true if public route, dev environment, or token is valid; otherwise validates with parent guard
-   */
   canActivate(context: ExecutionContext) {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
-    if (envs.ENVIRONMENT === 'dev') {
-      return true;
-    }
     if (isPublic) {
       return true;
     }
@@ -68,7 +59,6 @@ export class AuthJwtAtGuard extends AuthGuard('jwt-at') {
 /**
  * JWT Refresh Token Authentication Guard
  * Validates JWT refresh tokens for token refresh operations.
- * Allows public routes and bypasses auth in development environment.
  */
 @Injectable()
 export class AuthJwtRtGuard extends AuthGuard('jwt-rt') {
@@ -76,14 +66,6 @@ export class AuthJwtRtGuard extends AuthGuard('jwt-rt') {
     super();
   }
 
-  /**
-   * Handles the authentication request and checks for token validity.
-   * Throws specific exceptions for expired or invalid tokens.
-   * @param err - Error object from authentication process
-   * @param user - Authenticated user object (if valid)
-   * @param info - Additional info about authentication failure (e.g., token errors)
-   * @returns Authenticated user if valid; otherwise throws UnauthorizedException
-   */
   handleRequest(err, user, info) {
     if (info instanceof TokenExpiredError) {
       throw new UnauthorizedException('token expired', 'TOKEN_EXPIRED');
@@ -100,19 +82,11 @@ export class AuthJwtRtGuard extends AuthGuard('jwt-rt') {
     return user;
   }
 
-  /**
-   * Determines if the request can be activated
-   * @param context - Execution context
-   * @returns true if public route, dev environment, or token is valid; otherwise validates with parent guard
-   */
   canActivate(context: ExecutionContext) {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
-    if (envs.ENVIRONMENT === 'dev') {
-      return true;
-    }
     if (isPublic) {
       return true;
     }

@@ -74,7 +74,8 @@
     "local": {
       "host": "http://127.0.0.1:3000/v1",
       "contentType": "application/json",
-      "token": ""
+      "at_token": "",
+      "rt_token": ""
     }
   }
 }

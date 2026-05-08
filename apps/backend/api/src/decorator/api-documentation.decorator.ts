@@ -23,12 +23,20 @@ import { AuthJwtRtGuard } from '../guards';
 import { IS_PUBLIC_KEY } from './public.decorator';
 
 type ClassType = new (...args: unknown[]) => unknown;
+
+interface ApiDocumentationOptions {
+  additionalErrors?: HttpStatus[];
+  hasPagination?: boolean;
+  hasFilter?: boolean;
+  hasSort?: boolean;
+}
+
 export const ApiDocumentation = (
   models?: ClassType | ClassType[],
-  hasPagination: boolean = false,
-  hasFilter: boolean = false,
-  hasSort: boolean = false,
+  options: ApiDocumentationOptions = {},
 ) => {
+  const { additionalErrors = [], hasPagination = false, hasFilter = false, hasSort = false } = options;
+
   return (
     target: object,
     propertyKey: string | symbol,
@@ -165,10 +173,6 @@ export const ApiDocumentation = (
         description: 'Forbidden',
         schema: unsuccessSchema(HttpStatus.FORBIDDEN, 'forbidden'),
       }),
-      ApiNotFoundResponse({
-        description: 'Not Found',
-        schema: unsuccessSchema(HttpStatus.NOT_FOUND, 'not found'),
-      }),
       ApiInternalServerErrorResponse({
         description: 'Internal Server Error',
         schema: unsuccessSchema(
@@ -176,11 +180,26 @@ export const ApiDocumentation = (
           'internal server error',
         ),
       }),
-      ApiBadGatewayResponse({
-        description: 'Bad Gateway',
-        schema: unsuccessSchema(HttpStatus.BAD_GATEWAY, 'bad gateway'),
-      }),
     ];
+
+    if (additionalErrors.includes(HttpStatus.NOT_FOUND)) {
+      decorators.push(
+        ApiNotFoundResponse({
+          description: 'Not Found',
+          schema: unsuccessSchema(HttpStatus.NOT_FOUND, 'not found'),
+        }),
+      );
+    }
+
+    if (additionalErrors.includes(HttpStatus.BAD_GATEWAY)) {
+      decorators.push(
+        ApiBadGatewayResponse({
+          description: 'Bad Gateway',
+          schema: unsuccessSchema(HttpStatus.BAD_GATEWAY, 'bad gateway'),
+        }),
+      );
+    }
+
     if (!isPublic) {
       if (usesRefreshGuard) {
         decorators.unshift(ApiBearerAuth('refresh_token'));

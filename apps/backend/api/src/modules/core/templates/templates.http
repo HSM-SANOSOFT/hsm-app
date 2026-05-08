@@ -1,11 +1,11 @@
 ### Get Template
 GET {{host}}/templates/123e4567-e89b-12d3-a456-426614174000
-Authorization: Bearer {{token}}
+Authorization: Bearer {{at_token}}
 
 ### Create Template
 POST {{host}}/templates
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+Authorization: Bearer {{at_token}}
 
 {
   "category": "EMAIL_EXTERNAL",
@@ -23,7 +23,7 @@ Authorization: Bearer {{token}}
 ### Update Template
 PUT {{host}}/templates/123e4567-e89b-12d3-a456-426614174000
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+Authorization: Bearer {{at_token}}
 
 {
   "description": "Descripción actualizada",
@@ -32,12 +32,12 @@ Authorization: Bearer {{token}}
 
 ### Delete Template
 DELETE {{host}}/templates/123e4567-e89b-12d3-a456-426614174000
-Authorization: Bearer {{token}}
+Authorization: Bearer {{at_token}}
 
 ### Validate Template
 POST {{host}}/templates/validate
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+Authorization: Bearer {{at_token}}
 
 {
   "identifier": "welcome_email",

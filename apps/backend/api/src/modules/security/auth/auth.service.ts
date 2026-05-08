@@ -23,6 +23,7 @@ import {
 import { DatabasesEnum } from '@hsm/database/sources';
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   Logger,
   UnauthorizedException,
@@ -196,6 +197,14 @@ export class AuthService {
   async generateTokens(
     user: IUnsignedUser | IUnsignedUserIntegration,
   ): Promise<ITokens> {
+    if (
+      (user.roles as string[]).includes(RolesEnum.System.Developer) &&
+      envs.ENVIRONMENT !== 'dev'
+    ) {
+      throw new ForbiddenException(
+        'Developer role cannot be assigned in this environment',
+      );
+    }
     const integration: boolean = user.roles.includes(
       RolesEnum.System.Integration,
     );

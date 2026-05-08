@@ -1,3 +1,4 @@
+import { InsufficientRolesException } from '@hsm/common/errors';
 import { RolesEnum } from '@hsm/common/enums';
 import { ISignedUser, ISignedUserIntegration } from '@hsm/common/interfaces';
 import type { RolesType } from '@hsm/common/types';
@@ -5,6 +6,7 @@ import { envs } from '@hsm/config/envs';
 import {
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -19,10 +21,6 @@ export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    if (envs.ENVIRONMENT === 'dev') {
-      return true;
-    }
-
     const requiredRoles = this.reflector.getAllAndOverride<RolesType[]>(
       ROLES_KEY,
       [context.getHandler(), context.getClass()],
@@ -38,6 +36,15 @@ export class RolesGuard implements CanActivate {
     const { user }: { user: ISignedUser | ISignedUserIntegration } = context
       .switchToHttp()
       .getRequest();
+
+    if (user.roles.includes(RolesEnum.System.Developer)) {
+      if (envs.ENVIRONMENT !== 'dev') {
+        throw new ForbiddenException(
+          'Developer role is not permitted in this environment',
+        );
+      }
+      return true;
+    }
 
     const isAdmin = user.roles.includes(RolesEnum.System.Admin);
 
@@ -55,6 +62,9 @@ export class RolesGuard implements CanActivate {
     if (isAdmin) {
       return true;
     }
-    return requiredRoles!.some(role => user.roles.includes(role));
+    if (!requiredRoles!.some(role => user.roles.includes(role))) {
+      throw new InsufficientRolesException();
+    }
+    return true;
   }
 }

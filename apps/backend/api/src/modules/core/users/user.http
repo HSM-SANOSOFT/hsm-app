@@ -1,20 +1,20 @@
 ### Create User
 POST {{host}}/user/create
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+Authorization: Bearer {{at_token}}
 
 {}
 
 ### Update User
 POST {{host}}/user/update
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+Authorization: Bearer {{at_token}}
 
 {}
 
 ### Delete User
 POST {{host}}/user/delete
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+Authorization: Bearer {{at_token}}
 
 {}
