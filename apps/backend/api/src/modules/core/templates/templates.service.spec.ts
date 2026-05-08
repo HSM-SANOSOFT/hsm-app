@@ -44,7 +44,10 @@ describe('TemplatesService', () => {
       providers: [
         TemplatesService,
         {
-          provide: getRepositoryToken(TemplatesEntity, DatabasesEnum.HsmDbPostgres),
+          provide: getRepositoryToken(
+            TemplatesEntity,
+            DatabasesEnum.HsmDbPostgres,
+          ),
           useValue: templatesRepo,
         },
         {
@@ -212,7 +215,10 @@ describe('TemplatesService', () => {
 
     it('does NOT write to parseLogs', async () => {
       templatesRepo.findOne.mockResolvedValue(template);
-      await service.validate({ identifier: 'welcome', data: { userName: 'X' } });
+      await service.validate({
+        identifier: 'welcome',
+        data: { userName: 'X' },
+      });
       // No parseLogs repo injected — build-level proof. Verify no DB side-effects
       // by confirming only templatesRepo.findOne was called.
       expect(templatesRepo.findOne).toHaveBeenCalledTimes(1);

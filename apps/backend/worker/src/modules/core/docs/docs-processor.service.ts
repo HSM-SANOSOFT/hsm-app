@@ -1,19 +1,17 @@
-import {
-  DocumentFormatsEnum,
-  DocumentStatusEnum,
-} from '@hsm/common/enums';
 import { GenerateDocumentJobPayloadDto } from '@hsm/common/dtos';
+import { DocumentFormatsEnum, DocumentStatusEnum } from '@hsm/common/enums';
+import { TemplateNotActiveError } from '@hsm/common/errors';
 import {
+  DocumentStorageObjectEntity,
   DocumentsEntity,
   DocumentsGeneratedEntity,
-  DocumentStorageObjectEntity,
   DocumentsVersionEntity,
 } from '@hsm/database/entities';
 import { DatabasesEnum } from '@hsm/database/sources';
-import { TemplateNotActiveError } from '@hsm/common/errors';
 import { QueueEnum, QueueWorkerHost } from '@hsm/queue';
 
 const DOCS_BUCKET = 'hsm-docs';
+
 import { S3Service } from '@hsm/storage/s3/s3.service';
 import { Processor } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';

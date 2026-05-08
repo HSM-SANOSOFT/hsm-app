@@ -6,8 +6,8 @@ import { QueueEnum } from '@hsm/queue';
 import { S3Service } from '@hsm/storage/s3/s3.service';
 import { getQueueToken } from '@nestjs/bullmq';
 import { NotFoundException } from '@nestjs/common';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { DocsService } from './docs.service';
 
 const mockStorage: Partial<DocumentStorageObjectEntity> = {
@@ -54,9 +54,11 @@ describe('DocsService', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
-    mockDocsRepo.create.mockImplementation((data: Partial<DocumentsEntity>) => ({
-      ...data,
-    }));
+    mockDocsRepo.create.mockImplementation(
+      (data: Partial<DocumentsEntity>) => ({
+        ...data,
+      }),
+    );
     mockDocsRepo.save.mockImplementation(async (entity: DocumentsEntity) => {
       entity.id = 'doc-uuid';
       return entity;
@@ -74,7 +76,10 @@ describe('DocsService', () => {
           useValue: mockDocsQueue,
         },
         {
-          provide: getRepositoryToken(DocumentsEntity, DatabasesEnum.HsmDbPostgres),
+          provide: getRepositoryToken(
+            DocumentsEntity,
+            DatabasesEnum.HsmDbPostgres,
+          ),
           useValue: mockDocsRepo,
         },
       ],
@@ -167,9 +172,9 @@ describe('DocsService', () => {
 
     it('throws NotFoundException when document not found', async () => {
       mockDocsRepo.findOne.mockResolvedValueOnce(null);
-      await expect(
-        service.deleteDocument('missing-id'),
-      ).rejects.toBeInstanceOf(NotFoundException);
+      await expect(service.deleteDocument('missing-id')).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
     });
 
     it('returns { deleted: true } on success', async () => {

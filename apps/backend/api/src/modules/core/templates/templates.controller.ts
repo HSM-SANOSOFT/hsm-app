@@ -25,7 +25,9 @@ import { TemplatesService } from './templates.service';
 export class TemplatesController {
   constructor(private readonly templatesService: TemplatesService) {}
 
-  @ApiDocumentation(TemplateResponseDto, { additionalErrors: [HttpStatus.NOT_FOUND] })
+  @ApiDocumentation(TemplateResponseDto, {
+    additionalErrors: [HttpStatus.NOT_FOUND],
+  })
   @Roles()
   @Get(':identifier')
   getTemplate(@Param() params: GetTemplateRequestDto) {
@@ -35,14 +37,18 @@ export class TemplatesController {
     });
   }
 
-  @ApiDocumentation(TemplateResponseDto, { additionalErrors: [HttpStatus.NOT_FOUND] })
+  @ApiDocumentation(TemplateResponseDto, {
+    additionalErrors: [HttpStatus.NOT_FOUND],
+  })
   @Roles()
   @Post()
   addTemplate(@Body() payload: CreateTemplatePayloadDto) {
     return this.templatesService.create(payload);
   }
 
-  @ApiDocumentation(TemplateResponseDto, { additionalErrors: [HttpStatus.NOT_FOUND] })
+  @ApiDocumentation(TemplateResponseDto, {
+    additionalErrors: [HttpStatus.NOT_FOUND],
+  })
   @Roles()
   @Put(':id')
   updateTemplate(
@@ -60,7 +66,9 @@ export class TemplatesController {
     return { id };
   }
 
-  @ApiDocumentation(ValidateTemplateResponseDto, { additionalErrors: [HttpStatus.NOT_FOUND] })
+  @ApiDocumentation(ValidateTemplateResponseDto, {
+    additionalErrors: [HttpStatus.NOT_FOUND],
+  })
   @Roles()
   @Post('validate')
   validateTemplate(@Body() payload: ParseTemplatePayloadDto) {

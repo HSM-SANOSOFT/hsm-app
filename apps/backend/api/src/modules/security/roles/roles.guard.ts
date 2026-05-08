@@ -1,5 +1,5 @@
-import { InsufficientRolesException } from '@hsm/common/errors';
 import { RolesEnum } from '@hsm/common/enums';
+import { InsufficientRolesException } from '@hsm/common/errors';
 import { ISignedUser, ISignedUserIntegration } from '@hsm/common/interfaces';
 import type { RolesType } from '@hsm/common/types';
 import { envs } from '@hsm/config/envs';

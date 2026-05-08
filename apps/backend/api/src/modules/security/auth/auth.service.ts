@@ -321,7 +321,6 @@ export class AuthService {
     }
   }
 
-
   /**
    * Handles the signup process for integrations by creating a new integration user in the database, generating JWT tokens for the new integration, and saving the hashed refresh token in the database.
    * @param payload - The payload containing the new integration's information for signup

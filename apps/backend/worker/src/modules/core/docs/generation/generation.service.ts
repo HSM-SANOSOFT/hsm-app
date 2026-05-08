@@ -1,5 +1,5 @@
-import chromium from '@sparticuz/chromium-min';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import chromium from '@sparticuz/chromium-min';
 import { createPool, Pool } from 'generic-pool';
 import * as puppeteer from 'puppeteer-core';
 
@@ -28,7 +28,7 @@ export class GenerationService implements OnModuleInit, OnModuleDestroy {
           await page.setJavaScriptEnabled(false);
           return page;
         },
-        destroy: async (page) => {
+        destroy: async page => {
           await page.close();
         },
       },

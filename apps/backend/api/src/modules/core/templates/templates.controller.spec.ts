@@ -64,7 +64,10 @@ describe('TemplatesController', () => {
   });
 
   it('POST /validate forwards identifier and data to service.validate', () => {
-    controller.validateTemplate({ identifier: 'welcome', data: { userName: 'Ada' } });
+    controller.validateTemplate({
+      identifier: 'welcome',
+      data: { userName: 'Ada' },
+    });
     expect(service.validate).toHaveBeenCalledWith({
       identifier: 'welcome',
       data: { userName: 'Ada' },

@@ -1,6 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { getQueueToken } from '@nestjs/bullmq';
 import { QueueEnum } from '@hsm/queue';
+import { getQueueToken } from '@nestjs/bullmq';
+import { Test, TestingModule } from '@nestjs/testing';
 import { ComsService } from './coms.service';
 
 const comsQueue = { add: jest.fn() };

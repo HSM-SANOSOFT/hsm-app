@@ -117,7 +117,10 @@ export class DocsService {
     await this.docs.softDelete(id);
 
     const storageEntries = doc.versions
-      ?.filter((v): v is typeof v & { storage: NonNullable<typeof v.storage> } => v.storage != null)
+      ?.filter(
+        (v): v is typeof v & { storage: NonNullable<typeof v.storage> } =>
+          v.storage != null,
+      )
       .map(v => this.splitStoragePath(v.storage.path, v.storage.bucket));
 
     if (storageEntries && storageEntries.length > 0) {

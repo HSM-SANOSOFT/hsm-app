@@ -210,7 +210,11 @@ export class TemplatesService {
       input.data,
     );
     if (!validation.valid) {
-      return { valid: false, templateId: template.id, issues: validation.issues };
+      return {
+        valid: false,
+        templateId: template.id,
+        issues: validation.issues,
+      };
     }
 
     try {
@@ -221,7 +225,11 @@ export class TemplatesService {
         valid: false,
         templateId: template.id,
         issues: [
-          { path: 'content', expected: 'compilable Handlebars', received: message },
+          {
+            path: 'content',
+            expected: 'compilable Handlebars',
+            received: message,
+          },
         ],
       };
     }

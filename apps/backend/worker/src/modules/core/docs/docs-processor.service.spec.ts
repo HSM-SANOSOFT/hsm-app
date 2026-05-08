@@ -1,3 +1,4 @@
+import { GenerateDocumentJobPayloadDto } from '@hsm/common/dtos';
 import {
   DocumentCodesEnum,
   DocumentFormatsEnum,
@@ -5,27 +6,21 @@ import {
   DocumentSizesEnum,
   DocumentStatusEnum,
 } from '@hsm/common/enums';
-import { GenerateDocumentJobPayloadDto } from '@hsm/common/dtos';
 import {
   TemplateNotActiveError,
   TemplateNotFoundError,
   TemplateSchemaValidationError,
 } from '@hsm/common/errors';
+import { DocumentsEntity } from '@hsm/database/entities';
 import { DatabasesEnum } from '@hsm/database/sources';
-import {
-  DocumentsEntity,
-  DocumentsGeneratedEntity,
-  DocumentStorageObjectEntity,
-  DocumentsVersionEntity,
-} from '@hsm/database/entities';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Test, TestingModule } from '@nestjs/testing';
 import { QueueService } from '@hsm/queue';
 import { S3Service } from '@hsm/storage/s3/s3.service';
+import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { TemplatesService } from '../templates/templates.service';
+import { DocsProcessorService } from './docs-processor.service';
 import { ExcelGenerationService } from './generation/excel-generation.service';
 import { GenerationService } from './generation/generation.service';
-import { DocsProcessorService } from './docs-processor.service';
-import { TemplatesService } from '../templates/templates.service';
 
 const FAKE_PDF = Buffer.from('%PDF-1.4 fake');
 const FAKE_XLSX = Buffer.from('fake-xlsx');
@@ -96,7 +91,13 @@ const mockS3Service = {
   uploadFiles: jest.fn().mockResolvedValue([
     {
       bucket: 'hsm-docs',
-      files: [{ fileId: 'file-uuid', filename: 'HCU-001-ts.pdf', key: 'generated/file-uuid' }],
+      files: [
+        {
+          fileId: 'file-uuid',
+          filename: 'HCU-001-ts.pdf',
+          key: 'generated/file-uuid',
+        },
+      ],
     },
   ]),
 };
@@ -126,7 +127,13 @@ describe('DocsProcessorService', () => {
     mockS3Service.uploadFiles.mockResolvedValue([
       {
         bucket: 'hsm-docs',
-        files: [{ fileId: 'file-uuid', filename: 'HCU-001-ts.pdf', key: 'generated/file-uuid' }],
+        files: [
+          {
+            fileId: 'file-uuid',
+            filename: 'HCU-001-ts.pdf',
+            key: 'generated/file-uuid',
+          },
+        ],
       },
     ]);
 
@@ -137,9 +144,19 @@ describe('DocsProcessorService', () => {
         { provide: GenerationService, useValue: mockGenerationService },
         { provide: ExcelGenerationService, useValue: mockExcelService },
         { provide: S3Service, useValue: mockS3Service },
-        { provide: QueueService, useValue: { workerActive: jest.fn(), workerCompleted: jest.fn(), workerFailed: jest.fn() } },
         {
-          provide: getRepositoryToken(DocumentsEntity, DatabasesEnum.HsmDbPostgres),
+          provide: QueueService,
+          useValue: {
+            workerActive: jest.fn(),
+            workerCompleted: jest.fn(),
+            workerFailed: jest.fn(),
+          },
+        },
+        {
+          provide: getRepositoryToken(
+            DocumentsEntity,
+            DatabasesEnum.HsmDbPostgres,
+          ),
           useValue: mockDocsRepo,
         },
       ],
@@ -163,7 +180,10 @@ describe('DocsProcessorService', () => {
 
   describe('processGenerateDocument — PDF path', () => {
     it('sets status PROCESSING then COMPLETED on success', async () => {
-      await (service as any).handle({ name: 'generate-document', data: basePayload });
+      await (service as any).handle({
+        name: 'generate-document',
+        data: basePayload,
+      });
 
       expect(mockDocsRepo.update).toHaveBeenCalledWith('doc-uuid', {
         status: DocumentStatusEnum.PROCESSING,
@@ -174,21 +194,34 @@ describe('DocsProcessorService', () => {
     });
 
     it('calls generatePDF with the parsed HTML', async () => {
-      await (service as any).handle({ name: 'generate-document', data: basePayload });
-      expect(mockGenerationService.generatePDF).toHaveBeenCalledWith('<html>test</html>');
+      await (service as any).handle({
+        name: 'generate-document',
+        data: basePayload,
+      });
+      expect(mockGenerationService.generatePDF).toHaveBeenCalledWith(
+        '<html>test</html>',
+      );
     });
 
     it('uploads to S3 with correct bucket, folder derived from documentCode, and contentType', async () => {
-      await (service as any).handle({ name: 'generate-document', data: basePayload });
+      await (service as any).handle({
+        name: 'generate-document',
+        data: basePayload,
+      });
       const callArg = mockS3Service.uploadFiles.mock.calls[0][0];
       expect(callArg.payload[0].bucket).toBe('hsm-docs');
       // Folder derived from DocumentCodesEnum.HCU_001 = 'HCU-001' → 'hcu-001'
       expect(callArg.payload[0].files[0].folderName).toBe('hcu-001');
-      expect(callArg.payload[0].files[0].fileInfo.contentType).toBe('application/pdf');
+      expect(callArg.payload[0].files[0].fileInfo.contentType).toBe(
+        'application/pdf',
+      );
     });
 
     it('persists entities within the transaction', async () => {
-      await (service as any).handle({ name: 'generate-document', data: basePayload });
+      await (service as any).handle({
+        name: 'generate-document',
+        data: basePayload,
+      });
       expect(mockDocsRepo.manager.transaction).toHaveBeenCalled();
       expect(mockManager.save).toHaveBeenCalledTimes(3);
     });
@@ -196,11 +229,15 @@ describe('DocsProcessorService', () => {
 
   describe('processGenerateDocument — XLSX path', () => {
     const xlsxDefinition = JSON.stringify({
-      sheets: [{ name: 'Sheet1', columns: [{ header: 'A', key: 'a' }], rows: [] }],
+      sheets: [
+        { name: 'Sheet1', columns: [{ header: 'A', key: 'a' }], rows: [] },
+      ],
     });
 
     beforeEach(() => {
-      mockTemplatesService.findByIdentifier.mockResolvedValue(mockTemplateEntityXlsx);
+      mockTemplatesService.findByIdentifier.mockResolvedValue(
+        mockTemplateEntityXlsx,
+      );
       mockTemplatesService.parse.mockResolvedValue({
         html: xlsxDefinition,
         templateId: 'tmpl-xlsx-uuid',
@@ -208,19 +245,28 @@ describe('DocsProcessorService', () => {
     });
 
     it('sets status PROCESSING then COMPLETED', async () => {
-      await (service as any).handle({ name: 'generate-document', data: basePayload });
+      await (service as any).handle({
+        name: 'generate-document',
+        data: basePayload,
+      });
       expect(mockDocsRepo.update).toHaveBeenLastCalledWith('doc-uuid', {
         status: DocumentStatusEnum.COMPLETED,
       });
     });
 
     it('calls excelService.generate with the parsed workbook definition', async () => {
-      await (service as any).handle({ name: 'generate-document', data: basePayload });
+      await (service as any).handle({
+        name: 'generate-document',
+        data: basePayload,
+      });
       expect(mockExcelService.generate).toHaveBeenCalled();
     });
 
     it('uploads with XLSX contentType', async () => {
-      await (service as any).handle({ name: 'generate-document', data: basePayload });
+      await (service as any).handle({
+        name: 'generate-document',
+        data: basePayload,
+      });
       const callArg = mockS3Service.uploadFiles.mock.calls[0][0];
       expect(callArg.payload[0].files[0].fileInfo.contentType).toBe(
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -234,7 +280,10 @@ describe('DocsProcessorService', () => {
         new TemplateNotFoundError('hcu_001'),
       );
       await expect(
-        (service as any).handle({ name: 'generate-document', data: basePayload }),
+        (service as any).handle({
+          name: 'generate-document',
+          data: basePayload,
+        }),
       ).rejects.toBeInstanceOf(TemplateNotFoundError);
       expect(mockDocsRepo.update).toHaveBeenLastCalledWith('doc-uuid', {
         status: DocumentStatusEnum.FAILED,
@@ -247,7 +296,10 @@ describe('DocsProcessorService', () => {
         isActive: false,
       });
       await expect(
-        (service as any).handle({ name: 'generate-document', data: basePayload }),
+        (service as any).handle({
+          name: 'generate-document',
+          data: basePayload,
+        }),
       ).rejects.toBeInstanceOf(TemplateNotActiveError);
       expect(mockDocsRepo.update).toHaveBeenLastCalledWith('doc-uuid', {
         status: DocumentStatusEnum.FAILED,
@@ -261,7 +313,10 @@ describe('DocsProcessorService', () => {
         ]),
       );
       await expect(
-        (service as any).handle({ name: 'generate-document', data: basePayload }),
+        (service as any).handle({
+          name: 'generate-document',
+          data: basePayload,
+        }),
       ).rejects.toBeInstanceOf(TemplateSchemaValidationError);
       expect(mockDocsRepo.update).toHaveBeenLastCalledWith('doc-uuid', {
         status: DocumentStatusEnum.FAILED,
@@ -271,7 +326,10 @@ describe('DocsProcessorService', () => {
     it('S3 upload failure', async () => {
       mockS3Service.uploadFiles.mockRejectedValue(new Error('S3 error'));
       await expect(
-        (service as any).handle({ name: 'generate-document', data: basePayload }),
+        (service as any).handle({
+          name: 'generate-document',
+          data: basePayload,
+        }),
       ).rejects.toThrow('S3 error');
       expect(mockDocsRepo.update).toHaveBeenLastCalledWith('doc-uuid', {
         status: DocumentStatusEnum.FAILED,
@@ -279,13 +337,18 @@ describe('DocsProcessorService', () => {
     });
 
     it('invalid JSON for XLSX template output — SyntaxError caught and status FAILED', async () => {
-      mockTemplatesService.findByIdentifier.mockResolvedValue(mockTemplateEntityXlsx);
+      mockTemplatesService.findByIdentifier.mockResolvedValue(
+        mockTemplateEntityXlsx,
+      );
       mockTemplatesService.parse.mockResolvedValue({
         html: 'not-valid-json',
         templateId: 'tmpl-xlsx-uuid',
       });
       await expect(
-        (service as any).handle({ name: 'generate-document', data: basePayload }),
+        (service as any).handle({
+          name: 'generate-document',
+          data: basePayload,
+        }),
       ).rejects.toThrow(SyntaxError);
       expect(mockDocsRepo.update).toHaveBeenLastCalledWith('doc-uuid', {
         status: DocumentStatusEnum.FAILED,

@@ -35,7 +35,12 @@ export const ApiDocumentation = (
   models?: ClassType | ClassType[],
   options: ApiDocumentationOptions = {},
 ) => {
-  const { additionalErrors = [], hasPagination = false, hasFilter = false, hasSort = false } = options;
+  const {
+    additionalErrors = [],
+    hasPagination = false,
+    hasFilter = false,
+    hasSort = false,
+  } = options;
 
   return (
     target: object,

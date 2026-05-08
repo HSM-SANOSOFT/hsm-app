@@ -14,7 +14,6 @@ import { ExtractJwt, Strategy as StrategyJwt } from 'passport-jwt';
 import { Strategy } from 'passport-local';
 import { AuthService } from './auth.service';
 
-
 /**
  * Local Authentication Strategy
  * Validates user credentials (username and password) for local authentication.

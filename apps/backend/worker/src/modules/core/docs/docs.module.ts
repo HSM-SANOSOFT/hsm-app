@@ -1,8 +1,8 @@
 import { StorageModule } from '@hsm/storage';
 import { Module } from '@nestjs/common';
 import { TemplatesModule } from '../templates/templates.module';
-import { DocsProcessorService } from './docs-processor.service';
 import { DocsService } from './docs.service';
+import { DocsProcessorService } from './docs-processor.service';
 import { GenerationModule } from './generation/generation.module';
 
 @Module({
