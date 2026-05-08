@@ -71,11 +71,11 @@
     }
   ],
   "rest-client.environmentVariables": {
-    "local": {
+    "dev": {
       "host": "http://127.0.0.1:3000/v1",
       "contentType": "application/json",
-      "at_token": "",
-      "rt_token": ""
+      "at_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZXYiLCJ1c2VybmFtZSI6ImRldiIsImVtYWlsIjoiZGV2QGxvY2FsaG9zdCIsImZpcnN0TmFtZSI6IkRldiIsImZpcnN0TGFzdE5hbWUiOiJVc2VyIiwicm9sZXMiOlsiZGV2ZWxvcGVyIl0sImlhdCI6MTc3ODI3MzE1OSwiZXhwIjoxNzgwODY1MTU5fQ.vvGo4ocscIo-pWYnL6quysxy-x2JyEC96V9DfDBHj1E",
+      "rt_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZXYiLCJ1c2VybmFtZSI6ImRldiIsImVtYWlsIjoiZGV2QGxvY2FsaG9zdCIsImZpcnN0TmFtZSI6IkRldiIsImZpcnN0TGFzdE5hbWUiOiJVc2VyIiwicm9sZXMiOlsiZGV2ZWxvcGVyIl0sImlhdCI6MTc3ODI3MzE1OSwiZXhwIjoxNzgwODY1MTU5fQ.vvGo4ocscIo-pWYnL6quysxy-x2JyEC96V9DfDBHj1E"
     }
   }
 }
