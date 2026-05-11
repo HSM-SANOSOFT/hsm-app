@@ -51,8 +51,6 @@ ENV PATH="/home/vscode/.local/bin:${PATH}"
 
 RUN corepack enable
 
-RUN mkdir -p /home/vscode/.claude && chown -R vscode:vscode /home/vscode/.claude
-
 WORKDIR /workspace
-RUN chown vscode:vscode /workspace
 
+RUN mkdir -p /home/vscode/.claude && chown -R vscode:vscode /home/vscode/.claude /workspace
