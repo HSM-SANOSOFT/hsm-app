@@ -1,6 +1,6 @@
 import { SuccessResponseDto, UnsuccessResponseDto } from '@hsm/common/dtos';
 import { applyDecorators, HttpStatus } from '@nestjs/common';
-import { GUARDS_METADATA } from '@nestjs/common/constants';
+import { GUARDS_METADATA, PATH_METADATA } from '@nestjs/common/constants';
 import { Reflector } from '@nestjs/core';
 import {
   ApiBadGatewayResponse,
@@ -8,7 +8,6 @@ import {
   ApiBearerAuth,
   ApiExtraModels,
   ApiForbiddenResponse,
-  ApiHeader,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -30,6 +29,49 @@ interface ApiDocumentationOptions {
   hasFilter?: boolean;
   hasSort?: boolean;
 }
+
+const getIssueExample = (
+  httpCode: number,
+): { code: string; message: string; error: string } => {
+  switch (httpCode) {
+    case HttpStatus.BAD_REQUEST:
+      return {
+        code: 'VALIDATION_ERROR',
+        message: 'Validation failed.',
+        error: 'Bad Request',
+      };
+    case HttpStatus.UNAUTHORIZED:
+      return {
+        code: 'UNAUTHORIZED',
+        message: 'Authentication required.',
+        error: 'Unauthorized',
+      };
+    case HttpStatus.FORBIDDEN:
+      return {
+        code: 'FORBIDDEN',
+        message: 'Insufficient permissions.',
+        error: 'Forbidden',
+      };
+    case HttpStatus.NOT_FOUND:
+      return {
+        code: 'NOT_FOUND',
+        message: 'Resource not found.',
+        error: 'Not Found',
+      };
+    case HttpStatus.BAD_GATEWAY:
+      return {
+        code: 'BAD_GATEWAY',
+        message: 'Upstream service unavailable.',
+        error: 'Bad Gateway',
+      };
+    default:
+      return {
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'An unexpected error occurred.',
+        error: 'Internal Server Error',
+      };
+  }
+};
 
 export const ApiDocumentation = (
   models?: ClassType | ClassType[],
@@ -60,17 +102,30 @@ export const ApiDocumentation = (
 
     const usesRefreshGuard = !!guards.find(g => g === AuthJwtRtGuard);
 
+    // Derive the actual endpoint path from NestJS route metadata at decoration time.
+    // Direct Reflect.getMetadata is used (not reflector.getAllAndOverride) because
+    // PATH_METADATA is a scalar string — getAllAndOverride is designed for merged
+    // arrays across multiple targets, which is not what we need here.
+    // target.constructor is the controller class; descriptor.value is the method function.
+    const controllerPath =
+      (Reflect.getMetadata(PATH_METADATA, target.constructor) as string) ?? '';
+    const methodPath =
+      (Reflect.getMetadata(PATH_METADATA, descriptor.value) as string) ?? '';
+    const derivedPath =
+      '/' +
+      ['v1', controllerPath, methodPath]
+        .filter(Boolean)
+        .join('/')
+        .replace(/\/+/g, '/');
+
     const modelArray: ClassType[] = models
       ? Array.isArray(models)
         ? models
         : [models]
       : [];
 
-    const metadataSchema: (
-      success?: boolean,
-      code?: number,
-      message?: string,
-    ) => SchemaObject | ReferenceObject = (
+    const metadataSchema = (
+      path: string,
       success?: boolean,
       code?: number,
       message?: string,
@@ -79,11 +134,15 @@ export const ApiDocumentation = (
         properties: {
           success: {
             type: 'boolean',
-            example: success ? success : true,
+            example: success ?? true,
           },
           statusCode: {
             type: 'number',
             example: code ? code : HttpStatus.OK,
+          },
+          path: {
+            type: 'string',
+            example: path,
           },
           message: {
             type: 'string',
@@ -131,7 +190,7 @@ export const ApiDocumentation = (
             { $ref: getSchemaPath(SuccessResponseDto) },
             {
               properties: {
-                metadata: metadataSchema(),
+                metadata: metadataSchema(derivedPath),
                 data: dataSchema,
               },
             },
@@ -146,12 +205,20 @@ export const ApiDocumentation = (
       code: number,
       message: string,
     ): SchemaObject & Partial<ReferenceObject> => {
+      const issueExample = getIssueExample(code);
       return {
         allOf: [
           { $ref: getSchemaPath(UnsuccessResponseDto) },
           {
             properties: {
-              metadata: metadataSchema(false, code, message),
+              metadata: metadataSchema(derivedPath, false, code, message),
+              issue: {
+                properties: {
+                  code: { type: 'string', example: issueExample.code },
+                  message: { type: 'string', example: issueExample.message },
+                  error: { type: 'string', example: issueExample.error },
+                },
+              },
             },
           },
         ],
@@ -205,25 +272,15 @@ export const ApiDocumentation = (
       );
     }
 
+    // ApiBearerAuth links this endpoint to the global Swagger security scheme
+    // registered via addBearerAuth() in main.ts. No ApiHeader is needed —
+    // adding it separately creates a duplicate, unlinked Authorization field
+    // in the Swagger UI that the global "Authorize" button does not populate.
     if (!isPublic) {
       if (usesRefreshGuard) {
         decorators.unshift(ApiBearerAuth('refresh_token'));
-        decorators.unshift(
-          ApiHeader({
-            name: 'Authorization',
-            description: 'Bearer <refresh_token>',
-            required: true,
-          }),
-        );
       } else {
         decorators.unshift(ApiBearerAuth('access_token'));
-        decorators.unshift(
-          ApiHeader({
-            name: 'Authorization',
-            description: 'Bearer <access_token>',
-            required: true,
-          }),
-        );
       }
     }
 
