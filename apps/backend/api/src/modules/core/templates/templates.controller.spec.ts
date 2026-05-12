@@ -115,6 +115,8 @@ describe('TemplatesController', () => {
       { name: 'renamed' } as never,
     );
     expect(result.template.id).toBe('id-2');
+    expect(result.baseTemplate?.id).toBe('id-1');
+    expect(result.template.metadata).toMatchObject({ subject: 'Confirmed' });
   });
 
   it('DELETE returns the id', async () => {

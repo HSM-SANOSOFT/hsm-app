@@ -4,7 +4,7 @@ import {
   ParseTemplatePayloadDto,
   TemplateWithBaseResponseDto,
   UpdateTemplatePayloadDto,
-  ValidateTemplateWithBaseResponseDto,
+  ValidateTemplateResponseDto,
 } from '@hsm/common/dtos';
 import {
   Body,
@@ -66,7 +66,7 @@ export class TemplatesController {
     return { id };
   }
 
-  @ApiDocumentation(ValidateTemplateWithBaseResponseDto, {
+  @ApiDocumentation(ValidateTemplateResponseDto, {
     additionalErrors: [HttpStatus.NOT_FOUND],
   })
   @Roles()

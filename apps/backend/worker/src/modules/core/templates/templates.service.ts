@@ -29,6 +29,13 @@ export interface ParseEmailResult {
   templateId: string;
 }
 
+export interface ParseSmsResult {
+  provider: string;
+  from: string;
+  html: string;
+  templateId: string;
+}
+
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -174,7 +181,7 @@ export class TemplatesService {
   async parseSms(
     identifier: string,
     data: Record<string, unknown>,
-  ): Promise<{ provider: string; from: string; html: string; templateId: string }> {
+  ): Promise<ParseSmsResult> {
     const template = await this.findByIdentifier(identifier, {
       withChildren: true,
       withBase: true,

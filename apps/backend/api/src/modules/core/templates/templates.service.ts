@@ -1,5 +1,6 @@
 import {
   CreateTemplatePayloadDto,
+  DocTemplateFieldsDto,
   EmailTemplateFieldsDto,
   SmsTemplateFieldsDto,
   TemplateDetailDto,
@@ -267,12 +268,12 @@ export class TemplatesService {
         break;
       case TemplateCategoriesEnum.DOCS:
         if (entity.doc) {
-          metadata = {
-            documentCode: entity.doc.documentCode,
-            format: entity.doc.format,
-            size: entity.doc.size,
-            orientation: entity.doc.orientation,
-          };
+          const doc = new DocTemplateFieldsDto();
+          doc.documentCode = entity.doc.documentCode;
+          doc.format = entity.doc.format;
+          doc.size = entity.doc.size;
+          doc.orientation = entity.doc.orientation;
+          metadata = doc;
         }
         break;
       case TemplateCategoriesEnum.SMS_INTERNAL:
@@ -285,6 +286,12 @@ export class TemplatesService {
           metadata = sms;
         }
         break;
+      case TemplateCategoriesEnum.BASE:
+        break;
+      default: {
+        const _exhaustive: never = entity.category;
+        void _exhaustive;
+      }
     }
 
     return {
