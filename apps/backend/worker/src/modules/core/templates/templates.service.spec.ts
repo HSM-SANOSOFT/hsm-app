@@ -31,6 +31,7 @@ const makeTemplate = (
     schema: { userName: 'string' },
     baseTemplate: null,
     comEmail: null,
+    comSms: null,
     doc: null,
     ...overrides,
   }) as unknown as TemplatesEntity;
@@ -226,6 +227,45 @@ describe('TemplatesService (worker)', () => {
       await expect(
         service.parse({ identifier: 'welcome', data: {} }),
       ).rejects.toBeInstanceOf(TemplateSchemaValidationError);
+    });
+  });
+
+  describe('parseSms', () => {
+    it('returns provider, from, html and templateId for a valid SMS template', async () => {
+      const smsTemplate = makeTemplate({
+        category: TemplateCategoriesEnum.SMS_INTERNAL,
+        content: 'Hello {{patientName}}',
+        schema: { patientName: 'string' },
+        comSms: {
+          id: 'tmpl-id-1',
+          provider: 'twilio',
+          templateName: 'appt_reminder',
+          from: '+15005550006',
+        } as never,
+        baseTemplate: null,
+      });
+      // parseSms calls findByIdentifier (once) then parse (which calls findByIdentifier again)
+      templatesRepo.findOne
+        .mockResolvedValueOnce(smsTemplate)
+        .mockResolvedValueOnce(smsTemplate);
+
+      const result = await service.parseSms('sms-tmpl', { patientName: 'Ada' });
+      expect(result.provider).toBe('twilio');
+      expect(result.from).toBe('+15005550006');
+      expect(result.html).toContain('Ada');
+      expect(result.templateId).toBe('tmpl-id-1');
+    });
+
+    it('throws TemplateInvalidHandlebarsError when template has no comSms relation', async () => {
+      const nonSmsTemplate = makeTemplate({
+        category: TemplateCategoriesEnum.EMAIL_INTERNAL,
+        comSms: null,
+      });
+      templatesRepo.findOne.mockResolvedValue(nonSmsTemplate);
+
+      await expect(
+        service.parseSms('email-tmpl', {}),
+      ).rejects.toBeInstanceOf(TemplateInvalidHandlebarsError);
     });
   });
 });

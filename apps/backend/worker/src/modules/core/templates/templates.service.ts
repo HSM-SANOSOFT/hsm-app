@@ -53,6 +53,7 @@ export class TemplatesService {
       relations: {
         comEmail: withChildren,
         doc: withChildren,
+        comSms: withChildren,
         baseTemplate: withBase,
       },
     });
@@ -168,6 +169,30 @@ export class TemplatesService {
 
     const { html, templateId } = await this.parse({ identifier, data });
     return { subject, html, templateId };
+  }
+
+  async parseSms(
+    identifier: string,
+    data: Record<string, unknown>,
+  ): Promise<{ provider: string; from: string; html: string; templateId: string }> {
+    const template = await this.findByIdentifier(identifier, {
+      withChildren: true,
+      withBase: true,
+    });
+
+    if (!template.comSms) {
+      throw new TemplateInvalidHandlebarsError(
+        new Error(`Template '${identifier}' is not an SMS template`),
+      );
+    }
+
+    const { html, templateId } = await this.parse({ identifier, data });
+    return {
+      provider: template.comSms.provider,
+      from: template.comSms.from,
+      html,
+      templateId,
+    };
   }
 
   private identifierWhere(identifier: string) {
