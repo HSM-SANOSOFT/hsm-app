@@ -1,5 +1,10 @@
 import {
   CreateTemplatePayloadDto,
+  DocTemplateFieldsDto,
+  EmailTemplateFieldsDto,
+  SmsTemplateFieldsDto,
+  TemplateDetailDto,
+  TemplateWithBaseResponseDto,
   UpdateTemplatePayloadDto,
 } from '@hsm/common/dtos';
 import { TemplateCategoriesEnum } from '@hsm/common/enums';
@@ -17,6 +22,7 @@ import {
 } from '@hsm/common/utils';
 import {
   TemplateComEmailEntity,
+  TemplateComSmsEntity,
   TemplateDocEntity,
   TemplatesEntity,
 } from '@hsm/database/entities';
@@ -47,21 +53,22 @@ export class TemplatesService {
   async findByIdentifier(
     identifier: string,
     options: { withChildren?: boolean; withBase?: boolean } = {},
-  ): Promise<TemplatesEntity> {
+  ): Promise<TemplateWithBaseResponseDto> {
     const { withChildren = false, withBase = false } = options;
-    const template = await this.templates.findOne({
+    const entity = await this.templates.findOne({
       where: this.identifierWhere(identifier),
       relations: {
         comEmail: withChildren,
         doc: withChildren,
+        comSms: withChildren,
         baseTemplate: withBase,
       },
     });
-    if (!template) throw new TemplateNotFoundError(identifier);
-    return template;
+    if (!entity) throw new TemplateNotFoundError(identifier);
+    return this.toResponseDto(entity);
   }
 
-  async create(dto: CreateTemplatePayloadDto): Promise<TemplatesEntity> {
+  async create(dto: CreateTemplatePayloadDto): Promise<TemplateWithBaseResponseDto> {
     this.assertCategoryShape(dto);
     if (!isWellFormedTemplateSchema(dto.schema)) {
       throw new TemplateInvalidShapeError(
@@ -113,13 +120,13 @@ export class TemplatesService {
   async update(
     id: string,
     dto: UpdateTemplatePayloadDto,
-  ): Promise<TemplatesEntity> {
+  ): Promise<TemplateWithBaseResponseDto> {
     const existing = await this.findByIdentifier(id, {
       withChildren: true,
       withBase: true,
     });
 
-    if (dto.category !== undefined && dto.category !== existing.category) {
+    if (dto.category !== undefined && dto.category !== existing.template.category) {
       throw new TemplateInvalidShapeError(
         'category is immutable; create a new template instead',
       );
@@ -131,9 +138,9 @@ export class TemplatesService {
       throw new TemplateInvalidShapeError('schema is malformed');
     }
 
-    if (dto.name && dto.name !== existing.name) {
+    if (dto.name && dto.name !== existing.template.name) {
       const clash = await this.templates.findOne({
-        where: { name: dto.name, id: Not(existing.id) },
+        where: { name: dto.name, id: Not(existing.template.id) },
       });
       if (clash) throw new TemplateAlreadyExistsError(dto.name);
     }
@@ -161,17 +168,18 @@ export class TemplatesService {
       if (dto.schema !== undefined) patch.schema = dto.schema;
       if (dto.content !== undefined) patch.content = dto.content;
       if (dto.baseTemplateId !== undefined) {
+        // null clears the relation; TypeORM accepts null for nullable ManyToOne columns
         patch.baseTemplate = dto.baseTemplateId
           ? ({ id: dto.baseTemplateId } as TemplatesEntity)
-          : null!;
+          : (null as unknown as TemplatesEntity);
       }
       if (Object.keys(patch).length > 0) {
-        await manager.update(TemplatesEntity, existing.id, patch);
+        await manager.update(TemplatesEntity, existing.template.id, patch);
       }
-      await this.upsertChildOnUpdate(manager, existing, dto);
+      await this.upsertChildOnUpdate(manager, existing.template.id, existing.template.category, dto);
     });
 
-    return this.findByIdentifier(existing.id, {
+    return this.findByIdentifier(existing.template.id, {
       withChildren: true,
       withBase: true,
     });
@@ -194,6 +202,11 @@ export class TemplatesService {
         await manager.delete(TemplateComEmailEntity, { id });
       } else if (target.category === TemplateCategoriesEnum.DOCS) {
         await manager.delete(TemplateDocEntity, { id });
+      } else if (
+        target.category === TemplateCategoriesEnum.SMS_INTERNAL ||
+        target.category === TemplateCategoriesEnum.SMS_EXTERNAL
+      ) {
+        await manager.delete(TemplateComSmsEntity, { id });
       }
       await manager.delete(TemplatesEntity, { id });
     });
@@ -203,27 +216,27 @@ export class TemplatesService {
     identifier: string;
     data: Record<string, unknown>;
   }): Promise<ValidateTemplateResult> {
-    const template = await this.findByIdentifier(input.identifier);
+    const result = await this.findByIdentifier(input.identifier);
 
     const validation = validateAgainstTemplateSchema(
-      template.schema,
+      result.template.schema,
       input.data,
     );
     if (!validation.valid) {
       return {
         valid: false,
-        templateId: template.id,
+        templateId: result.template.id,
         issues: validation.issues,
       };
     }
 
     try {
-      Handlebars.precompile(template.content);
+      Handlebars.precompile(result.template.content);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       return {
         valid: false,
-        templateId: template.id,
+        templateId: result.template.id,
         issues: [
           {
             path: 'content',
@@ -234,7 +247,73 @@ export class TemplatesService {
       };
     }
 
-    return { valid: true, templateId: template.id };
+    return { valid: true, templateId: result.template.id };
+  }
+
+  private toDetailDto(entity: TemplatesEntity): TemplateDetailDto {
+    let metadata: TemplateDetailDto['metadata'] = null;
+
+    switch (entity.category) {
+      case TemplateCategoriesEnum.EMAIL_INTERNAL:
+      case TemplateCategoriesEnum.EMAIL_EXTERNAL:
+        if (entity.comEmail) {
+          const email = new EmailTemplateFieldsDto();
+          email.subject = entity.comEmail.subject;
+          email.fromEmail = entity.comEmail.fromEmail;
+          email.fromName = entity.comEmail.fromName;
+          email.cc = entity.comEmail.cc ?? undefined;
+          email.bcc = entity.comEmail.bcc ?? undefined;
+          email.hasAttachment = entity.comEmail.hasAttachment;
+          metadata = email;
+        }
+        break;
+      case TemplateCategoriesEnum.DOCS:
+        if (entity.doc) {
+          const doc = new DocTemplateFieldsDto();
+          doc.documentCode = entity.doc.documentCode;
+          doc.format = entity.doc.format;
+          doc.size = entity.doc.size;
+          doc.orientation = entity.doc.orientation;
+          metadata = doc;
+        }
+        break;
+      case TemplateCategoriesEnum.SMS_INTERNAL:
+      case TemplateCategoriesEnum.SMS_EXTERNAL:
+        if (entity.comSms) {
+          const sms = new SmsTemplateFieldsDto();
+          sms.provider = entity.comSms.provider;
+          sms.templateName = entity.comSms.templateName;
+          sms.from = entity.comSms.from;
+          metadata = sms;
+        }
+        break;
+      case TemplateCategoriesEnum.BASE:
+        break;
+      default: {
+        const _exhaustive: never = entity.category;
+        void _exhaustive;
+      }
+    }
+
+    return {
+      id: entity.id,
+      category: entity.category,
+      name: entity.name,
+      isActive: entity.isActive,
+      schema: entity.schema,
+      content: entity.content,
+      description: entity.description ?? null,
+      metadata,
+    };
+  }
+
+  private toResponseDto(entity: TemplatesEntity): TemplateWithBaseResponseDto {
+    return {
+      template: this.toDetailDto(entity),
+      baseTemplate: entity.baseTemplate
+        ? this.toDetailDto(entity.baseTemplate)
+        : null,
+    };
   }
 
   private identifierWhere(identifier: string) {
@@ -252,6 +331,9 @@ export class TemplatesService {
       dto.category === TemplateCategoriesEnum.EMAIL_INTERNAL ||
       dto.category === TemplateCategoriesEnum.EMAIL_EXTERNAL;
     const isDoc = dto.category === TemplateCategoriesEnum.DOCS;
+    const isSms =
+      dto.category === TemplateCategoriesEnum.SMS_INTERNAL ||
+      dto.category === TemplateCategoriesEnum.SMS_EXTERNAL;
 
     if (isBase) {
       if (dto.baseTemplateId) {
@@ -259,9 +341,9 @@ export class TemplatesService {
           'BASE templates must not have baseTemplateId',
         );
       }
-      if (dto.email || dto.doc) {
+      if (dto.email || dto.doc || dto.sms) {
         throw new TemplateInvalidShapeError(
-          'BASE templates must not include email or doc fields',
+          'BASE templates must not include email, doc, or sms fields',
         );
       }
       return;
@@ -279,9 +361,9 @@ export class TemplatesService {
           `${dto.category} templates require the email block`,
         );
       }
-      if (dto.doc) {
+      if (dto.doc || dto.sms) {
         throw new TemplateInvalidShapeError(
-          `${dto.category} templates must not include the doc block`,
+          `${dto.category} templates must not include the doc or sms block`,
         );
       }
     }
@@ -292,9 +374,22 @@ export class TemplatesService {
           'DOCS templates require the doc block',
         );
       }
-      if (dto.email) {
+      if (dto.email || dto.sms) {
         throw new TemplateInvalidShapeError(
-          'DOCS templates must not include the email block',
+          'DOCS templates must not include the email or sms block',
+        );
+      }
+    }
+
+    if (isSms) {
+      if (!dto.sms) {
+        throw new TemplateInvalidShapeError(
+          `${dto.category} templates require the sms block`,
+        );
+      }
+      if (dto.email || dto.doc) {
+        throw new TemplateInvalidShapeError(
+          `${dto.category} templates must not include the email or doc block`,
         );
       }
     }
@@ -330,32 +425,53 @@ export class TemplatesService {
         ...dto.doc!,
       });
       await manager.save(TemplateDocEntity, child);
+      return;
+    }
+    if (
+      dto.category === TemplateCategoriesEnum.SMS_INTERNAL ||
+      dto.category === TemplateCategoriesEnum.SMS_EXTERNAL
+    ) {
+      const child = manager.create(TemplateComSmsEntity, {
+        id,
+        ...dto.sms!,
+      });
+      await manager.save(TemplateComSmsEntity, child);
     }
   }
 
   private async upsertChildOnUpdate(
     manager: EntityManager,
-    existing: TemplatesEntity,
+    id: string,
+    category: TemplateCategoriesEnum,
     dto: UpdateTemplatePayloadDto,
   ): Promise<void> {
-    const cat = existing.category;
     if (
-      cat === TemplateCategoriesEnum.EMAIL_INTERNAL ||
-      cat === TemplateCategoriesEnum.EMAIL_EXTERNAL
+      category === TemplateCategoriesEnum.EMAIL_INTERNAL ||
+      category === TemplateCategoriesEnum.EMAIL_EXTERNAL
     ) {
       if (!dto.email) return;
       await manager.save(TemplateComEmailEntity, {
-        id: existing.id,
+        id,
         ...dto.email,
       });
       return;
     }
-    if (cat === TemplateCategoriesEnum.DOCS) {
+    if (category === TemplateCategoriesEnum.DOCS) {
       if (!dto.doc) return;
       await manager.save(TemplateDocEntity, {
-        id: existing.id,
+        id,
         ...dto.doc,
       });
+      return;
+    }
+    if (
+      category === TemplateCategoriesEnum.SMS_INTERNAL ||
+      category === TemplateCategoriesEnum.SMS_EXTERNAL
+    ) {
+      if (!dto.sms) return;
+      // upsert avoids the SELECT+INSERT race when two concurrent updates arrive
+      // with no pre-existing child row
+      await manager.upsert(TemplateComSmsEntity, { id, ...dto.sms }, ['id']);
     }
   }
 }

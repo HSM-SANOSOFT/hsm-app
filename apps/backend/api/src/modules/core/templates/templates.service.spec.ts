@@ -6,11 +6,18 @@ import {
   TemplateInvalidShapeError,
   TemplateNotFoundError,
 } from '@hsm/common/errors';
-import { TemplatesEntity } from '@hsm/database/entities/modules/core/template';
+import {
+  TemplateComEmailEntity,
+  TemplateComSmsEntity,
+  TemplateDocEntity,
+  TemplatesEntity,
+} from '@hsm/database/entities/modules/core/template';
 import { DatabasesEnum } from '@hsm/database/sources';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getDataSourceToken, getRepositoryToken } from '@nestjs/typeorm';
 import { TemplatesService } from './templates.service';
+
+const BASE_UUID = '11111111-1111-1111-1111-111111111111';
 
 describe('TemplatesService', () => {
   let service: TemplatesService;
@@ -18,6 +25,7 @@ describe('TemplatesService', () => {
   let managerSave: jest.Mock;
   let managerUpdate: jest.Mock;
   let managerDelete: jest.Mock;
+  let managerCreate: jest.Mock;
   let dataSource: {
     transaction: (cb: (mgr: unknown) => Promise<unknown>) => Promise<unknown>;
   };
@@ -30,8 +38,9 @@ describe('TemplatesService', () => {
     managerSave = jest.fn(async (_entity, value) => value);
     managerUpdate = jest.fn().mockResolvedValue({ affected: 1 });
     managerDelete = jest.fn().mockResolvedValue({ affected: 1 });
+    managerCreate = jest.fn((_entity, value) => value);
     const manager = {
-      create: <T>(_entity: unknown, value: T) => value,
+      create: managerCreate,
       save: managerSave,
       update: managerUpdate,
       delete: managerDelete,
@@ -60,6 +69,8 @@ describe('TemplatesService', () => {
     service = module.get<TemplatesService>(TemplatesService);
   });
 
+  // ─── findByIdentifier ────────────────────────────────────────────────────────
+
   describe('findByIdentifier', () => {
     it('throws TemplateNotFoundError when missing', async () => {
       templatesRepo.findOne.mockResolvedValue(null);
@@ -68,12 +79,144 @@ describe('TemplatesService', () => {
       );
     });
 
-    it('returns the template when found', async () => {
-      const t = { id: 'id-1', name: 'a' };
-      templatesRepo.findOne.mockResolvedValue(t);
-      await expect(service.findByIdentifier('a')).resolves.toBe(t);
+    it('returns {template, baseTemplate:null} for a BASE template', async () => {
+      const entity = {
+        id: 'id-1',
+        name: 'a',
+        category: TemplateCategoriesEnum.BASE,
+        isActive: true,
+        schema: {},
+        content: '<html>{{{body}}}</html>',
+        description: null,
+        baseTemplate: null,
+      };
+      templatesRepo.findOne.mockResolvedValue(entity);
+      const result = await service.findByIdentifier('a');
+      expect(result.template.id).toBe('id-1');
+      expect(result.template.metadata).toBeNull();
+      expect(result.baseTemplate).toBeNull();
+    });
+
+    it('returns email metadata for EMAIL_INTERNAL template', async () => {
+      const entity = {
+        id: 'id-2',
+        name: 'email-tmpl',
+        category: TemplateCategoriesEnum.EMAIL_INTERNAL,
+        isActive: true,
+        schema: { patientName: 'string' },
+        content: '<p>{{patientName}}</p>',
+        description: null,
+        comEmail: {
+          subject: 'Hello',
+          fromEmail: 'a@b.com',
+          fromName: 'HSM',
+          cc: null,
+          bcc: null,
+          hasAttachment: false,
+        },
+        baseTemplate: {
+          id: 'base-1',
+          name: 'layout',
+          category: TemplateCategoriesEnum.BASE,
+          isActive: true,
+          schema: { body: 'string' },
+          content: '<html>{{{body}}}</html>',
+          description: null,
+          baseTemplate: null,
+        },
+      };
+      templatesRepo.findOne.mockResolvedValue(entity);
+      const result = await service.findByIdentifier('email-tmpl', {
+        withChildren: true,
+        withBase: true,
+      });
+      expect(result.template.metadata).toMatchObject({
+        subject: 'Hello',
+        fromEmail: 'a@b.com',
+        fromName: 'HSM',
+        hasAttachment: false,
+      });
+      expect(result.baseTemplate?.id).toBe('base-1');
+      expect(result.baseTemplate?.metadata).toBeNull();
+    });
+
+    it('returns doc metadata for DOCS template', async () => {
+      const entity = {
+        id: 'id-3',
+        name: 'doc-tmpl',
+        category: TemplateCategoriesEnum.DOCS,
+        isActive: true,
+        schema: {},
+        content: '<p>doc</p>',
+        description: null,
+        doc: {
+          documentCode: 'SOME_CODE',
+          format: 'PDF',
+          size: 'A4',
+          orientation: 'PORTRAIT',
+        },
+        baseTemplate: {
+          id: 'base-1',
+          name: 'layout',
+          category: TemplateCategoriesEnum.BASE,
+          isActive: true,
+          schema: {},
+          content: '{{{body}}}',
+          description: null,
+          baseTemplate: null,
+        },
+      };
+      templatesRepo.findOne.mockResolvedValue(entity);
+      const result = await service.findByIdentifier('doc-tmpl', {
+        withChildren: true,
+        withBase: true,
+      });
+      expect(result.template.metadata).toMatchObject({
+        documentCode: 'SOME_CODE',
+        format: 'PDF',
+      });
+    });
+
+    it('returns SMS metadata for SMS_INTERNAL template', async () => {
+      const entity = {
+        id: 'id-4',
+        name: 'sms-tmpl',
+        category: TemplateCategoriesEnum.SMS_INTERNAL,
+        isActive: true,
+        schema: { patientName: 'string' },
+        content: 'Hello {{patientName}}',
+        description: null,
+        comSms: {
+          provider: 'twilio',
+          templateName: 'appt_reminder',
+          from: '+15005550006',
+        },
+        baseTemplate: {
+          id: 'base-1',
+          name: 'layout',
+          category: TemplateCategoriesEnum.BASE,
+          isActive: true,
+          schema: {},
+          content: '{{{body}}}',
+          description: null,
+          baseTemplate: null,
+        },
+      };
+      templatesRepo.findOne.mockResolvedValue(entity);
+      const result = await service.findByIdentifier('sms-tmpl', {
+        withChildren: true,
+        withBase: true,
+      });
+      expect(result.template.metadata).toMatchObject({
+        provider: 'twilio',
+        templateName: 'appt_reminder',
+        from: '+15005550006',
+      });
+      expect(result.baseTemplate?.metadata).toBeNull();
     });
   });
+
+  // ─── create ──────────────────────────────────────────────────────────────────
 
   describe('create', () => {
     const baseDto = {
@@ -104,7 +247,7 @@ describe('TemplatesService', () => {
           name: 'x',
           schema: {},
           content: '<p>{{a}}</p>',
-          baseTemplateId: '11111111-1111-1111-1111-111111111111',
+          baseTemplateId: BASE_UUID,
         }),
       ).rejects.toBeInstanceOf(TemplateInvalidShapeError);
     });
@@ -113,23 +256,164 @@ describe('TemplatesService', () => {
       await expect(
         service.create({
           ...baseDto,
-          baseTemplateId: '11111111-1111-1111-1111-111111111111',
+          baseTemplateId: BASE_UUID,
         }),
       ).rejects.toBeInstanceOf(TemplateInvalidShapeError);
     });
 
-    it('happy path: BASE template', async () => {
-      templatesRepo.findOne.mockResolvedValueOnce(null).mockResolvedValueOnce({
+    it('rejects BASE with sms block', async () => {
+      await expect(
+        service.create({
+          ...baseDto,
+          sms: { provider: 'twilio', templateName: 'x', from: '+1' },
+        } as Parameters<typeof service.create>[0]),
+      ).rejects.toBeInstanceOf(TemplateInvalidShapeError);
+    });
+
+    it('rejects SMS_INTERNAL without sms block', async () => {
+      await expect(
+        service.create({
+          category: TemplateCategoriesEnum.SMS_INTERNAL,
+          name: 'sms-x',
+          schema: {},
+          content: 'Hello {{name}}',
+          baseTemplateId: BASE_UUID,
+        }),
+      ).rejects.toBeInstanceOf(TemplateInvalidShapeError);
+    });
+
+    it('rejects SMS_INTERNAL without baseTemplateId', async () => {
+      await expect(
+        service.create({
+          category: TemplateCategoriesEnum.SMS_INTERNAL,
+          name: 'sms-x',
+          schema: {},
+          content: 'Hello {{name}}',
+          sms: { provider: 'twilio', templateName: 'x', from: '+1' },
+        } as Parameters<typeof service.create>[0]),
+      ).rejects.toBeInstanceOf(TemplateInvalidShapeError);
+    });
+
+    it('happy path: BASE template returns {template:{metadata:null}, baseTemplate:null}', async () => {
+      const savedEntity = {
         id: 'id-1',
-        name: baseDto.name,
+        ...baseDto,
         category: TemplateCategoriesEnum.BASE,
-      });
-      managerSave.mockResolvedValueOnce({ id: 'id-1', ...baseDto });
+        isActive: true,
+        description: null,
+        baseTemplate: null,
+      };
+      // findOne: no duplicate, then findByIdentifier reload
+      templatesRepo.findOne
+        .mockResolvedValueOnce(null)   // name uniqueness check
+        .mockResolvedValueOnce(savedEntity); // findByIdentifier reload
+      managerSave.mockResolvedValueOnce({ id: 'id-1' });
+
       const out = await service.create(baseDto);
-      expect(out).toMatchObject({ id: 'id-1' });
+      expect(out.template.id).toBe('id-1');
+      expect(out.template.metadata).toBeNull();
+      expect(out.baseTemplate).toBeNull();
       expect(dataSource.transaction).toHaveBeenCalled();
     });
+
+    it('happy path: EMAIL_INTERNAL returns email metadata and baseTemplate', async () => {
+      const baseEntity = {
+        id: BASE_UUID,
+        category: TemplateCategoriesEnum.BASE,
+        name: 'layout',
+        isActive: true,
+        schema: { body: 'string' },
+        content: '{{{body}}}',
+        description: null,
+        baseTemplate: null,
+      };
+      const savedEntity = {
+        id: 'id-email',
+        category: TemplateCategoriesEnum.EMAIL_INTERNAL,
+        name: 'email-x',
+        isActive: true,
+        schema: { patientName: 'string' },
+        content: '<p>{{patientName}}</p>',
+        description: null,
+        comEmail: {
+          subject: 'Hello',
+          fromEmail: 'a@b.com',
+          fromName: 'HSM',
+          cc: null,
+          bcc: null,
+          hasAttachment: false,
+        },
+        baseTemplate: baseEntity,
+      };
+      // findOne: base existence check, name uniqueness, reload
+      templatesRepo.findOne
+        .mockResolvedValueOnce(baseEntity)  // baseTemplateId check
+        .mockResolvedValueOnce(null)        // name uniqueness
+        .mockResolvedValueOnce(savedEntity); // reload
+      managerSave.mockResolvedValueOnce({ id: 'id-email' });
+
+      const out = await service.create({
+        category: TemplateCategoriesEnum.EMAIL_INTERNAL,
+        name: 'email-x',
+        schema: { patientName: 'string' },
+        content: '<p>{{patientName}}</p>',
+        baseTemplateId: BASE_UUID,
+        email: { subject: 'Hello', fromEmail: 'a@b.com', fromName: 'HSM' },
+      });
+      expect(out.template.id).toBe('id-email');
+      expect(out.template.metadata).toMatchObject({
+        subject: 'Hello',
+        fromEmail: 'a@b.com',
+      });
+      expect(out.baseTemplate?.id).toBe(BASE_UUID);
+    });
+
+    it('happy path: SMS_INTERNAL returns SMS metadata and baseTemplate', async () => {
+      const baseEntity = {
+        id: BASE_UUID,
+        category: TemplateCategoriesEnum.BASE,
+        name: 'layout',
+        isActive: true,
+        schema: {},
+        content: '{{{body}}}',
+        description: null,
+        baseTemplate: null,
+      };
+      const savedEntity = {
+        id: 'id-sms',
+        category: TemplateCategoriesEnum.SMS_INTERNAL,
+        name: 'sms-x',
+        isActive: true,
+        schema: { patientName: 'string' },
+        content: 'Hi {{patientName}}',
+        description: null,
+        comSms: { provider: 'twilio', templateName: 'appt', from: '+1' },
+        baseTemplate: baseEntity,
+      };
+      templatesRepo.findOne
+        .mockResolvedValueOnce(baseEntity)  // baseTemplateId check
+        .mockResolvedValueOnce(null)        // name uniqueness
+        .mockResolvedValueOnce(savedEntity); // reload
+      managerSave.mockResolvedValueOnce({ id: 'id-sms' });
+
+      const out = await service.create({
+        category: TemplateCategoriesEnum.SMS_INTERNAL,
+        name: 'sms-x',
+        schema: { patientName: 'string' },
+        content: 'Hi {{patientName}}',
+        baseTemplateId: BASE_UUID,
+        sms: { provider: 'twilio', templateName: 'appt', from: '+1' },
+      } as Parameters<typeof service.create>[0]);
+      expect(out.template.id).toBe('id-sms');
+      expect(out.template.metadata).toMatchObject({
+        provider: 'twilio',
+        from: '+1',
+      });
+      expect(out.baseTemplate?.id).toBe(BASE_UUID);
+    });
   });
+
+  // ─── delete ──────────────────────────────────────────────────────────────────
 
   describe('delete', () => {
     it('blocks when referenced as base', async () => {
@@ -150,7 +434,7 @@ describe('TemplatesService', () => {
       );
     });
 
-    it('hard-deletes when no references', async () => {
+    it('hard-deletes a BASE template', async () => {
       templatesRepo.findOne.mockResolvedValue({
         id: 'id-1',
         category: TemplateCategoriesEnum.BASE,
@@ -161,19 +445,147 @@ describe('TemplatesService', () => {
         id: 'id-1',
       });
     });
+
+    it('deletes TemplateComEmailEntity child for EMAIL_INTERNAL', async () => {
+      templatesRepo.findOne.mockResolvedValue({
+        id: 'id-email',
+        category: TemplateCategoriesEnum.EMAIL_INTERNAL,
+      });
+      templatesRepo.count.mockResolvedValue(0);
+      await service.delete('id-email');
+      expect(managerDelete).toHaveBeenCalledWith(TemplateComEmailEntity, {
+        id: 'id-email',
+      });
+      expect(managerDelete).toHaveBeenCalledWith(TemplatesEntity, {
+        id: 'id-email',
+      });
+    });
+
+    it('deletes TemplateDocEntity child for DOCS', async () => {
+      templatesRepo.findOne.mockResolvedValue({
+        id: 'id-doc',
+        category: TemplateCategoriesEnum.DOCS,
+      });
+      templatesRepo.count.mockResolvedValue(0);
+      await service.delete('id-doc');
+      expect(managerDelete).toHaveBeenCalledWith(TemplateDocEntity, {
+        id: 'id-doc',
+      });
+    });
+
+    it('deletes TemplateComSmsEntity child for SMS_INTERNAL', async () => {
+      templatesRepo.findOne.mockResolvedValue({
+        id: 'id-sms',
+        category: TemplateCategoriesEnum.SMS_INTERNAL,
+      });
+      templatesRepo.count.mockResolvedValue(0);
+      await service.delete('id-sms');
+      expect(managerDelete).toHaveBeenCalledWith(TemplateComSmsEntity, {
+        id: 'id-sms',
+      });
+      expect(managerDelete).toHaveBeenCalledWith(TemplatesEntity, {
+        id: 'id-sms',
+      });
+    });
+
+    it('deletes TemplateComSmsEntity child for SMS_EXTERNAL', async () => {
+      templatesRepo.findOne.mockResolvedValue({
+        id: 'id-sms-ext',
+        category: TemplateCategoriesEnum.SMS_EXTERNAL,
+      });
+      templatesRepo.count.mockResolvedValue(0);
+      await service.delete('id-sms-ext');
+      expect(managerDelete).toHaveBeenCalledWith(TemplateComSmsEntity, {
+        id: 'id-sms-ext',
+      });
+    });
   });
 
+  // ─── update ──────────────────────────────────────────────────────────────────
+
+  describe('update', () => {
+    const existingEntity = {
+      id: 'id-1',
+      category: TemplateCategoriesEnum.EMAIL_INTERNAL,
+      name: 'existing',
+      isActive: true,
+      schema: { patientName: 'string' },
+      content: '<p>{{patientName}}</p>',
+      description: null,
+      comEmail: {
+        subject: 'Old',
+        fromEmail: 'a@b.com',
+        fromName: 'HSM',
+        cc: null,
+        bcc: null,
+        hasAttachment: false,
+      },
+      baseTemplate: {
+        id: BASE_UUID,
+        category: TemplateCategoriesEnum.BASE,
+        name: 'layout',
+        isActive: true,
+        schema: {},
+        content: '{{{body}}}',
+        description: null,
+        baseTemplate: null,
+      },
+    };
+
+    it('happy path: returns updated {template, baseTemplate}', async () => {
+      const updatedEntity = {
+        ...existingEntity,
+        description: 'Updated',
+        comEmail: { ...existingEntity.comEmail, subject: 'New Subject' },
+      };
+      // findByIdentifier (existing load) + reload after update
+      templatesRepo.findOne
+        .mockResolvedValueOnce(existingEntity) // initial findByIdentifier
+        .mockResolvedValueOnce(updatedEntity); // final reload
+      managerUpdate.mockResolvedValueOnce({ affected: 1 });
+
+      const out = await service.update('id-1', { description: 'Updated' });
+      expect(out.template.id).toBe('id-1');
+      expect(out.template.metadata).toMatchObject({ subject: 'New Subject' });
+      expect(out.baseTemplate?.id).toBe(BASE_UUID);
+    });
+
+    it('rejects category mutation', async () => {
+      templatesRepo.findOne.mockResolvedValueOnce(existingEntity);
+      await expect(
+        service.update('id-1', {
+          category: TemplateCategoriesEnum.DOCS,
+        }),
+      ).rejects.toBeInstanceOf(TemplateInvalidShapeError);
+    });
+
+    it('rejects duplicate name', async () => {
+      const clash = { id: 'other', name: 'taken' };
+      templatesRepo.findOne
+        .mockResolvedValueOnce(existingEntity)
+        .mockResolvedValueOnce(clash); // name clash check
+      await expect(
+        service.update('id-1', { name: 'taken' }),
+      ).rejects.toBeInstanceOf(TemplateAlreadyExistsError);
+    });
+  });
+
+  // ─── validate ────────────────────────────────────────────────────────────────
+
   describe('validate', () => {
-    const template = {
+    const templateEntity = {
       id: 'tmpl-1',
       name: 'welcome',
       schema: { userName: 'string' },
       content: '<p>Hello {{userName}}</p>',
       category: TemplateCategoriesEnum.EMAIL_EXTERNAL,
-    } as unknown as TemplatesEntity;
+      isActive: true,
+      description: null,
+      baseTemplate: null,
+    };
 
-    it('returns valid:true when template exists, data matches schema, content compiles', async () => {
-      templatesRepo.findOne.mockResolvedValue(template);
+    it('returns valid:true and templateId when schema and content are valid', async () => {
+      templatesRepo.findOne.mockResolvedValue(templateEntity);
       const result = await service.validate({
         identifier: 'welcome',
         data: { userName: 'Ada' },
@@ -189,7 +601,7 @@ describe('TemplatesService', () => {
     });
 
     it('returns valid:false with issues when data fails schema validation', async () => {
-      templatesRepo.findOne.mockResolvedValue(template);
+      templatesRepo.findOne.mockResolvedValue(templateEntity);
       const result = await service.validate({
         identifier: 'welcome',
         data: {},
@@ -201,7 +613,7 @@ describe('TemplatesService', () => {
 
     it('returns valid:false with content issue when template has malformed Handlebars', async () => {
       templatesRepo.findOne.mockResolvedValue({
-        ...template,
+        ...templateEntity,
         schema: {},
         content: '{{#if x}}',
       });
@@ -214,13 +626,11 @@ describe('TemplatesService', () => {
     });
 
     it('does NOT write to parseLogs', async () => {
-      templatesRepo.findOne.mockResolvedValue(template);
+      templatesRepo.findOne.mockResolvedValue(templateEntity);
       await service.validate({
         identifier: 'welcome',
         data: { userName: 'X' },
       });
-      // No parseLogs repo injected — build-level proof. Verify no DB side-effects
-      // by confirming only templatesRepo.findOne was called.
       expect(templatesRepo.findOne).toHaveBeenCalledTimes(1);
     });
   });

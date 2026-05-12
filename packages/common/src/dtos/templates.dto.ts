@@ -111,6 +111,76 @@ export class DocTemplateFieldsDto {
   orientation: DocumentOrientationsEnum;
 }
 
+@ApiSchema({ name: 'SMS Template Fields' })
+export class SmsTemplateFieldsDto {
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({ description: 'Proveedor SMS', example: 'twilio' })
+  provider: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({
+    description: 'Nombre de la plantilla en el proveedor',
+    example: 'appt_reminder',
+  })
+  templateName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({
+    description: 'Número o identificador de origen',
+    example: '+15005550006',
+  })
+  from: string;
+}
+
+@ApiSchema({ name: 'Template Detail' })
+export class TemplateDetailDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty({ enum: TemplateCategoriesEnum })
+  category: TemplateCategoriesEnum;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  isActive: boolean;
+
+  @ApiProperty({ type: Object })
+  schema: object;
+
+  @ApiProperty()
+  content: string;
+
+  @ApiProperty({ required: false, nullable: true })
+  description?: string | null;
+
+  @ApiProperty({
+    required: false,
+    nullable: true,
+    description:
+      'Datos específicos del canal (email, doc, sms). Null para plantillas BASE.',
+    oneOf: [
+      { $ref: '#/components/schemas/Email Template Fields' },
+      { $ref: '#/components/schemas/Doc Template Fields' },
+      { $ref: '#/components/schemas/SMS Template Fields' },
+    ],
+  })
+  metadata: EmailTemplateFieldsDto | DocTemplateFieldsDto | SmsTemplateFieldsDto | null;
+}
+
+@ApiSchema({ name: 'Template With Base Response' })
+export class TemplateWithBaseResponseDto {
+  @ApiProperty({ type: () => TemplateDetailDto })
+  template: TemplateDetailDto;
+
+  @ApiProperty({ type: () => TemplateDetailDto, nullable: true })
+  baseTemplate: TemplateDetailDto | null;
+}
+
 @ApiSchema({ name: 'Create Template Payload' })
 export class CreateTemplatePayloadDto {
   @IsNotEmpty()
@@ -191,6 +261,21 @@ export class CreateTemplatePayloadDto {
     description: 'Requerido para categoría DOCS',
   })
   doc?: DocTemplateFieldsDto;
+
+  @ValidateIf(
+    o =>
+      o.category === TemplateCategoriesEnum.SMS_INTERNAL ||
+      o.category === TemplateCategoriesEnum.SMS_EXTERNAL,
+  )
+  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => SmsTemplateFieldsDto)
+  @ApiProperty({
+    required: false,
+    type: () => SmsTemplateFieldsDto,
+    description: 'Requerido para categorías SMS_*',
+  })
+  sms?: SmsTemplateFieldsDto;
 }
 
 @ApiSchema({ name: 'Update Template Payload' })
@@ -223,39 +308,6 @@ export class ParseTemplateResponseDto {
 
   @ApiProperty({ description: 'UUID de la plantilla usada' })
   templateId: string;
-}
-
-@ApiSchema({ name: 'Template Response' })
-export class TemplateResponseDto {
-  @ApiProperty()
-  id: string;
-
-  @ApiProperty({ enum: TemplateCategoriesEnum })
-  category: TemplateCategoriesEnum;
-
-  @ApiProperty()
-  name: string;
-
-  @ApiProperty()
-  isActive: boolean;
-
-  @ApiProperty({ type: Object })
-  schema: object;
-
-  @ApiProperty()
-  content: string;
-
-  @ApiProperty({ required: false, nullable: true })
-  description?: string | null;
-
-  @ApiProperty({ required: false, nullable: true })
-  baseTemplateId?: string | null;
-
-  @ApiProperty({ required: false, type: () => EmailTemplateFieldsDto })
-  email?: EmailTemplateFieldsDto;
-
-  @ApiProperty({ required: false, type: () => DocTemplateFieldsDto })
-  doc?: DocTemplateFieldsDto;
 }
 
 @ApiSchema({ name: 'Validate Template Response' })
