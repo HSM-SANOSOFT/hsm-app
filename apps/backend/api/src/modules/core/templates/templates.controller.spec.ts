@@ -3,6 +3,39 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TemplatesController } from './templates.controller';
 import { TemplatesService } from './templates.service';
 
+const baseTemplateFixture = {
+  template: {
+    id: 'id-1',
+    category: TemplateCategoriesEnum.BASE,
+    name: 'base_layout',
+    isActive: true,
+    schema: { body: 'string' },
+    content: '<html>{{{body}}}</html>',
+    description: null,
+    metadata: null,
+  },
+  baseTemplate: null,
+};
+
+const emailTemplateFixture = {
+  template: {
+    id: 'id-2',
+    category: TemplateCategoriesEnum.EMAIL_INTERNAL,
+    name: 'appt_confirm',
+    isActive: true,
+    schema: { patientName: 'string' },
+    content: '<p>{{patientName}}</p>',
+    description: null,
+    metadata: {
+      subject: 'Confirmed',
+      fromEmail: 'no-reply@hsm.org',
+      fromName: 'HSM',
+      hasAttachment: false,
+    },
+  },
+  baseTemplate: baseTemplateFixture.template,
+};
+
 describe('TemplatesController', () => {
   let controller: TemplatesController;
   let service: jest.Mocked<TemplatesService>;
@@ -32,6 +65,13 @@ describe('TemplatesController', () => {
     });
   });
 
+  it('GET returns {template, baseTemplate} shape from service', async () => {
+    service.findByIdentifier.mockResolvedValue(baseTemplateFixture);
+    const result = await controller.getTemplate({ identifier: 'base_layout' });
+    expect(result.template.id).toBe('id-1');
+    expect(result.baseTemplate).toBeNull();
+  });
+
   it('POST forwards body to create', () => {
     const dto = {
       category: TemplateCategoriesEnum.BASE,
@@ -43,6 +83,22 @@ describe('TemplatesController', () => {
     expect(service.create).toHaveBeenCalledWith(dto);
   });
 
+  it('POST returns {template, baseTemplate} shape from service', async () => {
+    service.create.mockResolvedValue(emailTemplateFixture);
+    const dto = {
+      category: TemplateCategoriesEnum.EMAIL_INTERNAL,
+      name: 'appt_confirm',
+      schema: { patientName: 'string' },
+      content: '<p>{{patientName}}</p>',
+      baseTemplateId: 'id-1',
+      email: { subject: 'Confirmed', fromEmail: 'no-reply@hsm.org', fromName: 'HSM' },
+    } as never;
+    const result = await controller.addTemplate(dto);
+    expect(result.template.id).toBe('id-2');
+    expect(result.baseTemplate?.id).toBe('id-1');
+    expect(result.template.metadata).toMatchObject({ subject: 'Confirmed' });
+  });
+
   it('PUT forwards id and body', () => {
     const dto = { name: 'b' } as never;
     controller.updateTemplate('11111111-1111-1111-1111-111111111111', dto);
@@ -50,6 +106,15 @@ describe('TemplatesController', () => {
       '11111111-1111-1111-1111-111111111111',
       dto,
     );
+  });
+
+  it('PUT returns {template, baseTemplate} shape from service', async () => {
+    service.update.mockResolvedValue(emailTemplateFixture);
+    const result = await controller.updateTemplate(
+      'id-2',
+      { name: 'renamed' } as never,
+    );
+    expect(result.template.id).toBe('id-2');
   });
 
   it('DELETE returns the id', async () => {
