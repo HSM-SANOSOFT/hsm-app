@@ -2,9 +2,9 @@ import {
   CreateTemplatePayloadDto,
   GetTemplateRequestDto,
   ParseTemplatePayloadDto,
-  TemplateResponseDto,
+  TemplateWithBaseResponseDto,
   UpdateTemplatePayloadDto,
-  ValidateTemplateResponseDto,
+  ValidateTemplateWithBaseResponseDto,
 } from '@hsm/common/dtos';
 import {
   Body,
@@ -25,7 +25,7 @@ import { TemplatesService } from './templates.service';
 export class TemplatesController {
   constructor(private readonly templatesService: TemplatesService) {}
 
-  @ApiDocumentation(TemplateResponseDto, {
+  @ApiDocumentation(TemplateWithBaseResponseDto, {
     additionalErrors: [HttpStatus.NOT_FOUND],
   })
   @Roles()
@@ -37,7 +37,7 @@ export class TemplatesController {
     });
   }
 
-  @ApiDocumentation(TemplateResponseDto, {
+  @ApiDocumentation(TemplateWithBaseResponseDto, {
     additionalErrors: [HttpStatus.NOT_FOUND],
   })
   @Roles()
@@ -46,7 +46,7 @@ export class TemplatesController {
     return this.templatesService.create(payload);
   }
 
-  @ApiDocumentation(TemplateResponseDto, {
+  @ApiDocumentation(TemplateWithBaseResponseDto, {
     additionalErrors: [HttpStatus.NOT_FOUND],
   })
   @Roles()
@@ -66,7 +66,7 @@ export class TemplatesController {
     return { id };
   }
 
-  @ApiDocumentation(ValidateTemplateResponseDto, {
+  @ApiDocumentation(ValidateTemplateWithBaseResponseDto, {
     additionalErrors: [HttpStatus.NOT_FOUND],
   })
   @Roles()
