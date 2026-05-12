@@ -1,9 +1,10 @@
 ### Get Template
+# Response shape: { data: { template: {..., metadata: {...}|null}, baseTemplate: {...}|null } }
 GET {{host}}/templates/123e4567-e89b-12d3-a456-426614174000
 content-Type: {{contentType}}
 Authorization: Bearer {{at_token}}
 
-### Create Template
+### Create EMAIL_EXTERNAL Template
 POST {{host}}/templates
 Content-Type: {{contentType}}
 Authorization: Bearer {{at_token}}
@@ -18,7 +19,52 @@ Authorization: Bearer {{at_token}}
     "appointmentDate": "string?"
   },
   "content": "<p>Hola [patientName]</p>",
-  "baseTemplateId": "123e4567-e89b-12d3-a456-426614174000"
+  "baseTemplateId": "123e4567-e89b-12d3-a456-426614174000",
+  "email": {
+    "subject": "Bienvenido a HSM",
+    "fromEmail": "no-reply@hsm.org",
+    "fromName": "HSM",
+    "hasAttachment": false
+  }
+}
+
+### Create SMS_INTERNAL Template
+POST {{host}}/templates
+Content-Type: {{contentType}}
+Authorization: Bearer {{at_token}}
+
+{
+  "category": "SMS_INTERNAL",
+  "name": "sms_welcome",
+  "description": "SMS de bienvenida",
+  "isActive": true,
+  "schema": {
+    "patientName": "string",
+    "appointmentDate": "string"
+  },
+  "content": "Hola [patientName], recordatorio: cita el [appointmentDate].",
+  "baseTemplateId": "123e4567-e89b-12d3-a456-426614174000",
+  "sms": {
+    "provider": "twilio",
+    "templateName": "welcome_sms",
+    "from": "+15005550006"
+  }
+}
+
+### Create BASE Template
+POST {{host}}/templates
+Content-Type: {{contentType}}
+Authorization: Bearer {{at_token}}
+
+{
+  "category": "BASE",
+  "name": "email_layout",
+  "description": "Base layout para emails",
+  "isActive": true,
+  "schema": {
+    "body": "string"
+  },
+  "content": "<!doctype html><html><body>[[[body]]]</body></html>"
 }
 
 ### Update Template
