@@ -270,7 +270,7 @@ describe('AuthService', () => {
         email: 'jdoe@test.com',
         firstName: 'John',
         firstLastName: 'Doe',
-        roles: [RolesEnum.System.Admin],
+        roles: [RolesEnum.Clinical.Nurse],
       } as never;
 
       const result = await service.signup(dto);
@@ -282,6 +282,18 @@ describe('AuthService', () => {
         access_token: 'signed-token',
         refresh_token: 'signed-token',
       });
+    });
+
+    it('rejects signup with developer role', async () => {
+      await expect(
+        service.signup({ roles: [RolesEnum.System.Developer] } as never),
+      ).rejects.toThrow('Cannot assign privileged roles via public signup');
+    });
+
+    it('rejects signup with admin role', async () => {
+      await expect(
+        service.signup({ roles: [RolesEnum.System.Admin] } as never),
+      ).rejects.toThrow('Cannot assign privileged roles via public signup');
     });
 
     it('rolls back transaction on error', async () => {
@@ -491,7 +503,7 @@ describe('AuthService', () => {
     });
 
     it('is a no-op when ENVIRONMENT is not dev', async () => {
-      (envs as { ENVIRONMENT: string }).ENVIRONMENT = 'test';
+      Object.assign(envs, { ENVIRONMENT: 'test' });
 
       await service.onModuleInit();
 
@@ -501,11 +513,11 @@ describe('AuthService', () => {
 
     describe('when ENVIRONMENT is dev', () => {
       beforeEach(() => {
-        (envs as { ENVIRONMENT: string }).ENVIRONMENT = 'dev';
+        Object.assign(envs, { ENVIRONMENT: 'dev' });
       });
 
       afterEach(() => {
-        (envs as { ENVIRONMENT: string }).ENVIRONMENT = 'test';
+        Object.assign(envs, { ENVIRONMENT: 'test' });
       });
 
       it('signs AT and RT with 30d expiry using dev payload', async () => {

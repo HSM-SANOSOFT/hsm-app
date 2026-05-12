@@ -9,6 +9,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Logger,
   Param,
   Post,
@@ -28,7 +29,7 @@ export class DocsController {
   private readonly logger = new Logger(DocsController.name);
   constructor(private readonly docsService: DocsService) {}
 
-  @ApiDocumentation()
+  @ApiDocumentation(undefined, { additionalErrors: [HttpStatus.NOT_FOUND] })
   @Roles()
   @Get(':id/url')
   async getDocumentUrl(@Param('id') id: string, @Req() req: Request) {
@@ -38,7 +39,7 @@ export class DocsController {
     );
   }
 
-  @ApiDocumentation()
+  @ApiDocumentation(undefined, { additionalErrors: [HttpStatus.NOT_FOUND] })
   @Roles()
   @Get(':id')
   async getDocument(@Param('id') id: string, @Req() req: Request) {
@@ -64,7 +65,7 @@ export class DocsController {
     );
   }
 
-  @ApiDocumentation()
+  @ApiDocumentation(undefined, { additionalErrors: [HttpStatus.NOT_FOUND] })
   @Roles()
   @Delete(':id')
   async deleteDocument(@Param('id') id: string, @Req() req: Request) {

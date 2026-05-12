@@ -1,9 +1,12 @@
+import { RolesEnum } from '@hsm/common/enums';
 import type { RolesType } from '@hsm/common/types';
 import { SetMetadata } from '@nestjs/common';
 
 export const ROLES_KEY = 'roles';
 
-type BranchEnum = Record<string, string>;
+// BranchEnum is constrained to the actual branches of RolesEnum so the
+// compiler rejects arbitrary Record<string,string> objects at call sites.
+type BranchEnum = (typeof RolesEnum)[keyof typeof RolesEnum];
 type RolesInput = RolesType | BranchEnum;
 
 export const Roles = (...rolesOrBranches: RolesInput[]) => {

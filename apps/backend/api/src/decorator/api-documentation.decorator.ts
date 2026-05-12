@@ -23,7 +23,7 @@ import { IS_PUBLIC_KEY } from './public.decorator';
 
 type ClassType = new (...args: unknown[]) => unknown;
 
-interface ApiDocumentationOptions {
+export interface ApiDocumentationOptions {
   additionalErrors?: HttpStatus[];
   hasPagination?: boolean;
   hasFilter?: boolean;

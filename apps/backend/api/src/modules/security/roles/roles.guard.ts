@@ -10,6 +10,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../../../decorator';
@@ -33,9 +34,25 @@ export class RolesGuard implements CanActivate {
       context.getClass(),
     ]);
 
+    // isPublic check must come before any user access. @Public() routes bypass
+    // AuthJwtAtGuard entirely, leaving req.user undefined — accessing it first
+    // throws a TypeError on every unauthenticated public endpoint.
+    if (isPublic) {
+      if (hasRequiredRoles) {
+        const message = 'Public route should not have roles defined';
+        this.logger.error(message);
+        throw new InternalServerErrorException({ message });
+      }
+      return true;
+    }
+
     const { user }: { user: ISignedUser | ISignedUserIntegration } = context
       .switchToHttp()
       .getRequest();
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
 
     if (user.roles.includes(RolesEnum.System.Developer)) {
       if (envs.ENVIRONMENT !== 'dev') {
@@ -48,14 +65,6 @@ export class RolesGuard implements CanActivate {
 
     const isAdmin = user.roles.includes(RolesEnum.System.Admin);
 
-    if (isPublic) {
-      if (hasRequiredRoles) {
-        const message = 'Public route should not have roles defined';
-        this.logger.error(message);
-        throw new InternalServerErrorException({ message });
-      }
-      return true;
-    }
     if (!hasRequiredRoles) {
       return true;
     }

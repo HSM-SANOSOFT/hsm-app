@@ -1,6 +1,37 @@
+### Get Document by ID
+GET {{host}}/docs/{{docId}}
+Authorization: Bearer {{at_token}}
+
+###
+
+### Get Document URL by ID
+GET {{host}}/docs/{{docId}}/url
+Authorization: Bearer {{at_token}}
+
+###
+
+### Delete Document by ID
+DELETE {{host}}/docs/{{docId}}
+Authorization: Bearer {{at_token}}
+
+###
+
+### Generate Document from Template
+POST {{host}}/docs/generate
+Content-Type: {{contentType}}
+Authorization: Bearer {{at_token}}
+
+{
+  "templateIdentifier": "example-template",
+  "data": {}
+}
+
+###
+
 ### Generate Presign Urls for Documents
 POST {{host}}/docs/url
 Content-Type: {{contentType}}
+Authorization: Bearer {{at_token}}
 
 [
   {
@@ -24,6 +55,7 @@ Content-Type: {{contentType}}
 
 ### Upload Documents
 POST {{host}}/docs/upload
+Authorization: Bearer {{at_token}}
 Content-Type: multipart/form-data; boundary=UploadBoundary
 
 --UploadBoundary

@@ -61,28 +61,34 @@ export class AuthService implements OnModuleInit {
   async onModuleInit(): Promise<void> {
     if (envs.ENVIRONMENT !== 'dev') return;
 
-    const payload = {
-      sub: 'dev',
-      username: 'dev',
-      email: 'dev@localhost',
-      firstName: 'Dev',
-      firstLastName: 'User',
-      roles: [RolesEnum.System.Developer],
-    };
+    try {
+      const payload = {
+        sub: 'dev',
+        username: 'dev',
+        email: 'dev@localhost',
+        firstName: 'Dev',
+        firstLastName: 'User',
+        roles: [RolesEnum.System.Developer],
+      };
 
-    const [at_token, rt_token] = await Promise.all([
-      this.jwtService.signAsync(payload, {
-        expiresIn: '30d',
-        secret: envs.JWT_AT_SECRET,
-      }),
-      this.jwtService.signAsync(payload, {
-        expiresIn: '30d',
-        secret: envs.JWT_RT_SECRET,
-      }),
-    ]);
+      const [at_token, rt_token] = await Promise.all([
+        this.jwtService.signAsync(payload, {
+          expiresIn: '30d',
+          secret: envs.JWT_AT_SECRET,
+        }),
+        this.jwtService.signAsync(payload, {
+          expiresIn: '30d',
+          secret: envs.JWT_RT_SECRET,
+        }),
+      ]);
 
-    this.logger.log(`DEV_AT=${at_token}`);
-    this.logger.log(`DEV_RT=${rt_token}`);
+      this.logger.log(`DEV_AT=${at_token}`);
+      this.logger.log(`DEV_RT=${rt_token}`);
+    } catch (error) {
+      this.logger.warn(
+        `Dev token generation failed — app startup continues: ${(error as Error).message}`,
+      );
+    }
   }
 
   /**
@@ -259,6 +265,15 @@ export class AuthService implements OnModuleInit {
    * @returns An object containing the generated access token and refresh token for the newly created user
    */
   async signup(newUser: SignupPayloadDto): Promise<ITokens> {
+    const privilegedRoles = [
+      RolesEnum.System.Developer,
+      RolesEnum.System.Admin,
+    ];
+    if (newUser.roles.some(role => privilegedRoles.includes(role as never))) {
+      throw new BadRequestException(
+        'Cannot assign privileged roles via public signup',
+      );
+    }
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
