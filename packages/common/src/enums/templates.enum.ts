@@ -3,6 +3,8 @@ export enum TemplateCategoriesEnum {
   EMAIL_INTERNAL = 'EMAIL_INTERNAL',
   EMAIL_EXTERNAL = 'EMAIL_EXTERNAL',
   DOCS = 'DOCS',
+  SMS_INTERNAL = 'SMS_INTERNAL',
+  SMS_EXTERNAL = 'SMS_EXTERNAL',
 }
 
 export enum TemplateParseTriggerEnum {
