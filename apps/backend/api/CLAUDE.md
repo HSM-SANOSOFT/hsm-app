@@ -90,17 +90,18 @@ Every controller has a co-located `.http` file (e.g. `auth.controller.ts` → `a
 - **New endpoint** → add a request block to that controller's `.http` file
 - **New controller** → create a co-located `.http` file at the same time, covering all endpoints
 
-**Shared environment variables** live in `.vscode/settings.json` under `rest-client.environmentVariables`. All `.http` files use `{{host}}`, `{{contentType}}`, and `{{token}}` — no per-file variable declarations.
+**Shared environment variables** live in `.vscode/settings.json` under `rest-client.environmentVariables`. All `.http` files use `{{host}}`, `{{contentType}}`, `{{at_token}}`, and `{{rt_token}}` — no per-file variable declarations.
 
 ```jsonc
 // .vscode/settings.json
 "rest-client.environmentVariables": {
-  "local": {
+  "dev": {
     "host": "http://127.0.0.1:3000/v1",   // container-internal port
     "contentType": "application/json",
-    "token": ""  // paste your JWT here after login
+    "at_token": "",  // printed to console as DEV_AT on app startup in dev
+    "rt_token": ""   // printed to console as DEV_RT on app startup in dev
   }
 }
 ```
 
-Select the active environment with `Ctrl+Alt+E` in VS Code. Update `token` once after `POST /auth/login` — all files pick it up automatically.
+Select the active environment with `Ctrl+Alt+E` in VS Code. On first start in dev, copy `DEV_AT` from the console into `at_token` and `DEV_RT` into `rt_token` — all `.http` files pick them up automatically. Do not commit token values to git.

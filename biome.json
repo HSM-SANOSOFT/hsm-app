@@ -157,9 +157,7 @@
   },
   "overrides": [
     {
-      "includes": [
-        "packages/database/src/sources/postgres/index.ts"
-      ],
+      "includes": ["packages/database/src/sources/postgres/index.ts"],
       "assist": {
         "actions": {
           "source": {

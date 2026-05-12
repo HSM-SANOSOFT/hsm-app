@@ -4,16 +4,20 @@ import { GenerationService } from './generation.service';
 const mockBrowserClose = jest.fn();
 const mockNewPage = jest.fn();
 
-function makeMockPage(pdfResult: Buffer | Error = Buffer.from('%PDF-1.4 fake')) {
+function makeMockPage(
+  pdfResult: Buffer | Error = Buffer.from('%PDF-1.4 fake'),
+) {
   return {
     setJavaScriptEnabled: jest.fn().mockResolvedValue(undefined),
     setContent: jest.fn().mockResolvedValue(undefined),
     emulateMediaType: jest.fn().mockResolvedValue(undefined),
-    pdf: jest.fn().mockImplementation(() =>
-      pdfResult instanceof Error
-        ? Promise.reject(pdfResult)
-        : Promise.resolve(pdfResult),
-    ),
+    pdf: jest
+      .fn()
+      .mockImplementation(() =>
+        pdfResult instanceof Error
+          ? Promise.reject(pdfResult)
+          : Promise.resolve(pdfResult),
+      ),
     close: jest.fn().mockResolvedValue(undefined),
   };
 }
@@ -66,7 +70,9 @@ describe('GenerationService', () => {
 
   describe('generatePDF', () => {
     it('returns a non-empty Buffer for valid HTML', async () => {
-      const result = await service.generatePDF('<html><body>test</body></html>');
+      const result = await service.generatePDF(
+        '<html><body>test</body></html>',
+      );
       expect(result).toBeInstanceOf(Buffer);
       expect(result.length).toBeGreaterThan(0);
     });

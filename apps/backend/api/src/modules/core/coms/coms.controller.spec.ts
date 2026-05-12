@@ -3,7 +3,9 @@ import { ComsController } from './coms.controller';
 import { ComsService } from './coms.service';
 
 const comsService = {
-  sendEmail: jest.fn().mockResolvedValue('sending email job queued with id job-123'),
+  sendEmail: jest
+    .fn()
+    .mockResolvedValue('sending email job queued with id job-123'),
   resendEmail: jest.fn().mockResolvedValue(undefined),
   sendSms: jest.fn().mockResolvedValue(undefined),
 };

@@ -125,7 +125,9 @@ describe('AuthController', () => {
     it('extracts token from payload and delegates', async () => {
       const payload = { token: 'integration-token' } as never;
       await controller.logoutIntegration(payload);
-      expect(authService.logoutIntegration).toHaveBeenCalledWith('integration-token');
+      expect(authService.logoutIntegration).toHaveBeenCalledWith(
+        'integration-token',
+      );
     });
   });
 
@@ -147,7 +149,11 @@ describe('AuthController', () => {
 
   describe('validatePin', () => {
     it('delegates payload to authService.validatePin', async () => {
-      const dto = { purpose: 'reset', target: 'jdoe@test.com', code: 123456 } as never;
+      const dto = {
+        purpose: 'reset',
+        target: 'jdoe@test.com',
+        code: 123456,
+      } as never;
       await controller.validatePin(dto);
       expect(authService.validatePin).toHaveBeenCalledWith(dto);
     });

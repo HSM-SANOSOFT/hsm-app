@@ -24,19 +24,19 @@ Content-Type: {{contentType}}
 
 ### Logout
 GET {{host}}/auth/logout
-Authorization: Bearer {{token}}
+Authorization: Bearer {{at_token}}
 
 ### Profile
 GET {{host}}/auth/profile
-Authorization: Bearer {{token}}
+Authorization: Bearer {{at_token}}
 
 ### Refresh
 GET {{host}}/auth/refresh
-Authorization: Bearer {{token}}
+Authorization: Bearer {{rt_token}}
 
 ### Signup Integration Token
 POST {{host}}/auth/signup/integration
-Authorization: Bearer {{token}}
+Authorization: Bearer {{at_token}}
 Content-Type: {{contentType}}
 
 {
@@ -47,7 +47,7 @@ Content-Type: {{contentType}}
 
 ### Logout Integration Token
 POST {{host}}/auth/logout/integration
-Authorization: Bearer {{token}}
+Authorization: Bearer {{at_token}}
 Content-Type: {{contentType}}
 
 {
@@ -57,7 +57,7 @@ Content-Type: {{contentType}}
 ### Generate PIN
 POST {{host}}/auth/pin/generate
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+Authorization: Bearer {{at_token}}
 
 {
   "purpose": "email_verification",
@@ -67,7 +67,7 @@ Authorization: Bearer {{token}}
 ### Validate PIN
 POST {{host}}/auth/pin/validate
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+Authorization: Bearer {{at_token}}
 
 {
   "purpose": "email_verification",

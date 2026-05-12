@@ -24,7 +24,7 @@ export class ExcelGenerationService {
 
     for (const sheet of definition.sheets) {
       const worksheet = workbook.addWorksheet(sheet.name);
-      worksheet.columns = sheet.columns.map((col) => ({
+      worksheet.columns = sheet.columns.map(col => ({
         header: col.header,
         key: col.key,
         width: col.width,

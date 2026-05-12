@@ -11,6 +11,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   ParseUUIDPipe,
   Post,
@@ -24,7 +25,9 @@ import { TemplatesService } from './templates.service';
 export class TemplatesController {
   constructor(private readonly templatesService: TemplatesService) {}
 
-  @ApiDocumentation(TemplateResponseDto)
+  @ApiDocumentation(TemplateResponseDto, {
+    additionalErrors: [HttpStatus.NOT_FOUND],
+  })
   @Roles()
   @Get(':identifier')
   getTemplate(@Param() params: GetTemplateRequestDto) {
@@ -34,14 +37,18 @@ export class TemplatesController {
     });
   }
 
-  @ApiDocumentation(TemplateResponseDto)
+  @ApiDocumentation(TemplateResponseDto, {
+    additionalErrors: [HttpStatus.NOT_FOUND],
+  })
   @Roles()
   @Post()
   addTemplate(@Body() payload: CreateTemplatePayloadDto) {
     return this.templatesService.create(payload);
   }
 
-  @ApiDocumentation(TemplateResponseDto)
+  @ApiDocumentation(TemplateResponseDto, {
+    additionalErrors: [HttpStatus.NOT_FOUND],
+  })
   @Roles()
   @Put(':id')
   updateTemplate(
@@ -51,7 +58,7 @@ export class TemplatesController {
     return this.templatesService.update(id, payload);
   }
 
-  @ApiDocumentation()
+  @ApiDocumentation(undefined, { additionalErrors: [HttpStatus.NOT_FOUND] })
   @Roles()
   @Delete(':id')
   async deleteTemplate(@Param('id', ParseUUIDPipe) id: string) {
@@ -59,7 +66,9 @@ export class TemplatesController {
     return { id };
   }
 
-  @ApiDocumentation(ValidateTemplateResponseDto)
+  @ApiDocumentation(ValidateTemplateResponseDto, {
+    additionalErrors: [HttpStatus.NOT_FOUND],
+  })
   @Roles()
   @Post('validate')
   validateTemplate(@Body() payload: ParseTemplatePayloadDto) {

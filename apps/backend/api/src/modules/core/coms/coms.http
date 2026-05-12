@@ -346,3 +346,15 @@ Content-Type: {{contentType}}
 ]
 
 }
+
+### Resend Email
+POST {{host}}/coms/resend/email
+Content-Type: {{contentType}}
+Authorization: Bearer {{at_token}}
+
+###
+
+### Send SMS
+POST {{host}}/coms/send/sms
+Content-Type: {{contentType}}
+Authorization: Bearer {{at_token}}
