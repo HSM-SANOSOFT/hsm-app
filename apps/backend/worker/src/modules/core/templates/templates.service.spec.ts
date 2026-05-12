@@ -268,4 +268,64 @@ describe('TemplatesService (worker)', () => {
       ).rejects.toBeInstanceOf(TemplateInvalidHandlebarsError);
     });
   });
+
+  describe('parseEmail', () => {
+    const emailTemplate = makeTemplate({
+      category: TemplateCategoriesEnum.EMAIL_INTERNAL,
+      content: '<p>Hello {{patientName}}</p>',
+      schema: { patientName: 'string' },
+      comEmail: {
+        id: 'tmpl-id-1',
+        subject: 'Hello {{patientName}}',
+        fromEmail: 'no-reply@hsm.org',
+        fromName: 'HSM',
+        cc: null,
+        bcc: null,
+        hasAttachment: false,
+      } as never,
+      baseTemplate: null,
+    });
+
+    it('returns subject, html and templateId for a valid email template', async () => {
+      // parseEmail calls findByIdentifier once, then calls parse() which calls findByIdentifier again
+      templatesRepo.findOne
+        .mockResolvedValueOnce(emailTemplate) // parseEmail's own findByIdentifier
+        .mockResolvedValueOnce({ ...emailTemplate, schema: { patientName: 'string' } }); // parse's findByIdentifier
+
+      const result = await service.parseEmail('welcome', { patientName: 'Ada' });
+      expect(result.subject).toBe('Hello Ada');
+      expect(result.html).toContain('Ada');
+      expect(result.templateId).toBe('tmpl-id-1');
+    });
+
+    it('throws TemplateInvalidHandlebarsError when template has no comEmail relation', async () => {
+      const nonEmailTemplate = makeTemplate({ comEmail: null });
+      templatesRepo.findOne.mockResolvedValue(nonEmailTemplate);
+
+      await expect(
+        service.parseEmail('welcome', {}),
+      ).rejects.toBeInstanceOf(TemplateInvalidHandlebarsError);
+    });
+
+    it('throws TemplateInvalidHandlebarsError when subject template has malformed Handlebars', async () => {
+      const badSubjectTemplate = makeTemplate({
+        category: TemplateCategoriesEnum.EMAIL_INTERNAL,
+        schema: {},
+        comEmail: {
+          id: 'tmpl-id-1',
+          subject: '{{#if x}}',
+          fromEmail: 'a@b.com',
+          fromName: 'HSM',
+          cc: null,
+          bcc: null,
+          hasAttachment: false,
+        } as never,
+      });
+      templatesRepo.findOne.mockResolvedValue(badSubjectTemplate);
+
+      await expect(
+        service.parseEmail('welcome', {}),
+      ).rejects.toBeInstanceOf(TemplateInvalidHandlebarsError);
+    });
+  });
 });

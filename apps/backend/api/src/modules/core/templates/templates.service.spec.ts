@@ -315,6 +315,102 @@ describe('TemplatesService', () => {
       expect(out.baseTemplate).toBeNull();
       expect(dataSource.transaction).toHaveBeenCalled();
     });
+
+    it('happy path: EMAIL_INTERNAL returns email metadata and baseTemplate', async () => {
+      const baseEntity = {
+        id: BASE_UUID,
+        category: TemplateCategoriesEnum.BASE,
+        name: 'layout',
+        isActive: true,
+        schema: { body: 'string' },
+        content: '{{{body}}}',
+        description: null,
+        baseTemplate: null,
+      };
+      const savedEntity = {
+        id: 'id-email',
+        category: TemplateCategoriesEnum.EMAIL_INTERNAL,
+        name: 'email-x',
+        isActive: true,
+        schema: { patientName: 'string' },
+        content: '<p>{{patientName}}</p>',
+        description: null,
+        comEmail: {
+          subject: 'Hello',
+          fromEmail: 'a@b.com',
+          fromName: 'HSM',
+          cc: null,
+          bcc: null,
+          hasAttachment: false,
+        },
+        baseTemplate: baseEntity,
+      };
+      // findOne: base existence check, name uniqueness, reload
+      templatesRepo.findOne
+        .mockResolvedValueOnce(baseEntity)  // baseTemplateId check
+        .mockResolvedValueOnce(null)        // name uniqueness
+        .mockResolvedValueOnce(savedEntity); // reload
+      managerSave.mockResolvedValueOnce({ id: 'id-email' });
+
+      const out = await service.create({
+        category: TemplateCategoriesEnum.EMAIL_INTERNAL,
+        name: 'email-x',
+        schema: { patientName: 'string' },
+        content: '<p>{{patientName}}</p>',
+        baseTemplateId: BASE_UUID,
+        email: { subject: 'Hello', fromEmail: 'a@b.com', fromName: 'HSM' },
+      });
+      expect(out.template.id).toBe('id-email');
+      expect(out.template.metadata).toMatchObject({
+        subject: 'Hello',
+        fromEmail: 'a@b.com',
+      });
+      expect(out.baseTemplate?.id).toBe(BASE_UUID);
+    });
+
+    it('happy path: SMS_INTERNAL returns SMS metadata and baseTemplate', async () => {
+      const baseEntity = {
+        id: BASE_UUID,
+        category: TemplateCategoriesEnum.BASE,
+        name: 'layout',
+        isActive: true,
+        schema: {},
+        content: '{{{body}}}',
+        description: null,
+        baseTemplate: null,
+      };
+      const savedEntity = {
+        id: 'id-sms',
+        category: TemplateCategoriesEnum.SMS_INTERNAL,
+        name: 'sms-x',
+        isActive: true,
+        schema: { patientName: 'string' },
+        content: 'Hi {{patientName}}',
+        description: null,
+        comSms: { provider: 'twilio', templateName: 'appt', from: '+1' },
+        baseTemplate: baseEntity,
+      };
+      templatesRepo.findOne
+        .mockResolvedValueOnce(baseEntity)  // baseTemplateId check
+        .mockResolvedValueOnce(null)        // name uniqueness
+        .mockResolvedValueOnce(savedEntity); // reload
+      managerSave.mockResolvedValueOnce({ id: 'id-sms' });
+
+      const out = await service.create({
+        category: TemplateCategoriesEnum.SMS_INTERNAL,
+        name: 'sms-x',
+        schema: { patientName: 'string' },
+        content: 'Hi {{patientName}}',
+        baseTemplateId: BASE_UUID,
+        sms: { provider: 'twilio', templateName: 'appt', from: '+1' },
+      } as Parameters<typeof service.create>[0]);
+      expect(out.template.id).toBe('id-sms');
+      expect(out.template.metadata).toMatchObject({
+        provider: 'twilio',
+        from: '+1',
+      });
+      expect(out.baseTemplate?.id).toBe(BASE_UUID);
+    });
   });
 
   // ─── delete ──────────────────────────────────────────────────────────────────
@@ -402,6 +498,75 @@ describe('TemplatesService', () => {
       expect(managerDelete).toHaveBeenCalledWith(TemplateComSmsEntity, {
         id: 'id-sms-ext',
       });
+    });
+  });
+
+  // ─── update ──────────────────────────────────────────────────────────────────
+
+  describe('update', () => {
+    const existingEntity = {
+      id: 'id-1',
+      category: TemplateCategoriesEnum.EMAIL_INTERNAL,
+      name: 'existing',
+      isActive: true,
+      schema: { patientName: 'string' },
+      content: '<p>{{patientName}}</p>',
+      description: null,
+      comEmail: {
+        subject: 'Old',
+        fromEmail: 'a@b.com',
+        fromName: 'HSM',
+        cc: null,
+        bcc: null,
+        hasAttachment: false,
+      },
+      baseTemplate: {
+        id: BASE_UUID,
+        category: TemplateCategoriesEnum.BASE,
+        name: 'layout',
+        isActive: true,
+        schema: {},
+        content: '{{{body}}}',
+        description: null,
+        baseTemplate: null,
+      },
+    };
+
+    it('happy path: returns updated {template, baseTemplate}', async () => {
+      const updatedEntity = {
+        ...existingEntity,
+        description: 'Updated',
+        comEmail: { ...existingEntity.comEmail, subject: 'New Subject' },
+      };
+      // findByIdentifier (existing load) + reload after update
+      templatesRepo.findOne
+        .mockResolvedValueOnce(existingEntity) // initial findByIdentifier
+        .mockResolvedValueOnce(updatedEntity); // final reload
+      managerUpdate.mockResolvedValueOnce({ affected: 1 });
+
+      const out = await service.update('id-1', { description: 'Updated' });
+      expect(out.template.id).toBe('id-1');
+      expect(out.template.metadata).toMatchObject({ subject: 'New Subject' });
+      expect(out.baseTemplate?.id).toBe(BASE_UUID);
+    });
+
+    it('rejects category mutation', async () => {
+      templatesRepo.findOne.mockResolvedValueOnce(existingEntity);
+      await expect(
+        service.update('id-1', {
+          category: TemplateCategoriesEnum.DOCS,
+        }),
+      ).rejects.toBeInstanceOf(TemplateInvalidShapeError);
+    });
+
+    it('rejects duplicate name', async () => {
+      const clash = { id: 'other', name: 'taken' };
+      templatesRepo.findOne
+        .mockResolvedValueOnce(existingEntity)
+        .mockResolvedValueOnce(clash); // name clash check
+      await expect(
+        service.update('id-1', { name: 'taken' }),
+      ).rejects.toBeInstanceOf(TemplateAlreadyExistsError);
     });
   });
 

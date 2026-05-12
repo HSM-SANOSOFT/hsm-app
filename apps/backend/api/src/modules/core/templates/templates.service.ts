@@ -168,9 +168,10 @@ export class TemplatesService {
       if (dto.schema !== undefined) patch.schema = dto.schema;
       if (dto.content !== undefined) patch.content = dto.content;
       if (dto.baseTemplateId !== undefined) {
+        // null clears the relation; TypeORM accepts null for nullable ManyToOne columns
         patch.baseTemplate = dto.baseTemplateId
           ? ({ id: dto.baseTemplateId } as TemplatesEntity)
-          : null!;
+          : (null as unknown as TemplatesEntity);
       }
       if (Object.keys(patch).length > 0) {
         await manager.update(TemplatesEntity, existing.template.id, patch);
@@ -468,10 +469,9 @@ export class TemplatesService {
       category === TemplateCategoriesEnum.SMS_EXTERNAL
     ) {
       if (!dto.sms) return;
-      await manager.save(TemplateComSmsEntity, {
-        id,
-        ...dto.sms,
-      });
+      // upsert avoids the SELECT+INSERT race when two concurrent updates arrive
+      // with no pre-existing child row
+      await manager.upsert(TemplateComSmsEntity, { id, ...dto.sms }, ['id']);
     }
   }
 }
