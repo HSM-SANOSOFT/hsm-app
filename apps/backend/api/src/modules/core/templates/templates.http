@@ -1,6 +1,6 @@
 ### Get Template
 # Response shape: { data: { template: {..., metadata: {...}|null}, baseTemplate: {...}|null } }
-GET {{host}}/templates/123e4567-e89b-12d3-a456-426614174000
+GET {{host}}/templates/81813161-0010-596b-abe2-012f2bd3588c
 content-Type: {{contentType}}
 Authorization: Bearer {{at_token}}
 
