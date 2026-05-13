@@ -2,6 +2,7 @@ import { GenerateDocumentJobPayloadDto } from '@hsm/common/dtos';
 import { DocumentFormatsEnum, DocumentStatusEnum } from '@hsm/common/enums';
 import { TemplateNotActiveError } from '@hsm/common/errors';
 import {
+  DocumentLinkEntity,
   DocumentStorageObjectEntity,
   DocumentsEntity,
   DocumentsGeneratedEntity,
@@ -164,6 +165,20 @@ export class DocsProcessorService extends QueueWorkerHost {
         });
         generated.version = version;
         await manager.save(DocumentsGeneratedEntity, generated);
+
+        // Link document to an entity if provided
+        if (data.entityId && data.entityType) {
+          const link = manager.create(DocumentLinkEntity, {
+            document: { id: data.documentId },
+            entityId: data.entityId,
+            entityType: data.entityType,
+          });
+          await manager.save(DocumentLinkEntity, link);
+          await manager.update(DocumentsEntity, data.documentId, {
+            entityId: data.entityId,
+            entityType: data.entityType,
+          });
+        }
       });
 
       await this.docsRepo.update(data.documentId, {

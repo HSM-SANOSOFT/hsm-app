@@ -89,6 +89,14 @@ export class GenerateDocumentJobPayloadDto {
 
   @IsObject()
   data: Record<string, unknown>;
+
+  @IsOptional()
+  @IsString()
+  entityId?: string;
+
+  @IsOptional()
+  @IsString()
+  entityType?: string;
 }
 
 @ApiSchema({ name: 'Generate Document Request' })
