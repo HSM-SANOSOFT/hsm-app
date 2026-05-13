@@ -5,6 +5,9 @@ import { DocsController } from './docs.controller';
 import { DocsService } from './docs.service';
 
 const docsService = {
+  listDocuments: jest
+    .fn()
+    .mockResolvedValue({ data: [], total: 0, page: 1, limit: 20 }),
   generateDocument: jest
     .fn()
     .mockResolvedValue({ documentId: 'doc-uuid', jobId: 'job-id' }),
@@ -47,6 +50,15 @@ describe('DocsController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  describe('listDocuments', () => {
+    it('delegates query and user id to docsService.listDocuments', async () => {
+      const query = { page: 1, limit: 10 } as never;
+      const result = await controller.listDocuments(query, makeReq());
+      expect(docsService.listDocuments).toHaveBeenCalledWith(query, 'user-uuid');
+      expect(result).toEqual({ data: [], total: 0, page: 1, limit: 20 });
+    });
   });
 
   describe('generateDocument', () => {
@@ -110,11 +122,15 @@ describe('DocsController', () => {
   });
 
   describe('uploadDocuments', () => {
-    it('delegates body and files to docsService.uploadDocuments', async () => {
+    it('delegates body, files, and user id to docsService.uploadDocuments', async () => {
       const body = { payload: [] } as never;
       const files: Express.Multer.File[] = [];
-      await controller.uploadDocuments(body, files);
-      expect(docsService.uploadDocuments).toHaveBeenCalledWith(body, files);
+      await controller.uploadDocuments(body, files, makeReq());
+      expect(docsService.uploadDocuments).toHaveBeenCalledWith(
+        body,
+        files,
+        'user-uuid',
+      );
     });
   });
 });

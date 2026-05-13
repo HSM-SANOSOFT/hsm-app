@@ -2,9 +2,11 @@ import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { plainToInstance, Transform, Type } from 'class-transformer';
 import {
   IsArray,
+  IsInt,
   IsNotEmpty,
   IsObject,
   IsOptional,
+  IsPositive,
   IsString,
   IsUUID,
   ValidateNested,
@@ -77,6 +79,14 @@ export class UploadDocumentPayloadDto {
   @ValidateNested({ each: true })
   @Type(() => UploadDocument)
   payload: UploadDocument[];
+
+  @IsOptional()
+  @IsString()
+  entityId?: string;
+
+  @IsOptional()
+  @IsString()
+  entityType?: string;
 }
 
 export class GenerateDocumentJobPayloadDto {
@@ -89,6 +99,14 @@ export class GenerateDocumentJobPayloadDto {
 
   @IsObject()
   data: Record<string, unknown>;
+
+  @IsOptional()
+  @IsString()
+  entityId?: string;
+
+  @IsOptional()
+  @IsString()
+  entityType?: string;
 }
 
 @ApiSchema({ name: 'Generate Document Request' })
@@ -117,4 +135,51 @@ export class GenerateDocumentRequestDto {
   @IsString()
   @ApiProperty({ required: false, description: 'Descripción opcional' })
   description?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ required: false, description: 'ID de la entidad asociada' })
+  entityId?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ required: false, description: 'Tipo de la entidad asociada' })
+  entityType?: string;
+}
+
+@ApiSchema({ name: 'List Documents Query' })
+export class ListDocumentsQueryDto {
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ required: false, description: 'ID de la entidad asociada' })
+  entityId?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ required: false, description: 'Tipo de la entidad asociada' })
+  entityType?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ required: false, description: 'Tipo de documento' })
+  type?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ required: false, description: 'Estado del documento' })
+  status?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @IsPositive()
+  @ApiProperty({ required: false, description: 'Número de página', example: 1 })
+  page?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @IsPositive()
+  @ApiProperty({ required: false, description: 'Resultados por página', example: 20 })
+  limit?: number;
 }
