@@ -1,14 +1,32 @@
+import {
+  ListEmailBatchesQueryDto,
+  ListEmailRecipientsQueryDto,
+  SendEmailPayloadDto,
+} from '@hsm/common/dtos';
+import { EmailBatchStatusEnum } from '@hsm/common/enums';
 import { Test, TestingModule } from '@nestjs/testing';
+import type { Request } from 'express';
 import { ComsController } from './coms.controller';
 import { ComsService } from './coms.service';
 
-const comsService = {
-  sendEmail: jest
-    .fn()
-    .mockResolvedValue('sending email job queued with id job-123'),
-  resendEmail: jest.fn().mockResolvedValue(undefined),
-  sendSms: jest.fn().mockResolvedValue(undefined),
+// ---------------------------------------------------------------------------
+// Mock service
+// ---------------------------------------------------------------------------
+
+const mockComsService = {
+  sendEmail: jest.fn(),
+  listBatches: jest.fn(),
+  getBatch: jest.fn(),
+  resendBatch: jest.fn(),
+  listRecipients: jest.fn(),
+  getRecipient: jest.fn(),
+  resendRecipient: jest.fn(),
+  sendSms: jest.fn(),
 };
+
+// ---------------------------------------------------------------------------
+// Test setup
+// ---------------------------------------------------------------------------
 
 describe('ComsController', () => {
   let controller: ComsController;
@@ -18,7 +36,7 @@ describe('ComsController', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ComsController],
-      providers: [{ provide: ComsService, useValue: comsService }],
+      providers: [{ provide: ComsService, useValue: mockComsService }],
     }).compile();
 
     controller = module.get<ComsController>(ComsController);
@@ -28,25 +46,169 @@ describe('ComsController', () => {
     expect(controller).toBeDefined();
   });
 
+  // -------------------------------------------------------------------------
+  // sendEmail
+  // -------------------------------------------------------------------------
+
   describe('sendEmail', () => {
-    it('delegates payload to comsService.sendEmail', async () => {
-      const payload = { templateIdentifier: 'welcome', data: {} } as never;
-      await controller.sendEmail(payload);
-      expect(comsService.sendEmail).toHaveBeenCalledWith(payload);
+    it('delegates payload + userId to comsService.sendEmail', async () => {
+      const payload: SendEmailPayloadDto = {
+        toEmails: ['a@example.com'],
+        emailTemplate: 'welcome',
+        data: {},
+        fromEmail: undefined as unknown as string,
+        fromName: undefined as unknown as string,
+      };
+      const req = { user: { id: 'user-uuid' } } as unknown as Request;
+      mockComsService.sendEmail.mockResolvedValue({
+        batchId: 'b-uuid',
+        jobId: 'j-123',
+      });
+
+      const result = await controller.sendEmail(payload, req);
+
+      expect(mockComsService.sendEmail).toHaveBeenCalledWith(payload, 'user-uuid');
+      expect(result).toEqual({ batchId: 'b-uuid', jobId: 'j-123' });
     });
   });
 
-  describe('resendEmail', () => {
-    it('delegates to comsService.resendEmail', async () => {
-      await controller.resendEmail();
-      expect(comsService.resendEmail).toHaveBeenCalled();
+  // -------------------------------------------------------------------------
+  // listBatches
+  // -------------------------------------------------------------------------
+
+  describe('listBatches', () => {
+    it('delegates query to comsService.listBatches', async () => {
+      const query: ListEmailBatchesQueryDto = { page: 1, limit: 10 };
+      mockComsService.listBatches.mockResolvedValue({ data: [], total: 0, page: 1, limit: 10 });
+
+      const result = await controller.listBatches(query);
+
+      expect(mockComsService.listBatches).toHaveBeenCalledWith(query);
+      expect(result).toEqual({ data: [], total: 0, page: 1, limit: 10 });
     });
   });
+
+  // -------------------------------------------------------------------------
+  // getBatch
+  // -------------------------------------------------------------------------
+
+  describe('getBatch', () => {
+    it('delegates id to comsService.getBatch', async () => {
+      mockComsService.getBatch.mockResolvedValue({ id: 'b-uuid' });
+
+      const result = await controller.getBatch('b-uuid');
+
+      expect(mockComsService.getBatch).toHaveBeenCalledWith('b-uuid');
+      expect(result).toEqual({ id: 'b-uuid' });
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // resendBatch
+  // -------------------------------------------------------------------------
+
+  describe('resendBatch', () => {
+    it('delegates id to comsService.resendBatch', async () => {
+      mockComsService.resendBatch.mockResolvedValue({ jobId: 'j-456' });
+
+      const result = await controller.resendBatch('b-uuid');
+
+      expect(mockComsService.resendBatch).toHaveBeenCalledWith('b-uuid');
+      expect(result).toEqual({ jobId: 'j-456' });
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // listRecipients
+  // -------------------------------------------------------------------------
+
+  describe('listRecipients', () => {
+    it('delegates query to comsService.listRecipients', async () => {
+      const query: ListEmailRecipientsQueryDto = {
+        batchId: 'b-uuid',
+        page: 1,
+        limit: 20,
+      };
+      mockComsService.listRecipients.mockResolvedValue({
+        data: [],
+        total: 0,
+        page: 1,
+        limit: 20,
+      });
+
+      const result = await controller.listRecipients(query);
+
+      expect(mockComsService.listRecipients).toHaveBeenCalledWith(query);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // getRecipient
+  // -------------------------------------------------------------------------
+
+  describe('getRecipient', () => {
+    it('delegates id to comsService.getRecipient', async () => {
+      mockComsService.getRecipient.mockResolvedValue({ id: 'r-uuid' });
+
+      const result = await controller.getRecipient('r-uuid');
+
+      expect(mockComsService.getRecipient).toHaveBeenCalledWith('r-uuid');
+      expect(result).toEqual({ id: 'r-uuid' });
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // resendRecipient
+  // -------------------------------------------------------------------------
+
+  describe('resendRecipient', () => {
+    it('delegates id to comsService.resendRecipient', async () => {
+      mockComsService.resendRecipient.mockResolvedValue({ jobId: 'j-789' });
+
+      const result = await controller.resendRecipient('r-uuid');
+
+      expect(mockComsService.resendRecipient).toHaveBeenCalledWith('r-uuid');
+      expect(result).toEqual({ jobId: 'j-789' });
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // sendSms (stub)
+  // -------------------------------------------------------------------------
 
   describe('sendSms', () => {
     it('delegates to comsService.sendSms', async () => {
+      mockComsService.sendSms.mockResolvedValue(undefined);
+
       await controller.sendSms();
-      expect(comsService.sendSms).toHaveBeenCalled();
+
+      expect(mockComsService.sendSms).toHaveBeenCalled();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Filter / status enum coverage
+  // -------------------------------------------------------------------------
+
+  describe('listBatches with overallStatus filter', () => {
+    it('passes overallStatus filter to service', async () => {
+      const query: ListEmailBatchesQueryDto = {
+        overallStatus: EmailBatchStatusEnum.SENT,
+        page: 1,
+        limit: 5,
+      };
+      mockComsService.listBatches.mockResolvedValue({
+        data: [],
+        total: 0,
+        page: 1,
+        limit: 5,
+      });
+
+      await controller.listBatches(query);
+
+      expect(mockComsService.listBatches).toHaveBeenCalledWith(
+        expect.objectContaining({ overallStatus: EmailBatchStatusEnum.SENT }),
+      );
     });
   });
 });

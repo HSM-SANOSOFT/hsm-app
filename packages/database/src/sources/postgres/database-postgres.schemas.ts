@@ -3,6 +3,7 @@ import { DatabaseAllSchemasEnum } from '../all/database-all.schemas';
 enum SchemasEnum {
   USERS = 'users',
   AUTH = 'auth',
+  COMS = 'coms',
   DOCS = 'docs',
   TEMPLATES = 'templates',
   COMS = 'coms',
