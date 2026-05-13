@@ -1,7 +1,7 @@
 ---
 title: "feat: Complete email and document modules with send logging and entity linking"
 type: feat
-status: active
+status: completed
 date: 2026-05-13
 origin: docs/brainstorms/email-and-document-modules-requirements.md
 deepened: 2026-05-13
