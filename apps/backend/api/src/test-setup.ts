@@ -33,3 +33,4 @@ process.env.STRG_S3_HOST = 'http://localhost:9000';
 process.env.STRG_S3_HOST_EXTERNAL = 'http://localhost:9000';
 process.env.STRG_S3_REGION = 'us-east-1';
 process.env.STRG_S3_SECRET_KEY = 'test-s3-secret';
+process.env.COMS_WEBHOOK_SIGNING_KEYS = '{"mandrill":"test-key"}';

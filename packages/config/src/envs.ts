@@ -41,6 +41,8 @@ interface EnvVars {
   STRG_S3_HOST_EXTERNAL: string;
   STRG_S3_REGION: string;
   STRG_S3_SECRET_KEY: string;
+
+  COMS_WEBHOOK_SIGNING_KEYS?: string;
 }
 
 const EnvSchema = joi
@@ -90,6 +92,8 @@ const EnvSchema = joi
     }),
     STRG_S3_REGION: joi.string().default('us-east-1'),
     STRG_S3_SECRET_KEY: joi.string().required(),
+
+    COMS_WEBHOOK_SIGNING_KEYS: joi.string().optional(),
   })
   .unknown()
   .required();
@@ -140,5 +144,15 @@ export const envs = Object.freeze({
   STRG_S3_HOST_EXTERNAL: envVars.STRG_S3_HOST_EXTERNAL,
   STRG_S3_REGION: envVars.STRG_S3_REGION,
   STRG_S3_SECRET_KEY: envVars.STRG_S3_SECRET_KEY,
+
+  COMS_WEBHOOK_SIGNING_KEYS: envVars.COMS_WEBHOOK_SIGNING_KEYS,
 } as const);
 export type Envs = Readonly<typeof envs>;
+
+export function getWebhookSigningKeys(): Record<string, string> {
+  try {
+    return JSON.parse(envs.COMS_WEBHOOK_SIGNING_KEYS ?? '{}') as Record<string, string>;
+  } catch {
+    return {};
+  }
+}
