@@ -10,7 +10,7 @@ export const databasePostgresEntities = [
   ...DatabaseAllEntities,
   ...Object.values(authEntities),
   ...Object.values(userEntities),
+  ...Object.values(comsEntities),
   ...Object.values(docsEntities),
   ...Object.values(templateEntities),
-  ...Object.values(comsEntities),
 ].filter(isEntity);
