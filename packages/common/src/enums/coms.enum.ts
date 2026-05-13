@@ -1,0 +1,30 @@
+export enum EmailBatchStatusEnum {
+  PENDING = 'PENDING',
+  PROCESSING = 'PROCESSING',
+  SENT = 'SENT',
+  PARTIAL = 'PARTIAL',
+  FAILED = 'FAILED',
+}
+
+export enum EmailRecipientStatusEnum {
+  PENDING = 'PENDING',
+  SENT = 'SENT',
+  FAILED = 'FAILED',
+  SUPPRESSED = 'SUPPRESSED',
+  DELIVERED = 'DELIVERED',
+  BOUNCED_HARD = 'BOUNCED_HARD',
+  BOUNCED_SOFT = 'BOUNCED_SOFT',
+  SPAM = 'SPAM',
+}
+
+export enum EmailWebhookEventTypeEnum {
+  DELIVERED = 'DELIVERED',
+  BOUNCED_HARD = 'BOUNCED_HARD',
+  BOUNCED_SOFT = 'BOUNCED_SOFT',
+  SPAM = 'SPAM',
+  DEFERRED = 'DEFERRED',
+  OPEN = 'OPEN',
+  CLICK = 'CLICK',
+  UNSUBSCRIBED = 'UNSUBSCRIBED',
+  UNKNOWN = 'UNKNOWN',
+}
