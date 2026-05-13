@@ -101,3 +101,12 @@ Content-Type: {{contentType}}
 Authorization: Bearer {{at_token}}
 
 ###
+
+### Webhook — simulate Mandrill hard_bounce
+POST {{host}}/coms/webhooks/mandrill
+Content-Type: application/json
+X-Mandrill-Signature: test-signature
+
+[{"event":"hard_bounce","ts":1715000000,"msg":{"email":"user@example.com","_id":"abc123","diag":"No such user here"}}]
+
+###

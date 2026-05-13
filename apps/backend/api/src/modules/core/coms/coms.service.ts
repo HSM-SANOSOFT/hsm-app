@@ -60,7 +60,7 @@ export class ComsService {
         documentIds: dto.documentIds ?? null,
         overallStatus: EmailBatchStatusEnum.PENDING,
         createdBy: userId ?? null,
-      });
+      } as EmailBatchEntity);
       const persistedBatch = await manager.save(EmailBatchEntity, batch);
 
       // TODO(U8): add suppression check once EmailSuppressionEntity is available

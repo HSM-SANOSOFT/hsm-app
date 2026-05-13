@@ -1,3 +1,4 @@
+import { EmailSuppressionReasonEnum } from '@hsm/common/enums';
 import { DatabasePostgresSchemasEnum } from '@hsm/database/sources/postgres';
 import {
   Column,
@@ -9,12 +10,6 @@ import {
   Unique,
 } from 'typeorm';
 import { EmailWebhookEventEntity } from './email-webhook-event.entity';
-
-export enum EmailSuppressionReasonEnum {
-  HARD_BOUNCE = 'HARD_BOUNCE',
-  SPAM_COMPLAINT = 'SPAM_COMPLAINT',
-  MANUAL = 'MANUAL',
-}
 
 @Unique(['email'])
 @Entity({ name: 'email_suppression', schema: DatabasePostgresSchemasEnum.COMS })

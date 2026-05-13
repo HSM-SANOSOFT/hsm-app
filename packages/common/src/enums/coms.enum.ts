@@ -28,3 +28,9 @@ export enum EmailWebhookEventTypeEnum {
   UNSUBSCRIBED = 'UNSUBSCRIBED',
   UNKNOWN = 'UNKNOWN',
 }
+
+export enum EmailSuppressionReasonEnum {
+  HARD_BOUNCE = 'HARD_BOUNCE',
+  SPAM_COMPLAINT = 'SPAM_COMPLAINT',
+  MANUAL = 'MANUAL',
+}

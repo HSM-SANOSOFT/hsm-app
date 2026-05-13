@@ -82,6 +82,14 @@ export class UploadDocumentPayloadDto {
   @ValidateNested({ each: true })
   @Type(() => UploadDocument)
   payload: UploadDocument[];
+
+  @IsOptional()
+  @IsString()
+  entityId?: string;
+
+  @IsOptional()
+  @IsString()
+  entityType?: string;
 }
 
 export class GenerateDocumentJobPayloadDto {

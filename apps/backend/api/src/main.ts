@@ -8,6 +8,7 @@ import { MainModule } from './main.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(MainModule, {
+    rawBody: true,
     logger: new ConsoleLogger({
       prefix: 'hsm-app-be-main',
       json: envs.ENVIRONMENT !== 'dev',
