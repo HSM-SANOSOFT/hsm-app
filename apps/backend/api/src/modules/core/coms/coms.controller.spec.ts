@@ -9,10 +9,6 @@ import type { Request } from 'express';
 import { ComsController } from './coms.controller';
 import { ComsService } from './coms.service';
 
-// ---------------------------------------------------------------------------
-// Mock service
-// ---------------------------------------------------------------------------
-
 const mockComsService = {
   sendEmail: jest.fn(),
   listBatches: jest.fn(),
@@ -23,10 +19,6 @@ const mockComsService = {
   resendRecipient: jest.fn(),
   sendSms: jest.fn(),
 };
-
-// ---------------------------------------------------------------------------
-// Test setup
-// ---------------------------------------------------------------------------
 
 describe('ComsController', () => {
   let controller: ComsController;
@@ -46,10 +38,6 @@ describe('ComsController', () => {
     expect(controller).toBeDefined();
   });
 
-  // -------------------------------------------------------------------------
-  // sendEmail
-  // -------------------------------------------------------------------------
-
   describe('sendEmail', () => {
     it('delegates payload + userId to comsService.sendEmail', async () => {
       const payload: SendEmailPayloadDto = {
@@ -60,10 +48,7 @@ describe('ComsController', () => {
         fromName: undefined as unknown as string,
       };
       const req = { user: { id: 'user-uuid' } } as unknown as Request;
-      mockComsService.sendEmail.mockResolvedValue({
-        batchId: 'b-uuid',
-        jobId: 'j-123',
-      });
+      mockComsService.sendEmail.mockResolvedValue({ batchId: 'b-uuid', jobId: 'j-123' });
 
       const result = await controller.sendEmail(payload, req);
 
@@ -71,10 +56,6 @@ describe('ComsController', () => {
       expect(result).toEqual({ batchId: 'b-uuid', jobId: 'j-123' });
     });
   });
-
-  // -------------------------------------------------------------------------
-  // listBatches
-  // -------------------------------------------------------------------------
 
   describe('listBatches', () => {
     it('delegates query to comsService.listBatches', async () => {
@@ -88,10 +69,6 @@ describe('ComsController', () => {
     });
   });
 
-  // -------------------------------------------------------------------------
-  // getBatch
-  // -------------------------------------------------------------------------
-
   describe('getBatch', () => {
     it('delegates id to comsService.getBatch', async () => {
       mockComsService.getBatch.mockResolvedValue({ id: 'b-uuid' });
@@ -102,10 +79,6 @@ describe('ComsController', () => {
       expect(result).toEqual({ id: 'b-uuid' });
     });
   });
-
-  // -------------------------------------------------------------------------
-  // resendBatch
-  // -------------------------------------------------------------------------
 
   describe('resendBatch', () => {
     it('delegates id to comsService.resendBatch', async () => {
@@ -118,33 +91,16 @@ describe('ComsController', () => {
     });
   });
 
-  // -------------------------------------------------------------------------
-  // listRecipients
-  // -------------------------------------------------------------------------
-
   describe('listRecipients', () => {
     it('delegates query to comsService.listRecipients', async () => {
-      const query: ListEmailRecipientsQueryDto = {
-        batchId: 'b-uuid',
-        page: 1,
-        limit: 20,
-      };
-      mockComsService.listRecipients.mockResolvedValue({
-        data: [],
-        total: 0,
-        page: 1,
-        limit: 20,
-      });
+      const query: ListEmailRecipientsQueryDto = { batchId: 'b-uuid', page: 1, limit: 20 };
+      mockComsService.listRecipients.mockResolvedValue({ data: [], total: 0, page: 1, limit: 20 });
 
-      const result = await controller.listRecipients(query);
+      await controller.listRecipients(query);
 
       expect(mockComsService.listRecipients).toHaveBeenCalledWith(query);
     });
   });
-
-  // -------------------------------------------------------------------------
-  // getRecipient
-  // -------------------------------------------------------------------------
 
   describe('getRecipient', () => {
     it('delegates id to comsService.getRecipient', async () => {
@@ -157,10 +113,6 @@ describe('ComsController', () => {
     });
   });
 
-  // -------------------------------------------------------------------------
-  // resendRecipient
-  // -------------------------------------------------------------------------
-
   describe('resendRecipient', () => {
     it('delegates id to comsService.resendRecipient', async () => {
       mockComsService.resendRecipient.mockResolvedValue({ jobId: 'j-789' });
@@ -172,10 +124,6 @@ describe('ComsController', () => {
     });
   });
 
-  // -------------------------------------------------------------------------
-  // sendSms (stub)
-  // -------------------------------------------------------------------------
-
   describe('sendSms', () => {
     it('delegates to comsService.sendSms', async () => {
       mockComsService.sendSms.mockResolvedValue(undefined);
@@ -186,10 +134,6 @@ describe('ComsController', () => {
     });
   });
 
-  // -------------------------------------------------------------------------
-  // Filter / status enum coverage
-  // -------------------------------------------------------------------------
-
   describe('listBatches with overallStatus filter', () => {
     it('passes overallStatus filter to service', async () => {
       const query: ListEmailBatchesQueryDto = {
@@ -197,12 +141,7 @@ describe('ComsController', () => {
         page: 1,
         limit: 5,
       };
-      mockComsService.listBatches.mockResolvedValue({
-        data: [],
-        total: 0,
-        page: 1,
-        limit: 5,
-      });
+      mockComsService.listBatches.mockResolvedValue({ data: [], total: 0, page: 1, limit: 5 });
 
       await controller.listBatches(query);
 

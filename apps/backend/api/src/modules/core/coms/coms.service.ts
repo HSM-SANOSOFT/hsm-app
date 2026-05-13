@@ -127,8 +127,7 @@ export class ComsService {
     const page = query.page ?? 1;
     const limit = query.limit ?? 20;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const where: Record<string, any> = {};
+    const where: Record<string, unknown> = {};
     if (templateId) where.templateId = templateId;
     if (overallStatus) where.overallStatus = overallStatus;
     if (createdBy) where.createdBy = createdBy;
@@ -146,7 +145,7 @@ export class ComsService {
     return { data, total, page, limit };
   }
 
-  async getBatch(id: string) {
+  getBatch(id: string) {
     return this.batchRepo.findOneOrFail({
       where: { id },
       relations: { recipients: true },
@@ -158,8 +157,7 @@ export class ComsService {
     const page = query.page ?? 1;
     const limit = query.limit ?? 20;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const where: Record<string, any> = {};
+    const where: Record<string, unknown> = {};
     if (batchId) where.batch = { id: batchId };
     if (toEmail) where.toEmail = toEmail;
     if (status) where.status = status;
@@ -174,7 +172,7 @@ export class ComsService {
     return { data, total, page, limit };
   }
 
-  async getRecipient(id: string) {
+  getRecipient(id: string) {
     return this.recipientRepo.findOneOrFail({ where: { id } });
   }
 

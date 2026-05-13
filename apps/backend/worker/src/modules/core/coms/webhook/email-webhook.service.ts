@@ -25,8 +25,6 @@ export class EmailWebhookService {
     private readonly webhookEventRepo: Repository<EmailWebhookEventEntity>,
     @InjectRepository(EmailRecipientEntity, DatabasesEnum.HsmDbPostgres)
     private readonly recipientRepo: Repository<EmailRecipientEntity>,
-    @InjectRepository(EmailSuppressionEntity, DatabasesEnum.HsmDbPostgres)
-    private readonly suppressionRepo: Repository<EmailSuppressionEntity>,
     @InjectDataSource(DatabasesEnum.HsmDbPostgres)
     private readonly dataSource: DataSource,
     @InjectQueue(QueueEnum.Coms) private readonly comsQueue: Queue,

@@ -86,18 +86,18 @@ describe('DocsService', () => {
         ...data,
       }),
     );
-    mockDocsRepo.save.mockImplementation(async (entity: DocumentsEntity) => {
+    mockDocsRepo.save.mockImplementation((entity: DocumentsEntity) => {
       entity.id = 'doc-uuid';
-      return entity;
+      return Promise.resolve(entity);
     });
     mockDocsRepo.findOne.mockResolvedValue(mockDocument);
     mockDocsRepo.softDelete.mockResolvedValue(undefined);
     mockDocsQueue.add.mockResolvedValue({ id: 'job-id' });
 
     mockVersionsRepo.create.mockImplementation((data: Partial<DocumentsVersionEntity>) => ({ ...data }));
-    mockVersionsRepo.save.mockImplementation(async (entity: DocumentsVersionEntity) => {
+    mockVersionsRepo.save.mockImplementation((entity: DocumentsVersionEntity) => {
       entity.id = 'version-uuid';
-      return entity;
+      return Promise.resolve(entity);
     });
 
     mockStorageRepo.create.mockImplementation((data: Partial<DocumentStorageObjectEntity>) => ({ ...data }));

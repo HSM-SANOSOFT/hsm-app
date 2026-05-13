@@ -137,7 +137,7 @@ export class DocsController {
   @Delete()
   async deleteDocuments(
     @Body()
-    payload: Array<{
+    _payload: Array<{
       bucket: string;
       files: Array<{
         foldername: string;
