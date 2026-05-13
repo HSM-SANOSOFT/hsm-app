@@ -1,4 +1,4 @@
-import { SendEmailPayloadDto } from '@hsm/common/dtos';
+import { SendEmailJobDto } from '@hsm/common/dtos';
 
 import { QueueWorkerHost } from '@hsm/queue';
 import { Processor } from '@nestjs/bullmq';
@@ -14,7 +14,7 @@ export class ComsService extends QueueWorkerHost {
   protected async handle(job: Job) {
     switch (job.name) {
       case 'send-email': {
-        const payload = job.data as SendEmailPayloadDto;
+        const payload = job.data as SendEmailJobDto;
         return await this.emailService.sendEmail(payload);
       }
       default:

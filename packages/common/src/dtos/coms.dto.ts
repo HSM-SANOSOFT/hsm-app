@@ -9,8 +9,29 @@ import {
   IsObject,
   IsOptional,
   IsString,
+  IsUUID,
 } from 'class-validator';
 import { DocumentsPayloadDto } from './docs.dto';
+
+@ApiSchema({ name: 'Send Email Job' })
+export class SendEmailJobDto {
+  @IsUUID()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'ID of the EmailBatch to process',
+    example: 'b1c2d3e4-0000-0000-0000-000000000001',
+  })
+  batchId: string;
+
+  @IsUUID()
+  @IsOptional()
+  @ApiProperty({
+    description: 'Optional: target a single recipient (resend)',
+    required: false,
+    example: 'r1c2d3e4-0000-0000-0000-000000000001',
+  })
+  recipientId?: string;
+}
 
 @ApiSchema({ name: 'Send Email Payload' })
 export class SendEmailPayloadDto extends PartialType(DocumentsPayloadDto) {

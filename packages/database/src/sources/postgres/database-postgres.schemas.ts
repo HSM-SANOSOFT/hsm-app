@@ -5,6 +5,7 @@ enum SchemasEnum {
   AUTH = 'auth',
   DOCS = 'docs',
   TEMPLATES = 'templates',
+  COMS = 'coms',
 }
 
 export const DatabasePostgresSchemasEnum = {
