@@ -1,124 +1,10 @@
-### send email
+### Send Email
 POST {{host}}/coms/send/email
 Content-Type: {{contentType}}
+Authorization: Bearer {{at_token}}
 
 {
-  "toEmails": ["kijiv85358@eubonus.com"],
-  "emailTemplate": "adm/auto-admision",
-  "data": {
-    "patientName": "Juan Perez",
-    "documentId": "123456789",
-    "date": "2024-07-15",
-    "code": 123456
-  }
-}
-
-### send email
-POST {{host}}/coms/send/email
-Content-Type: {{contentType}}
-
-{
-  "toEmails": ["kijiv85358@eubonus.com"],
-  "emailTemplate": "adm/bienvenida",
-  "data": {
-  }
-}
-
-### send email
-POST {{host}}/coms/send/email
-Content-Type: {{contentType}}
-
-{
-  "toEmails": ["kijiv85358@eubonus.com"],
-  "emailTemplate": "adm/citas-turno",
-  "data": {
-    "patientName": "Juan Perez",
-    "appointmentDate": "2024-07-15",
-    "appointmentTime": "10:00 AM",
-    "appointmentDetails": "Turno 5",
-    "medicalSpecialty": "Cardiología",
-    "appointmentType": "Consulta Inicial",
-    "appointmentNote": "Traer estudios previos"
-  }
-}
-
-### send email
-POST {{host}}/coms/send/email
-Content-Type: {{contentType}}
-
-{
-  "toEmails": ["kijiv85358@eubonus.com"],
-  "emailTemplate": "adm/documento-derivacion-aprobado",
-  "data": {
-    "patientName": "Juan Perez",
-    "medicalUnit": "Clínica Central"
-  }
-}
-
-### send email
-POST {{host}}/coms/send/email
-Content-Type: {{contentType}}
-
-{
-  "toEmails": ["kijiv85358@eubonus.com"],
-  "emailTemplate": "adm/documento-derivacion-pendiente",
-  "data": {
-  }
-}
-
-### send email
-POST {{host}}/coms/send/email
-Content-Type: {{contentType}}
-
-{
-  "toEmails": ["kijiv85358@eubonus.com"],
-  "emailTemplate": "adm/documento-derivacion-rechazado",
-  "data": {
-  }
-}
-
-### send email
-POST {{host}}/coms/send/email
-Content-Type: {{contentType}}
-
-{
-  "toEmails": ["kijiv85358@eubonus.com"],
-  "emailTemplate": "adm/reagendamiento",
-  "data": {
-    "patientName": "Juan Perez",
-    "scheduledDate": "2024-07-20",
-    "rescheduledDate": "2024-07-25",
-    "appointmentTime": "11:00 AM",
-    "appointmentDetails": "Turno 10",
-    "medicalSpecialty": "Dermatología",
-    "appointmentType": "Consulta Inicial"
-  }
-}
-
-### send email
-POST {{host}}/coms/send/email
-Content-Type: {{contentType}}
-
-{
-  "toEmails": ["kijiv85358@eubonus.com"],
-  "emailTemplate": "adm/recordatorio-cita",
-  "data": {
-    "patientName": "Juan Perez",
-    "appointmentDate": "2024-07-15",
-    "appointmentTime": "10:00 AM",
-    "appointmentDetails": "Turno 5",
-    "medicalSpecialty": "Cardiología",
-    "appointmentType": "Consulta Inicial",
-    "appointmentNote": "Traer estudios previos"
-  }
-}
-
-### send email
-POST {{host}}/coms/send/email
-Content-Type: {{contentType}}
-
-{
-  "toEmails": ["kijiv85358@eubonus.com"],
+  "toEmails": ["user@example.com"],
   "emailTemplate": "auth/pin-inicio-sesion",
   "data": {
     "date": "2024-07-10 14:30",
@@ -126,235 +12,92 @@ Content-Type: {{contentType}}
   }
 }
 
-### send email
+###
+
+### Send Email — with fromEmail override and documentIds
 POST {{host}}/coms/send/email
 Content-Type: {{contentType}}
+Authorization: Bearer {{at_token}}
 
 {
-  "toEmails": ["kijiv85358@eubonus.com"],
-  "emailTemplate": "auth/pin-restablecer-contrasena",
-  "data": {
-    "date": "2024-07-10 14:30",
-    "pin": 654321
-  }
-}
-
-### send email
-POST {{host}}/coms/send/email
-Content-Type: {{contentType}}
-
-{
-  "toEmails": ["kijiv85358@eubonus.com"],
-  "emailTemplate": "auth/pin-registro",
-  "data": {
-    "date": "2024-07-10 14:30",
-    "pin": 654321
-  }
-}
-
-### send email
-POST {{host}}/coms/send/email
-Content-Type: {{contentType}}
-
-{
-  "toEmails": ["kijiv85358@eubonus.com"],
-  "emailTemplate": "auth/pin-resultado-examen",
+  "fromEmail": "no-reply@hospitalsm.org",
+  "fromName": "Hospital SM",
+  "toEmails": ["user1@example.com", "user2@example.com"],
+  "emailTemplate": "adm/auto-admision",
   "data": {
     "patientName": "Juan Perez",
-    "date": "2024-07-10 14:30",
-    "pin": 654321
-  }
-}
-
-### send email
-POST {{host}}/coms/send/email
-Content-Type: {{contentType}}
-
-{
-  "toEmails": ["kijiv85358@eubonus.com"],
-  "emailTemplate": "fac/factura-generada",
-  "data": {
-  }
-}
-
-### send email
-POST {{host}}/coms/send/email
-Content-Type: {{contentType}}
-
-{
-  "toEmails": ["kijiv85358@eubonus.com"],
-  "emailTemplate": "fac/factura-lista",
-  "data": {
-    "patientName": "Juan Perez",
-    "invoiceNumber": "F001-00012345"
-  }
-}
-
-### send email
-POST {{host}}/coms/send/email
-Content-Type: {{contentType}}
-
-{
-  "toEmails": ["kijiv85358@eubonus.com"],
-  "emailTemplate": "his/certificado-medico",
-  "data": {
-    "patientName": "Juan Perez"
-  }
-}
-
-### send email
-POST {{host}}/coms/send/email
-Content-Type: {{contentType}}
-
-{
-  "toEmails": ["kijiv85358@eubonus.com"],
-  "emailTemplate": "his/programacion-quirofano",
-  "data": {
-    "cirugias": [
-      {
-        "surgeryId": "SQ-001",
-        "surgeryDate": "2024-08-01",
-        "surgeryTime": "09:00 AM",
-        "surgeryType": "Apendicectomía",
-        "surgeonName": "Dr. Carlos López",
-        "operatingRoomId": "Quirófano 2",
-        "patientName": "Juan Perez",
-        "patientMedicalHistoryId": "HIS-123456",
-        "medicalObservations": "Paciente con alergia a la penicilina."
-      },
-      {
-        "surgeryId": "SQ-002",
-        "surgeryDate": "2024-08-02",
-        "surgeryTime": "11:00 AM",
-        "surgeryType": "Colecistectomía",
-        "surgeonName": "Dra. María Gómez",
-        "operatingRoomId": "Quirófano 1",
-        "patientName": "Ana Martínez",
-        "patientMedicalHistoryId": "HIS-654321"
-      },
-      {
-        "surgeryId": "SQ-003",
-        "surgeryDate": "2024-08-03",
-        "surgeryTime": "02:00 PM",
-        "surgeryType": "Herniorrafia",
-        "surgeonName": "Dr. Luis Fernández",
-        "operatingRoomId": "Quirófano 3",
-        "patientName": "Pedro Sánchez",
-        "patientMedicalHistoryId": "HIS-789012",
-        "medicalObservations": "Revisar historial de hipertensión."
-      }
-    ]
-  }
-}
-
-### send email
-POST {{host}}/coms/send/email
-Content-Type: {{contentType}}
-
-{
-  "toEmails": ["kijiv85358@eubonus.com"],
-  "emailTemplate": "his/receta-medica",
-  "data": {
-    "patientName": "Juan Perez"
-  }
-}
-
-### send email
-POST {{host}}/coms/send/email
-Content-Type: {{contentType}}
-
-{
-  "toEmails": ["kijiv85358@eubonus.com"],
-  "emailTemplate": "his/resultado-examenes",
-  "data": {
-    "patientName": "Juan Perez",
-    "labType": "Imagenes"
-  }
-}
-
-### send email
-POST {{host}}/coms/send/email
-Content-Type: {{contentType}}
-
-{
-  "toEmails": ["kijiv85358@eubonus.com"],
-  "emailTemplate": "his/solicitud-examenes",
-  "data": {
-    "patientName": "Juan Perez",
-    "labType": "Imagenes"
-  }
-}
-
-### send email
-POST {{host}}/coms/send/email
-Content-Type: {{contentType}}
-
-{
-  "toEmail": ["kijiv85358@eubonus.com"],
-  "emailTemplate": "mkt/campana-promocional",
-  "data": {
-  }
-}
-
-### send email
-POST {{host}}/coms/send/email
-Content-Type: {{contentType}}
-
-{
-  "toEmails": ["raulsantamariao@hotmail.com"],
-  "emailTemplate": "mkt/cotizacion-servicio",
-  "data": {
-    "serviceName": "Chequeo Médico Completo"
-  }
-}
-
-### send email
-POST {{host}}/coms/send/email
-Content-Type: {{contentType}}
-
-{
-  "toEmails": ["raulsantamariao@hotmail.com"],
-  "emailTemplate": "mkt/cotizacion-servicio",
-  "data": {
-    "serviceName": "Chequeo Médico Completo"
+    "documentId": "123456789",
+    "date": "2024-07-15",
+    "code": 123456
   },
   "documents": [
-  {
-    "bucket": "test",
-    "files": [
-      {
-        "folderName": "test1",
-        "fileInfo": {
-          "fileId": "32e4e180-b307-42c8-8240-096c749a9188"
-          }
-
-      },
-      {
-        "folderName": "test1",
-        "fileInfo": {
-          "fileId": "19d609dd-b531-4e7d-bfb8-efffc8e817ee"
-          }
-      },
-      {
-        "folderName": "test1",
-        "fileInfo": {
-          "fileId": "9f6fe419-da67-40d2-b55c-5fb6676d984d"
-          }
-      }
-    ]
-  }
-]
-
+    {
+      "bucket": "hsm-docs",
+      "files": [
+        {
+          "folderName": "generated",
+          "fileInfo": { "fileId": "32e4e180-b307-42c8-8240-096c749a9188" }
+        }
+      ]
+    }
+  ]
 }
 
-### Resend Email
-POST {{host}}/coms/resend/email
+###
+
+### List Email Batches
+GET {{host}}/coms/emails/batches
+Authorization: Bearer {{at_token}}
+
+###
+
+### List Email Batches — filtered by status and date range
+GET {{host}}/coms/emails/batches?overallStatus=SENT&fromDate=2024-01-01&toDate=2024-12-31&page=1&limit=10
+Authorization: Bearer {{at_token}}
+
+###
+
+### Get Email Batch by ID
+GET {{host}}/coms/emails/batches/[batchId]
+Authorization: Bearer {{at_token}}
+
+###
+
+### Resend Email Batch
+POST {{host}}/coms/emails/batches/[batchId]/resend
 Content-Type: {{contentType}}
 Authorization: Bearer {{at_token}}
 
 ###
 
-### Send SMS
+### List Email Recipients
+GET {{host}}/coms/emails/recipients
+Authorization: Bearer {{at_token}}
+
+###
+
+### List Email Recipients — filtered by batchId and status
+GET {{host}}/coms/emails/recipients?batchId=[batchId]&status=FAILED&page=1&limit=20
+Authorization: Bearer {{at_token}}
+
+###
+
+### Get Email Recipient by ID
+GET {{host}}/coms/emails/recipients/[recipientId]
+Authorization: Bearer {{at_token}}
+
+###
+
+### Resend Email Recipient
+POST {{host}}/coms/emails/recipients/[recipientId]/resend
+Content-Type: {{contentType}}
+Authorization: Bearer {{at_token}}
+
+###
+
+### Send SMS (stub — not yet implemented)
 POST {{host}}/coms/send/sms
 Content-Type: {{contentType}}
 Authorization: Bearer {{at_token}}
+
+###
