@@ -1,4 +1,3 @@
-import { HttpStatus } from '@nestjs/common';
 import { GUARDS_METADATA } from '@nestjs/common/constants';
 import {
   ApiBadRequestResponse,
@@ -93,35 +92,35 @@ describe('ApiDocumentation', () => {
     it('400 issue code is VALIDATION_ERROR', () => {
       applyDecorator();
       const { schema } = (ApiBadRequestResponse as jest.Mock).mock.calls[0][0];
-      expect(
-        schema.allOf[1].properties.issue.properties.code.example,
-      ).toBe('VALIDATION_ERROR');
+      expect(schema.allOf[1].properties.issue.properties.code.example).toBe(
+        'VALIDATION_ERROR',
+      );
     });
 
     it('401 issue code is UNAUTHORIZED', () => {
       applyDecorator();
       const { schema } = (ApiUnauthorizedResponse as jest.Mock).mock
         .calls[0][0];
-      expect(
-        schema.allOf[1].properties.issue.properties.code.example,
-      ).toBe('UNAUTHORIZED');
+      expect(schema.allOf[1].properties.issue.properties.code.example).toBe(
+        'UNAUTHORIZED',
+      );
     });
 
     it('403 issue code is FORBIDDEN', () => {
       applyDecorator();
       const { schema } = (ApiForbiddenResponse as jest.Mock).mock.calls[0][0];
-      expect(
-        schema.allOf[1].properties.issue.properties.code.example,
-      ).toBe('FORBIDDEN');
+      expect(schema.allOf[1].properties.issue.properties.code.example).toBe(
+        'FORBIDDEN',
+      );
     });
 
     it('500 issue code is INTERNAL_SERVER_ERROR', () => {
       applyDecorator();
       const { schema } = (ApiInternalServerErrorResponse as jest.Mock).mock
         .calls[0][0];
-      expect(
-        schema.allOf[1].properties.issue.properties.code.example,
-      ).toBe('INTERNAL_SERVER_ERROR');
+      expect(schema.allOf[1].properties.issue.properties.code.example).toBe(
+        'INTERNAL_SERVER_ERROR',
+      );
     });
   });
 
@@ -131,7 +130,7 @@ describe('ApiDocumentation', () => {
     it('authenticated endpoint does not include ApiHeader for Authorization', () => {
       applyDecorator();
       const authHeaderCall = (ApiHeader as jest.Mock).mock.calls.find(
-        (args) => (args[0] as { name?: string })?.name === 'Authorization',
+        args => (args[0] as { name?: string })?.name === 'Authorization',
       );
       expect(authHeaderCall).toBeUndefined();
     });
@@ -146,7 +145,7 @@ describe('ApiDocumentation', () => {
       applyDecorator();
       expect(ApiBearerAuth as jest.Mock).not.toHaveBeenCalled();
       const authHeaderCall = (ApiHeader as jest.Mock).mock.calls.find(
-        (args) => (args[0] as { name?: string })?.name === 'Authorization',
+        args => (args[0] as { name?: string })?.name === 'Authorization',
       );
       expect(authHeaderCall).toBeUndefined();
     });
@@ -155,11 +154,15 @@ describe('ApiDocumentation', () => {
       const { AuthJwtRtGuard } = jest.requireMock('../guards') as {
         AuthJwtRtGuard: unknown;
       };
-      Reflect.defineMetadata(GUARDS_METADATA, [AuthJwtRtGuard], descriptor.value);
+      Reflect.defineMetadata(
+        GUARDS_METADATA,
+        [AuthJwtRtGuard],
+        descriptor.value,
+      );
       applyDecorator();
       expect(ApiBearerAuth as jest.Mock).toHaveBeenCalledWith('refresh_token');
       const authHeaderCall = (ApiHeader as jest.Mock).mock.calls.find(
-        (args) => (args[0] as { name?: string })?.name === 'Authorization',
+        args => (args[0] as { name?: string })?.name === 'Authorization',
       );
       expect(authHeaderCall).toBeUndefined();
     });
@@ -173,9 +176,9 @@ describe('ApiDocumentation', () => {
       Reflect.defineMetadata('path', 'login', descriptor.value);
       applyDecorator();
       const { schema } = (ApiOkResponse as jest.Mock).mock.calls[0][0];
-      expect(
-        schema.allOf[1].properties.metadata.properties.path.example,
-      ).toBe('/v1/auth/login');
+      expect(schema.allOf[1].properties.metadata.properties.path.example).toBe(
+        '/v1/auth/login',
+      );
     });
 
     it('handles parameterised segments without double slashes', () => {
@@ -183,9 +186,9 @@ describe('ApiDocumentation', () => {
       Reflect.defineMetadata('path', ':id', descriptor.value);
       applyDecorator();
       const { schema } = (ApiOkResponse as jest.Mock).mock.calls[0][0];
-      expect(
-        schema.allOf[1].properties.metadata.properties.path.example,
-      ).toBe('/v1/docs/:id');
+      expect(schema.allOf[1].properties.metadata.properties.path.example).toBe(
+        '/v1/docs/:id',
+      );
     });
 
     it('falls back to /v1 when both paths are empty strings', () => {
@@ -193,9 +196,9 @@ describe('ApiDocumentation', () => {
       Reflect.defineMetadata('path', '', descriptor.value);
       applyDecorator();
       const { schema } = (ApiOkResponse as jest.Mock).mock.calls[0][0];
-      expect(
-        schema.allOf[1].properties.metadata.properties.path.example,
-      ).toBe('/v1');
+      expect(schema.allOf[1].properties.metadata.properties.path.example).toBe(
+        '/v1',
+      );
     });
 
     it('does not throw when PATH_METADATA is not set on targets', () => {
@@ -217,9 +220,9 @@ describe('ApiDocumentation', () => {
       Reflect.defineMetadata('path', 'login', descriptor.value);
       applyDecorator();
       const { schema } = (ApiBadRequestResponse as jest.Mock).mock.calls[0][0];
-      expect(
-        schema.allOf[1].properties.metadata.properties.path.example,
-      ).toBe('/v1/auth/login');
+      expect(schema.allOf[1].properties.metadata.properties.path.example).toBe(
+        '/v1/auth/login',
+      );
     });
   });
 });
