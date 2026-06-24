@@ -1,0 +1,35 @@
+### Get settings by category (admin only)
+# Response shape: { data: { category, settings: [{ key, category, value, isSecret, isSet }] } }
+# Secret values are returned masked ("********"), never the stored value.
+GET {{host}}/settings?category=EMAIL
+content-Type: {{contentType}}
+Authorization: Bearer {{at_token}}
+
+### Get WEBHOOK settings
+GET {{host}}/settings?category=WEBHOOK
+content-Type: {{contentType}}
+Authorization: Bearer {{at_token}}
+
+### Get STORAGE settings
+GET {{host}}/settings?category=STORAGE
+content-Type: {{contentType}}
+Authorization: Bearer {{at_token}}
+
+### Get APP_BEHAVIOR settings
+GET {{host}}/settings?category=APP_BEHAVIOR
+content-Type: {{contentType}}
+Authorization: Bearer {{at_token}}
+
+### Update settings (admin only)
+# A blank secret value leaves the stored secret unchanged.
+PUT {{host}}/settings
+Content-Type: {{contentType}}
+Authorization: Bearer {{at_token}}
+
+{
+  "category": "EMAIL",
+  "settings": [
+    { "key": "SMTP_ADDRESS", "value": "smtp.hsm.org" },
+    { "key": "SMTP_PASSWORD", "value": "" }
+  ]
+}
