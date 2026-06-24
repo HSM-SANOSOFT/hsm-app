@@ -1,0 +1,87 @@
+<section class="admin-settings" data-testid="admin-settings">
+  <header class="admin-settings__header">
+    <h1>Settings</h1>
+    <p>Manage operational configuration. Secret values are never displayed.</p>
+  </header>
+
+  <p-toast />
+
+  <p-tabs
+    [value]="activeCategory()"
+    (valueChange)="onTabChange($event)"
+  >
+    <p-tablist>
+      @for (tab of tabs; track tab.value) {
+        <p-tab [value]="tab.value">{{ tab.label }}</p-tab>
+      }
+    </p-tablist>
+
+    <p-tabpanels>
+      @for (tab of tabs; track tab.value) {
+        <p-tabpanel [value]="tab.value">
+          @if (loading()) {
+            <div class="admin-settings__loading" data-testid="settings-loading">
+              <p-progress-spinner [style]="{ width: '2.5rem', height: '2.5rem' }" />
+            </div>
+          } @else {
+            @if (errorMessage(); as error) {
+              <p-message severity="error" [text]="error" />
+            }
+
+            <form class="admin-settings__form" (ngSubmit)="save()">
+              @for (field of fields(); track field.item.key) {
+                <div class="admin-settings__field" [attr.data-key]="field.item.key">
+                  <label [for]="field.item.key">{{ field.item.key }}</label>
+
+                  @if (field.item.isSecret) {
+                    <p-password
+                      [inputId]="field.item.key"
+                      [feedback]="false"
+                      [toggleMask]="true"
+                      [ngModel]="field.draft"
+                      [ngModelOptions]="{ standalone: true }"
+                      (ngModelChange)="onFieldInput(field, $event)"
+                      [placeholder]="
+                        field.item.isSet
+                          ? 'A value is set — leave blank to keep it'
+                          : 'Not set'
+                      "
+                      [attr.data-testid]="'secret-' + field.item.key"
+                    />
+                    @if (field.item.isSet) {
+                      <small class="admin-settings__hint">
+                        A value is stored. Leave blank to keep it unchanged.
+                      </small>
+                    }
+                  } @else {
+                    <input
+                      pInputText
+                      [id]="field.item.key"
+                      [ngModel]="field.draft"
+                      [ngModelOptions]="{ standalone: true }"
+                      (ngModelChange)="onFieldInput(field, $event)"
+                      [attr.data-testid]="'value-' + field.item.key"
+                    />
+                  }
+                </div>
+              } @empty {
+                <p class="admin-settings__empty">
+                  No settings in this category.
+                </p>
+              }
+
+              <div class="admin-settings__actions">
+                <p-button
+                  type="submit"
+                  label="Save"
+                  [loading]="saving()"
+                  data-testid="settings-save"
+                />
+              </div>
+            </form>
+          }
+        </p-tabpanel>
+      }
+    </p-tabpanels>
+  </p-tabs>
+</section>
