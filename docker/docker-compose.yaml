@@ -23,8 +23,10 @@ services:
       - hsm-app-network
     ports:
       - 10001:3000
+    # Secrets are written per-app by .devcontainer/script/get-secrets-infisical.sh
+    # (root ../.env holds only the Infisical *bootstrap* creds, not app secrets).
     env_file:
-      - ../.env
+      - ../apps/backend/api/.env
     restart: unless-stopped
     depends_on:
       - postgres
@@ -41,8 +43,9 @@ services:
       - hsm-app-network
     ports:
       - 10002:3001
+    # Per-app secrets file (see api service note above).
     env_file:
-      - ../.env
+      - ../apps/backend/worker/.env
     depends_on:
       - postgres
       - redis
