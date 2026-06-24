@@ -112,8 +112,13 @@ Wiring:
   root: `pnpm check` / `npx @biomejs/biome check apps/frontend/web/src`.
   Biome's HTML parser has `interpolation` enabled in the root config so it
   tolerates Angular `{{ }}` templates.
-- **HTTP** via `provideHttpClient(withFetch())` (auth/refresh interceptors are
-  added in U8).
+- **HTTP** via `provideHttpClient(withFetch(), withInterceptors([authInterceptor]))`.
+  The U8 `authInterceptor` (`core/auth/auth.interceptor.ts`) attaches the access
+  token and runs a single in-flight refresh on 401 (KTD2); concurrent 401s queue
+  on a shared `BehaviorSubject` so only one `GET /v1/auth/refresh` fires. Auth
+  state lives in `AuthService` (signals: `currentUser`, `isAuthenticated`,
+  `isAdmin`); route protection via `authGuard`/`roleGuard`/`adminGuard`; element
+  gating via the `*hasRole` / `*ifAdmin` structural directives.
 - Output dir is `dist/` so Turborepo's `build` cache (`outputs: ["dist/**"]`)
   works.
 

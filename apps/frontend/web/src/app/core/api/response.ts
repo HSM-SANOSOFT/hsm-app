@@ -70,3 +70,29 @@ export interface Tokens {
   access_token: string;
   refresh_token: string;
 }
+
+/**
+ * Mirror of `@hsm/common` `LoginPayloadDto`.
+ *
+ * The backend authenticates on USERNAME + password (not email).
+ */
+export interface LoginPayload {
+  username: string;
+  password: string;
+}
+
+/**
+ * Mirror of `@hsm/common` `SignedUserProfileDto` (only the fields the console
+ * reads). `roles` comes back as a string array of role *values* (e.g.
+ * `['admin']`) matching `RolesEnum.*` values from `@hsm/common/enums`.
+ */
+export interface UserProfile {
+  id: string;
+  username: string;
+  email: string;
+  firstName: string;
+  firstLastName: string;
+  roles: string[];
+  iat: number;
+  exp: number;
+}

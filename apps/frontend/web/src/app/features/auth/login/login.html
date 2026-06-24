@@ -1,0 +1,49 @@
+<section class="login">
+  <h1>HSM Console</h1>
+  <p>Sign in to continue.</p>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="login-form">
+    @if (errorMessage(); as message) {
+      <p-message severity="error" [text]="message" />
+    }
+
+    <div class="field">
+      <label for="username">Username</label>
+      <input
+        pInputText
+        id="username"
+        type="text"
+        formControlName="username"
+        autocomplete="username"
+      />
+      @if (
+        form.controls.username.invalid && form.controls.username.touched
+      ) {
+        <small class="error">Username is required.</small>
+      }
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <p-password
+        inputId="password"
+        formControlName="password"
+        [feedback]="false"
+        [toggleMask]="true"
+        autocomplete="current-password"
+      />
+      @if (
+        form.controls.password.invalid && form.controls.password.touched
+      ) {
+        <small class="error">Password is required.</small>
+      }
+    </div>
+
+    <p-button
+      type="submit"
+      label="Sign in"
+      [loading]="submitting()"
+      [disabled]="submitting()"
+    />
+  </form>
+</section>
