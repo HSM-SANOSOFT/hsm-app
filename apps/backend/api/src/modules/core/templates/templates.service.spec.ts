@@ -21,7 +21,7 @@ const BASE_UUID = '11111111-1111-1111-1111-111111111111';
 
 describe('TemplatesService', () => {
   let service: TemplatesService;
-  let templatesRepo: { findOne: jest.Mock; count: jest.Mock };
+  let templatesRepo: { findOne: jest.Mock; find: jest.Mock; count: jest.Mock };
   let managerSave: jest.Mock;
   let managerUpdate: jest.Mock;
   let managerDelete: jest.Mock;
@@ -33,6 +33,7 @@ describe('TemplatesService', () => {
   beforeEach(async () => {
     templatesRepo = {
       findOne: jest.fn(),
+      find: jest.fn().mockResolvedValue([]),
       count: jest.fn().mockResolvedValue(0),
     };
     managerSave = jest.fn(async (_entity, value) => value);
@@ -217,6 +218,44 @@ describe('TemplatesService', () => {
   });
 
   // ─── create ──────────────────────────────────────────────────────────────────
+
+  describe('findAll', () => {
+    it('lists all templates mapped to detail DTOs, ordered by name', async () => {
+      templatesRepo.find.mockResolvedValue([
+        {
+          id: 't1',
+          name: 'alpha',
+          category: TemplateCategoriesEnum.BASE,
+          isActive: true,
+          schema: {},
+          content: '<html>{{{body}}}</html>',
+          description: null,
+        },
+      ]);
+
+      const result = await service.findAll({});
+
+      expect(templatesRepo.find).toHaveBeenCalledWith(
+        expect.objectContaining({ order: { name: 'ASC' } }),
+      );
+      expect(result).toHaveLength(1);
+      expect(result[0]).toEqual(
+        expect.objectContaining({ id: 't1', name: 'alpha' }),
+      );
+    });
+
+    it('filters by category when provided', async () => {
+      templatesRepo.find.mockResolvedValue([]);
+
+      await service.findAll({ category: TemplateCategoriesEnum.DOCS });
+
+      expect(templatesRepo.find).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { category: TemplateCategoriesEnum.DOCS },
+        }),
+      );
+    });
+  });
 
   describe('create', () => {
     const baseDto = {

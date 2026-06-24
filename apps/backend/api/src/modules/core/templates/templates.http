@@ -118,3 +118,15 @@ Authorization: Bearer {{at_token}}
     "patientName": "Ada Lovelace"
   }
 }
+
+### List all templates
+GET {{host}}/templates
+Authorization: Bearer {{at_token}}
+
+### List templates by category (BASE for base-template selector)
+GET {{host}}/templates?category=BASE
+Authorization: Bearer {{at_token}}
+
+### List DOCS templates (document generation picker)
+GET {{host}}/templates?category=DOCS
+Authorization: Bearer {{at_token}}

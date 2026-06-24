@@ -39,6 +39,20 @@ export class GetTemplateRequestDto {
   identifier: string;
 }
 
+@ApiSchema({ name: 'List Templates Query' })
+export class ListTemplatesQueryDto {
+  @IsOptional()
+  @IsEnum(TemplateCategoriesEnum)
+  @ApiProperty({
+    enum: TemplateCategoriesEnum,
+    required: false,
+    description:
+      'Filtra las plantillas por categoría (p. ej. BASE para el selector ' +
+      'de plantilla base, o DOCS para generación de documentos).',
+  })
+  category?: TemplateCategoriesEnum;
+}
+
 @ApiSchema({ name: 'Email Template Fields' })
 export class EmailTemplateFieldsDto {
   @IsNotEmpty()

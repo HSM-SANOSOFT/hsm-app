@@ -3,7 +3,9 @@ import {
   DraftRenderPayloadDto,
   DraftRenderResponseDto,
   GetTemplateRequestDto,
+  ListTemplatesQueryDto,
   ParseTemplatePayloadDto,
+  TemplateDetailDto,
   TemplateWithBaseResponseDto,
   UpdateTemplatePayloadDto,
   ValidateTemplateResponseDto,
@@ -18,6 +20,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ApiDocumentation } from '../../../decorator';
 import { Roles } from '../../security/roles/roles.decorator';
@@ -26,6 +29,13 @@ import { TemplatesService } from './templates.service';
 @Controller('templates')
 export class TemplatesController {
   constructor(private readonly templatesService: TemplatesService) {}
+
+  @ApiDocumentation(TemplateDetailDto)
+  @Roles()
+  @Get()
+  listTemplates(@Query() query: ListTemplatesQueryDto) {
+    return this.templatesService.findAll({ category: query.category });
+  }
 
   @ApiDocumentation(TemplateWithBaseResponseDto, {
     additionalErrors: [HttpStatus.NOT_FOUND],

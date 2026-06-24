@@ -71,6 +71,17 @@ export class TemplatesService {
     return this.toResponseDto(entity);
   }
 
+  async findAll(
+    options: { category?: TemplateCategoriesEnum } = {},
+  ): Promise<TemplateDetailDto[]> {
+    const entities = await this.templates.find({
+      where: options.category ? { category: options.category } : {},
+      relations: { comEmail: true, doc: true, comSms: true },
+      order: { name: 'ASC' },
+    });
+    return entities.map(entity => this.toDetailDto(entity));
+  }
+
   async create(
     dto: CreateTemplatePayloadDto,
   ): Promise<TemplateWithBaseResponseDto> {
