@@ -25,6 +25,11 @@ services:
       - 10001:3000
     env_file:
       - ../.env
+    environment:
+      # Seeds an initial admin user on API startup (see AdminSeedService).
+      # Leave blank/unset to skip seeding.
+      DEFAULT_ADMIN_USERNAME: ${DEFAULT_ADMIN_USERNAME:-}
+      DEFAULT_ADMIN_PASSWORD: ${DEFAULT_ADMIN_PASSWORD:-}
     restart: unless-stopped
     depends_on:
       - postgres

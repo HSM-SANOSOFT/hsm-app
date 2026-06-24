@@ -43,6 +43,9 @@ interface EnvVars {
   STRG_S3_SECRET_KEY: string;
 
   COMS_WEBHOOK_SIGNING_KEYS?: string;
+
+  DEFAULT_ADMIN_USERNAME?: string;
+  DEFAULT_ADMIN_PASSWORD?: string;
 }
 
 const EnvSchema = joi
@@ -94,6 +97,9 @@ const EnvSchema = joi
     STRG_S3_SECRET_KEY: joi.string().required(),
 
     COMS_WEBHOOK_SIGNING_KEYS: joi.string().optional(),
+
+    DEFAULT_ADMIN_USERNAME: joi.string().allow('').optional(),
+    DEFAULT_ADMIN_PASSWORD: joi.string().allow('').optional(),
   })
   .unknown()
   .required();
@@ -146,12 +152,18 @@ export const envs = Object.freeze({
   STRG_S3_SECRET_KEY: envVars.STRG_S3_SECRET_KEY,
 
   COMS_WEBHOOK_SIGNING_KEYS: envVars.COMS_WEBHOOK_SIGNING_KEYS,
+
+  DEFAULT_ADMIN_USERNAME: envVars.DEFAULT_ADMIN_USERNAME,
+  DEFAULT_ADMIN_PASSWORD: envVars.DEFAULT_ADMIN_PASSWORD,
 } as const);
 export type Envs = Readonly<typeof envs>;
 
 export function getWebhookSigningKeys(): Record<string, string> {
   try {
-    return JSON.parse(envs.COMS_WEBHOOK_SIGNING_KEYS ?? '{}') as Record<string, string>;
+    return JSON.parse(envs.COMS_WEBHOOK_SIGNING_KEYS ?? '{}') as Record<
+      string,
+      string
+    >;
   } catch {
     return {};
   }
