@@ -57,6 +57,10 @@ async function bootstrap() {
     defaultVersion: '1',
   });
 
+  // The web frontend is served from a different origin (the containerized
+  // `web` service / the dev server on :4200), so allow cross-origin requests.
+  app.enableCors();
+
   app.enableShutdownHooks();
 
   await app.listen(port);
