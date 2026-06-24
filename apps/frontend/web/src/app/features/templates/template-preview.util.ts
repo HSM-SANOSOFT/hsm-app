@@ -62,6 +62,56 @@ export function seedSampleDataFromSchema(
   return null;
 }
 
+/**
+ * Inverse of {@link seedSampleDataFromSchema}: derive a template mini-schema
+ * from a concrete sample-data object (U14). Used to assemble the `schema` field
+ * a CREATE requires, since the editor only captures editable sample data.
+ *
+ * Leaf mapping:
+ * - `string` → `'string'`
+ * - `number` → `'number'`
+ * - `boolean` → `'boolean'`
+ * - object → recurse key-by-key (nested sub-schema)
+ * - array → `[<schema of first element>]` (single-element mini-schema list);
+ *   an empty array → `['any']`
+ * - `null` / `undefined` → `'any'`
+ *
+ * This mirrors `seedSampleDataFromSchema`'s primitive tags so a seed→edit→derive
+ * round-trip stays within the backend's accepted schema shape.
+ */
+export function deriveSchemaFromSampleData(value: unknown): TemplateSchemaNode {
+  if (value === null || value === undefined) {
+    return 'any';
+  }
+
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return ['any'];
+    }
+    return [deriveSchemaFromSampleData(value[0])];
+  }
+
+  if (isPlainObject(value)) {
+    const out: Record<string, TemplateSchemaNode> = {};
+    for (const [key, child] of Object.entries(value)) {
+      out[key] = deriveSchemaFromSampleData(child);
+    }
+    return out;
+  }
+
+  switch (typeof value) {
+    case 'string':
+      return 'string';
+    case 'number':
+      return 'number';
+    case 'boolean':
+      return 'boolean';
+    default:
+      // bigint / symbol / function — not representable; treat as 'any'.
+      return 'any';
+  }
+}
+
 function sampleForTag(tag: string, now: Date): unknown {
   switch (tag as PrimitiveTag) {
     case 'string':

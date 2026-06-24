@@ -4,11 +4,43 @@ import {
   DestroyRef,
   ElementRef,
   effect,
+  InjectionToken,
   inject,
   input,
   output,
   viewChild,
 } from '@angular/core';
+
+/** Minimal slice of the Monaco API this wrapper actually drives. */
+export interface MonacoLike {
+  editor: {
+    create(
+      host: HTMLElement,
+      options: Record<string, unknown>,
+    ): {
+      getValue(): string;
+      setValue(v: string): void;
+      onDidChangeModelContent(cb: () => void): { dispose(): void };
+      dispose(): void;
+    };
+  };
+}
+
+/**
+ * Loads Monaco. Defaults to the lazy ESM import so Monaco stays out of the
+ * initial bundle. Overridable in tests with a stub — the Angular unit-test
+ * builder pre-bundles the dynamic import, so `vi.mock('monaco-editor')` cannot
+ * intercept it; injecting the loader is the clean test seam that avoids the
+ * real (worker-laden) module loading after the test environment tears down.
+ */
+export const MONACO_LOADER = new InjectionToken<() => Promise<MonacoLike>>(
+  'MONACO_LOADER',
+  {
+    providedIn: 'root',
+    factory: () => () =>
+      import('monaco-editor') as unknown as Promise<MonacoLike>,
+  },
+);
 
 /**
  * Reusable standalone Monaco editor wrapper (U13).
@@ -61,6 +93,7 @@ export class MonacoEditor {
 
   private readonly host = viewChild.required<ElementRef<HTMLElement>>('host');
   private readonly destroyRef = inject(DestroyRef);
+  private readonly loadMonaco = inject(MONACO_LOADER);
 
   /** The `monaco.editor.IStandaloneCodeEditor`, once created. */
   private editor: {
@@ -97,7 +130,7 @@ export class MonacoEditor {
   }
 
   private async createEditor(): Promise<void> {
-    const monaco = await import('monaco-editor');
+    const monaco = await this.loadMonaco();
     // Component may have been destroyed while the chunk loaded.
     if (!this.host) {
       return;

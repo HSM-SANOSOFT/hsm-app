@@ -21,7 +21,7 @@ import { MonacoEditor } from '../monaco-editor';
 import type {
   BaseTemplateOption,
   CategoryOption,
-  DraftRenderPayload,
+  SaveRequest,
   TemplateDetail,
   TemplateWithBase,
 } from '../template.types';
@@ -72,11 +72,12 @@ export class TemplateEditor {
   readonly identifier = input<string | null>(null);
 
   /**
-   * Stubbed Save seam (R17). U14 listens here to POST `/v1/templates/draft-render`,
-   * show the true-preview confirm dialog, and persist. This component performs
-   * NO persistence and NO draft-render itself.
+   * Save seam (R17). The routed host (`Templates`) listens here to run the
+   * true-preview-on-save gate: POST `/v1/templates/draft-render`, show the
+   * confirm dialog, and persist only on confirm. This component performs NO
+   * persistence and NO draft-render itself — it just emits the captured state.
    */
-  readonly save = output<DraftRenderPayload>();
+  readonly save = output<SaveRequest>();
 
   // --- Metadata bar state (R12) ---
   protected readonly name = signal('');
@@ -209,27 +210,39 @@ export class TemplateEditor {
   }
 
   /**
-   * Save (R17) — stubbed seam. Emits the current draft for U14 to draft-render,
-   * confirm, and persist. No persistence happens here.
+   * Save (R17). Emits the full captured editor state as a {@link SaveRequest};
+   * the host runs the draft-render → confirm → persist gate. No persistence and
+   * no draft-render happen here — the editor stays a pure authoring surface.
    */
   protected onSave(): void {
-    let sampleData: Record<string, unknown> | undefined;
-    try {
-      const parsed = this.sampleDataJson().trim()
-        ? JSON.parse(this.sampleDataJson())
-        : undefined;
-      sampleData =
-        parsed && typeof parsed === 'object' && !Array.isArray(parsed)
-          ? (parsed as Record<string, unknown>)
-          : undefined;
-    } catch {
-      sampleData = undefined;
-    }
-
     this.save.emit({
+      loadedId: this.loaded()?.id ?? null,
+      name: this.name(),
+      description: this.description(),
+      category: this.category(),
       content: this.content(),
       baseTemplateId: this.baseTemplateId() ?? undefined,
-      sampleData,
+      sampleData: this.parseSampleData(),
     });
+  }
+
+  /**
+   * Parse the editable sample-data JSON into a plain object, or `undefined` when
+   * it is blank or not a JSON object. Mirrors the preview's lenient parsing so a
+   * transient invalid edit never blocks Save (the server validates the draft).
+   */
+  private parseSampleData(): Record<string, unknown> | undefined {
+    try {
+      const raw = this.sampleDataJson().trim();
+      if (!raw) {
+        return undefined;
+      }
+      const parsed = JSON.parse(raw);
+      return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+        ? (parsed as Record<string, unknown>)
+        : undefined;
+    } catch {
+      return undefined;
+    }
   }
 }

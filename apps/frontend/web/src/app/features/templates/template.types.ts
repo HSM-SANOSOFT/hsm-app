@@ -63,6 +63,52 @@ export interface DraftRenderPayload {
   sampleData?: Record<string, unknown>;
 }
 
+/**
+ * Mirror of `@hsm/common` `DraftRenderResponseDto` — the body returned by
+ * `POST /v1/templates/draft-render`: the server-composed (base + child) HTML.
+ */
+export interface DraftRenderResponse {
+  html: string;
+}
+
+/**
+ * Everything the editor's metadata bar + panels capture, emitted on Save so the
+ * host's save-flow (U14) can both draft-render and persist. `loadedId` carries
+ * the id of the template being edited (CREATE vs UPDATE discriminator).
+ */
+export interface SaveRequest {
+  /** The id of the loaded template, if editing an existing one (else null). */
+  loadedId: string | null;
+  name: string;
+  description: string;
+  category: TemplateCategoriesEnum;
+  content: string;
+  baseTemplateId?: string;
+  /** The editable sample-data object (drives draft-render + schema derivation). */
+  sampleData?: Record<string, unknown>;
+}
+
+/**
+ * Mirror of `@hsm/common` `CreateTemplatePayloadDto` (the subset this unit
+ * sends). `schema` is the derived mini-schema; channel `metadata` editors
+ * (email/doc/sms) are out of scope for U14 — those keys are intentionally
+ * omitted, so CREATE is exercised for BASE and content-only templates.
+ */
+export interface CreateTemplatePayload {
+  category: TemplateCategoriesEnum;
+  name: string;
+  description?: string;
+  schema: TemplateSchemaNode;
+  content: string;
+  baseTemplateId?: string;
+}
+
+/**
+ * Mirror of `@hsm/common` `UpdateTemplatePayloadDto` (`PartialType` of create):
+ * every field optional, so an update sends only what changed.
+ */
+export type UpdateTemplatePayload = Partial<CreateTemplatePayload>;
+
 /** A `TemplateCategoriesEnum` option for the category `p-select`. */
 export interface CategoryOption {
   label: string;

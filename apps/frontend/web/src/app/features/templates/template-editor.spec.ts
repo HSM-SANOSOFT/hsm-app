@@ -10,6 +10,7 @@ import { TemplateCategoriesEnum } from '@hsm/common/enums';
 import { environment } from '../../../environments/environment';
 import type { SuccessResponse } from '../../core/api/response';
 import { TemplateEditor } from './editor/template-editor';
+import { MONACO_LOADER, type MonacoLike } from './monaco-editor';
 import type { TemplateDetail, TemplateWithBase } from './template.types';
 import {
   buildPreviewSrcdoc,
@@ -33,22 +34,25 @@ function wrap<T>(data: T): SuccessResponse<T> {
   };
 }
 
-// Monaco is mocked: the editor wrapper lazy-imports it, and jsdom has no canvas
-// / web-worker support. The component logic under test never needs a real
-// editor — value binding flows through signals.
-vi.mock('monaco-editor', () => {
-  const noop = (): void => undefined;
-  return {
-    editor: {
-      create: () => ({
-        getValue: () => '',
-        setValue: noop,
-        onDidChangeModelContent: () => ({ dispose: noop }),
-        dispose: noop,
-      }),
-    },
-  };
-});
+// Monaco is stubbed via the MONACO_LOADER token: the Angular unit-test builder
+// pre-bundles the wrapper's dynamic `import('monaco-editor')`, so `vi.mock`
+// can't intercept it (the real, worker-laden module would load and reject
+// after teardown). Overriding the loader keeps the real module out of tests.
+const noop = (): void => undefined;
+const stubMonaco: MonacoLike = {
+  editor: {
+    create: () => ({
+      getValue: () => '',
+      setValue: noop,
+      onDidChangeModelContent: () => ({ dispose: noop }),
+      dispose: noop,
+    }),
+  },
+};
+const provideStubMonaco = {
+  provide: MONACO_LOADER,
+  useValue: () => Promise.resolve(stubMonaco),
+};
 
 describe('seedSampleDataFromSchema (R15 / AE5)', () => {
   const fixedNow = new Date('2026-06-24T12:00:00.000Z');
@@ -157,6 +161,7 @@ describe('TemplateEditor component', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideAnimationsAsync(),
+        provideStubMonaco,
       ],
     });
     httpMock = TestBed.inject(HttpTestingController);
@@ -226,6 +231,7 @@ describe('TemplateEditor component', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideAnimationsAsync(),
+        provideStubMonaco,
       ],
     });
     httpMock = TestBed.inject(HttpTestingController);
@@ -242,8 +248,11 @@ describe('TemplateEditor component', () => {
     expect(sandbox).not.toContain('allow-same-origin');
   });
 
-  it('emits a draft payload from the stubbed Save seam (R17)', () => {
+  it('emits the full SaveRequest from the Save seam (R17)', () => {
     const cmp = setup() as unknown as {
+      name: { set: (v: string) => void };
+      description: { set: (v: string) => void };
+      category: { set: (v: TemplateCategoriesEnum) => void };
       content: { set: (v: string) => void };
       sampleDataJson: { set: (v: string) => void };
       baseTemplateId: { set: (v: string | null) => void };
@@ -252,6 +261,9 @@ describe('TemplateEditor component', () => {
     };
     httpMock.expectOne(`${base}/templates?category=BASE`).flush(wrap([]));
 
+    cmp.name.set('Welcome');
+    cmp.description.set('A greeting');
+    cmp.category.set(TemplateCategoriesEnum.EMAIL_INTERNAL);
     cmp.content.set('<p>{{name}}</p>');
     cmp.sampleDataJson.set('{"name":"Ada"}');
     cmp.baseTemplateId.set('b1');
@@ -263,6 +275,10 @@ describe('TemplateEditor component', () => {
     cmp.onSave();
 
     expect(emitted).toEqual({
+      loadedId: null,
+      name: 'Welcome',
+      description: 'A greeting',
+      category: TemplateCategoriesEnum.EMAIL_INTERNAL,
       content: '<p>{{name}}</p>',
       baseTemplateId: 'b1',
       sampleData: { name: 'Ada' },
