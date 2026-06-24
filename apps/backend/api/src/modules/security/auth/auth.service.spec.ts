@@ -1,12 +1,16 @@
 import { RolesEnum } from '@hsm/common/enums';
-import { envs } from '@hsm/config';
 import type { IUnsignedUser } from '@hsm/common/interfaces';
+import { envs } from '@hsm/config';
 import {
   RefreshTokenUserEntity,
   RefreshTokenUserIntegrationEntity,
 } from '@hsm/database/entities';
 import { DatabasesEnum } from '@hsm/database/sources';
-import { BadRequestException, Logger, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getDataSourceToken, getRepositoryToken } from '@nestjs/typeorm';
@@ -34,6 +38,7 @@ const mockUser: IUnsignedUser = {
   firstName: 'John',
   firstLastName: 'Doe',
   roles: [RolesEnum.System.Admin],
+  onboardingCompletedAt: null,
 };
 
 const mockManager = {
@@ -175,6 +180,33 @@ describe('AuthService', () => {
       expect(result).toMatchObject({ id: 'user-uuid', username: 'jdoe' });
     });
 
+    it('serializes a completed onboarding Date to an ISO string', async () => {
+      const completedAt = new Date('2026-06-24T10:00:00.000Z');
+      mockUsersService.findOneByUsername.mockResolvedValue({
+        ...mockUser,
+        password: 'hashed-pw',
+        roles: [{ role: RolesEnum.System.Admin }],
+        onboardingCompletedAt: completedAt,
+      });
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+      const result = await service.validateUser('jdoe', 'plain-pw');
+      expect(result.onboardingCompletedAt).toBe('2026-06-24T10:00:00.000Z');
+    });
+
+    it('maps a null/absent onboarding timestamp to null (pending)', async () => {
+      mockUsersService.findOneByUsername.mockResolvedValue({
+        ...mockUser,
+        password: 'hashed-pw',
+        roles: [{ role: RolesEnum.System.Admin }],
+        onboardingCompletedAt: null,
+      });
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+      const result = await service.validateUser('jdoe', 'plain-pw');
+      expect(result.onboardingCompletedAt).toBeNull();
+    });
+
     it('throws UnauthorizedException on wrong password', async () => {
       mockUsersService.findOneByUsername.mockResolvedValue({
         ...mockUser,
@@ -262,6 +294,7 @@ describe('AuthService', () => {
       mockUsersService.createUser.mockResolvedValue({
         ...mockUser,
         id: 'user-uuid',
+        onboardingCompletedAt: new Date('2026-06-24T10:00:00.000Z'),
       });
 
       const dto = {
@@ -278,6 +311,13 @@ describe('AuthService', () => {
       expect(mockUsersService.createUser).toHaveBeenCalled();
       expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
       expect(mockQueryRunner.release).toHaveBeenCalled();
+      // The created user's onboarding timestamp rides into the signed token.
+      expect(mockJwtService.signAsync).toHaveBeenCalledWith(
+        expect.objectContaining({
+          onboardingCompletedAt: '2026-06-24T10:00:00.000Z',
+        }),
+        expect.anything(),
+      );
       expect(result).toEqual({
         access_token: 'signed-token',
         refresh_token: 'signed-token',

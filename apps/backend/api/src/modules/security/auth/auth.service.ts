@@ -69,6 +69,7 @@ export class AuthService implements OnModuleInit {
         firstName: 'Dev',
         firstLastName: 'User',
         roles: [RolesEnum.System.Developer],
+        onboardingCompletedAt: new Date().toISOString(),
       };
 
       const [at_token, rt_token] = await Promise.all([
@@ -98,6 +99,14 @@ export class AuthService implements OnModuleInit {
    */
   async hashData(data: string): Promise<string> {
     return await bcrypt.hash(data, 10);
+  }
+
+  /**
+   * Serializes the DB `onboardingCompletedAt` (a Date or null/undefined) into
+   * the `string | null` shape carried in the JWT and exposed by the profile.
+   */
+  private serializeOnboarding(value?: Date | null): string | null {
+    return value ? value.toISOString() : null;
   }
 
   /**
@@ -176,6 +185,9 @@ export class AuthService implements OnModuleInit {
       firstName: user.firstName,
       firstLastName: user.firstLastName,
       roles: userRoles,
+      onboardingCompletedAt: this.serializeOnboarding(
+        user.onboardingCompletedAt,
+      ),
     };
   }
 
@@ -293,6 +305,9 @@ export class AuthService implements OnModuleInit {
         firstName: user.firstName,
         firstLastName: user.firstLastName,
         roles: newUser.roles,
+        onboardingCompletedAt: this.serializeOnboarding(
+          user.onboardingCompletedAt,
+        ),
       };
       const tokens: ITokens = await this.generateTokens(userToSign);
       const refreshToken = await this.hashData(tokens.refresh_token);

@@ -40,4 +40,10 @@ export interface IUnsignedUser
     'id' | 'username' | 'email' | 'firstName' | 'firstLastName'
   > {
   roles: RolesType[];
+  /**
+   * ISO timestamp of onboarding completion, or `null` if the account is still
+   * pending. Carried in the JWT so `GET /auth/profile` (JWT-derived) can expose
+   * it; the DB row remains the source of truth for the server-side guard.
+   */
+  onboardingCompletedAt: string | null;
 }

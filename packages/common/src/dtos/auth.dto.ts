@@ -96,6 +96,15 @@ export class SignedUserProfileDto {
   roles!: RolesType[];
 
   @ApiProperty({
+    description:
+      'ISO timestamp of onboarding completion, or null while the account is ' +
+      'pending first-login onboarding (admin-created staff).',
+    nullable: true,
+    example: '2026-06-24T10:00:00.000Z',
+  })
+  onboardingCompletedAt!: string | null;
+
+  @ApiProperty({
     description: 'Issued-at timestamp (JWT)',
     example: 1731500000,
   })

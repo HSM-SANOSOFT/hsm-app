@@ -75,10 +75,14 @@ export class UsersService {
   async createUser(
     user: CreateUserPayloadDto,
     queryRunner: QueryRunner,
+    overrides?: Partial<Pick<UserEntity, 'onboardingCompletedAt'>>,
   ): Promise<UserEntity> {
     const { roles, ...userData } = user;
     const roleDomains = this.rolesService.findRoleDomains(roles);
-    const newUser = await queryRunner.manager.save(UserEntity, userData);
+    const newUser = await queryRunner.manager.save(UserEntity, {
+      ...userData,
+      ...overrides,
+    });
     await Promise.all(
       roleDomains.map(({ role, domain }) =>
         queryRunner.manager.save(UserRoleEntity, {

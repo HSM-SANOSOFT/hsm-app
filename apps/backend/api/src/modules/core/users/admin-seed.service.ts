@@ -74,6 +74,9 @@ export class AdminSeedService implements OnApplicationBootstrap {
           roles: [RolesEnum.System.Admin],
         },
         queryRunner,
+        // The seeded admin is created complete, never pending — otherwise the
+        // onboarding guard (U4) would lock the only bootstrap account out.
+        { onboardingCompletedAt: new Date() },
       );
       await queryRunner.commitTransaction();
       this.logger.log(`Seeded default admin user "${username}"`);

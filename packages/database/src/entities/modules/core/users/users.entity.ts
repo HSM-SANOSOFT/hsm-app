@@ -64,6 +64,16 @@ export class UserEntity {
   @Column({ type: 'timestamptz', nullable: true })
   lastLoginAt?: Date;
 
+  /**
+   * Timestamp marking when the user finished first-login onboarding.
+   * `null` means the account is still pending onboarding (admin-created staff
+   * before their forced first-login flow). Patients and the seeded admin are
+   * created complete (non-null). Orthogonal to `isActive`. DB-authoritative —
+   * the server-side onboarding guard reads this column, not the JWT claim.
+   */
+  @Column({ type: 'timestamptz', nullable: true })
+  onboardingCompletedAt?: Date | null;
+
   @Column({ type: 'boolean', default: true })
   isActive!: boolean;
 
