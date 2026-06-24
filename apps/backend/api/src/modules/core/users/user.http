@@ -1,20 +1,36 @@
-### Create User
-POST {{host}}/user/create
+### Self-service: Update own profile (name/email only)
+PATCH {{host}}/user/me
 Content-Type: {{contentType}}
 Authorization: Bearer {{at_token}}
 
-{}
+{
+  "firstName": "John",
+  "email": "john@test.com"
+}
 
-### Update User
-POST {{host}}/user/update
+### Self-service: Change own password
+POST {{host}}/user/me/password
 Content-Type: {{contentType}}
 Authorization: Bearer {{at_token}}
 
-{}
+{
+  "currentPassword": "old-password",
+  "newPassword": "new-password"
+}
 
-### Delete User
-POST {{host}}/user/delete
+### Admin: List users (paginated)
+GET {{host}}/user?page=1&limit=20
+Authorization: Bearer {{at_token}}
+
+### Admin: Get user by id
+GET {{host}}/user/{{userId}}
+Authorization: Bearer {{at_token}}
+
+### Admin: Change a user's role
+PATCH {{host}}/user/{{userId}}/role
 Content-Type: {{contentType}}
 Authorization: Bearer {{at_token}}
 
-{}
+{
+  "role": "admin"
+}

@@ -1,29 +1,82 @@
-import { Controller, Post } from '@nestjs/common';
+import {
+  ChangePasswordDto,
+  ChangeUserRoleDto,
+  ListUsersQueryDto,
+  UpdateOwnProfileDto,
+} from '@hsm/common/dtos';
+import { RolesEnum } from '@hsm/common/enums';
+import type { ISignedUser } from '@hsm/common/interfaces';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+} from '@nestjs/common';
+import type { Request } from 'express';
 import { ApiDocumentation } from '../../../decorator';
 import { Roles } from '../../security/roles/roles.decorator';
+import { UsersService } from './users.service';
 
 @Controller('user')
 export class UserController {
-  //TODO: Add endpoint implementations
+  constructor(private readonly usersService: UsersService) {}
 
-  @ApiDocumentation()
+  // --- Self-service (any authenticated user) ---
+
+  @ApiDocumentation(undefined, { additionalErrors: [HttpStatus.NOT_FOUND] })
   @Roles()
-  @Post('create')
-  async createUser() {
-    // Implementation for creating a user
+  @Patch('me')
+  async updateOwnProfile(
+    @Body() payload: UpdateOwnProfileDto,
+    @Req() req: Request,
+  ) {
+    return await this.usersService.updateOwnProfile(
+      (req.user as ISignedUser).id,
+      payload,
+    );
   }
 
-  @ApiDocumentation()
+  @ApiDocumentation(undefined, { additionalErrors: [HttpStatus.NOT_FOUND] })
   @Roles()
-  @Post('update')
-  async updateUser() {
-    // Implementation for updating a user
+  @Post('me/password')
+  async changeOwnPassword(
+    @Body() payload: ChangePasswordDto,
+    @Req() req: Request,
+  ) {
+    return await this.usersService.changeOwnPassword(
+      (req.user as ISignedUser).id,
+      payload,
+    );
   }
 
-  @ApiDocumentation()
-  @Roles()
-  @Post('delete')
-  async deleteUser() {
-    // Implementation for deleting a user
+  // --- Admin user management ---
+
+  @ApiDocumentation(undefined, { hasPagination: true })
+  @Roles(RolesEnum.System.Admin)
+  @Get()
+  async listUsers(@Query() query: ListUsersQueryDto) {
+    return await this.usersService.findAll(query);
+  }
+
+  @ApiDocumentation(undefined, { additionalErrors: [HttpStatus.NOT_FOUND] })
+  @Roles(RolesEnum.System.Admin)
+  @Get(':id')
+  async getUser(@Param('id') id: string) {
+    return await this.usersService.findUserById(id);
+  }
+
+  @ApiDocumentation(undefined, { additionalErrors: [HttpStatus.NOT_FOUND] })
+  @Roles(RolesEnum.System.Admin)
+  @Patch(':id/role')
+  async changeUserRole(
+    @Param('id') id: string,
+    @Body() payload: ChangeUserRoleDto,
+  ) {
+    return await this.usersService.changeUserRole(id, payload.role);
   }
 }

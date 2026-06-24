@@ -7,3 +7,4 @@ export * from './settings.dto';
 export * from './storage.dto';
 export * from './templates.dto';
 export * from './user.dto';
+export * from './user-management.dto';

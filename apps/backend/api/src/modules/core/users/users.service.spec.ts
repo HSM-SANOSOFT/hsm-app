@@ -5,11 +5,17 @@ import {
   UserRoleEntity,
 } from '@hsm/database/entities';
 import { DatabasesEnum } from '@hsm/database/sources';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
 import { RolesService } from '../../security/roles/roles.service';
 import { UsersService } from './users.service';
+
+jest.mock('bcrypt', () => ({
+  hash: jest.fn().mockResolvedValue('hashed-value'),
+  compare: jest.fn().mockResolvedValue(true),
+}));
 
 const mockUser: Partial<UserEntity> = {
   id: 'user-uuid',
@@ -31,10 +37,28 @@ const mockIntegrationUser: Partial<UserIntegrationEntity> = {
   name: 'TestIntegration',
 };
 
+const mockManager = {
+  save: jest.fn(),
+  delete: jest.fn(),
+};
+const mockQueryRunner = {
+  connect: jest.fn().mockResolvedValue(undefined),
+  startTransaction: jest.fn().mockResolvedValue(undefined),
+  commitTransaction: jest.fn().mockResolvedValue(undefined),
+  rollbackTransaction: jest.fn().mockResolvedValue(undefined),
+  release: jest.fn().mockResolvedValue(undefined),
+  manager: mockManager,
+};
 const userRepo = {
   findOne: jest.fn(),
+  findAndCount: jest.fn(),
   update: jest.fn(),
   delete: jest.fn(),
+  manager: {
+    connection: {
+      createQueryRunner: jest.fn().mockReturnValue(mockQueryRunner),
+    },
+  },
 };
 const userIntegrationRepo = { findOne: jest.fn() };
 const userRoleRepo = { find: jest.fn() };
@@ -45,6 +69,18 @@ describe('UsersService', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    (bcrypt.hash as jest.Mock).mockResolvedValue('hashed-value');
+    (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+    mockManager.save.mockResolvedValue({});
+    mockManager.delete.mockResolvedValue({ affected: 1 });
+    mockQueryRunner.connect.mockResolvedValue(undefined);
+    mockQueryRunner.startTransaction.mockResolvedValue(undefined);
+    mockQueryRunner.commitTransaction.mockResolvedValue(undefined);
+    mockQueryRunner.rollbackTransaction.mockResolvedValue(undefined);
+    mockQueryRunner.release.mockResolvedValue(undefined);
+    userRepo.manager.connection.createQueryRunner.mockReturnValue(
+      mockQueryRunner,
+    );
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -205,6 +241,193 @@ describe('UsersService', () => {
       userRepo.delete.mockResolvedValue({ affected: 1 });
       await service.deleteUser({ id: 'user-uuid' } as never);
       expect(userRepo.delete).toHaveBeenCalledWith('user-uuid');
+    });
+  });
+
+  describe('findAll', () => {
+    it('returns data plus pagination metadata under metadata.extra.pagination', async () => {
+      userRepo.findAndCount.mockResolvedValue([[mockUser], 25]);
+
+      const result = await service.findAll({ page: 2, limit: 10 });
+
+      expect(userRepo.findAndCount).toHaveBeenCalledWith(
+        expect.objectContaining({ skip: 10, take: 10 }),
+      );
+      expect(result.data).toEqual([mockUser]);
+      expect(result.metadata?.extra?.pagination).toEqual({
+        page: 2,
+        pageSize: 10,
+        totalItems: 25,
+        totalPages: 3,
+      });
+    });
+
+    it('defaults to page 1 / limit 20 when omitted', async () => {
+      userRepo.findAndCount.mockResolvedValue([[], 0]);
+      const result = await service.findAll({});
+      expect(userRepo.findAndCount).toHaveBeenCalledWith(
+        expect.objectContaining({ skip: 0, take: 20 }),
+      );
+      expect(result.metadata?.extra?.pagination).toMatchObject({
+        page: 1,
+        pageSize: 20,
+        totalItems: 0,
+        totalPages: 0,
+      });
+    });
+  });
+
+  describe('findUserById', () => {
+    it('returns the user with roles when found', async () => {
+      userRepo.findOne.mockResolvedValue({ ...mockUser, roles: [mockRole] });
+      const result = await service.findUserById('user-uuid');
+      expect(result).toMatchObject({ id: 'user-uuid' });
+      expect(userRepo.findOne).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'user-uuid' },
+          relations: { roles: true },
+        }),
+      );
+    });
+
+    it('throws NotFoundException for an unknown id', async () => {
+      userRepo.findOne.mockResolvedValue(null);
+      await expect(service.findUserById('ghost')).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('updateOwnProfile (R6)', () => {
+    it('updates only firstName/email and never role', async () => {
+      userRepo.update.mockResolvedValue({ affected: 1 });
+      userRepo.findOne.mockResolvedValue({
+        ...mockUser,
+        firstName: 'Jane',
+        email: 'jane@test.com',
+      });
+
+      await service.updateOwnProfile('user-uuid', {
+        firstName: 'Jane',
+        email: 'jane@test.com',
+        // a stray role would never reach here; assert the persisted shape
+        role: RolesEnum.System.Admin,
+      } as never);
+
+      expect(userRepo.update).toHaveBeenCalledWith('user-uuid', {
+        firstName: 'Jane',
+        email: 'jane@test.com',
+      });
+      // the update payload contains no `role` key
+      const persisted = userRepo.update.mock.calls[0][1];
+      expect(persisted).not.toHaveProperty('role');
+    });
+
+    it('skips the repository update when nothing changes', async () => {
+      userRepo.findOne.mockResolvedValue(mockUser);
+      await service.updateOwnProfile('user-uuid', {});
+      expect(userRepo.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('changeOwnPassword', () => {
+    it('rejects a wrong current password with Unauthorized', async () => {
+      userRepo.findOne.mockResolvedValue(mockUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+
+      await expect(
+        service.changeOwnPassword('user-uuid', {
+          currentPassword: 'wrong',
+          newPassword: 'new-pass',
+        }),
+      ).rejects.toBeInstanceOf(UnauthorizedException);
+      expect(userRepo.update).not.toHaveBeenCalled();
+    });
+
+    it('hashes and persists the new password when the current one matches', async () => {
+      userRepo.findOne.mockResolvedValue(mockUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+      (bcrypt.hash as jest.Mock).mockResolvedValue('new-hashed');
+
+      await service.changeOwnPassword('user-uuid', {
+        currentPassword: 'old-pass',
+        newPassword: 'new-pass',
+      });
+
+      expect(bcrypt.compare).toHaveBeenCalledWith(
+        'old-pass',
+        mockUser.password,
+      );
+      expect(userRepo.update).toHaveBeenCalledWith('user-uuid', {
+        password: 'new-hashed',
+      });
+    });
+
+    it('throws NotFound for an unknown user', async () => {
+      userRepo.findOne.mockResolvedValue(null);
+      await expect(
+        service.changeOwnPassword('ghost', {
+          currentPassword: 'x',
+          newPassword: 'y',
+        }),
+      ).rejects.toBeInstanceOf(NotFoundException);
+    });
+  });
+
+  describe('changeUserRole', () => {
+    it('replaces role rows in a transaction and returns the refreshed user', async () => {
+      rolesService.findRoleDomains.mockReturnValue([
+        { role: RolesEnum.System.Auditor, domain: 'System' },
+      ]);
+      userRepo.findOne
+        .mockResolvedValueOnce(mockUser) // existence check
+        .mockResolvedValueOnce({
+          ...mockUser,
+          roles: [{ role: RolesEnum.System.Auditor, domain: 'System' }],
+        }); // findUserById refresh
+
+      const result = await service.changeUserRole(
+        'user-uuid',
+        RolesEnum.System.Auditor,
+      );
+
+      expect(mockManager.delete).toHaveBeenCalledWith(UserRoleEntity, {
+        user: { id: 'user-uuid' },
+      });
+      expect(mockManager.save).toHaveBeenCalledWith(
+        UserRoleEntity,
+        expect.objectContaining({ role: RolesEnum.System.Auditor }),
+      );
+      expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
+      expect(result.roles?.[0]).toMatchObject({
+        role: RolesEnum.System.Auditor,
+      });
+    });
+
+    it('throws NotFound when the target user does not exist', async () => {
+      rolesService.findRoleDomains.mockReturnValue([
+        { role: RolesEnum.System.Auditor, domain: 'System' },
+      ]);
+      userRepo.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.changeUserRole('ghost', RolesEnum.System.Auditor),
+      ).rejects.toBeInstanceOf(NotFoundException);
+      expect(mockQueryRunner.startTransaction).not.toHaveBeenCalled();
+    });
+
+    it('rolls back the transaction on a save failure', async () => {
+      rolesService.findRoleDomains.mockReturnValue([
+        { role: RolesEnum.System.Auditor, domain: 'System' },
+      ]);
+      userRepo.findOne.mockResolvedValue(mockUser);
+      mockManager.save.mockRejectedValueOnce(new Error('db down'));
+
+      await expect(
+        service.changeUserRole('user-uuid', RolesEnum.System.Auditor),
+      ).rejects.toThrow('db down');
+      expect(mockQueryRunner.rollbackTransaction).toHaveBeenCalled();
+      expect(mockQueryRunner.release).toHaveBeenCalled();
     });
   });
 });
