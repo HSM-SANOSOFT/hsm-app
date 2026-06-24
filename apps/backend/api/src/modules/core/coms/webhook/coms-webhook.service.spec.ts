@@ -1,6 +1,6 @@
 import { EmailWebhookEventTypeEnum } from '@hsm/common/enums';
-import { getWebhookSigningKeys } from '@hsm/config';
 import { EmailWebhookEventEntity } from '@hsm/database/entities';
+import { SettingsAccessorService } from '@hsm/database/settings';
 import { DatabasesEnum } from '@hsm/database/sources';
 import { QueueEnum } from '@hsm/queue';
 import { getQueueToken } from '@nestjs/bullmq';
@@ -9,21 +9,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ComsWebhookService } from './coms-webhook.service';
 import { EmailWebhookAdapterFactory } from './email-webhook-adapter.factory';
-
-// ---------------------------------------------------------------------------
-// Mock @hsm/config — provide envs so queue.module.ts can load without crashing
-// We spread the actual module and replace only getWebhookSigningKeys.
-// The __mockGetWebhookSigningKeys variable is accessed via require inside tests.
-// ---------------------------------------------------------------------------
-jest.mock('@hsm/config', () => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const actual = jest.requireActual<typeof import('@hsm/config')>('@hsm/config');
-  return {
-    ...actual,
-    // Override with a jest.fn() — we'll retrieve it via jest.mocked() in tests
-    getWebhookSigningKeys: jest.fn().mockReturnValue({ mandrill: 'test-key' }),
-  };
-});
 
 // ---------------------------------------------------------------------------
 // Mock helpers
@@ -45,6 +30,12 @@ const mockWebhookEventRepo = {
 
 const mockComsQueue = {
   add: jest.fn(),
+};
+
+// Live-config accessor (U4): signing keys now come from the store via this
+// accessor instead of the boot-frozen env helper.
+const mockSettingsAccessor = {
+  getWebhookSigningKeys: jest.fn(),
 };
 
 // ---------------------------------------------------------------------------
@@ -79,7 +70,9 @@ describe('ComsWebhookService', () => {
     jest.clearAllMocks();
 
     // Reset the signing keys mock back to the default (mandrill: 'test-key')
-    jest.mocked(getWebhookSigningKeys).mockReturnValue({ mandrill: 'test-key' });
+    mockSettingsAccessor.getWebhookSigningKeys.mockResolvedValue({
+      mandrill: 'test-key',
+    });
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -99,6 +92,10 @@ describe('ComsWebhookService', () => {
           provide: getQueueToken(QueueEnum.Coms),
           useValue: mockComsQueue,
         },
+        {
+          provide: SettingsAccessorService,
+          useValue: mockSettingsAccessor,
+        },
       ],
     }).compile();
 
@@ -116,7 +113,11 @@ describe('ComsWebhookService', () => {
   describe('receiveWebhook — happy path', () => {
     it('verifies signature, persists events, enqueues jobs, returns received count', async () => {
       const rawPayload = [
-        { event: 'hard_bounce', ts: 1715000000, msg: { email: 'user@example.com', _id: 'abc123' } },
+        {
+          event: 'hard_bounce',
+          ts: 1715000000,
+          msg: { email: 'user@example.com', _id: 'abc123' },
+        },
       ];
       const rawBody = buildRawBody(rawPayload);
       const savedEntity = { id: 'evt-uuid-1' };
@@ -131,7 +132,11 @@ describe('ComsWebhookService', () => {
       const result = await service.receiveWebhook(PROVIDER, HEADERS, rawBody);
 
       expect(mockAdapterFactory.getAdapter).toHaveBeenCalledWith(PROVIDER);
-      expect(mockAdapter.verify).toHaveBeenCalledWith(HEADERS, rawBody, 'test-key');
+      expect(mockAdapter.verify).toHaveBeenCalledWith(
+        HEADERS,
+        rawBody,
+        'test-key',
+      );
       expect(mockAdapter.normalize).toHaveBeenCalled();
       expect(mockWebhookEventRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -152,7 +157,10 @@ describe('ComsWebhookService', () => {
 
     it('persists and enqueues N jobs when normalize returns N events', async () => {
       const rawBody = buildRawBody([{}, {}]);
-      const events = [NORMALIZED_EVENT, { ...NORMALIZED_EVENT, recipientEmail: 'b@example.com' }];
+      const events = [
+        NORMALIZED_EVENT,
+        { ...NORMALIZED_EVENT, recipientEmail: 'b@example.com' },
+      ];
 
       mockAdapterFactory.getAdapter.mockReturnValue(mockAdapter);
       mockAdapter.verify.mockReturnValue(true);
@@ -198,7 +206,7 @@ describe('ComsWebhookService', () => {
   describe('receiveWebhook — missing signing key', () => {
     it('throws BadRequestException when no signing key is configured for provider', async () => {
       // Override to return a map without any provider key
-      jest.mocked(getWebhookSigningKeys).mockReturnValueOnce({});
+      mockSettingsAccessor.getWebhookSigningKeys.mockResolvedValueOnce({});
 
       mockAdapterFactory.getAdapter.mockReturnValue(mockAdapter);
 

@@ -4,7 +4,10 @@ import {
   SendEmailJobDto,
   SendEmailPayloadDto,
 } from '@hsm/common/dtos';
-import { EmailBatchStatusEnum, EmailRecipientStatusEnum } from '@hsm/common/enums';
+import {
+  EmailBatchStatusEnum,
+  EmailRecipientStatusEnum,
+} from '@hsm/common/enums';
 import { validateAgainstTemplateSchema } from '@hsm/common/utils';
 import { EmailBatchEntity, EmailRecipientEntity } from '@hsm/database/entities';
 import { DatabasesEnum } from '@hsm/database/sources';

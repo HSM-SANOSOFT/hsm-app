@@ -1,8 +1,8 @@
 import type { NormalizedWebhookEvent } from '@hsm/common/types';
 import { EmailWebhookEventEntity } from '@hsm/database/entities';
+import { SettingsAccessorService } from '@hsm/database/settings';
 import { DatabasesEnum } from '@hsm/database/sources';
 import { QueueEnum } from '@hsm/queue';
-import { getWebhookSigningKeys } from '@hsm/config';
 import { InjectQueue } from '@nestjs/bullmq';
 import {
   BadRequestException,
@@ -24,6 +24,10 @@ export class ComsWebhookService {
     @InjectRepository(EmailWebhookEventEntity, DatabasesEnum.HsmDbPostgres)
     private readonly webhookEventRepo: Repository<EmailWebhookEventEntity>,
     @InjectQueue(QueueEnum.Coms) private readonly comsQueue: Queue,
+    // Live config (U4): signing keys come from the store via the short-TTL
+    // accessor, so a key change takes effect on the next request without a
+    // restart — instead of the boot-frozen `getWebhookSigningKeys()` env read.
+    private readonly settingsAccessor: SettingsAccessorService,
   ) {}
 
   async receiveWebhook(
@@ -38,8 +42,8 @@ export class ComsWebhookService {
       return { received: 0 };
     }
 
-    // Get signing key
-    const signingKeys = getWebhookSigningKeys();
+    // Get signing key (live from the settings store, cached with a short TTL)
+    const signingKeys = await this.settingsAccessor.getWebhookSigningKeys();
     const signingKey = signingKeys[provider];
     if (!signingKey) {
       throw new BadRequestException(

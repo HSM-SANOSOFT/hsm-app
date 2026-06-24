@@ -72,43 +72,61 @@ describe('MandrillWebhookAdapter', () => {
     });
 
     it('maps send event to DELIVERED', () => {
-      const payload = [{ event: 'send', ts: 1700000001, msg: { email: 'a@b.com' } }];
+      const payload = [
+        { event: 'send', ts: 1700000001, msg: { email: 'a@b.com' } },
+      ];
       const [result] = adapter.normalize(payload);
       expect(result.eventType).toBe(EmailWebhookEventTypeEnum.DELIVERED);
     });
 
     it('maps spam event to SPAM', () => {
-      const payload = [{ event: 'spam', ts: 1700000002, msg: { email: 'c@d.com' } }];
+      const payload = [
+        { event: 'spam', ts: 1700000002, msg: { email: 'c@d.com' } },
+      ];
       const [result] = adapter.normalize(payload);
       expect(result.eventType).toBe(EmailWebhookEventTypeEnum.SPAM);
     });
 
     it('maps soft_bounce event to BOUNCED_SOFT', () => {
-      const payload = [{ event: 'soft_bounce', ts: 1700000003, msg: { email: 'e@f.com' } }];
+      const payload = [
+        { event: 'soft_bounce', ts: 1700000003, msg: { email: 'e@f.com' } },
+      ];
       const [result] = adapter.normalize(payload);
       expect(result.eventType).toBe(EmailWebhookEventTypeEnum.BOUNCED_SOFT);
     });
 
     it('maps open event to OPEN', () => {
-      const payload = [{ event: 'open', ts: 1700000004, msg: { email: 'g@h.com' } }];
+      const payload = [
+        { event: 'open', ts: 1700000004, msg: { email: 'g@h.com' } },
+      ];
       const [result] = adapter.normalize(payload);
       expect(result.eventType).toBe(EmailWebhookEventTypeEnum.OPEN);
     });
 
     it('maps click event to CLICK', () => {
-      const payload = [{ event: 'click', ts: 1700000005, msg: { email: 'i@j.com' } }];
+      const payload = [
+        { event: 'click', ts: 1700000005, msg: { email: 'i@j.com' } },
+      ];
       const [result] = adapter.normalize(payload);
       expect(result.eventType).toBe(EmailWebhookEventTypeEnum.CLICK);
     });
 
     it('maps unsub event to UNSUBSCRIBED', () => {
-      const payload = [{ event: 'unsub', ts: 1700000006, msg: { email: 'k@l.com' } }];
+      const payload = [
+        { event: 'unsub', ts: 1700000006, msg: { email: 'k@l.com' } },
+      ];
       const [result] = adapter.normalize(payload);
       expect(result.eventType).toBe(EmailWebhookEventTypeEnum.UNSUBSCRIBED);
     });
 
     it('maps unknown event type to UNKNOWN without throwing', () => {
-      const payload = [{ event: 'totally_unknown_event', ts: 1700000007, msg: { email: 'm@n.com' } }];
+      const payload = [
+        {
+          event: 'totally_unknown_event',
+          ts: 1700000007,
+          msg: { email: 'm@n.com' },
+        },
+      ];
       expect(() => adapter.normalize(payload)).not.toThrow();
       const [result] = adapter.normalize(payload);
       expect(result.eventType).toBe(EmailWebhookEventTypeEnum.UNKNOWN);
@@ -126,13 +144,17 @@ describe('MandrillWebhookAdapter', () => {
     });
 
     it('sets providerMessageId to undefined when _id is absent', () => {
-      const payload = [{ event: 'send', ts: 1700000008, msg: { email: 'o@p.com' } }];
+      const payload = [
+        { event: 'send', ts: 1700000008, msg: { email: 'o@p.com' } },
+      ];
       const [result] = adapter.normalize(payload);
       expect(result.providerMessageId).toBeUndefined();
     });
 
     it('sets reason to undefined when diag is absent', () => {
-      const payload = [{ event: 'hard_bounce', ts: 1700000009, msg: { email: 'q@r.com' } }];
+      const payload = [
+        { event: 'hard_bounce', ts: 1700000009, msg: { email: 'q@r.com' } },
+      ];
       const [result] = adapter.normalize(payload);
       expect(result.reason).toBeUndefined();
     });

@@ -26,10 +26,7 @@ export class ComsController {
   @ApiDocumentation()
   @Roles()
   @Post('send/email')
-  async sendEmail(
-    @Body() payload: SendEmailPayloadDto,
-    @Req() req: Request,
-  ) {
+  async sendEmail(@Body() payload: SendEmailPayloadDto, @Req() req: Request) {
     return await this.comsService.sendEmail(
       payload,
       (req.user as ISignedUser)?.id,

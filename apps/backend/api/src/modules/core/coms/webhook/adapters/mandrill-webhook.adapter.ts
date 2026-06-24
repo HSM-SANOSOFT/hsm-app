@@ -1,19 +1,25 @@
-import { Injectable } from '@nestjs/common';
 import { createHmac } from 'node:crypto';
+import { EmailWebhookEventTypeEnum } from '@hsm/common/enums';
 
 import { IEmailWebhookAdapter } from '@hsm/common/interfaces';
-import { EmailWebhookEventTypeEnum } from '@hsm/common/enums';
 import type { NormalizedWebhookEvent } from '@hsm/common/types';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class MandrillWebhookAdapter implements IEmailWebhookAdapter {
-  verify(headers: Record<string, string>, rawBody: Buffer, signingKey: string): boolean {
+  verify(
+    headers: Record<string, string>,
+    rawBody: Buffer,
+    signingKey: string,
+  ): boolean {
     const signature = headers['x-mandrill-signature'];
     if (!signature) return false;
 
     // Mandrill signature: HMAC-SHA1 over the webhook URL + sorted POST params
     // For simplicity: verify over the raw body bytes with the signing key
-    const computed = createHmac('sha1', signingKey).update(rawBody).digest('base64');
+    const computed = createHmac('sha1', signingKey)
+      .update(rawBody)
+      .digest('base64');
     return computed === signature;
   }
 

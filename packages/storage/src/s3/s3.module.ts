@@ -1,3 +1,4 @@
+import { SettingsAccessorModule } from '@hsm/database/settings';
 import { Module } from '@nestjs/common';
 import { S3Initializer } from './s3.initializer';
 import { s3Client, s3ClientPresigned } from './s3.provider';
@@ -5,6 +6,8 @@ import { S3Service } from './s3.service';
 import { S3_CLIENT, S3_CLIENT_PRESIGNED, S3_INIT } from './s3.symbols';
 
 @Module({
+  // Live config (U4): the S3 clients rebuild lazily on storage settings change.
+  imports: [SettingsAccessorModule],
   providers: [
     S3Service,
     S3Initializer,

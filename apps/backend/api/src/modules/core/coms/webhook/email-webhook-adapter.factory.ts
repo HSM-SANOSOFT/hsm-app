@@ -1,6 +1,5 @@
-import { Injectable } from '@nestjs/common';
-
 import { IEmailWebhookAdapter } from '@hsm/common/interfaces';
+import { Injectable } from '@nestjs/common';
 
 import { MandrillWebhookAdapter } from './adapters/mandrill-webhook.adapter';
 

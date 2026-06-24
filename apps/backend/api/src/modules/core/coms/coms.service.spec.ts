@@ -3,7 +3,10 @@ import {
   ListEmailRecipientsQueryDto,
   SendEmailPayloadDto,
 } from '@hsm/common/dtos';
-import { EmailBatchStatusEnum, EmailRecipientStatusEnum } from '@hsm/common/enums';
+import {
+  EmailBatchStatusEnum,
+  EmailRecipientStatusEnum,
+} from '@hsm/common/enums';
 import { EmailBatchEntity, EmailRecipientEntity } from '@hsm/database/entities';
 import { DatabasesEnum } from '@hsm/database/sources';
 import { QueueEnum } from '@hsm/queue';
@@ -67,7 +70,10 @@ describe('ComsService', () => {
       providers: [
         ComsService,
         {
-          provide: getRepositoryToken(EmailBatchEntity, DatabasesEnum.HsmDbPostgres),
+          provide: getRepositoryToken(
+            EmailBatchEntity,
+            DatabasesEnum.HsmDbPostgres,
+          ),
           useValue: mockBatchRepo,
         },
         {
@@ -128,7 +134,9 @@ describe('ComsService', () => {
     beforeEach(() => {
       mockTemplatesService.findByIdentifier.mockResolvedValue(validTemplate);
       // manager.create returns a draft; manager.save returns the persisted entity
-      mockManager.create.mockImplementation((_entity: unknown, data: unknown) => ({ ...data as object }));
+      mockManager.create.mockImplementation(
+        (_entity: unknown, data: unknown) => ({ ...(data as object) }),
+      );
       mockManager.save.mockResolvedValue(savedBatch);
       mockComsQueue.add.mockResolvedValue({ id: 'job-123' });
       mockBatchRepo.update.mockResolvedValue(undefined);
@@ -137,7 +145,9 @@ describe('ComsService', () => {
     it('happy path — resolves template, validates data, saves batch+recipients, enqueues job', async () => {
       const result = await service.sendEmail(validPayload, 'user-id');
 
-      expect(mockTemplatesService.findByIdentifier).toHaveBeenCalledWith('welcome');
+      expect(mockTemplatesService.findByIdentifier).toHaveBeenCalledWith(
+        'welcome',
+      );
       expect(mockDataSource.transaction).toHaveBeenCalled();
       expect(mockComsQueue.add).toHaveBeenCalledWith(
         'send-email',
@@ -337,7 +347,12 @@ describe('ComsService', () => {
           take: 20,
         }),
       );
-      expect(result).toEqual({ data: recipients, total: 1, page: 1, limit: 20 });
+      expect(result).toEqual({
+        data: recipients,
+        total: 1,
+        page: 1,
+        limit: 20,
+      });
     });
   });
 

@@ -11,20 +11,20 @@ import {
   EmailRecipientEntity,
 } from '@hsm/database/entities';
 import { DatabasesEnum } from '@hsm/database/sources';
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import nodemailer from 'nodemailer';
 import { Attachment } from 'nodemailer/lib/mailer';
 import { Repository } from 'typeorm';
 import { DocsService } from '../../docs/docs.service';
 import { TemplatesService } from '../../templates/templates.service';
+import { SmtpTransportProvider } from './smtp-transport.provider';
 
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
 
   constructor(
-    @Inject('SMTP_CLIENT') private readonly smtpClient: nodemailer.Transporter,
+    private readonly smtpTransport: SmtpTransportProvider,
     private readonly templateService: TemplatesService,
     private readonly docsService: DocsService,
     @InjectRepository(EmailBatchEntity, DatabasesEnum.HsmDbPostgres)
@@ -77,8 +77,10 @@ export class EmailService {
     );
 
     try {
-      // Send
-      const result = await this.smtpClient.sendMail({
+      // Send — resolve the transporter from the live-config provider, which
+      // rebuilds it when SMTP settings have changed.
+      const smtpClient = await this.smtpTransport.getTransporter();
+      const result = await smtpClient.sendMail({
         from: batch.fromEmail,
         to: recipients.map(r => r.toEmail),
         subject,
@@ -166,7 +168,9 @@ export class EmailService {
       }
 
       if (doc.status !== DocumentStatusEnum.COMPLETED) {
-        throw new Error(`Document ${docId} is not ready (status: ${doc.status})`);
+        throw new Error(
+          `Document ${docId} is not ready (status: ${doc.status})`,
+        );
       }
 
       const latestVersion = doc.versions
@@ -202,7 +206,10 @@ export class EmailService {
     return attachments;
   }
 
-  private splitStoragePath(path: string): { folderName: string; fileId: string } {
+  private splitStoragePath(path: string): {
+    folderName: string;
+    fileId: string;
+  } {
     const parts = path.split('/');
     const fileId = parts[parts.length - 1];
     const folderName = parts.slice(0, -1).join('/');

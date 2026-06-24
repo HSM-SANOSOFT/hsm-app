@@ -48,11 +48,17 @@ describe('ComsController', () => {
         fromName: undefined as unknown as string,
       };
       const req = { user: { id: 'user-uuid' } } as unknown as Request;
-      mockComsService.sendEmail.mockResolvedValue({ batchId: 'b-uuid', jobId: 'j-123' });
+      mockComsService.sendEmail.mockResolvedValue({
+        batchId: 'b-uuid',
+        jobId: 'j-123',
+      });
 
       const result = await controller.sendEmail(payload, req);
 
-      expect(mockComsService.sendEmail).toHaveBeenCalledWith(payload, 'user-uuid');
+      expect(mockComsService.sendEmail).toHaveBeenCalledWith(
+        payload,
+        'user-uuid',
+      );
       expect(result).toEqual({ batchId: 'b-uuid', jobId: 'j-123' });
     });
   });
@@ -60,7 +66,12 @@ describe('ComsController', () => {
   describe('listBatches', () => {
     it('delegates query to comsService.listBatches', async () => {
       const query: ListEmailBatchesQueryDto = { page: 1, limit: 10 };
-      mockComsService.listBatches.mockResolvedValue({ data: [], total: 0, page: 1, limit: 10 });
+      mockComsService.listBatches.mockResolvedValue({
+        data: [],
+        total: 0,
+        page: 1,
+        limit: 10,
+      });
 
       const result = await controller.listBatches(query);
 
@@ -93,8 +104,17 @@ describe('ComsController', () => {
 
   describe('listRecipients', () => {
     it('delegates query to comsService.listRecipients', async () => {
-      const query: ListEmailRecipientsQueryDto = { batchId: 'b-uuid', page: 1, limit: 20 };
-      mockComsService.listRecipients.mockResolvedValue({ data: [], total: 0, page: 1, limit: 20 });
+      const query: ListEmailRecipientsQueryDto = {
+        batchId: 'b-uuid',
+        page: 1,
+        limit: 20,
+      };
+      mockComsService.listRecipients.mockResolvedValue({
+        data: [],
+        total: 0,
+        page: 1,
+        limit: 20,
+      });
 
       await controller.listRecipients(query);
 
@@ -141,7 +161,12 @@ describe('ComsController', () => {
         page: 1,
         limit: 5,
       };
-      mockComsService.listBatches.mockResolvedValue({ data: [], total: 0, page: 1, limit: 5 });
+      mockComsService.listBatches.mockResolvedValue({
+        data: [],
+        total: 0,
+        page: 1,
+        limit: 5,
+      });
 
       await controller.listBatches(query);
 

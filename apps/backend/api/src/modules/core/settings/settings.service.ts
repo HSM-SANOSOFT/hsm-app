@@ -4,11 +4,15 @@ import type {
   UpdateSettingsPayloadDto,
 } from '@hsm/common/dtos';
 import { SettingsCategoryEnum } from '@hsm/common/enums';
-import { envs } from '@hsm/config';
 import {
   AppSettingAuditEntity,
   AppSettingEntity,
 } from '@hsm/database/entities';
+import {
+  type SettingDefinition,
+  settingDefinitionForKey,
+  settingDefinitionsForCategory,
+} from '@hsm/database/settings';
 import { DatabasesEnum } from '@hsm/database/sources';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -20,109 +24,6 @@ import { In, Repository } from 'typeorm';
  * back to a client nor written to the audit table.
  */
 export const SECRET_MASK = '********';
-
-interface SettingDefinition {
-  key: string;
-  category: SettingsCategoryEnum;
-  isSecret: boolean;
-  /** Seed value sourced from the deploy-time env (defaults). */
-  envValue: () => string | null;
-}
-
-/**
- * The catalogue of store-managed settings. Each entry maps a setting key to its
- * category and to the `@hsm/config` env value that seeds it when no DB row
- * exists. Infra keys (DB/Redis/JWT, throttler) are intentionally absent — they
- * stay deploy-only (KTD4).
- */
-const SETTING_DEFINITIONS: SettingDefinition[] = [
-  // EMAIL / SMTP
-  {
-    key: 'SMTP_ADDRESS',
-    category: SettingsCategoryEnum.EMAIL,
-    isSecret: false,
-    envValue: () => envs.SMTP_ADDRESS ?? null,
-  },
-  {
-    key: 'SMTP_USERNAME',
-    category: SettingsCategoryEnum.EMAIL,
-    isSecret: false,
-    envValue: () => envs.SMTP_USERNAME ?? null,
-  },
-  {
-    key: 'SMTP_PASSWORD',
-    category: SettingsCategoryEnum.EMAIL,
-    isSecret: true,
-    envValue: () => envs.SMTP_PASSWORD ?? null,
-  },
-  {
-    key: 'SMTP_PORT',
-    category: SettingsCategoryEnum.EMAIL,
-    isSecret: false,
-    envValue: () => (envs.SMTP_PORT != null ? String(envs.SMTP_PORT) : null),
-  },
-  {
-    key: 'SMTP_SECURE',
-    category: SettingsCategoryEnum.EMAIL,
-    isSecret: false,
-    envValue: () =>
-      envs.SMTP_SECURE != null ? String(envs.SMTP_SECURE) : null,
-  },
-  // WEBHOOK signing keys
-  {
-    key: 'COMS_WEBHOOK_SIGNING_KEYS',
-    category: SettingsCategoryEnum.WEBHOOK,
-    isSecret: true,
-    envValue: () => envs.COMS_WEBHOOK_SIGNING_KEYS ?? null,
-  },
-  // STORAGE / S3
-  {
-    key: 'STRG_S3_ACCESS_KEY',
-    category: SettingsCategoryEnum.STORAGE,
-    isSecret: false,
-    envValue: () => envs.STRG_S3_ACCESS_KEY ?? null,
-  },
-  {
-    key: 'STRG_S3_SECRET_KEY',
-    category: SettingsCategoryEnum.STORAGE,
-    isSecret: true,
-    envValue: () => envs.STRG_S3_SECRET_KEY ?? null,
-  },
-  {
-    key: 'STRG_S3_HOST',
-    category: SettingsCategoryEnum.STORAGE,
-    isSecret: false,
-    envValue: () => envs.STRG_S3_HOST ?? null,
-  },
-  {
-    key: 'STRG_S3_HOST_EXTERNAL',
-    category: SettingsCategoryEnum.STORAGE,
-    isSecret: false,
-    envValue: () => envs.STRG_S3_HOST_EXTERNAL ?? null,
-  },
-  {
-    key: 'STRG_S3_REGION',
-    category: SettingsCategoryEnum.STORAGE,
-    isSecret: false,
-    envValue: () => envs.STRG_S3_REGION ?? null,
-  },
-  {
-    key: 'STRG_S3_FORCE_PATH_STYLE',
-    category: SettingsCategoryEnum.STORAGE,
-    isSecret: false,
-    envValue: () =>
-      envs.STRG_S3_FORCE_PATH_STYLE != null
-        ? String(envs.STRG_S3_FORCE_PATH_STYLE)
-        : null,
-  },
-  // APP_BEHAVIOR toggles
-  {
-    key: 'SWAGGER_SITE_TITLE',
-    category: SettingsCategoryEnum.APP_BEHAVIOR,
-    isSecret: false,
-    envValue: () => envs.SWAGGER_SITE_TITLE ?? null,
-  },
-];
 
 @Injectable()
 export class SettingsService {
@@ -138,11 +39,11 @@ export class SettingsService {
   private definitionsForCategory(
     category: SettingsCategoryEnum,
   ): SettingDefinition[] {
-    return SETTING_DEFINITIONS.filter(def => def.category === category);
+    return settingDefinitionsForCategory(category);
   }
 
   private definitionForKey(key: string): SettingDefinition | undefined {
-    return SETTING_DEFINITIONS.find(def => def.key === key);
+    return settingDefinitionForKey(key);
   }
 
   /**

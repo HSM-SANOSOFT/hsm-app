@@ -1,4 +1,3 @@
-import { ApiDocumentation, Public } from '../../../../decorator';
 import {
   Controller,
   Headers,
@@ -8,6 +7,7 @@ import {
   Req,
 } from '@nestjs/common';
 import type { Request } from 'express';
+import { ApiDocumentation, Public } from '../../../../decorator';
 import { ComsWebhookService } from './coms-webhook.service';
 
 @Controller('coms/webhooks')
