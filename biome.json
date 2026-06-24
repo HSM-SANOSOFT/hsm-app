@@ -150,6 +150,9 @@
     "globals": ["exports"]
   },
   "html": {
+    "parser": {
+      "interpolation": true
+    },
     "formatter": {
       "indentScriptAndStyle": false,
       "selfCloseVoidElements": "always"

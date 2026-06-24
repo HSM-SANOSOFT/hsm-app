@@ -1,0 +1,13 @@
+/* Global styles for @hsm/web. */
+@import "primeicons/primeicons.css";
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.app-shell {
+  padding: 1.5rem;
+}
