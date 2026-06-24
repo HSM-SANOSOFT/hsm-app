@@ -191,6 +191,7 @@ export class TemplateEditor {
     this.loadError.set(null);
     this.api
       .get<TemplateWithBase>(`/templates/${encodeURIComponent(identifier)}`)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: ({ template, baseTemplate }) => {
           this.applyLoadedTemplate(template, baseTemplate);

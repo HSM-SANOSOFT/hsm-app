@@ -3,10 +3,12 @@ import { FormsModule } from '@angular/forms';
 import { RolesEnum } from '@hsm/common/enums';
 import { ButtonModule } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
+import { Message } from 'primeng/message';
 import { Select } from 'primeng/select';
 import { type TableLazyLoadEvent, TableModule } from 'primeng/table';
 
 import { ApiClient } from '../../../core/api/api-client';
+import { toErrorMessage } from '../../../core/api/api-error';
 import {
   computePage,
   DEFAULT_PAGE_SIZE,
@@ -55,10 +57,14 @@ function buildRoleOptions(): RoleOption[] {
  */
 @Component({
   selector: 'app-admin-users',
-  imports: [FormsModule, TableModule, Select, Dialog, ButtonModule],
+  imports: [FormsModule, TableModule, Select, Dialog, ButtonModule, Message],
   template: `
     <section class="admin-users" data-testid="admin-users">
       <h1>Users</h1>
+
+      @if (error(); as err) {
+        <p-message severity="error" [text]="err" data-testid="users-error" />
+      }
 
       <p-table
         [value]="users()"
@@ -153,6 +159,9 @@ export class AdminUsers {
   readonly selectedUser = signal<AdminUser | null>(null);
   detailVisible = false;
 
+  /** Surfaces view/role-change failures to the admin. */
+  readonly error = signal<string | null>(null);
+
   /**
    * `p-table` lazy-load handler. Translates the table's `first`/`rows` offset
    * into the backend's 1-based `page`/`limit` query and fetches that page,
@@ -189,8 +198,11 @@ export class AdminUsers {
   view(user: AdminUser): void {
     this.selectedUser.set(user);
     this.detailVisible = true;
+    this.error.set(null);
     this.api.get<AdminUser>(`${USERS_PATH}/${user.id}`).subscribe({
       next: full => this.selectedUser.set(full),
+      error: err =>
+        this.error.set(toErrorMessage(err, 'Failed to load user detail.')),
     });
   }
 
@@ -202,6 +214,7 @@ export class AdminUsers {
     if (!role || role === this.currentRoleValue(user)) {
       return;
     }
+    this.error.set(null);
     const body: ChangeUserRolePayload = { role };
     this.api.patch<AdminUser>(`${USERS_PATH}/${user.id}/role`, body).subscribe({
       next: updated => {
@@ -211,6 +224,15 @@ export class AdminUsers {
         if (this.selectedUser()?.id === updated.id) {
           this.selectedUser.set(updated);
         }
+      },
+      error: err => {
+        this.error.set(toErrorMessage(err, 'Failed to change role.'));
+        // Revert the dropdown to the user's current role: re-set the list to a
+        // fresh array reference so the `[ngModel]` binding re-reads the
+        // unchanged role and discards the optimistic selection.
+        this.users.update(list =>
+          list.map(u => (u.id === user.id ? { ...u } : u)),
+        );
       },
     });
   }

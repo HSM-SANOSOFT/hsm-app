@@ -74,75 +74,85 @@ export class SettingsService {
       : [];
     const rowByKey = new Map(existingRows.map(r => [r.key, r]));
 
-    const auditRows: AppSettingAuditEntity[] = [];
+    // Wrap every per-key setting write AND the audit write in a single
+    // transaction (R11): a failure must not leave settings changed with no
+    // matching audit trail. The set of rows written and audit contents are
+    // identical to the non-transactional version — only atomicity is added.
+    await this.settings.manager.transaction(async manager => {
+      const auditRows: AppSettingAuditEntity[] = [];
 
-    for (const item of payload.settings) {
-      const def = settingDefinitionForKey(item.key);
-      if (!def || def.category !== payload.category) {
-        // Ignore unknown keys / keys outside the declared category rather than
-        // creating arbitrary rows.
-        this.logger.warn(
-          `Ignoring update for unknown or mismatched setting key '${item.key}'`,
+      for (const item of payload.settings) {
+        const def = settingDefinitionForKey(item.key);
+        if (!def || def.category !== payload.category) {
+          // Ignore unknown keys / keys outside the declared category rather than
+          // creating arbitrary rows.
+          this.logger.warn(
+            `Ignoring update for unknown or mismatched setting key '${item.key}'`,
+          );
+          continue;
+        }
+
+        const incoming = item.value ?? '';
+        const isBlank = incoming.trim() === '';
+
+        // A blank secret leaves the stored value unchanged (never overwrite a
+        // secret with an empty value).
+        if (def.isSecret && isBlank) {
+          continue;
+        }
+
+        const existingRow = rowByKey.get(def.key);
+        const previousRaw = resolveDefinitionValue(
+          def,
+          existingRow ?? undefined,
         );
-        continue;
-      }
+        const newRaw = incoming;
 
-      const incoming = item.value ?? '';
-      const isBlank = incoming.trim() === '';
+        // Skip when the effective value is unchanged.
+        if (previousRaw === newRaw) {
+          continue;
+        }
 
-      // A blank secret leaves the stored value unchanged (never overwrite a
-      // secret with an empty value).
-      if (def.isSecret && isBlank) {
-        continue;
-      }
+        if (existingRow) {
+          existingRow.value = newRaw;
+          existingRow.updatedBy = actorId;
+          existingRow.category = def.category;
+          existingRow.isSecret = def.isSecret;
+          await manager.save(AppSettingEntity, existingRow);
+        } else {
+          await manager.save(
+            AppSettingEntity,
+            this.settings.create({
+              key: def.key,
+              category: def.category,
+              isSecret: def.isSecret,
+              value: newRaw,
+              updatedBy: actorId,
+            }),
+          );
+        }
 
-      const existingRow = rowByKey.get(def.key);
-      const previousRaw = resolveDefinitionValue(def, existingRow ?? undefined);
-      const newRaw = incoming;
-
-      // Skip when the effective value is unchanged.
-      if (previousRaw === newRaw) {
-        continue;
-      }
-
-      if (existingRow) {
-        existingRow.value = newRaw;
-        existingRow.updatedBy = actorId;
-        existingRow.category = def.category;
-        existingRow.isSecret = def.isSecret;
-        await this.settings.save(existingRow);
-      } else {
-        await this.settings.save(
-          this.settings.create({
+        // Audit: secret old/new values are masked, never plaintext.
+        const maskedOld = def.isSecret
+          ? previousRaw != null && previousRaw !== ''
+            ? SECRET_MASK
+            : null
+          : previousRaw;
+        auditRows.push(
+          this.audits.create({
             key: def.key,
             category: def.category,
-            isSecret: def.isSecret,
-            value: newRaw,
-            updatedBy: actorId,
+            changedBy: actorId,
+            oldValue: maskedOld,
+            newValue: def.isSecret ? SECRET_MASK : newRaw,
           }),
         );
       }
 
-      // Audit: secret old/new values are masked, never plaintext.
-      const maskedOld = def.isSecret
-        ? previousRaw != null && previousRaw !== ''
-          ? SECRET_MASK
-          : null
-        : previousRaw;
-      auditRows.push(
-        this.audits.create({
-          key: def.key,
-          category: def.category,
-          changedBy: actorId,
-          oldValue: maskedOld,
-          newValue: def.isSecret ? SECRET_MASK : newRaw,
-        }),
-      );
-    }
-
-    if (auditRows.length > 0) {
-      await this.audits.save(auditRows);
-    }
+      if (auditRows.length > 0) {
+        await manager.save(AppSettingAuditEntity, auditRows);
+      }
+    });
 
     return this.getByCategory(payload.category);
   }

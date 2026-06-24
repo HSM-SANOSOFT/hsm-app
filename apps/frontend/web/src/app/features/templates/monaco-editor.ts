@@ -105,6 +105,8 @@ export class MonacoEditor {
   private changeSub: { dispose(): void } | null = null;
   /** Guards the `value` input → editor sync from re-emitting `valueChange`. */
   private applyingExternal = false;
+  /** Set on destroy so a chunk-load that resolves post-destroy is a no-op. */
+  private destroyed = false;
 
   constructor() {
     afterNextRender(() => {
@@ -123,6 +125,7 @@ export class MonacoEditor {
     });
 
     this.destroyRef.onDestroy(() => {
+      this.destroyed = true;
       this.changeSub?.dispose();
       this.editor?.dispose();
       this.editor = null;
@@ -132,7 +135,7 @@ export class MonacoEditor {
   private async createEditor(): Promise<void> {
     const monaco = await this.loadMonaco();
     // Component may have been destroyed while the chunk loaded.
-    if (!this.host) {
+    if (this.destroyed) {
       return;
     }
     this.editor = monaco.editor.create(this.host().nativeElement, {

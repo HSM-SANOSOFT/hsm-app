@@ -26,12 +26,18 @@ export class SmtpTransportProvider {
 
   private transporter: nodemailer.Transporter | null = null;
   private builtHash: string | null = null;
+  /** Single-flight guard: concurrent callers await one in-progress rebuild. */
+  private rebuilding: Promise<nodemailer.Transporter> | null = null;
 
   constructor(private readonly settingsAccessor: SettingsAccessorService) {}
 
   /**
    * Returns a transporter built from the current effective SMTP settings,
    * rebuilding it only when those settings have changed since the last build.
+   *
+   * A single-flight guard collapses concurrent rebuilds (during a settings
+   * change) onto one `createTransport` call so concurrent sends don't each build
+   * a transporter and leak connections; the superseded transporter is closed.
    */
   async getTransporter(): Promise<nodemailer.Transporter> {
     const hash = await this.settingsAccessor.getVersionHash(SMTP_KEYS);
@@ -39,6 +45,22 @@ export class SmtpTransportProvider {
       return this.transporter;
     }
 
+    // A rebuild is already in flight — await it rather than starting another.
+    if (this.rebuilding) {
+      const rebuilt = await this.rebuilding;
+      if (this.builtHash === hash) {
+        return rebuilt;
+      }
+    }
+
+    this.rebuilding = this.rebuild(hash).finally(() => {
+      this.rebuilding = null;
+    });
+    return this.rebuilding;
+  }
+
+  /** Builds a fresh transporter for `hash`, closing the superseded one. */
+  private async rebuild(hash: string): Promise<nodemailer.Transporter> {
     const values = await this.settingsAccessor.getCategoryValues(
       SettingsCategoryEnum.EMAIL,
     );
@@ -56,6 +78,13 @@ export class SmtpTransportProvider {
       },
       secure,
     });
+
+    // Close the old transport before replacing it so its pooled connections
+    // are released rather than leaked.
+    const previous = this.transporter;
+    if (previous && typeof previous.close === 'function') {
+      previous.close();
+    }
 
     this.transporter = transporter;
     this.builtHash = hash;

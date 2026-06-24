@@ -9,16 +9,29 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { SECRET_MASK, SettingsService } from './settings.service';
 
+const mockAuditRepo = {
+  create: jest.fn(),
+  save: jest.fn(),
+};
+
 const mockSettingsRepo = {
   find: jest.fn(),
   findOne: jest.fn(),
   create: jest.fn(),
   save: jest.fn(),
-};
-
-const mockAuditRepo = {
-  create: jest.fn(),
-  save: jest.fn(),
+  // `update()` now wraps its writes in a single transaction. The mock manager
+  // routes each `save(Entity, row)` to the matching repo's `save` so the
+  // existing assertions (settings/audit saves were called) still hold.
+  manager: {
+    transaction: jest.fn(async (cb: (manager: unknown) => Promise<unknown>) =>
+      cb({
+        save: (entity: unknown, row: unknown) =>
+          entity === AppSettingAuditEntity
+            ? mockAuditRepo.save(row)
+            : mockSettingsRepo.save(row),
+      }),
+    ),
+  },
 };
 
 describe('SettingsService', () => {

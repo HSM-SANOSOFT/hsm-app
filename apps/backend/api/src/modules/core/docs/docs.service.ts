@@ -55,10 +55,10 @@ export class DocsService {
       .andWhere('doc.deletedAt IS NULL');
 
     if (entityId && entityType) {
-      qb.andWhere(
-        'doc.entityId = :entityId AND doc.entityType = :entityType',
-        { entityId, entityType },
-      );
+      qb.andWhere('doc.entityId = :entityId AND doc.entityType = :entityType', {
+        entityId,
+        entityType,
+      });
     }
     if (type) qb.andWhere('doc.type = :type', { type });
     if (status) qb.andWhere('doc.status = :status', { status });
@@ -66,7 +66,19 @@ export class DocsService {
     qb.skip(skip).take(limit).orderBy('doc.createdAt', 'DESC');
 
     const [data, total] = await qb.getManyAndCount();
-    return { data, total, page, limit };
+    return {
+      data,
+      metadata: {
+        extra: {
+          pagination: {
+            page,
+            pageSize: limit,
+            totalItems: total,
+            totalPages: Math.ceil(total / limit),
+          },
+        },
+      },
+    };
   }
 
   async generateDocument(dto: GenerateDocumentRequestDto, userId?: string) {

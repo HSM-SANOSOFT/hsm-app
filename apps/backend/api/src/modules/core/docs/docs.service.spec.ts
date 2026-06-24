@@ -1,4 +1,7 @@
-import { GenerateDocumentRequestDto, ListDocumentsQueryDto } from '@hsm/common/dtos';
+import {
+  GenerateDocumentRequestDto,
+  ListDocumentsQueryDto,
+} from '@hsm/common/dtos';
 import { DocumentStatusEnum } from '@hsm/common/enums';
 import {
   DocumentLinkEntity,
@@ -71,7 +74,9 @@ const mockS3Service = {
   uploadFiles: jest.fn().mockResolvedValue([
     {
       bucket: 'test-bucket',
-      files: [{ fileId: 'file-uuid', filename: 'doc.pdf', key: 'folder/file-uuid' }],
+      files: [
+        { fileId: 'file-uuid', filename: 'doc.pdf', key: 'folder/file-uuid' },
+      ],
     },
   ]),
 };
@@ -94,17 +99,29 @@ describe('DocsService', () => {
     mockDocsRepo.softDelete.mockResolvedValue(undefined);
     mockDocsQueue.add.mockResolvedValue({ id: 'job-id' });
 
-    mockVersionsRepo.create.mockImplementation((data: Partial<DocumentsVersionEntity>) => ({ ...data }));
-    mockVersionsRepo.save.mockImplementation((entity: DocumentsVersionEntity) => {
-      entity.id = 'version-uuid';
-      return Promise.resolve(entity);
-    });
+    mockVersionsRepo.create.mockImplementation(
+      (data: Partial<DocumentsVersionEntity>) => ({ ...data }),
+    );
+    mockVersionsRepo.save.mockImplementation(
+      (entity: DocumentsVersionEntity) => {
+        entity.id = 'version-uuid';
+        return Promise.resolve(entity);
+      },
+    );
 
-    mockStorageRepo.create.mockImplementation((data: Partial<DocumentStorageObjectEntity>) => ({ ...data }));
-    mockStorageRepo.save.mockImplementation(async (entity: DocumentStorageObjectEntity) => entity);
+    mockStorageRepo.create.mockImplementation(
+      (data: Partial<DocumentStorageObjectEntity>) => ({ ...data }),
+    );
+    mockStorageRepo.save.mockImplementation(
+      async (entity: DocumentStorageObjectEntity) => entity,
+    );
 
-    mockLinkRepo.create.mockImplementation((data: Partial<DocumentLinkEntity>) => ({ ...data }));
-    mockLinkRepo.save.mockImplementation(async (entity: DocumentLinkEntity) => entity);
+    mockLinkRepo.create.mockImplementation(
+      (data: Partial<DocumentLinkEntity>) => ({ ...data }),
+    );
+    mockLinkRepo.save.mockImplementation(
+      async (entity: DocumentLinkEntity) => entity,
+    );
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -179,11 +196,22 @@ describe('DocsService', () => {
       const result = await service.listDocuments(query, 'user-uuid');
 
       expect(mockDocsRepo.createQueryBuilder).toHaveBeenCalledWith('doc');
-      expect(mockQb.where).toHaveBeenCalledWith(
-        'doc.createdBy = :userId',
-        { userId: 'user-uuid' },
-      );
-      expect(result).toEqual({ data: [mockDocument], total: 1, page: 1, limit: 10 });
+      expect(mockQb.where).toHaveBeenCalledWith('doc.createdBy = :userId', {
+        userId: 'user-uuid',
+      });
+      expect(result).toEqual({
+        data: [mockDocument],
+        metadata: {
+          extra: {
+            pagination: {
+              page: 1,
+              pageSize: 10,
+              totalItems: 1,
+              totalPages: 1,
+            },
+          },
+        },
+      });
     });
 
     it('applies entityId and entityType filters when both provided', async () => {
@@ -204,8 +232,8 @@ describe('DocsService', () => {
     it('uses default page=1 limit=20 when not provided', async () => {
       const query: ListDocumentsQueryDto = {};
       const result = await service.listDocuments(query, 'user-uuid');
-      expect(result.page).toBe(1);
-      expect(result.limit).toBe(20);
+      expect(result.metadata.extra.pagination.page).toBe(1);
+      expect(result.metadata.extra.pagination.pageSize).toBe(20);
     });
   });
 
@@ -315,7 +343,11 @@ describe('DocsService', () => {
   });
 
   describe('uploadDocuments', () => {
-    const makeFile = (name: string, mimetype = 'application/pdf', size = 1024): Express.Multer.File =>
+    const makeFile = (
+      name: string,
+      mimetype = 'application/pdf',
+      size = 1024,
+    ): Express.Multer.File =>
       ({
         originalname: name,
         mimetype,
@@ -327,9 +359,13 @@ describe('DocsService', () => {
         filename: name,
         path: '',
         stream: null as unknown as never,
-      } as Express.Multer.File);
+      }) as Express.Multer.File;
 
-    const makePayload = (fileName: string, entityId?: string, entityType?: string) => ({
+    const makePayload = (
+      fileName: string,
+      entityId?: string,
+      entityType?: string,
+    ) => ({
       payload: [
         {
           bucket: 'test-bucket',
@@ -360,7 +396,10 @@ describe('DocsService', () => {
       await service.uploadDocuments(payload as never, files, 'user-uuid');
 
       expect(mockLinkRepo.create).toHaveBeenCalledWith(
-        expect.objectContaining({ entityId: 'entity-123', entityType: 'PATIENT' }),
+        expect.objectContaining({
+          entityId: 'entity-123',
+          entityType: 'PATIENT',
+        }),
       );
       expect(mockLinkRepo.save).toHaveBeenCalled();
     });
@@ -379,7 +418,11 @@ describe('DocsService', () => {
       const files = [makeFile('doc.pdf')];
       const payload = makePayload('doc.pdf');
 
-      const result = await service.uploadDocuments(payload as never, files, 'user-uuid');
+      const result = await service.uploadDocuments(
+        payload as never,
+        files,
+        'user-uuid',
+      );
 
       expect(result).toHaveProperty('documentIds');
       expect(result).toHaveProperty('s3Result');

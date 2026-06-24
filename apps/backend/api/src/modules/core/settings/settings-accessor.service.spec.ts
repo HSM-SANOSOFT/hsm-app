@@ -148,6 +148,46 @@ describe('SettingsAccessorService', () => {
     expect(hashAfter).not.toBe(hashBefore);
   });
 
+  it('on a first-boot DB error, serves the env seed (not null)', async () => {
+    // The very first refresh fails with the cache still empty: instead of
+    // leaving it empty (which would make getValue return null), it is seeded
+    // from the env defaults so consumers get the effective env value.
+    mockSettingsRepo.find.mockRejectedValueOnce(new Error('db down'));
+
+    const value = await service.getValue('SMTP_ADDRESS');
+
+    expect(value).toBe(envs.SMTP_ADDRESS);
+    expect(value).not.toBeNull();
+  });
+
+  it('keeps serving the prior good snapshot on a later transient DB error', async () => {
+    jest.useFakeTimers();
+    const base = Date.now();
+    jest.setSystemTime(base);
+
+    mockSettingsRepo.find.mockResolvedValueOnce([
+      {
+        key: 'SMTP_ADDRESS',
+        category: SettingsCategoryEnum.EMAIL,
+        isSecret: false,
+        value: 'smtp.good-snapshot.test',
+      } as AppSettingEntity,
+    ]);
+    expect(await service.getValue('SMTP_ADDRESS')).toBe(
+      'smtp.good-snapshot.test',
+    );
+
+    // A later refresh fails transiently — the populated cache must NOT be
+    // clobbered with env defaults; the prior good snapshot keeps serving.
+    service.invalidate();
+    mockSettingsRepo.find.mockRejectedValueOnce(new Error('transient'));
+    jest.setSystemTime(base + SETTINGS_CACHE_TTL_MS + 1);
+
+    expect(await service.getValue('SMTP_ADDRESS')).toBe(
+      'smtp.good-snapshot.test',
+    );
+  });
+
   it('does NOT expose infra keys (DB/Redis/JWT, throttler) — they stay env-only', () => {
     const keys = SETTING_DEFINITIONS.map(d => d.key);
 

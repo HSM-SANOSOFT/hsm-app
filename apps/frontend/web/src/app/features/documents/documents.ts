@@ -11,6 +11,7 @@ import { TagModule } from 'primeng/tag';
 import { finalize } from 'rxjs';
 
 import { ApiClient } from '../../core/api/api-client';
+import { toErrorMessage } from '../../core/api/api-error';
 import { computePage, DEFAULT_PAGE_SIZE } from '../../core/api/pagination.util';
 import {
   type DocsTemplate,
@@ -312,6 +313,7 @@ export class Documents {
 
     this.api
       .post<GenerateDocumentResponse>(`${DOCS_PATH}/generate`, body)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: res => this.pollGeneration(res.documentId),
         error: (err: { message?: string }) => {
@@ -328,7 +330,10 @@ export class Documents {
     pollDocumentStatus(() =>
       this.api.get<DocumentRecord>(`${DOCS_PATH}/${documentId}`),
     )
-      .pipe(finalize(() => this.generating.set(false)))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.generating.set(false)),
+      )
       .subscribe({
         next: doc => {
           last = doc;
@@ -388,7 +393,14 @@ export class Documents {
   download(id: string): void {
     this.api
       .get<DocumentUrlResponse>(`${DOCS_PATH}/${id}/url`)
-      .subscribe({ next: res => this.triggerBrowserDownload(res.url) });
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: res => this.triggerBrowserDownload(res.url),
+        error: err =>
+          this.generateError.set(
+            toErrorMessage(err, 'Failed to fetch download URL.'),
+          ),
+      });
   }
 
   /**
@@ -421,11 +433,14 @@ export class Documents {
     );
 
     this.uploadError.set(null);
-    this.api.post(`${DOCS_PATH}/upload`, form).subscribe({
-      next: () => this.loadDocuments(),
-      error: (err: { message?: string }) =>
-        this.uploadError.set(err?.message ?? 'Upload failed.'),
-    });
+    this.api
+      .post(`${DOCS_PATH}/upload`, form)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => this.loadDocuments(),
+        error: (err: { message?: string }) =>
+          this.uploadError.set(err?.message ?? 'Upload failed.'),
+      });
   }
 
   isCompleted(doc: DocumentRecord): boolean {
