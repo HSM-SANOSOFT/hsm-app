@@ -4,10 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { DocumentStatusEnum, TemplateCategoriesEnum } from '@hsm/common/enums';
 import { ButtonModule } from 'primeng/button';
 import { FileUpload, type FileUploadHandlerEvent } from 'primeng/fileupload';
+import { InputTextModule } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { Select } from 'primeng/select';
 import { type TableLazyLoadEvent, TableModule } from 'primeng/table';
-import { TagModule } from 'primeng/tag';
 import { finalize } from 'rxjs';
 
 import { ApiClient } from '../../core/api/api-client';
@@ -55,92 +55,127 @@ const UPLOAD_FOLDER = 'uploads';
     Select,
     ButtonModule,
     FileUpload,
+    InputTextModule,
     Message,
-    TagModule,
   ],
   template: `
-    <section class="documents" data-testid="documents">
-      <h1>Documents</h1>
+    <div class="page documents" data-testid="documents">
+      <header class="page-header">
+        <div>
+          <span class="page-eyebrow">DOCUMENTS</span>
+          <h1 class="page-title">Documents</h1>
+          <p class="page-subtitle">
+            Generate documents from a template, browse your library, and upload
+            files.
+          </p>
+        </div>
+      </header>
 
       <!-- ── Generate (R18) ───────────────────────────────────────────── -->
-      <section class="documents-generate" data-testid="generate-panel">
-        <h2>Generate from template</h2>
+      <section class="surface-card" data-testid="generate-panel">
+        <h2 class="card-title">Generate from template</h2>
+        <p class="card-hint">
+          Pick a DOCS template, fill in its fields, and generate a document.
+        </p>
 
-        <p-select
-          [options]="templates()"
-          optionLabel="name"
-          placeholder="Select a DOCS template"
-          [ngModel]="selectedTemplate()"
-          (onChange)="onTemplateChange($event.value)"
-          data-testid="template-select"
-        />
+        <div class="field">
+          <label for="template-select">Template</label>
+          <p-select
+            inputId="template-select"
+            [options]="templates()"
+            optionLabel="name"
+            placeholder="Select a DOCS template"
+            [ngModel]="selectedTemplate()"
+            (onChange)="onTemplateChange($event.value)"
+            data-testid="template-select"
+          />
+        </div>
 
         @if (selectedTemplate(); as tpl) {
           <form class="generate-form" data-testid="generate-form">
-            <label class="field">
-              <span>Title</span>
-              <input
-                type="text"
-                [ngModel]="title()"
-                (ngModelChange)="title.set($event)"
-                [ngModelOptions]="{ standalone: true }"
-                data-testid="generate-title"
-              />
-            </label>
-
-            @for (field of schemaFields(); track field.key) {
-              <label class="field" [attr.data-testid]="'field-' + field.key">
-                <span>{{ field.key }}{{ field.optional ? '' : ' *' }}</span>
-                @switch (field.kind) {
-                  @case ('boolean') {
-                    <input
-                      type="checkbox"
-                      [ngModel]="boolValue(field.key)"
-                      (ngModelChange)="setField(field.key, $event)"
-                      [ngModelOptions]="{ standalone: true }"
-                    />
-                  }
-                  @case ('number') {
-                    <input
-                      type="number"
-                      [ngModel]="formData()[field.key]"
-                      (ngModelChange)="setField(field.key, $event)"
-                      [ngModelOptions]="{ standalone: true }"
-                    />
-                  }
-                  @case ('date') {
-                    <input
-                      type="date"
-                      [ngModel]="formData()[field.key]"
-                      (ngModelChange)="setField(field.key, $event)"
-                      [ngModelOptions]="{ standalone: true }"
-                    />
-                  }
-                  @default {
-                    <input
-                      type="text"
-                      [ngModel]="formData()[field.key]"
-                      (ngModelChange)="setField(field.key, $event)"
-                      [ngModelOptions]="{ standalone: true }"
-                    />
-                  }
-                }
+            <div class="field-grid">
+              <label class="field" data-testid="generate-title">
+                <span>Title</span>
+                <input
+                  type="text"
+                  pInputText
+                  [ngModel]="title()"
+                  (ngModelChange)="title.set($event)"
+                  [ngModelOptions]="{ standalone: true }"
+                />
               </label>
-            }
 
-            <p-button
-              label="Generate"
-              [loading]="generating()"
-              [disabled]="generating() || !title()"
-              (onClick)="generate()"
-              data-testid="generate-button"
-            />
+              @for (field of schemaFields(); track field.key) {
+                <label
+                  class="field"
+                  [attr.data-testid]="'field-' + field.key"
+                >
+                  <span class="mono">
+                    {{ field.key }}{{ field.optional ? '' : ' *' }}
+                  </span>
+                  @switch (field.kind) {
+                    @case ('boolean') {
+                      <input
+                        type="checkbox"
+                        [ngModel]="boolValue(field.key)"
+                        (ngModelChange)="setField(field.key, $event)"
+                        [ngModelOptions]="{ standalone: true }"
+                      />
+                    }
+                    @case ('number') {
+                      <input
+                        type="number"
+                        pInputText
+                        [ngModel]="formData()[field.key]"
+                        (ngModelChange)="setField(field.key, $event)"
+                        [ngModelOptions]="{ standalone: true }"
+                      />
+                    }
+                    @case ('date') {
+                      <input
+                        type="date"
+                        pInputText
+                        [ngModel]="formData()[field.key]"
+                        (ngModelChange)="setField(field.key, $event)"
+                        [ngModelOptions]="{ standalone: true }"
+                      />
+                    }
+                    @default {
+                      <input
+                        type="text"
+                        pInputText
+                        [ngModel]="formData()[field.key]"
+                        (ngModelChange)="setField(field.key, $event)"
+                        [ngModelOptions]="{ standalone: true }"
+                      />
+                    }
+                  }
+                </label>
+              }
+            </div>
+
+            <div class="generate-actions">
+              <p-button
+                label="Generate"
+                [loading]="generating()"
+                [disabled]="generating() || !title()"
+                (onClick)="generate()"
+                data-testid="generate-button"
+              />
+
+              @if (generateStatus(); as status) {
+                <span
+                  class="pill"
+                  [class]="statusPill(status)"
+                  data-testid="generate-status"
+                >
+                  {{ generating() ? 'generating' : status }}
+                </span>
+              }
+            </div>
           </form>
         }
 
-        @if (generateStatus(); as status) {
-          <p data-testid="generate-status">Status: {{ status }}</p>
-        }
         @if (generateError(); as err) {
           <p-message
             severity="error"
@@ -151,8 +186,11 @@ const UPLOAD_FOLDER = 'uploads';
       </section>
 
       <!-- ── Upload (R20) ─────────────────────────────────────────────── -->
-      <section class="documents-upload" data-testid="upload-panel">
-        <h2>Upload</h2>
+      <section class="surface-card" data-testid="upload-panel">
+        <h2 class="card-title">Upload</h2>
+        <p class="card-hint">
+          Upload an existing file straight into your library.
+        </p>
         <p-fileupload
           mode="basic"
           name="files"
@@ -173,8 +211,9 @@ const UPLOAD_FOLDER = 'uploads';
       </section>
 
       <!-- ── Library (R19) ────────────────────────────────────────────── -->
-      <section class="documents-library" data-testid="library-panel">
-        <h2>Library</h2>
+      <section class="surface-card" data-testid="library-panel">
+        <h2 class="card-title">Library</h2>
+        <p class="card-hint">Your generated and uploaded documents.</p>
         <p-table
           [value]="documents()"
           [lazy]="true"
@@ -192,21 +231,23 @@ const UPLOAD_FOLDER = 'uploads';
               <th>Title</th>
               <th>Type</th>
               <th>Status</th>
+              <th>Document ID</th>
               <th>Actions</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-doc>
             <tr [attr.data-testid]="'doc-row-' + doc.id">
               <td>{{ doc.title }}</td>
-              <td>{{ doc.type }}</td>
+              <td class="muted">{{ doc.type }}</td>
               <td>
-                <p-tag
-                  [value]="doc.status"
-                  [severity]="statusSeverity(doc.status)"
-                />
+                <span class="pill" [class]="statusPill(doc.status)">
+                  {{ doc.status }}
+                </span>
               </td>
+              <td class="mono">{{ doc.id }}</td>
               <td>
                 <p-button
+                  icon="pi pi-download"
                   label="Download"
                   size="small"
                   [text]="true"
@@ -219,13 +260,28 @@ const UPLOAD_FOLDER = 'uploads';
           </ng-template>
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="4">No documents yet.</td>
+              <td colspan="5">
+                <div class="empty-state">
+                  <i class="pi pi-folder-open"></i>
+                  No documents yet.
+                </div>
+              </td>
             </tr>
           </ng-template>
         </p-table>
       </section>
-    </section>
+    </div>
   `,
+  styles: [
+    `
+      .generate-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 0.5rem;
+      }
+    `,
+  ],
 })
 export class Documents {
   private readonly api = inject(ApiClient);
@@ -447,19 +503,24 @@ export class Documents {
     return doc.status === DocumentStatusEnum.COMPLETED;
   }
 
-  /** Maps a document status to a PrimeNG tag severity for the library. */
-  statusSeverity(
-    status: string,
-  ): 'success' | 'danger' | 'info' | 'warn' | 'secondary' {
+  /**
+   * Maps a {@link DocumentStatusEnum} value to a Clinical Pine status-pill
+   * modifier class for the library and generate status line:
+   * - COMPLETED → `pill--ok`
+   * - FAILED → `pill--failed`
+   * - PENDING / PROCESSING (in-flight) → `pill--pending`
+   */
+  statusPill(status: string): string {
     switch (status) {
       case DocumentStatusEnum.COMPLETED:
-        return 'success';
+        return 'pill--ok';
       case DocumentStatusEnum.FAILED:
-        return 'danger';
+        return 'pill--failed';
+      case DocumentStatusEnum.PENDING:
       case DocumentStatusEnum.PROCESSING:
-        return 'info';
+        return 'pill--pending';
       default:
-        return 'warn';
+        return 'pill--neutral';
     }
   }
 

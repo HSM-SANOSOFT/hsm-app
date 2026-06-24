@@ -48,7 +48,7 @@ import { TemplateSaveFlow } from './template-save-flow';
     <!-- AE1/AE2: the gate — TRUE server HTML in a sandboxed iframe; persist only
          fires on confirm. -->
     <p-dialog
-      header="Confirm template — server preview"
+      header="Confirm save"
       [(visible)]="confirmVisible"
       [modal]="true"
       [closable]="true"
@@ -61,14 +61,18 @@ import { TemplateSaveFlow } from './template-save-flow';
         composition). It may differ from the live preview. Confirm to save, or
         cancel to keep editing.
       </p>
-      <iframe
-        class="confirm-frame"
-        title="Server-composed preview"
-        sandbox="allow-scripts"
-        [srcdoc]="confirmHtml()"
-        data-testid="confirm-iframe"
-        style="width: 100%; height: 28rem; border: 1px solid var(--p-content-border-color);"
-      ></iframe>
+      <div class="confirm-frame-wrap">
+        <div class="confirm-frame-header">
+          <span class="confirm-frame-label">SERVER PREVIEW</span>
+        </div>
+        <iframe
+          class="confirm-frame"
+          title="Server-composed preview"
+          sandbox="allow-scripts"
+          [srcdoc]="confirmHtml()"
+          data-testid="confirm-iframe"
+        ></iframe>
+      </div>
 
       <ng-template pTemplate="footer">
         <p-button
@@ -79,7 +83,7 @@ import { TemplateSaveFlow } from './template-save-flow';
           data-testid="confirm-cancel"
         />
         <p-button
-          label="Confirm & save"
+          label="Confirm"
           icon="pi pi-check"
           [loading]="persisting()"
           (onClick)="confirmSave()"
@@ -88,6 +92,46 @@ import { TemplateSaveFlow } from './template-save-flow';
       </ng-template>
     </p-dialog>
   `,
+  styles: [
+    `
+      .confirm-hint {
+        margin: 0 0 1rem;
+        color: var(--ink-muted);
+        font-size: 0.9rem;
+        max-width: 60ch;
+      }
+
+      .confirm-frame-wrap {
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        overflow: hidden;
+        background: var(--surface);
+      }
+
+      .confirm-frame-header {
+        padding: 0.55rem 0.85rem;
+        background: var(--surface-sunk);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .confirm-frame-label {
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-muted);
+      }
+
+      .confirm-frame {
+        display: block;
+        width: 100%;
+        height: 28rem;
+        border: 0;
+        background: #fff;
+      }
+    `,
+  ],
 })
 export class Templates {
   private readonly route = inject(ActivatedRoute);

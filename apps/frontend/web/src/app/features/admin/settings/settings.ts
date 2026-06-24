@@ -68,6 +68,21 @@ const CATEGORY_TABS: ReadonlyArray<{
   ],
   providers: [MessageService],
   templateUrl: './settings.html',
+  styles: `
+    :host ::ng-deep .field > label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .settings-loading {
+      display: flex;
+      justify-content: center;
+      padding: 3rem 1rem;
+    }
+    form .page-actions {
+      margin-top: 0.5rem;
+    }
+  `,
 })
 export class AdminSettings {
   private readonly api = inject(ApiClient);

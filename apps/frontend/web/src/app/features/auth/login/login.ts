@@ -27,6 +27,7 @@ import { AuthService } from '../../../core/auth/auth.service';
     MessageModule,
   ],
   templateUrl: './login.html',
+  styleUrl: './login.css',
 })
 export class Login {
   private readonly fb = inject(FormBuilder);

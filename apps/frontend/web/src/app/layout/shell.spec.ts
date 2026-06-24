@@ -73,10 +73,10 @@ describe('Shell', () => {
   }
 
   function navLabels(host: HTMLElement): string[] {
-    // PrimeNG menubar renders each item's label text in `.p-menubar-item-label`.
-    return Array.from(host.querySelectorAll('.p-menubar-item-label')).map(el =>
-      (el.textContent ?? '').trim(),
-    );
+    // The sidebar renders each entry's label in `.nav-link__label`.
+    return Array.from(
+      host.querySelectorAll('[data-testid="nav-link"] .nav-link__label'),
+    ).map(el => (el.textContent ?? '').trim());
   }
 
   it('shows admin nav entries to an admin', () => {

@@ -1,87 +1,106 @@
-<section class="admin-settings" data-testid="admin-settings">
-  <header class="admin-settings__header">
-    <h1>Settings</h1>
-    <p>Manage operational configuration. Secret values are never displayed.</p>
+<div class="page" data-testid="admin-settings">
+  <header class="page-header">
+    <div>
+      <span class="page-eyebrow">ADMIN · SETTINGS</span>
+      <h1 class="page-title">Runtime settings</h1>
+      <p class="page-subtitle">
+        Live operational configuration applied without a redeploy. Secret values
+        are masked and never displayed — leave a secret blank to keep it.
+      </p>
+    </div>
   </header>
 
   <p-toast />
 
-  <p-tabs
-    [value]="activeCategory()"
-    (valueChange)="onTabChange($event)"
-  >
-    <p-tablist>
-      @for (tab of tabs; track tab.value) {
-        <p-tab [value]="tab.value">{{ tab.label }}</p-tab>
-      }
-    </p-tablist>
+  <section class="surface-card">
+    <p-tabs
+      [value]="activeCategory()"
+      (valueChange)="onTabChange($event)"
+    >
+      <p-tablist>
+        @for (tab of tabs; track tab.value) {
+          <p-tab [value]="tab.value">{{ tab.label }}</p-tab>
+        }
+      </p-tablist>
 
-    <p-tabpanels>
-      @for (tab of tabs; track tab.value) {
-        <p-tabpanel [value]="tab.value">
-          @if (loading()) {
-            <div class="admin-settings__loading" data-testid="settings-loading">
-              <p-progress-spinner [style]="{ width: '2.5rem', height: '2.5rem' }" />
-            </div>
-          } @else {
-            @if (errorMessage(); as error) {
-              <p-message severity="error" [text]="error" />
-            }
-
-            <form class="admin-settings__form" (ngSubmit)="save()">
-              @for (field of fields(); track field.item.key) {
-                <div class="admin-settings__field" [attr.data-key]="field.item.key">
-                  <label [for]="field.item.key">{{ field.item.key }}</label>
-
-                  @if (field.item.isSecret) {
-                    <p-password
-                      [inputId]="field.item.key"
-                      [feedback]="false"
-                      [toggleMask]="true"
-                      [ngModel]="field.draft"
-                      [ngModelOptions]="{ standalone: true }"
-                      (ngModelChange)="onFieldInput(field, $event)"
-                      [placeholder]="
-                        field.item.isSet
-                          ? 'A value is set — leave blank to keep it'
-                          : 'Not set'
-                      "
-                      [attr.data-testid]="'secret-' + field.item.key"
-                    />
-                    @if (field.item.isSet) {
-                      <small class="admin-settings__hint">
-                        A value is stored. Leave blank to keep it unchanged.
-                      </small>
-                    }
-                  } @else {
-                    <input
-                      pInputText
-                      [id]="field.item.key"
-                      [ngModel]="field.draft"
-                      [ngModelOptions]="{ standalone: true }"
-                      (ngModelChange)="onFieldInput(field, $event)"
-                      [attr.data-testid]="'value-' + field.item.key"
-                    />
-                  }
-                </div>
-              } @empty {
-                <p class="admin-settings__empty">
-                  No settings in this category.
-                </p>
+      <p-tabpanels>
+        @for (tab of tabs; track tab.value) {
+          <p-tabpanel [value]="tab.value">
+            @if (loading()) {
+              <div class="settings-loading" data-testid="settings-loading">
+                <p-progress-spinner [style]="{ width: '2.5rem', height: '2.5rem' }" />
+              </div>
+            } @else {
+              @if (errorMessage(); as error) {
+                <p-message severity="error" [text]="error" />
               }
 
-              <div class="admin-settings__actions">
-                <p-button
-                  type="submit"
-                  label="Save"
-                  [loading]="saving()"
-                  data-testid="settings-save"
-                />
-              </div>
-            </form>
-          }
-        </p-tabpanel>
-      }
-    </p-tabpanels>
-  </p-tabs>
-</section>
+              <form (ngSubmit)="save()">
+                <div class="field-grid">
+                  @for (field of fields(); track field.item.key) {
+                    <div class="field" [attr.data-key]="field.item.key">
+                      <label [for]="field.item.key">
+                        <span class="mono">{{ field.item.key }}</span>
+                        @if (field.item.isSecret) {
+                          <span class="pill pill--neutral">secret</span>
+                        }
+                      </label>
+
+                      @if (field.item.isSecret) {
+                        <p-password
+                          fluid
+                          [inputId]="field.item.key"
+                          [feedback]="false"
+                          [toggleMask]="true"
+                          [ngModel]="field.draft"
+                          [ngModelOptions]="{ standalone: true }"
+                          (ngModelChange)="onFieldInput(field, $event)"
+                          [placeholder]="
+                            field.item.isSet
+                              ? 'A value is set — leave blank to keep it'
+                              : 'Not set'
+                          "
+                          [attr.data-testid]="'secret-' + field.item.key"
+                        />
+                        @if (field.item.isSet) {
+                          <small class="muted">
+                            A value is stored. Leave blank to keep it unchanged.
+                          </small>
+                        }
+                      } @else {
+                        <input
+                          pInputText
+                          fluid
+                          [id]="field.item.key"
+                          [ngModel]="field.draft"
+                          [ngModelOptions]="{ standalone: true }"
+                          (ngModelChange)="onFieldInput(field, $event)"
+                          [attr.data-testid]="'value-' + field.item.key"
+                        />
+                      }
+                    </div>
+                  } @empty {
+                    <div class="empty-state">
+                      <i class="pi pi-sliders-h"></i>
+                      No settings in this category.
+                    </div>
+                  }
+                </div>
+
+                <div class="page-actions">
+                  <p-button
+                    type="submit"
+                    label="Save"
+                    icon="pi pi-check"
+                    [loading]="saving()"
+                    data-testid="settings-save"
+                  />
+                </div>
+              </form>
+            }
+          </p-tabpanel>
+        }
+      </p-tabpanels>
+    </p-tabs>
+  </section>
+</div>

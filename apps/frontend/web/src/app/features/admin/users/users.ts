@@ -59,66 +59,89 @@ function buildRoleOptions(): RoleOption[] {
   selector: 'app-admin-users',
   imports: [FormsModule, TableModule, Select, Dialog, ButtonModule, Message],
   template: `
-    <section class="admin-users" data-testid="admin-users">
-      <h1>Users</h1>
+    <div class="page admin-users" data-testid="admin-users">
+      <header class="page-header">
+        <div>
+          <span class="page-eyebrow">ADMIN · USERS</span>
+          <h1 class="page-title">Users</h1>
+          <p class="page-subtitle">
+            Review console accounts and manage their assigned roles.
+          </p>
+        </div>
+      </header>
 
       @if (error(); as err) {
         <p-message severity="error" [text]="err" data-testid="users-error" />
       }
 
-      <p-table
-        [value]="users()"
-        [lazy]="true"
-        [paginator]="true"
-        [rows]="pageSize()"
-        [totalRecords]="totalRecords()"
-        [loading]="loading()"
-        [first]="first()"
-        (onLazyLoad)="loadUsers($event)"
-        dataKey="id"
-        data-testid="users-table"
-      >
-        <ng-template pTemplate="header">
-          <tr>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Name</th>
-            <th>Role(s)</th>
-            <th>Actions</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-user>
-          <tr [attr.data-testid]="'user-row-' + user.id">
-            <td>{{ user.username }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.firstName }}</td>
-            <td data-testid="user-roles">{{ roleLabels(user) }}</td>
-            <td>
-              <p-button
-                label="View"
-                size="small"
-                [text]="true"
-                (onClick)="view(user)"
-                [attr.data-testid]="'view-' + user.id"
-              />
-              <p-select
-                [options]="roleOptions"
-                optionLabel="label"
-                optionValue="value"
-                placeholder="Change role"
-                [ngModel]="currentRoleValue(user)"
-                (onChange)="changeRole(user, $event.value)"
-                [attr.data-testid]="'role-select-' + user.id"
-              />
-            </td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="5">No users found.</td>
-          </tr>
-        </ng-template>
-      </p-table>
+      <section class="surface-card">
+        <p-table
+          [value]="users()"
+          [lazy]="true"
+          [paginator]="true"
+          [rows]="pageSize()"
+          [totalRecords]="totalRecords()"
+          [loading]="loading()"
+          [first]="first()"
+          (onLazyLoad)="loadUsers($event)"
+          dataKey="id"
+          data-testid="users-table"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Name</th>
+              <th>Role(s)</th>
+              <th>Actions</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-user>
+            <tr [attr.data-testid]="'user-row-' + user.id">
+              <td>{{ user.username }}</td>
+              <td class="muted">{{ user.email }}</td>
+              <td>{{ user.firstName }}</td>
+              <td data-testid="user-roles">
+                @for (role of user.roles ?? []; track role.id) {
+                  <span class="pill pill--neutral">{{ role.role }}</span>
+                } @empty {
+                  <span class="muted">—</span>
+                }
+              </td>
+              <td>
+                <div class="row-actions">
+                  <p-button
+                    label="View"
+                    size="small"
+                    [text]="true"
+                    (onClick)="view(user)"
+                    [attr.data-testid]="'view-' + user.id"
+                  />
+                  <p-select
+                    [options]="roleOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Change role"
+                    [ngModel]="currentRoleValue(user)"
+                    (onChange)="changeRole(user, $event.value)"
+                    [attr.data-testid]="'role-select-' + user.id"
+                  />
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="5">
+                <div class="empty-state">
+                  <i class="pi pi-users"></i>
+                  No users found.
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </section>
 
       <p-dialog
         header="User detail"
@@ -128,19 +151,48 @@ function buildRoleOptions(): RoleOption[] {
         data-testid="user-detail-dialog"
       >
         @if (selectedUser(); as u) {
-          <dl data-testid="user-detail">
-            <dt>Username</dt>
-            <dd>{{ u.username }}</dd>
-            <dt>Email</dt>
-            <dd>{{ u.email }}</dd>
-            <dt>Name</dt>
-            <dd>{{ u.firstName }}</dd>
-            <dt>Role(s)</dt>
-            <dd>{{ roleLabels(u) }}</dd>
-          </dl>
+          <div class="field-grid" data-testid="user-detail">
+            <div class="field">
+              <label>Username</label>
+              <span>{{ u.username }}</span>
+            </div>
+            <div class="field">
+              <label>Email</label>
+              <span class="muted">{{ u.email }}</span>
+            </div>
+            <div class="field">
+              <label>Name</label>
+              <span>{{ u.firstName }}</span>
+            </div>
+            <div class="field">
+              <label>Role(s)</label>
+              <span>
+                @for (role of u.roles; track role.id) {
+                  <span class="pill pill--neutral">{{ role.role }}</span>
+                } @empty {
+                  <span class="muted">—</span>
+                }
+              </span>
+            </div>
+          </div>
         }
       </p-dialog>
-    </section>
+    </div>
+  `,
+  styles: `
+    .row-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    [data-testid='user-roles'] .pill + .pill {
+      margin-left: 0.35rem;
+    }
+
+    [data-testid='user-detail'] .field span .pill + .pill {
+      margin-left: 0.35rem;
+    }
   `,
 })
 export class AdminUsers {

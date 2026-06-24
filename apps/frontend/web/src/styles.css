@@ -1,13 +1,300 @@
-/* Global styles for @hsm/web. */
+/* ============================================================================
+   HSM Console — global design system ("Clinical Pine")
+
+   PrimeNG colour lives in `theme/hsm-preset.ts`. This file owns the tokens,
+   typography, and the layout primitives every feature screen composes with.
+   PrimeNG is registered under a CSS layer (app.config.ts), so these unlayered
+   rules win without `!important`.
+   ============================================================================ */
 @import "primeicons/primeicons.css";
+
+:root {
+  /* Brand / interactive */
+  --pine-50: #edfbf6;
+  --pine-100: #d2f4e7;
+  --pine-200: #a6e9d1;
+  --pine-600: #0c8466;
+  --pine-700: #0c6a53;
+  --pine-800: #0b5a4e;
+  --pine-900: #0a4338;
+  --pine: var(--pine-800);
+
+  /* Warm-clay accent — used sparingly: the active-nav rail and focal moments */
+  --clay: #d9763c;
+  --clay-soft: #f5e2d4;
+
+  /* Ink + neutral surfaces (faint green undertone) */
+  --ink: #16201d;
+  --ink-soft: #45524e;
+  --ink-muted: #74827d;
+  --bg: #f3f6f4;
+  --surface: #ffffff;
+  --surface-sunk: #f6f8f7;
+  --line: #e2e7e5;
+  --line-strong: #cdd5d2;
+
+  /* Semantic status (the app is full of state) */
+  --ok: #0c8466;
+  --ok-bg: #e3f5ee;
+  --pending: #b87514;
+  --pending-bg: #fbf0db;
+  --fail: #c0392b;
+  --fail-bg: #fbe7e4;
+
+  /* Type */
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Radius + shadow + space */
+  --r-sm: 5px;
+  --r-md: 7px;
+  --r-lg: 11px;
+  --r-xl: 16px;
+  --shadow-sm: 0 1px 2px rgba(16, 33, 28, 0.06);
+  --shadow-md: 0 4px 16px -6px rgba(16, 33, 28, 0.14);
+  --shadow-lg: 0 18px 48px -16px rgba(11, 67, 56, 0.28);
+
+  --sidebar-w: 244px;
+  --topbar-h: 60px;
+}
+
+* {
+  box-sizing: border-box;
+}
 
 html,
 body {
   margin: 0;
-  height: 100%;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-.app-shell {
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  color: var(--ink);
+  margin: 0;
+}
+
+a {
+  color: var(--pine-700);
+}
+
+::selection {
+  background: var(--pine-200);
+  color: var(--pine-900);
+}
+
+/* Visible, accessible focus — clay so it never blends into the pine UI */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--clay);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* Quiet, modern scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+/* ---- Layout primitives -------------------------------------------------- */
+
+/* Page wrapper every feature screen lives in */
+.page {
+  display: block;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 2rem 2rem 4rem;
+  animation: page-rise 0.32s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes page-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page {
+    animation: none;
+  }
+}
+
+/* Page header: eyebrow (mono) + title + subtitle, with right-aligned actions */
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.page-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.page-title {
+  font-size: 1.7rem;
+  line-height: 1.1;
+}
+
+.page-subtitle {
+  margin: 0.5rem 0 0;
+  color: var(--ink-muted);
+  max-width: 56ch;
+  font-size: 0.95rem;
+}
+
+.page-actions {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+/* Card surface */
+.surface-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
   padding: 1.5rem;
+}
+
+.surface-card + .surface-card {
+  margin-top: 1.25rem;
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+}
+
+.card-hint {
+  color: var(--ink-muted);
+  font-size: 0.875rem;
+  margin: 0 0 1.25rem;
+}
+
+/* Form field stacks */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.1rem;
+}
+
+.field > label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0 1.5rem;
+}
+
+.field-error {
+  color: var(--fail);
+  font-size: 0.78rem;
+}
+
+/* Data type for keys, ids, codes, template source */
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+}
+
+.muted {
+  color: var(--ink-muted);
+}
+
+/* Status pill */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.pill::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.pill--ok {
+  color: var(--ok);
+  background: var(--ok-bg);
+}
+.pill--pending {
+  color: var(--pending);
+  background: var(--pending-bg);
+}
+.pill--failed {
+  color: var(--fail);
+  background: var(--fail-bg);
+}
+.pill--neutral {
+  color: var(--ink-soft);
+  background: var(--surface-sunk);
+  border-color: var(--line);
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--ink-muted);
+}
+
+.empty-state .pi {
+  font-size: 1.6rem;
+  color: var(--line-strong);
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+/* Make PrimeNG data tables read as calm operational grids */
+.p-datatable-thead > tr > th {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
 }

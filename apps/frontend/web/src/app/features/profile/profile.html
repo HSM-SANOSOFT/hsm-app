@@ -1,15 +1,17 @@
-<section class="profile" data-testid="profile-screen">
-  <h1>My account</h1>
+<div class="page" data-testid="profile-screen">
+  <header class="page-header">
+    <div>
+      <span class="page-eyebrow">ACCOUNT</span>
+      <h1 class="page-title">Your profile</h1>
+      <p class="page-subtitle">Update your name, email, and password.</p>
+    </div>
+  </header>
 
-  <article class="profile-card">
-    <h2>Profile</h2>
-    <p>Update your name and email.</p>
+  <section class="surface-card">
+    <h2 class="card-title">Profile</h2>
+    <p class="card-hint">Update your name and email.</p>
 
-    <form
-      [formGroup]="profileForm"
-      (ngSubmit)="saveProfile()"
-      class="profile-form"
-    >
+    <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
       @if (profileError(); as message) {
         <p-message severity="error" [text]="message" />
       }
@@ -17,38 +19,42 @@
         <p-message severity="success" text="Profile updated." />
       }
 
-      <div class="field">
-        <label for="firstName">First name</label>
-        <input
-          pInputText
-          id="firstName"
-          type="text"
-          formControlName="firstName"
-          autocomplete="given-name"
-        />
-        @if (
-          profileForm.controls.firstName.invalid &&
-          profileForm.controls.firstName.touched
-        ) {
-          <small class="error">First name is required.</small>
-        }
-      </div>
+      <div class="field-grid">
+        <div class="field">
+          <label for="firstName">First name</label>
+          <input
+            pInputText
+            fluid
+            id="firstName"
+            type="text"
+            formControlName="firstName"
+            autocomplete="given-name"
+          />
+          @if (
+            profileForm.controls.firstName.invalid &&
+            profileForm.controls.firstName.touched
+          ) {
+            <small class="field-error">First name is required.</small>
+          }
+        </div>
 
-      <div class="field">
-        <label for="email">Email</label>
-        <input
-          pInputText
-          id="email"
-          type="email"
-          formControlName="email"
-          autocomplete="email"
-        />
-        @if (
-          profileForm.controls.email.invalid &&
-          profileForm.controls.email.touched
-        ) {
-          <small class="error">A valid email is required.</small>
-        }
+        <div class="field">
+          <label for="email">Email</label>
+          <input
+            pInputText
+            fluid
+            id="email"
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+          />
+          @if (
+            profileForm.controls.email.invalid &&
+            profileForm.controls.email.touched
+          ) {
+            <small class="field-error">A valid email is required.</small>
+          }
+        </div>
       </div>
 
       <p-button
@@ -58,17 +64,13 @@
         [disabled]="profileSubmitting()"
       />
     </form>
-  </article>
+  </section>
 
-  <article class="profile-card">
-    <h2>Change password</h2>
-    <p>Enter your current password to set a new one.</p>
+  <section class="surface-card">
+    <h2 class="card-title">Password</h2>
+    <p class="card-hint">Enter your current password to set a new one.</p>
 
-    <form
-      [formGroup]="passwordForm"
-      (ngSubmit)="changePassword()"
-      class="password-form"
-    >
+    <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
       @if (passwordError(); as message) {
         <p-message severity="error" [text]="message" />
       }
@@ -80,6 +82,7 @@
         <label for="currentPassword">Current password</label>
         <p-password
           inputId="currentPassword"
+          fluid
           formControlName="currentPassword"
           [feedback]="false"
           [toggleMask]="true"
@@ -89,42 +92,46 @@
           passwordForm.controls.currentPassword.invalid &&
           passwordForm.controls.currentPassword.touched
         ) {
-          <small class="error">Current password is required.</small>
+          <small class="field-error">Current password is required.</small>
         }
       </div>
 
-      <div class="field">
-        <label for="newPassword">New password</label>
-        <p-password
-          inputId="newPassword"
-          formControlName="newPassword"
-          [toggleMask]="true"
-          autocomplete="new-password"
-        />
-        @if (
-          passwordForm.controls.newPassword.invalid &&
-          passwordForm.controls.newPassword.touched
-        ) {
-          <small class="error">
-            New password must be at least 8 characters.
-          </small>
-        }
-      </div>
+      <div class="field-grid">
+        <div class="field">
+          <label for="newPassword">New password</label>
+          <p-password
+            inputId="newPassword"
+            fluid
+            formControlName="newPassword"
+            [toggleMask]="true"
+            autocomplete="new-password"
+          />
+          @if (
+            passwordForm.controls.newPassword.invalid &&
+            passwordForm.controls.newPassword.touched
+          ) {
+            <small class="field-error">
+              New password must be at least 8 characters.
+            </small>
+          }
+        </div>
 
-      <div class="field">
-        <label for="confirmPassword">Confirm new password</label>
-        <p-password
-          inputId="confirmPassword"
-          formControlName="confirmPassword"
-          [feedback]="false"
-          [toggleMask]="true"
-          autocomplete="new-password"
-        />
-        @if (
-          passwordMismatch() && passwordForm.controls.confirmPassword.touched
-        ) {
-          <small class="error">Passwords do not match.</small>
-        }
+        <div class="field">
+          <label for="confirmPassword">Confirm new password</label>
+          <p-password
+            inputId="confirmPassword"
+            fluid
+            formControlName="confirmPassword"
+            [feedback]="false"
+            [toggleMask]="true"
+            autocomplete="new-password"
+          />
+          @if (
+            passwordMismatch() && passwordForm.controls.confirmPassword.touched
+          ) {
+            <small class="field-error">Passwords do not match.</small>
+          }
+        </div>
       </div>
 
       <p-button
@@ -134,5 +141,5 @@
         [disabled]="passwordSubmitting()"
       />
     </form>
-  </article>
-</section>
+  </section>
+</div>

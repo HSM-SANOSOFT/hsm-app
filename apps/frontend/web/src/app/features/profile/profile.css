@@ -1,0 +1,15 @@
+/* Profile screen — layout gaps only; visuals come from the global design system. */
+
+/* Space the inline status messages from the fields below them. */
+p-message {
+  display: block;
+  margin-bottom: 1.1rem;
+}
+
+/* p-password wraps its input; with `fluid` the wrapper fills, ensure the
+   inner control fills it too so it lines up with the plain text inputs. */
+p-password,
+:host ::ng-deep .p-password,
+:host ::ng-deep .p-password .p-password-input {
+  width: 100%;
+}

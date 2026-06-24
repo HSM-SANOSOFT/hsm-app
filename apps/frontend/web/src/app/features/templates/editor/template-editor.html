@@ -1,109 +1,140 @@
-<section class="template-editor" data-testid="template-editor">
-  <!-- R12: foldable metadata bar -->
-  <p-panel
-    header="Template metadata"
-    [toggleable]="true"
-    data-testid="metadata-panel"
-  >
-    <div class="metadata-grid">
-      <label class="field">
-        <span>Name</span>
-        <input
-          pInputText
-          type="text"
-          [ngModel]="name()"
-          (ngModelChange)="name.set($event)"
-          data-testid="meta-name"
-        />
-      </label>
-
-      <label class="field">
-        <span>Category</span>
-        <p-select
-          [options]="categoryOptions"
-          optionLabel="label"
-          optionValue="value"
-          [ngModel]="category()"
-          (ngModelChange)="category.set($event)"
-          data-testid="meta-category"
-        />
-      </label>
-
-      <label class="field field--wide">
-        <span>Description</span>
-        <input
-          pInputText
-          type="text"
-          [ngModel]="description()"
-          (ngModelChange)="description.set($event)"
-          data-testid="meta-description"
-        />
-      </label>
-
-      <!-- R12: base-template selector (BASE-category templates only) -->
-      <label class="field">
-        <span>Base template</span>
-        <p-select
-          [options]="baseTemplates()"
-          optionLabel="label"
-          optionValue="value"
-          [showClear]="true"
-          placeholder="None (full content)"
-          [ngModel]="baseTemplateId()"
-          (ngModelChange)="baseTemplateId.set($event)"
-          data-testid="meta-base-template"
-        />
-      </label>
+<div class="page page--editor">
+  <header class="page-header">
+    <div>
+      <span class="page-eyebrow">AUTHORING · TEMPLATES</span>
+      <h1 class="page-title">Template editor</h1>
+      <p class="page-subtitle">
+        Author Handlebars templates with a live, sandboxed preview. Save renders
+        the true server-composed output for confirmation before persisting.
+      </p>
     </div>
-  </p-panel>
-
-  @if (loadError(); as err) {
-    <p-message severity="error" [text]="err" data-testid="load-error" />
-  }
-
-  <!-- R13: split layout — editor + sample data on the left, preview right -->
-  <div class="split">
-    <div class="split__pane split__pane--edit">
-      <h3>Content</h3>
-      <app-monaco-editor
-        language="handlebars"
-        height="320px"
-        [value]="content()"
-        (valueChange)="content.set($event)"
-        data-testid="content-editor"
-      />
-
-      <!-- R15 / AE5: editable sample-data panel, seeded from schema -->
-      <h3>Sample data</h3>
-      <app-monaco-editor
-        language="json"
-        height="200px"
-        [value]="sampleDataJson()"
-        (valueChange)="sampleDataJson.set($event)"
-        data-testid="sample-data-editor"
+    <div class="page-actions">
+      <!-- R17: stubbed Save seam — U14 wires draft-render + confirm + persist -->
+      <p-button
+        label="Save"
+        icon="pi pi-save"
+        (onClick)="onSave()"
+        data-testid="save-button"
       />
     </div>
+  </header>
 
-    <div class="split__pane split__pane--preview">
-      <h3>Live preview</h3>
-      <!-- R16 / KTD7: sandboxed iframe, allow-scripts ONLY -->
-      <iframe
-        class="preview-frame"
-        title="Template preview"
-        sandbox="allow-scripts"
-        [srcdoc]="previewSrcdoc()"
-        data-testid="preview-iframe"
-      ></iframe>
+  <section class="template-editor" data-testid="template-editor">
+    <!-- R12: foldable metadata bar -->
+    <p-panel
+      header="Template metadata"
+      [toggleable]="true"
+      styleClass="meta-panel"
+      data-testid="metadata-panel"
+    >
+      <div class="field-grid">
+        <label class="field">
+          <span>Name</span>
+          <input
+            pInputText
+            type="text"
+            [ngModel]="name()"
+            (ngModelChange)="name.set($event)"
+            data-testid="meta-name"
+          />
+        </label>
+
+        <label class="field">
+          <span>Category</span>
+          <p-select
+            [options]="categoryOptions"
+            optionLabel="label"
+            optionValue="value"
+            [ngModel]="category()"
+            (ngModelChange)="category.set($event)"
+            data-testid="meta-category"
+          />
+        </label>
+
+        <label class="field field--wide">
+          <span>Description</span>
+          <input
+            pInputText
+            type="text"
+            [ngModel]="description()"
+            (ngModelChange)="description.set($event)"
+            data-testid="meta-description"
+          />
+        </label>
+
+        <!-- R12: base-template selector (BASE-category templates only) -->
+        <label class="field">
+          <span>Base template</span>
+          <p-select
+            [options]="baseTemplates()"
+            optionLabel="label"
+            optionValue="value"
+            [showClear]="true"
+            placeholder="None (full content)"
+            [ngModel]="baseTemplateId()"
+            (ngModelChange)="baseTemplateId.set($event)"
+            data-testid="meta-base-template"
+          />
+        </label>
+      </div>
+    </p-panel>
+
+    @if (loadError(); as err) {
+      <p-message severity="error" [text]="err" data-testid="load-error" />
+    }
+
+    <!-- R13: split layout — editor + sample data on the left, preview right -->
+    <div class="split">
+      <div class="split__pane split__pane--edit">
+        <div class="frame">
+          <div class="frame__header">
+            <span class="frame__label mono">TEMPLATE · HANDLEBARS</span>
+          </div>
+          <div class="frame__body">
+            <app-monaco-editor
+              language="handlebars"
+              height="320px"
+              [value]="content()"
+              (valueChange)="content.set($event)"
+              data-testid="content-editor"
+            />
+          </div>
+        </div>
+
+        <!-- R15 / AE5: editable sample-data panel, seeded from schema -->
+        <div class="frame">
+          <div class="frame__header">
+            <span class="frame__label mono">SAMPLE DATA · JSON</span>
+          </div>
+          <div class="frame__body">
+            <app-monaco-editor
+              language="json"
+              height="200px"
+              [value]="sampleDataJson()"
+              (valueChange)="sampleDataJson.set($event)"
+              data-testid="sample-data-editor"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="split__pane split__pane--preview">
+        <div class="frame frame--fill">
+          <div class="frame__header">
+            <span class="frame__label mono">PREVIEW</span>
+          </div>
+          <div class="frame__body frame__body--preview">
+            <!-- R16 / KTD7: sandboxed iframe, allow-scripts ONLY -->
+            <iframe
+              class="preview-frame"
+              title="Template preview"
+              sandbox="allow-scripts"
+              [srcdoc]="previewSrcdoc()"
+              data-testid="preview-iframe"
+            ></iframe>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-
-  <div class="actions">
-    <!-- R17: stubbed Save seam — U14 wires draft-render + confirm + persist -->
-    <p-button
-      label="Save"
-      icon="pi pi-save"
-      (onClick)="onSave()"
-      data-testid="save-button"
-    />
-  </div>
-</section>
+  </section>
+</div>

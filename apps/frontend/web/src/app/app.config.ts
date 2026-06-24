@@ -12,9 +12,9 @@ import {
 } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
-import Aura from '@primeng/themes/aura';
 import { providePrimeNG } from 'primeng/config';
 import { firstValueFrom } from 'rxjs';
+import { HsmPreset } from '../theme/hsm-preset';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/auth/auth.interceptor';
 import { AuthService } from './core/auth/auth.service';
@@ -42,6 +42,16 @@ export const appConfig: ApplicationConfig = {
       return firstValueFrom(auth.restoreSession());
     }),
     provideAnimationsAsync(),
-    providePrimeNG({ theme: { preset: Aura } }),
+    providePrimeNG({
+      theme: {
+        preset: HsmPreset,
+        options: {
+          // All-day light operations console; no dark-mode toggle.
+          darkModeSelector: false,
+          // Keep PrimeNG utilities below app styles so our chrome wins.
+          cssLayer: { name: 'primeng', order: 'theme, base, primeng' },
+        },
+      },
+    }),
   ],
 };
