@@ -1,15 +1,20 @@
-import { SendEmailJobDto } from '@hsm/common/dtos';
+import {
+  SendEmailJobDto,
+  SendTransactionalEmailJobDto,
+} from '@hsm/common/dtos';
 
 import { QueueWorkerHost } from '@hsm/queue';
 import { Processor } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { EmailService } from './email/email.service';
+import { TransactionalEmailService } from './email/transactional-email.service';
 import { EmailWebhookService } from './webhook/email-webhook.service';
 
 @Processor('coms')
 export class ComsService extends QueueWorkerHost {
   constructor(
     private readonly emailService: EmailService,
+    private readonly transactionalEmailService: TransactionalEmailService,
     private readonly webhookService: EmailWebhookService,
   ) {
     super();
@@ -20,6 +25,10 @@ export class ComsService extends QueueWorkerHost {
       case 'send-email': {
         const payload = job.data as SendEmailJobDto;
         return await this.emailService.sendEmail(payload);
+      }
+      case 'send-transactional-email': {
+        const payload = job.data as SendTransactionalEmailJobDto;
+        return await this.transactionalEmailService.send(payload);
       }
       case 'process-webhook-event': {
         const { webhookEventId } = job.data as { webhookEventId: string };

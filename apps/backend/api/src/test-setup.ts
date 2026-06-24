@@ -1,6 +1,7 @@
 // Sets dummy env vars before @hsm/config Joi validation runs.
 // All external services are mocked in unit tests — no real credentials needed.
 process.env.ENVIRONMENT = 'test';
+process.env.APP_BASE_URL = 'http://localhost:4200';
 process.env.SWAGGER_FAVICON = 'http://localhost/favicon.ico';
 process.env.SWAGGER_SITE_TITLE = 'Test';
 process.env.SMTP_ADDRESS = 'smtp.test.local';

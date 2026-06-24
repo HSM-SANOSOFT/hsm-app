@@ -74,3 +74,28 @@ Authorization: Bearer {{at_token}}
   "target": "example@example.com",
   "code": 123456
 }
+
+### Forgot Password (request reset link)
+POST {{host}}/auth/password/forgot
+Content-Type: {{contentType}}
+
+{
+  "email": "rsantamariao@hospitalsantamaria.com.ec"
+}
+
+### Reset Password (consume token from emailed link fragment)
+POST {{host}}/auth/password/reset
+Content-Type: {{contentType}}
+
+{
+  "token": "<paste-token-from-reset-link-fragment>",
+  "newPassword": "NewPassw0rd@2026"
+}
+
+### Recover Username (email the username)
+POST {{host}}/auth/username/recover
+Content-Type: {{contentType}}
+
+{
+  "email": "rsantamariao@hospitalsantamaria.com.ec"
+}

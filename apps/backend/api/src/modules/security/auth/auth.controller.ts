@@ -1,9 +1,12 @@
 import {
+  ForgotPasswordDto,
   LoginPayloadDto,
   LogoutIntegrationTokenPayloadDto,
   PinGenerationPayloadDto,
   PinValidationPayloadDto,
   PublicSignupPayloadDto,
+  RecoverUsernameDto,
+  ResetPasswordDto,
   SignedIntegrationProfileDto,
   SignedUserProfileDto,
   SignupIntegrationTokenPayloadDto,
@@ -20,15 +23,28 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
 import { ApiDocumentation, Public } from '../../../decorator';
 import { AuthJwtRtGuard, AuthLocalGuard } from '../../../guards';
 import { Roles } from '../../security/roles/roles.decorator';
+import { AccountRecoveryService } from './account-recovery.service';
 import { AuthService } from './auth.service';
+
+/**
+ * Generic, non-committal acknowledgement returned by the recovery endpoints
+ * regardless of whether an account exists — the non-enumerating contract.
+ */
+const GENERIC_RECOVERY_MESSAGE = {
+  message: 'If an account exists, we have sent an email.',
+};
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private accountRecoveryService: AccountRecoveryService,
+  ) {}
 
   @ApiDocumentation(TokensDto)
   @Public()
@@ -101,5 +117,46 @@ export class AuthController {
   @Post('pin/validate')
   async validatePin(@Body() payload: PinValidationPayloadDto) {
     return await this.authService.validatePin(payload);
+  }
+
+  /**
+   * Begin a password reset. Always returns the same generic message so callers
+   * can't enumerate accounts; the per-account 429 from the service is the only
+   * non-generic outcome and is allowed to propagate. A tighter per-IP throttle
+   * sits on top of the per-account rate limit.
+   */
+  @ApiDocumentation()
+  @Throttle({ long: { ttl: 60000, limit: 10 } })
+  @Public()
+  @Post('password/forgot')
+  async forgotPassword(@Body() payload: ForgotPasswordDto) {
+    await this.accountRecoveryService.forgotPassword(payload.email);
+    return GENERIC_RECOVERY_MESSAGE;
+  }
+
+  /**
+   * Consume a reset token and set a new password. A 400 for an invalid/expired/
+   * used token is allowed to propagate.
+   */
+  @ApiDocumentation()
+  @Throttle({ long: { ttl: 60000, limit: 10 } })
+  @Public()
+  @Post('password/reset')
+  async resetPassword(@Body() payload: ResetPasswordDto) {
+    await this.accountRecoveryService.resetPassword(
+      payload.token,
+      payload.newPassword,
+    );
+    return { message: 'Password updated.' };
+  }
+
+  /** Email the username for an account. Always returns the generic message. */
+  @ApiDocumentation()
+  @Throttle({ long: { ttl: 60000, limit: 10 } })
+  @Public()
+  @Post('username/recover')
+  async recoverUsername(@Body() payload: RecoverUsernameDto) {
+    await this.accountRecoveryService.recoverUsername(payload.email);
+    return GENERIC_RECOVERY_MESSAGE;
   }
 }

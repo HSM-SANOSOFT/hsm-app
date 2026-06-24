@@ -3,6 +3,7 @@ import { RolesEnum } from '@hsm/common/enums';
 import type { IRefreshUser, ISignedUser } from '@hsm/common/interfaces';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request } from 'express';
+import { AccountRecoveryService } from './account-recovery.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
@@ -19,6 +20,12 @@ const authService = {
   validatePin: jest.fn().mockResolvedValue(undefined),
 };
 
+const accountRecoveryService = {
+  forgotPassword: jest.fn().mockResolvedValue(undefined),
+  resetPassword: jest.fn().mockResolvedValue(undefined),
+  recoverUsername: jest.fn().mockResolvedValue(undefined),
+};
+
 const makeReq = (overrides: Partial<Request> = {}): Request =>
   ({ headers: {}, user: undefined, ...overrides }) as unknown as Request;
 
@@ -30,7 +37,13 @@ describe('AuthController', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
-      providers: [{ provide: AuthService, useValue: authService }],
+      providers: [
+        { provide: AuthService, useValue: authService },
+        {
+          provide: AccountRecoveryService,
+          useValue: accountRecoveryService,
+        },
+      ],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
@@ -155,6 +168,59 @@ describe('AuthController', () => {
       } as never;
       await controller.validatePin(dto);
       expect(authService.validatePin).toHaveBeenCalledWith(dto);
+    });
+  });
+
+  describe('forgotPassword', () => {
+    it('delegates the email and returns the generic, non-enumerating message', async () => {
+      const result = await controller.forgotPassword({
+        email: 'jdoe@test.com',
+      });
+      expect(accountRecoveryService.forgotPassword).toHaveBeenCalledWith(
+        'jdoe@test.com',
+      );
+      expect(result).toEqual({
+        message: 'If an account exists, we have sent an email.',
+      });
+    });
+
+    it('returns the SAME generic message even when the service did nothing (account absent)', async () => {
+      accountRecoveryService.forgotPassword.mockResolvedValueOnce(undefined);
+      const result = await controller.forgotPassword({
+        email: 'nobody@test.com',
+      });
+      // No account-existence signal leaks through the controller response.
+      expect(result).toEqual({
+        message: 'If an account exists, we have sent an email.',
+      });
+    });
+  });
+
+  describe('resetPassword', () => {
+    it('delegates token + newPassword and returns the update confirmation', async () => {
+      const result = await controller.resetPassword({
+        token: 'tok',
+        newPassword: 'NewPassw0rd@',
+      });
+      expect(accountRecoveryService.resetPassword).toHaveBeenCalledWith(
+        'tok',
+        'NewPassw0rd@',
+      );
+      expect(result).toEqual({ message: 'Password updated.' });
+    });
+  });
+
+  describe('recoverUsername', () => {
+    it('delegates the email and returns the generic, non-enumerating message', async () => {
+      const result = await controller.recoverUsername({
+        email: 'jdoe@test.com',
+      });
+      expect(accountRecoveryService.recoverUsername).toHaveBeenCalledWith(
+        'jdoe@test.com',
+      );
+      expect(result).toEqual({
+        message: 'If an account exists, we have sent an email.',
+      });
     });
   });
 });

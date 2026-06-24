@@ -15,7 +15,10 @@ import {
   Max,
   Min,
 } from 'class-validator';
-import { EmailBatchStatusEnum, EmailRecipientStatusEnum } from '../enums/coms.enum';
+import {
+  EmailBatchStatusEnum,
+  EmailRecipientStatusEnum,
+} from '../enums/coms.enum';
 
 @ApiSchema({ name: 'Send Email Payload' })
 export class SendEmailPayloadDto {
@@ -82,6 +85,28 @@ export class SendEmailJobDto {
   @IsOptional()
   @IsUUID()
   recipientId?: string;
+}
+
+/**
+ * A one-off transactional email (account-recovery: password reset / username
+ * recovery). Unlike the batch path, nothing is persisted — the worker sends it
+ * directly via the SMTP transport. Carries the already-rendered subject/body so
+ * the worker never needs the (sensitive, never-stored) plaintext reset link
+ * beyond this in-flight job.
+ */
+export class SendTransactionalEmailJobDto {
+  @IsEmail()
+  toEmail: string;
+
+  @IsString()
+  subject: string;
+
+  @IsString()
+  html: string;
+
+  @IsOptional()
+  @IsString()
+  text?: string;
 }
 
 @ApiSchema({ name: 'Email Batch Response' })

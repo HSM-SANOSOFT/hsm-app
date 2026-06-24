@@ -6,6 +6,8 @@ import * as joi from 'joi';
 interface EnvVars {
   ENVIRONMENT: string;
 
+  APP_BASE_URL: string;
+
   SWAGGER_FAVICON: string;
   SWAGGER_SITE_TITLE: string;
 
@@ -51,6 +53,9 @@ interface EnvVars {
 const EnvSchema = joi
   .object({
     ENVIRONMENT: joi.string().required(),
+
+    // Web app base URL — used to build account-recovery links (reset password).
+    APP_BASE_URL: joi.string().default('http://localhost:4200'),
 
     SWAGGER_FAVICON: joi.string().required(),
     SWAGGER_SITE_TITLE: joi.string().required(),
@@ -114,6 +119,8 @@ const envVars: EnvVars = validation.value as EnvVars;
 
 export const envs = Object.freeze({
   ENVIRONMENT: envVars.ENVIRONMENT,
+
+  APP_BASE_URL: envVars.APP_BASE_URL,
 
   SWAGGER_FAVICON: envVars.SWAGGER_FAVICON,
   SWAGGER_SITE_TITLE: envVars.SWAGGER_SITE_TITLE,

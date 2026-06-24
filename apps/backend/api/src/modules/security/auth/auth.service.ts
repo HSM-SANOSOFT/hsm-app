@@ -490,6 +490,8 @@ export class AuthService implements OnModuleInit {
    * @param ip - The IP address from which the request originated (for logging purposes)
    */
   async generatePin(payload: PinGenerationPayloadDto, ip: string) {
+    // NOTE: Password reset is now handled by AccountRecoveryService (token-based
+    // email links), superseding this PIN stub for that purpose.
     // TODO: Implement PIN generation and validation methods for functionalities like email verification and password reset
     const { purpose: pinPurpose, target: pinTarget } = payload;
 

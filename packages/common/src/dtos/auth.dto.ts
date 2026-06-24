@@ -1,6 +1,7 @@
 import { ApiProperty, ApiSchema, OmitType } from '@nestjs/swagger';
 import {
   IsArray,
+  IsEmail,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -180,6 +181,61 @@ export class PublicSignupPayloadDto extends OmitType(CreateUserPayloadDto, [
   })
   roles?: RolesType[];
 }
+/**
+ * Request a password reset for the account owning `email`. The response is the
+ * same generic message whether or not an account exists (non-enumerating).
+ */
+@ApiSchema({ name: 'Forgot Password Payload' })
+export class ForgotPasswordDto {
+  @IsEmail()
+  @ApiProperty({
+    required: true,
+    description: 'Email of the account to send a reset link to.',
+    example: 'user@example.com',
+  })
+  email!: string;
+}
+
+/**
+ * Consume a reset token (from the emailed link's URL fragment) and set a new
+ * password. The token is single-use and expires; an invalid/expired/used token
+ * is rejected with a generic message.
+ */
+@ApiSchema({ name: 'Reset Password Payload' })
+export class ResetPasswordDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    required: true,
+    description: 'The single-use reset token from the emailed link.',
+  })
+  token!: string;
+
+  // Mirrors ChangePasswordDto.newPassword constraints.
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    required: true,
+    description: 'The new password to set for the account.',
+  })
+  newPassword!: string;
+}
+
+/**
+ * Request that the username for the account owning `email` be emailed. The
+ * response is the same generic message whether or not an account exists.
+ */
+@ApiSchema({ name: 'Recover Username Payload' })
+export class RecoverUsernameDto {
+  @IsEmail()
+  @ApiProperty({
+    required: true,
+    description: 'Email of the account whose username should be emailed.',
+    example: 'user@example.com',
+  })
+  email!: string;
+}
+
 @ApiSchema({ name: 'Access and Refresh Token' })
 export class TokensDto implements ITokens {
   @ApiProperty({ description: 'Authorization token', type: 'string' })

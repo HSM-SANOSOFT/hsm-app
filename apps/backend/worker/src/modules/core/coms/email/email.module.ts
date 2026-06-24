@@ -11,6 +11,7 @@ import { DocsModule } from '../../docs/docs.module';
 import { TemplatesModule } from '../../templates/templates.module';
 import { EmailService } from './email.service';
 import { SmtpTransportProvider } from './smtp-transport.provider';
+import { TransactionalEmailService } from './transactional-email.service';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { SmtpTransportProvider } from './smtp-transport.provider';
       DatabasesEnum.HsmDbPostgres,
     ),
   ],
-  providers: [EmailService, SmtpTransportProvider],
-  exports: [EmailService],
+  providers: [EmailService, SmtpTransportProvider, TransactionalEmailService],
+  exports: [EmailService, TransactionalEmailService],
 })
 export class EmailModule {}
