@@ -1,12 +1,26 @@
 import { envs } from '@hsm/config';
+import {
+  EmailBatchEntity,
+  EmailRecipientEntity,
+} from '@hsm/database/entities';
+import { DatabasesEnum } from '@hsm/database/sources';
 import { InternalServerErrorException, Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import nodemailer from 'nodemailer';
+import { DocumentsEntity } from '@hsm/database/entities';
 import { DocsModule } from '../../docs/docs.module';
 import { TemplatesModule } from '../../templates/templates.module';
 import { EmailService } from './email.service';
 
 @Module({
-  imports: [TemplatesModule, DocsModule],
+  imports: [
+    TemplatesModule,
+    DocsModule,
+    TypeOrmModule.forFeature(
+      [EmailBatchEntity, EmailRecipientEntity, DocumentsEntity],
+      DatabasesEnum.HsmDbPostgres,
+    ),
+  ],
   providers: [
     EmailService,
     {

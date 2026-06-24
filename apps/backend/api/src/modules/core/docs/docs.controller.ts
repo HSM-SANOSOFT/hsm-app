@@ -1,6 +1,7 @@
 import {
   DocumentsPayloadDto,
   GenerateDocumentRequestDto,
+  ListDocumentsQueryDto,
   UploadDocumentPayloadDto,
 } from '@hsm/common/dtos';
 import type { ISignedUser } from '@hsm/common/interfaces';
@@ -28,6 +29,16 @@ import { Roles } from '../../security/roles/roles.decorator';
 export class DocsController {
   private readonly logger = new Logger(DocsController.name);
   constructor(private readonly docsService: DocsService) {}
+
+  @ApiDocumentation()
+  @Roles()
+  @Get()
+  async listDocuments(@Query() query: ListDocumentsQueryDto, @Req() req: Request) {
+    return await this.docsService.listDocuments(
+      query,
+      (req.user as ISignedUser)?.id ?? '',
+    );
+  }
 
   @ApiDocumentation(undefined, { additionalErrors: [HttpStatus.NOT_FOUND] })
   @Roles()
@@ -107,13 +118,18 @@ export class DocsController {
   async uploadDocuments(
     @Body() body: UploadDocumentPayloadDto,
     @UploadedFiles() files: Array<Express.Multer.File>,
+    @Req() req: Request,
   ) {
     const toLog = {
       payload: body.payload.map(p => p),
       files: files.map(f => ({ name: f.originalname, type: f.mimetype })),
     };
     this.logger.debug(`Uploading documents ${JSON.stringify(toLog)}`);
-    return await this.docsService.uploadDocuments(body, files);
+    return await this.docsService.uploadDocuments(
+      body,
+      files,
+      (req.user as ISignedUser)?.id,
+    );
   }
 
   @ApiDocumentation()
@@ -121,7 +137,7 @@ export class DocsController {
   @Delete()
   async deleteDocuments(
     @Body()
-    payload: Array<{
+    _payload: Array<{
       bucket: string;
       files: Array<{
         foldername: string;

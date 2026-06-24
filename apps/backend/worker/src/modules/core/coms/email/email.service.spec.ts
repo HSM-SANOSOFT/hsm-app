@@ -1,9 +1,14 @@
-import { SendEmailPayloadDto } from '@hsm/common/dtos';
-import { TemplateNotFoundError } from '@hsm/common/errors';
+import { SendEmailJobDto } from '@hsm/common/dtos';
 import {
-  TemplateParseLogEntity,
-  TemplatesEntity,
-} from '@hsm/database/entities/modules/core/template';
+  DocumentStatusEnum,
+  EmailBatchStatusEnum,
+  EmailRecipientStatusEnum,
+} from '@hsm/common/enums';
+import {
+  DocumentsEntity,
+  EmailBatchEntity,
+  EmailRecipientEntity,
+} from '@hsm/database/entities';
 import { DatabasesEnum } from '@hsm/database/sources';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -18,22 +23,56 @@ const makeParseEmailResult = (overrides = {}) => ({
   ...overrides,
 });
 
-const makePayload = (
-  overrides: Partial<SendEmailPayloadDto> = {},
-): SendEmailPayloadDto =>
+const makeRecipient = (
+  overrides: Partial<EmailRecipientEntity> = {},
+): EmailRecipientEntity =>
   ({
-    emailTemplate: 'welcome',
-    data: { userName: 'Ada' },
-    toEmails: ['ada@example.com'],
-    fromEmail: 'no-reply@hsm.org',
+    id: 'r-001',
+    toEmail: 'ada@example.com',
+    status: EmailRecipientStatusEnum.PENDING,
+    sentAt: null,
+    errorMessage: null,
+    messageId: null,
     ...overrides,
-  }) as SendEmailPayloadDto;
+  }) as EmailRecipientEntity;
+
+const makeBatch = (
+  overrides: Partial<EmailBatchEntity> = {},
+): EmailBatchEntity =>
+  ({
+    id: 'batch-001',
+    templateId: 'tmpl-id',
+    data: { userName: 'Ada' },
+    documentIds: null,
+    fromEmail: 'no-reply@hsm.org',
+    fromName: null,
+    overallStatus: EmailBatchStatusEnum.PENDING,
+    providerMessageId: null,
+    recipients: [makeRecipient()],
+    ...overrides,
+  }) as EmailBatchEntity;
+
+const makePayload = (
+  overrides: Partial<SendEmailJobDto> = {},
+): SendEmailJobDto => ({
+  batchId: 'batch-001',
+  ...overrides,
+});
 
 describe('EmailService', () => {
   let service: EmailService;
   let templatesService: { parseEmail: jest.Mock };
   let docsService: { getDocumentsStreams: jest.Mock };
   let smtpClient: { sendMail: jest.Mock };
+  let batchRepo: {
+    findOne: jest.Mock;
+    update: jest.Mock;
+  };
+  let recipientRepo: {
+    update: jest.Mock;
+    find: jest.Mock;
+  };
+  let docsRepo: { findOne: jest.Mock };
 
   beforeEach(async () => {
     templatesService = {
@@ -43,6 +82,15 @@ describe('EmailService', () => {
     smtpClient = {
       sendMail: jest.fn().mockResolvedValue({ messageId: 'msg-1' }),
     };
+    batchRepo = {
+      findOne: jest.fn(),
+      update: jest.fn().mockResolvedValue(undefined),
+    };
+    recipientRepo = {
+      update: jest.fn().mockResolvedValue(undefined),
+      find: jest.fn(),
+    };
+    docsRepo = { findOne: jest.fn() };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -51,18 +99,16 @@ describe('EmailService', () => {
         { provide: DocsService, useValue: docsService },
         { provide: 'SMTP_CLIENT', useValue: smtpClient },
         {
-          provide: getRepositoryToken(
-            TemplatesEntity,
-            DatabasesEnum.HsmDbPostgres,
-          ),
-          useValue: { findOne: jest.fn() },
+          provide: getRepositoryToken(EmailBatchEntity, DatabasesEnum.HsmDbPostgres),
+          useValue: batchRepo,
         },
         {
-          provide: getRepositoryToken(
-            TemplateParseLogEntity,
-            DatabasesEnum.HsmDbPostgres,
-          ),
-          useValue: { save: jest.fn() },
+          provide: getRepositoryToken(EmailRecipientEntity, DatabasesEnum.HsmDbPostgres),
+          useValue: recipientRepo,
+        },
+        {
+          provide: getRepositoryToken(DocumentsEntity, DatabasesEnum.HsmDbPostgres),
+          useValue: docsRepo,
         },
       ],
     }).compile();
@@ -70,51 +116,158 @@ describe('EmailService', () => {
     service = module.get<EmailService>(EmailService);
   });
 
-  describe('sendEmail – happy path', () => {
-    it('parses template and sends rendered subject + html', async () => {
+  describe('sendEmail – happy path (batch with 2 PENDING recipients, no docs)', () => {
+    it('marks batch PROCESSING, sends email to both recipients, then updates both SENT and batch SENT', async () => {
+      const recipient1 = makeRecipient({ id: 'r-001', toEmail: 'ada@example.com' });
+      const recipient2 = makeRecipient({ id: 'r-002', toEmail: 'bob@example.com' });
+      const batch = makeBatch({ recipients: [recipient1, recipient2] });
+
+      batchRepo.findOne.mockResolvedValue(batch);
+      recipientRepo.find.mockResolvedValue([
+        { ...recipient1, status: EmailRecipientStatusEnum.SENT },
+        { ...recipient2, status: EmailRecipientStatusEnum.SENT },
+      ]);
+
       await service.sendEmail(makePayload());
 
-      expect(templatesService.parseEmail).toHaveBeenCalledWith('welcome', {
-        userName: 'Ada',
+      // Mark PROCESSING first
+      expect(batchRepo.update).toHaveBeenCalledWith('batch-001', {
+        overallStatus: EmailBatchStatusEnum.PROCESSING,
       });
+
+      // Template parsed
+      expect(templatesService.parseEmail).toHaveBeenCalledWith('tmpl-id', { userName: 'Ada' });
+
+      // SMTP called with both recipients
       expect(smtpClient.sendMail).toHaveBeenCalledWith(
         expect.objectContaining({
+          from: 'no-reply@hsm.org',
+          to: ['ada@example.com', 'bob@example.com'],
           subject: 'Hello Ada',
           html: '<p>Welcome Ada</p>',
+          attachments: [],
+        }),
+      );
+
+      // Both recipients updated SENT
+      expect(recipientRepo.update).toHaveBeenCalledWith(
+        'r-001',
+        expect.objectContaining({ status: EmailRecipientStatusEnum.SENT }),
+      );
+      expect(recipientRepo.update).toHaveBeenCalledWith(
+        'r-002',
+        expect.objectContaining({ status: EmailRecipientStatusEnum.SENT }),
+      );
+
+      // Batch updated to SENT with messageId
+      expect(batchRepo.update).toHaveBeenCalledWith('batch-001', {
+        overallStatus: EmailBatchStatusEnum.SENT,
+        providerMessageId: 'msg-1',
+      });
+    });
+  });
+
+  describe('sendEmail – resend single recipient (recipientId set)', () => {
+    it('targets only the specified recipient, not all PENDING recipients', async () => {
+      const recipient1 = makeRecipient({ id: 'r-001', toEmail: 'ada@example.com', status: EmailRecipientStatusEnum.SENT });
+      const recipient2 = makeRecipient({ id: 'r-002', toEmail: 'bob@example.com', status: EmailRecipientStatusEnum.PENDING });
+      const batch = makeBatch({ recipients: [recipient1, recipient2] });
+
+      batchRepo.findOne.mockResolvedValue(batch);
+      recipientRepo.find.mockResolvedValue([
+        { ...recipient1 },
+        { ...recipient2, status: EmailRecipientStatusEnum.SENT },
+      ]);
+
+      await service.sendEmail(makePayload({ recipientId: 'r-001' }));
+
+      expect(smtpClient.sendMail).toHaveBeenCalledWith(
+        expect.objectContaining({
           to: ['ada@example.com'],
         }),
       );
-    });
-
-    it('sends with empty attachments when documents absent', async () => {
-      await service.sendEmail(makePayload({ documents: undefined }));
-
-      expect(docsService.getDocumentsStreams).not.toHaveBeenCalled();
-      expect(smtpClient.sendMail).toHaveBeenCalledWith(
-        expect.objectContaining({ attachments: [] }),
+      expect(recipientRepo.update).toHaveBeenCalledWith(
+        'r-001',
+        expect.objectContaining({ status: EmailRecipientStatusEnum.SENT }),
+      );
+      // r-002 should not be updated
+      expect(recipientRepo.update).not.toHaveBeenCalledWith(
+        'r-002',
+        expect.anything(),
       );
     });
   });
 
-  describe('sendEmail – error paths', () => {
-    it('propagates TemplateNotFoundError so BullMQ can retry', async () => {
-      templatesService.parseEmail.mockRejectedValue(
-        new TemplateNotFoundError('welcome'),
+  describe('sendEmail – SENT recipient in batch not re-sent', () => {
+    it('filters out SENT recipients when no recipientId is given', async () => {
+      const pendingRecipient = makeRecipient({ id: 'r-001', toEmail: 'ada@example.com', status: EmailRecipientStatusEnum.PENDING });
+      const sentRecipient = makeRecipient({ id: 'r-002', toEmail: 'already-sent@example.com', status: EmailRecipientStatusEnum.SENT });
+      const batch = makeBatch({ recipients: [pendingRecipient, sentRecipient] });
+
+      batchRepo.findOne.mockResolvedValue(batch);
+      recipientRepo.find.mockResolvedValue([
+        { ...pendingRecipient, status: EmailRecipientStatusEnum.SENT },
+        { ...sentRecipient },
+      ]);
+
+      await service.sendEmail(makePayload());
+
+      expect(smtpClient.sendMail).toHaveBeenCalledWith(
+        expect.objectContaining({
+          to: ['ada@example.com'],
+        }),
       );
-
-      await expect(
-        service.sendEmail(makePayload({ emailTemplate: 'welcome', data: {} })),
-      ).rejects.toBeInstanceOf(TemplateNotFoundError);
-
-      expect(smtpClient.sendMail).not.toHaveBeenCalled();
+      // SENT recipient should not be re-updated
+      expect(recipientRepo.update).not.toHaveBeenCalledWith(
+        'r-002',
+        expect.anything(),
+      );
     });
+  });
 
-    it('propagates smtp error when sendMail fails', async () => {
+  describe('sendEmail – SMTP failure', () => {
+    it('updates recipients to FAILED, recomputes batch status, and rethrows', async () => {
+      const recipient = makeRecipient({ id: 'r-001' });
+      const batch = makeBatch({ recipients: [recipient] });
+
+      batchRepo.findOne.mockResolvedValue(batch);
       smtpClient.sendMail.mockRejectedValue(new Error('SMTP timeout'));
+      recipientRepo.find.mockResolvedValue([
+        { ...recipient, status: EmailRecipientStatusEnum.FAILED },
+      ]);
+
+      await expect(service.sendEmail(makePayload())).rejects.toThrow('SMTP timeout');
+
+      expect(recipientRepo.update).toHaveBeenCalledWith('r-001', {
+        status: EmailRecipientStatusEnum.FAILED,
+        errorMessage: 'SMTP timeout',
+      });
+
+      // Batch recomputed to FAILED (all recipients failed)
+      expect(batchRepo.update).toHaveBeenCalledWith('batch-001', {
+        overallStatus: EmailBatchStatusEnum.FAILED,
+      });
+    });
+  });
+
+  describe('resolveDocumentAttachments – PENDING document throws', () => {
+    it('throws a descriptive error when document is not COMPLETED', async () => {
+      const pendingDoc = {
+        id: 'doc-001',
+        title: 'Report',
+        status: DocumentStatusEnum.PENDING,
+        versions: [],
+      } as unknown as DocumentsEntity;
+
+      const batch = makeBatch({ documentIds: ['doc-001'] });
+      batchRepo.findOne.mockResolvedValue(batch);
+      docsRepo.findOne.mockResolvedValue(pendingDoc);
 
       await expect(service.sendEmail(makePayload())).rejects.toThrow(
-        'SMTP timeout',
+        `Document doc-001 is not ready (status: ${DocumentStatusEnum.PENDING})`,
       );
+
+      expect(smtpClient.sendMail).not.toHaveBeenCalled();
     });
   });
 });

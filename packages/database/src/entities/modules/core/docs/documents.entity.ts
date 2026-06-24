@@ -33,6 +33,12 @@ export class DocumentsEntity {
   source: string;
 
   @Column({ nullable: true })
+  entityId?: string;
+
+  @Column({ nullable: true })
+  entityType?: string;
+
+  @Column({ nullable: true })
   createdBy?: string;
 
   @CreateDateColumn()

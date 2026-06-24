@@ -2,6 +2,7 @@ import {
   DocumentsPayloadDto,
   GenerateDocumentJobPayloadDto,
   GenerateDocumentRequestDto,
+  ListDocumentsQueryDto,
   S3FileUploadPayloadDto,
   UploadDocumentPayloadDto,
 } from '@hsm/common/dtos';
@@ -10,7 +11,12 @@ import {
   DocumentStatusEnum,
   DocumentTypeEnum,
 } from '@hsm/common/enums';
-import { DocumentsEntity } from '@hsm/database/entities';
+import {
+  DocumentLinkEntity,
+  DocumentStorageObjectEntity,
+  DocumentsEntity,
+  DocumentsVersionEntity,
+} from '@hsm/database/entities';
 import { DatabasesEnum } from '@hsm/database/sources';
 import { QueueEnum } from '@hsm/queue';
 import { S3Service } from '@hsm/storage/s3/s3.service';
@@ -31,7 +37,37 @@ export class DocsService {
     @InjectQueue(QueueEnum.Document) private readonly docsQueue: Queue,
     @InjectRepository(DocumentsEntity, DatabasesEnum.HsmDbPostgres)
     private readonly docs: Repository<DocumentsEntity>,
+    @InjectRepository(DocumentsVersionEntity, DatabasesEnum.HsmDbPostgres)
+    private readonly versions: Repository<DocumentsVersionEntity>,
+    @InjectRepository(DocumentStorageObjectEntity, DatabasesEnum.HsmDbPostgres)
+    private readonly storageRepo: Repository<DocumentStorageObjectEntity>,
+    @InjectRepository(DocumentLinkEntity, DatabasesEnum.HsmDbPostgres)
+    private readonly linkRepo: Repository<DocumentLinkEntity>,
   ) {}
+
+  async listDocuments(query: ListDocumentsQueryDto, userId: string) {
+    const { entityId, entityType, type, status, page = 1, limit = 20 } = query;
+    const skip = (page - 1) * limit;
+
+    const qb = this.docs
+      .createQueryBuilder('doc')
+      .where('doc.createdBy = :userId', { userId })
+      .andWhere('doc.deletedAt IS NULL');
+
+    if (entityId && entityType) {
+      qb.andWhere(
+        'doc.entityId = :entityId AND doc.entityType = :entityType',
+        { entityId, entityType },
+      );
+    }
+    if (type) qb.andWhere('doc.type = :type', { type });
+    if (status) qb.andWhere('doc.status = :status', { status });
+
+    qb.skip(skip).take(limit).orderBy('doc.createdAt', 'DESC');
+
+    const [data, total] = await qb.getManyAndCount();
+    return { data, total, page, limit };
+  }
 
   async generateDocument(dto: GenerateDocumentRequestDto, userId?: string) {
     const doc = this.docs.create({
@@ -48,6 +84,8 @@ export class DocsService {
       documentId: doc.id,
       templateIdentifier: dto.templateIdentifier,
       data: dto.data,
+      entityId: dto.entityId,
+      entityType: dto.entityType,
     };
 
     const job = await this.docsQueue.add('generate-document', jobPayload);
@@ -169,7 +207,9 @@ export class DocsService {
   async uploadDocuments(
     payload: UploadDocumentPayloadDto,
     files: Array<Express.Multer.File>,
+    userId?: string,
   ) {
+    // Build a map from originalname → file queue for matching
     const fileQueues = new Map<string, Express.Multer.File[]>();
     for (const f of files) {
       const key = (f.originalname ?? '').trim();
@@ -178,6 +218,15 @@ export class DocsService {
       const fileQueue = fileQueues.get(key) ?? [];
       fileQueue.push(f);
       fileQueues.set(key, fileQueue);
+    }
+
+    // Also keep a map of filename → original file for mimeType/size lookup after upload
+    const fileByName = new Map<string, Express.Multer.File>();
+    for (const f of files) {
+      const key = (f.originalname ?? '').trim();
+      if (key && !fileByName.has(key)) {
+        fileByName.set(key, f);
+      }
     }
 
     const data: S3FileUploadPayloadDto = {
@@ -214,7 +263,55 @@ export class DocsService {
         `Uploaded files not referenced in payload: ${extras.join(', ')}`,
       );
     }
-    return await this.s3Service.uploadFiles(data);
+
+    const s3Result = await this.s3Service.uploadFiles(data);
+
+    // Persist DocumentsEntity rows for each uploaded file
+    const createdDocIds: string[] = [];
+    for (const bucket of s3Result) {
+      for (const file of bucket.files) {
+        const originalFile = fileByName.get(file.filename ?? '');
+
+        const doc = this.docs.create({
+          title: file.filename ?? file.fileId,
+          type: DocumentTypeEnum.UPLOADED,
+          status: DocumentStatusEnum.COMPLETED,
+          source: DocumentSourceEnum.MANUAL,
+          createdBy: userId,
+        });
+        await this.docs.save(doc);
+
+        const version = this.versions.create({
+          version: 1,
+          filename: file.filename,
+          mimeType: originalFile?.mimetype,
+          size: originalFile?.size,
+          document: doc,
+        });
+        await this.versions.save(version);
+
+        const storage = this.storageRepo.create({
+          id: file.fileId,
+          path: file.key,
+          bucket: bucket.bucket,
+        });
+        storage.version = version;
+        await this.storageRepo.save(storage);
+
+        if (payload.entityId && payload.entityType) {
+          const link = this.linkRepo.create({
+            document: doc,
+            entityId: payload.entityId,
+            entityType: payload.entityType,
+          });
+          await this.linkRepo.save(link);
+        }
+
+        createdDocIds.push(doc.id);
+      }
+    }
+
+    return { s3Result, documentIds: createdDocIds };
   }
 
   /** Decomposes an S3 storage path (e.g. "generated/uuid") into folderName and fileId. */

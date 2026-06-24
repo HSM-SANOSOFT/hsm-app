@@ -1,3 +1,15 @@
+### List Documents (paginated, scoped to current user)
+GET {{host}}/docs
+Authorization: Bearer {{at_token}}
+
+###
+
+### List Documents filtered by entity
+GET {{host}}/docs?entityId=patient-uuid&entityType=PATIENT&page=1&limit=10
+Authorization: Bearer {{at_token}}
+
+###
+
 ### Get Document by ID
 GET {{host}}/docs/{{docId}}
 Authorization: Bearer {{at_token}}
@@ -23,7 +35,23 @@ Authorization: Bearer {{at_token}}
 
 {
   "templateIdentifier": "example-template",
+  "title": "HCU-001 Admision",
   "data": {}
+}
+
+###
+
+### Generate Document from Template with entity link
+POST {{host}}/docs/generate
+Content-Type: {{contentType}}
+Authorization: Bearer {{at_token}}
+
+{
+  "templateIdentifier": "hcu_001_admision",
+  "title": "HCU-001 Admision",
+  "data": { "patientName": "Ada Lovelace", "date": "2026-05-04" },
+  "entityId": "patient-uuid",
+  "entityType": "PATIENT"
 }
 
 ###
@@ -130,3 +158,31 @@ Content-Type: application/pdf
 
 < C:\Users\rauls\Downloads\test7.pdf
 --UploadBoundary--
+
+### Upload Documents with entity link
+POST {{host}}/docs/upload
+Authorization: Bearer {{at_token}}
+Content-Type: multipart/form-data; boundary=UploadBoundaryEntity
+
+--UploadBoundaryEntity
+Content-Disposition: form-data; name="payload"
+Content-Type: application/json
+
+[{"bucket":"test","files":[{"filename":"report.pdf","foldername":"reports"}]}]
+
+--UploadBoundaryEntity
+Content-Disposition: form-data; name="entityId"
+
+patient-uuid
+
+--UploadBoundaryEntity
+Content-Disposition: form-data; name="entityType"
+
+PATIENT
+
+--UploadBoundaryEntity
+Content-Disposition: form-data; name="files"; filename="report.pdf"
+Content-Type: application/pdf
+
+< C:\Users\rauls\Downloads\report.pdf
+--UploadBoundaryEntity--

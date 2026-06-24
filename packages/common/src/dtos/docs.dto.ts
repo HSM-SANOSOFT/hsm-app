@@ -2,13 +2,18 @@ import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { plainToInstance, Transform, Type } from 'class-transformer';
 import {
   IsArray,
+  IsEnum,
+  IsInt,
   IsNotEmpty,
   IsObject,
   IsOptional,
   IsString,
   IsUUID,
+  Max,
+  Min,
   ValidateNested,
 } from 'class-validator';
+import { DocumentStatusEnum, DocumentTypeEnum } from '@hsm/common/enums';
 
 type Ctor<T> = new () => T;
 
@@ -77,6 +82,14 @@ export class UploadDocumentPayloadDto {
   @ValidateNested({ each: true })
   @Type(() => UploadDocument)
   payload: UploadDocument[];
+
+  @IsOptional()
+  @IsString()
+  entityId?: string;
+
+  @IsOptional()
+  @IsString()
+  entityType?: string;
 }
 
 export class GenerateDocumentJobPayloadDto {
@@ -89,6 +102,14 @@ export class GenerateDocumentJobPayloadDto {
 
   @IsObject()
   data: Record<string, unknown>;
+
+  @IsOptional()
+  @IsString()
+  entityId?: string;
+
+  @IsOptional()
+  @IsString()
+  entityType?: string;
 }
 
 @ApiSchema({ name: 'Generate Document Request' })
@@ -117,4 +138,52 @@ export class GenerateDocumentRequestDto {
   @IsString()
   @ApiProperty({ required: false, description: 'Descripción opcional' })
   description?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ description: 'ID of the entity this document belongs to', required: false })
+  entityId?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ description: 'Type of the entity this document belongs to', required: false })
+  entityType?: string;
+}
+
+@ApiSchema({ name: 'List Documents Query' })
+export class ListDocumentsQueryDto {
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ required: false })
+  entityId?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ required: false })
+  entityType?: string;
+
+  @IsOptional()
+  @IsEnum(DocumentTypeEnum)
+  @ApiProperty({ required: false, enum: DocumentTypeEnum })
+  type?: DocumentTypeEnum;
+
+  @IsOptional()
+  @IsEnum(DocumentStatusEnum)
+  @ApiProperty({ required: false, enum: DocumentStatusEnum })
+  status?: DocumentStatusEnum;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Type(() => Number)
+  @ApiProperty({ required: false, default: 1 })
+  page?: number = 1;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  @Type(() => Number)
+  @ApiProperty({ required: false, default: 20 })
+  limit?: number = 20;
 }
