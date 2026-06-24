@@ -1,0 +1,135 @@
+<section class="auth">
+  <aside class="auth-aside" aria-hidden="true">
+    <a class="auth-brand">
+      <span class="auth-brand__mark"></span>
+      <span class="auth-brand__word">HSM<span>Console</span></span>
+    </a>
+
+    <div class="auth-pitch">
+      <p class="auth-eyebrow">Internal operations</p>
+      <h2 class="auth-headline">
+        Request access to templates, documents, and runtime configuration.
+      </h2>
+    </div>
+
+    <ul class="auth-systems mono">
+      <li><span class="auth-dot auth-dot--ok"></span> staff &middot; auditor access</li>
+      <li><span class="auth-dot auth-dot--pending"></span> admin &middot; granted by an administrator</li>
+    </ul>
+
+    <p class="auth-foot mono">HSM backend &middot; staff access only</p>
+  </aside>
+
+  <main class="auth-main">
+    <div class="auth-card">
+      <span class="auth-brand__word auth-brand__word--compact">
+        HSM<span>Console</span>
+      </span>
+
+      <h1 class="auth-title">Create account</h1>
+      <p class="auth-sub">Sets up a staff account with auditor access.</p>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
+        @if (errorMessage(); as message) {
+          <p-message severity="error" [text]="message" styleClass="auth-msg" />
+        }
+
+        <div class="auth-row">
+          <div class="field">
+            <label for="firstName">First name</label>
+            <input
+              pInputText
+              id="firstName"
+              type="text"
+              formControlName="firstName"
+              autocomplete="given-name"
+              fluid
+            />
+            @if (form.controls.firstName.invalid && form.controls.firstName.touched) {
+              <small class="field-error">First name is required.</small>
+            }
+          </div>
+
+          <div class="field">
+            <label for="firstLastName">Last name</label>
+            <input
+              pInputText
+              id="firstLastName"
+              type="text"
+              formControlName="firstLastName"
+              autocomplete="family-name"
+              fluid
+            />
+            @if (form.controls.firstLastName.invalid && form.controls.firstLastName.touched) {
+              <small class="field-error">Last name is required.</small>
+            }
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="username">Username</label>
+          <input
+            pInputText
+            id="username"
+            type="text"
+            formControlName="username"
+            autocomplete="username"
+            placeholder="e.g. jdoe"
+            fluid
+          />
+          @if (form.controls.username.invalid && form.controls.username.touched) {
+            <small class="field-error">Username is required.</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input
+            pInputText
+            id="email"
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+            fluid
+          />
+          @if (form.controls.email.invalid && form.controls.email.touched) {
+            <small class="field-error">Enter a valid email address.</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <p-password
+            inputId="password"
+            formControlName="password"
+            [feedback]="true"
+            [toggleMask]="true"
+            autocomplete="new-password"
+            placeholder="At least 8 characters"
+            fluid
+          />
+          @if (form.controls.password.invalid && form.controls.password.touched) {
+            <small class="field-error">Use at least 8 characters.</small>
+          }
+        </div>
+
+        <p-button
+          type="submit"
+          label="Create account"
+          icon="pi pi-arrow-right"
+          iconPos="right"
+          [loading]="submitting()"
+          [disabled]="submitting()"
+          styleClass="auth-submit"
+          fluid
+        />
+      </form>
+
+      <p class="auth-alt">
+        Already have an account?
+        <a routerLink="/login" data-testid="login-link">Sign in</a>
+      </p>
+    </div>
+  </main>
+</section>

@@ -26,6 +26,13 @@ describe('app.routes', () => {
     expect(login?.loadComponent).toBeDefined();
   });
 
+  it('keeps /register public (no shell, no guards)', () => {
+    const register = findRoute(routes, 'register');
+    expect(register).toBeDefined();
+    expect(register?.canActivate).toBeUndefined();
+    expect(register?.loadComponent).toBeDefined();
+  });
+
   it('mounts all authenticated routes inside a single auth-guarded shell', () => {
     const shell = routes.find(r => r.path === '' && r.children);
     expect(shell).toBeDefined();

@@ -3,11 +3,17 @@ import { RolesEnum } from '@hsm/common/enums';
 import { catchError, map, type Observable, of, switchMap, tap } from 'rxjs';
 
 import { ApiClient } from '../api/api-client';
-import type { LoginPayload, Tokens, UserProfile } from '../api/response';
+import type {
+  LoginPayload,
+  SignupPayload,
+  Tokens,
+  UserProfile,
+} from '../api/response';
 import { TokenStorage } from './token-storage';
 
 /** Backend auth endpoints (relative to the `/v1` base URL). */
 export const AUTH_LOGIN_PATH = '/auth/login';
+export const AUTH_SIGNUP_PATH = '/auth/signup';
 export const AUTH_REFRESH_PATH = '/auth/refresh';
 export const AUTH_PROFILE_PATH = '/auth/profile';
 export const AUTH_LOGOUT_PATH = '/auth/logout';
@@ -69,6 +75,20 @@ export class AuthService {
     return this.api.post<Tokens>(AUTH_LOGIN_PATH, payload).pipe(
       tap(tokens => this.tokenStorage.save(tokens)),
       // After storing tokens, load the profile and emit it.
+      switchMap(() => this.loadProfile()),
+    );
+  }
+
+  /**
+   * Self-registers via `POST /v1/auth/signup`, which returns a token pair on
+   * success (the backend rejects privileged roles). Stores the tokens and loads
+   * the profile — same shape as {@link login}, so the new user lands
+   * authenticated. Errors with the `ApiError` thrown by {@link ApiClient}
+   * (e.g. a duplicate username).
+   */
+  register(payload: SignupPayload): Observable<UserProfile> {
+    return this.api.post<Tokens>(AUTH_SIGNUP_PATH, payload).pipe(
+      tap(tokens => this.tokenStorage.save(tokens)),
       switchMap(() => this.loadProfile()),
     );
   }

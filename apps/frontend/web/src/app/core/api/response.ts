@@ -82,6 +82,21 @@ export interface LoginPayload {
 }
 
 /**
+ * Mirror of the `roles`-bearing fields of `@hsm/common` `SignupPayloadDto`
+ * (which extends `CreateUserPayloadDto`). Public self-registration via
+ * `POST /v1/auth/signup`; the backend rejects privileged roles
+ * (`admin`/`developer`), so the console only ever sends a non-privileged role.
+ */
+export interface SignupPayload {
+  username: string;
+  email: string;
+  password: string;
+  firstName: string;
+  firstLastName: string;
+  roles: string[];
+}
+
+/**
  * Mirror of `@hsm/common` `SignedUserProfileDto` (only the fields the console
  * reads). `roles` comes back as a string array of role *values* (e.g.
  * `['admin']`) matching `RolesEnum.*` values from `@hsm/common/enums`.

@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
@@ -21,13 +21,14 @@ import { AuthService } from '../../../core/auth/auth.service';
   selector: 'app-login',
   imports: [
     ReactiveFormsModule,
+    RouterLink,
     InputTextModule,
     PasswordModule,
     ButtonModule,
     MessageModule,
   ],
   templateUrl: './login.html',
-  styleUrl: './login.css',
+  styleUrl: '../auth.css',
 })
 export class Login {
   private readonly fb = inject(FormBuilder);
