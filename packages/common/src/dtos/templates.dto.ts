@@ -169,7 +169,11 @@ export class TemplateDetailDto {
       { $ref: '#/components/schemas/SMS Template Fields' },
     ],
   })
-  metadata: EmailTemplateFieldsDto | DocTemplateFieldsDto | SmsTemplateFieldsDto | null;
+  metadata:
+    | EmailTemplateFieldsDto
+    | DocTemplateFieldsDto
+    | SmsTemplateFieldsDto
+    | null;
 }
 
 @ApiSchema({ name: 'Template With Base Response' })
@@ -308,6 +312,42 @@ export class ParseTemplateResponseDto {
 
   @ApiProperty({ description: 'UUID de la plantilla usada' })
   templateId: string;
+}
+
+@ApiSchema({ name: 'Draft Render Payload' })
+export class DraftRenderPayloadDto {
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({
+    description: 'Fuente Handlebars del borrador a renderizar',
+    example: '<p>Hola {{patientName}}</p>',
+  })
+  content: string;
+
+  @IsOptional()
+  @IsUUID()
+  @ApiProperty({
+    required: false,
+    description:
+      'UUID de la plantilla BASE que envuelve el contenido vía {{body}}. ' +
+      'Si se omite, el contenido se renderiza tal cual.',
+  })
+  baseTemplateId?: string;
+
+  @IsOptional()
+  @IsObject()
+  @ApiProperty({
+    required: false,
+    description: 'Datos de ejemplo contra los que renderizar el borrador',
+    example: { patientName: 'Ada', age: 36 },
+  })
+  sampleData?: Record<string, unknown>;
+}
+
+@ApiSchema({ name: 'Draft Render Response' })
+export class DraftRenderResponseDto {
+  @ApiProperty({ description: 'HTML compuesto en el servidor' })
+  html: string;
 }
 
 @ApiSchema({ name: 'Validate Template Response' })

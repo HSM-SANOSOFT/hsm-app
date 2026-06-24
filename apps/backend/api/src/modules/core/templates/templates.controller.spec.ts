@@ -1,5 +1,6 @@
 import { TemplateCategoriesEnum } from '@hsm/common/enums';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ROLES_KEY } from '../../security/roles/roles.decorator';
 import { TemplatesController } from './templates.controller';
 import { TemplatesService } from './templates.service';
 
@@ -47,6 +48,7 @@ describe('TemplatesController', () => {
       update: jest.fn(),
       delete: jest.fn(),
       validate: jest.fn(),
+      draftRender: jest.fn(),
     } as unknown as jest.Mocked<TemplatesService>;
 
     const module: TestingModule = await Test.createTestingModule({
@@ -91,7 +93,11 @@ describe('TemplatesController', () => {
       schema: { patientName: 'string' },
       content: '<p>{{patientName}}</p>',
       baseTemplateId: 'id-1',
-      email: { subject: 'Confirmed', fromEmail: 'no-reply@hsm.org', fromName: 'HSM' },
+      email: {
+        subject: 'Confirmed',
+        fromEmail: 'no-reply@hsm.org',
+        fromName: 'HSM',
+      },
     } as never;
     const result = await controller.addTemplate(dto);
     expect(result.template.id).toBe('id-2');
@@ -110,10 +116,9 @@ describe('TemplatesController', () => {
 
   it('PUT returns {template, baseTemplate} shape from service', async () => {
     service.update.mockResolvedValue(emailTemplateFixture);
-    const result = await controller.updateTemplate(
-      'id-2',
-      { name: 'renamed' } as never,
-    );
+    const result = await controller.updateTemplate('id-2', {
+      name: 'renamed',
+    } as never);
     expect(result.template.id).toBe('id-2');
     expect(result.baseTemplate?.id).toBe('id-1');
     expect(result.template.metadata).toMatchObject({ subject: 'Confirmed' });
@@ -139,5 +144,39 @@ describe('TemplatesController', () => {
       identifier: 'welcome',
       data: { userName: 'Ada' },
     });
+  });
+
+  it('POST /draft-render forwards payload to service.draftRender', () => {
+    const payload = {
+      content: '<p>{{name}}</p>',
+      baseTemplateId: 'id-1',
+      sampleData: { name: 'Ada' },
+    } as never;
+    controller.draftRender(payload);
+    expect(service.draftRender).toHaveBeenCalledWith(payload);
+  });
+
+  it('POST /draft-render returns the composed html from the service', async () => {
+    service.draftRender.mockResolvedValue({ html: '<p>Ada</p>' });
+    const result = await controller.draftRender({
+      content: '<p>{{name}}</p>',
+      sampleData: { name: 'Ada' },
+    } as never);
+    expect(result).toEqual({ html: '<p>Ada</p>' });
+  });
+
+  it('draft-render is auth/role guarded (not @Public())', () => {
+    const roles = Reflect.getMetadata(
+      ROLES_KEY,
+      TemplatesController.prototype.draftRender,
+    );
+    // @Roles() sets the metadata key (empty array = any authenticated role);
+    // its presence proves the endpoint is guarded and not @Public().
+    expect(roles).toBeDefined();
+    const isPublic = Reflect.getMetadata(
+      'isPublic',
+      TemplatesController.prototype.draftRender,
+    );
+    expect(isPublic).toBeUndefined();
   });
 });

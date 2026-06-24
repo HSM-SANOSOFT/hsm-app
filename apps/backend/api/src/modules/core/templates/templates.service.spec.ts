@@ -305,7 +305,7 @@ describe('TemplatesService', () => {
       };
       // findOne: no duplicate, then findByIdentifier reload
       templatesRepo.findOne
-        .mockResolvedValueOnce(null)   // name uniqueness check
+        .mockResolvedValueOnce(null) // name uniqueness check
         .mockResolvedValueOnce(savedEntity); // findByIdentifier reload
       managerSave.mockResolvedValueOnce({ id: 'id-1' });
 
@@ -347,8 +347,8 @@ describe('TemplatesService', () => {
       };
       // findOne: base existence check, name uniqueness, reload
       templatesRepo.findOne
-        .mockResolvedValueOnce(baseEntity)  // baseTemplateId check
-        .mockResolvedValueOnce(null)        // name uniqueness
+        .mockResolvedValueOnce(baseEntity) // baseTemplateId check
+        .mockResolvedValueOnce(null) // name uniqueness
         .mockResolvedValueOnce(savedEntity); // reload
       managerSave.mockResolvedValueOnce({ id: 'id-email' });
 
@@ -391,8 +391,8 @@ describe('TemplatesService', () => {
         baseTemplate: baseEntity,
       };
       templatesRepo.findOne
-        .mockResolvedValueOnce(baseEntity)  // baseTemplateId check
-        .mockResolvedValueOnce(null)        // name uniqueness
+        .mockResolvedValueOnce(baseEntity) // baseTemplateId check
+        .mockResolvedValueOnce(null) // name uniqueness
         .mockResolvedValueOnce(savedEntity); // reload
       managerSave.mockResolvedValueOnce({ id: 'id-sms' });
 
@@ -632,6 +632,79 @@ describe('TemplatesService', () => {
         data: { userName: 'X' },
       });
       expect(templatesRepo.findOne).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  // ─── draftRender ───────────────────────────────────────────────────────────────
+
+  describe('draftRender', () => {
+    it('renders content against sampleData when no base is given', async () => {
+      const result = await service.draftRender({
+        content: '<p>Hola {{patientName}}</p>',
+        sampleData: { patientName: 'Ada' },
+      });
+      expect(result).toEqual({ html: '<p>Hola Ada</p>' });
+      // no DB lookup when there is no base
+      expect(templatesRepo.findOne).not.toHaveBeenCalled();
+    });
+
+    it('renders against an empty object when sampleData is omitted', async () => {
+      const result = await service.draftRender({
+        content: '<p>Hola {{patientName}}</p>',
+      });
+      expect(result).toEqual({ html: '<p>Hola </p>' });
+    });
+
+    it('composes the base around the child via {{{body}}}, matching generation', async () => {
+      templatesRepo.findOne.mockResolvedValue({
+        id: BASE_UUID,
+        category: TemplateCategoriesEnum.BASE,
+        content: '<html><body>{{{body}}}</body></html>',
+      });
+      const result = await service.draftRender({
+        content: '<p>Hola {{patientName}}</p>',
+        baseTemplateId: BASE_UUID,
+        sampleData: { patientName: 'Ada' },
+      });
+      expect(result).toEqual({
+        html: '<html><body><p>Hola Ada</p></body></html>',
+      });
+      expect(templatesRepo.findOne).toHaveBeenCalledWith({
+        where: { id: BASE_UUID },
+      });
+    });
+
+    it('throws TemplateNotFoundError when baseTemplateId does not exist', async () => {
+      templatesRepo.findOne.mockResolvedValue(null);
+      await expect(
+        service.draftRender({
+          content: '<p>x</p>',
+          baseTemplateId: BASE_UUID,
+        }),
+      ).rejects.toBeInstanceOf(TemplateNotFoundError);
+    });
+
+    it('throws TemplateInvalidShapeError when baseTemplateId is not a BASE template', async () => {
+      templatesRepo.findOne.mockResolvedValue({
+        id: BASE_UUID,
+        category: TemplateCategoriesEnum.EMAIL_INTERNAL,
+        content: '<p>not a base</p>',
+      });
+      await expect(
+        service.draftRender({
+          content: '<p>x</p>',
+          baseTemplateId: BASE_UUID,
+        }),
+      ).rejects.toBeInstanceOf(TemplateInvalidShapeError);
+    });
+
+    it('surfaces a Handlebars compile error as TemplateInvalidHandlebarsError, not a 500', async () => {
+      await expect(
+        service.draftRender({
+          content: '{{#if x}}',
+          sampleData: {},
+        }),
+      ).rejects.toBeInstanceOf(TemplateInvalidHandlebarsError);
     });
   });
 });

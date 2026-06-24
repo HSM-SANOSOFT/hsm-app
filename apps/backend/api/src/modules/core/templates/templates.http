@@ -92,3 +92,29 @@ Authorization: Bearer {{at_token}}
     "patientName": "Ada Lovelace"
   }
 }
+
+### Draft Render (no base)
+# Response shape: { data: { html: "..." } }
+POST {{host}}/templates/draft-render
+Content-Type: {{contentType}}
+Authorization: Bearer {{at_token}}
+
+{
+  "content": "<p>Hola {{patientName}}</p>",
+  "sampleData": {
+    "patientName": "Ada Lovelace"
+  }
+}
+
+### Draft Render (with base composition)
+POST {{host}}/templates/draft-render
+Content-Type: {{contentType}}
+Authorization: Bearer {{at_token}}
+
+{
+  "content": "<p>Hola {{patientName}}</p>",
+  "baseTemplateId": "123e4567-e89b-12d3-a456-426614174000",
+  "sampleData": {
+    "patientName": "Ada Lovelace"
+  }
+}

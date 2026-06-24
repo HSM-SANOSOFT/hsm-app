@@ -1,6 +1,8 @@
 import {
   CreateTemplatePayloadDto,
   DocTemplateFieldsDto,
+  DraftRenderPayloadDto,
+  DraftRenderResponseDto,
   EmailTemplateFieldsDto,
   SmsTemplateFieldsDto,
   TemplateDetailDto,
@@ -17,6 +19,7 @@ import {
   type TemplateSchemaIssue,
 } from '@hsm/common/errors';
 import {
+  composeTemplate,
   isWellFormedTemplateSchema,
   validateAgainstTemplateSchema,
 } from '@hsm/common/utils';
@@ -68,7 +71,9 @@ export class TemplatesService {
     return this.toResponseDto(entity);
   }
 
-  async create(dto: CreateTemplatePayloadDto): Promise<TemplateWithBaseResponseDto> {
+  async create(
+    dto: CreateTemplatePayloadDto,
+  ): Promise<TemplateWithBaseResponseDto> {
     this.assertCategoryShape(dto);
     if (!isWellFormedTemplateSchema(dto.schema)) {
       throw new TemplateInvalidShapeError(
@@ -126,7 +131,10 @@ export class TemplatesService {
       withBase: true,
     });
 
-    if (dto.category !== undefined && dto.category !== existing.template.category) {
+    if (
+      dto.category !== undefined &&
+      dto.category !== existing.template.category
+    ) {
       throw new TemplateInvalidShapeError(
         'category is immutable; create a new template instead',
       );
@@ -176,7 +184,12 @@ export class TemplatesService {
       if (Object.keys(patch).length > 0) {
         await manager.update(TemplatesEntity, existing.template.id, patch);
       }
-      await this.upsertChildOnUpdate(manager, existing.template.id, existing.template.category, dto);
+      await this.upsertChildOnUpdate(
+        manager,
+        existing.template.id,
+        existing.template.category,
+        dto,
+      );
     });
 
     return this.findByIdentifier(existing.template.id, {
@@ -248,6 +261,36 @@ export class TemplatesService {
     }
 
     return { valid: true, templateId: result.template.id };
+  }
+
+  async draftRender(
+    dto: DraftRenderPayloadDto,
+  ): Promise<DraftRenderResponseDto> {
+    let baseContent: string | null = null;
+
+    if (dto.baseTemplateId) {
+      const base = await this.templates.findOne({
+        where: { id: dto.baseTemplateId },
+      });
+      if (!base) throw new TemplateNotFoundError(dto.baseTemplateId);
+      if (base.category !== TemplateCategoriesEnum.BASE) {
+        throw new TemplateInvalidShapeError(
+          'baseTemplateId must reference a template with category=BASE',
+        );
+      }
+      baseContent = base.content;
+    }
+
+    try {
+      const html = composeTemplate({
+        content: dto.content,
+        baseContent,
+        data: dto.sampleData ?? {},
+      });
+      return { html };
+    } catch (err) {
+      throw new TemplateInvalidHandlebarsError(err);
+    }
   }
 
   private toDetailDto(entity: TemplatesEntity): TemplateDetailDto {

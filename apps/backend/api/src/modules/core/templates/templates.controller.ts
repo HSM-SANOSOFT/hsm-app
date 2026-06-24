@@ -1,5 +1,7 @@
 import {
   CreateTemplatePayloadDto,
+  DraftRenderPayloadDto,
+  DraftRenderResponseDto,
   GetTemplateRequestDto,
   ParseTemplatePayloadDto,
   TemplateWithBaseResponseDto,
@@ -76,5 +78,14 @@ export class TemplatesController {
       identifier: payload.identifier,
       data: payload.data,
     });
+  }
+
+  @ApiDocumentation(DraftRenderResponseDto, {
+    additionalErrors: [HttpStatus.NOT_FOUND, HttpStatus.BAD_REQUEST],
+  })
+  @Roles()
+  @Post('draft-render')
+  draftRender(@Body() payload: DraftRenderPayloadDto) {
+    return this.templatesService.draftRender(payload);
   }
 }
