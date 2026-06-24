@@ -1,0 +1,138 @@
+<section class="profile" data-testid="profile-screen">
+  <h1>My account</h1>
+
+  <article class="profile-card">
+    <h2>Profile</h2>
+    <p>Update your name and email.</p>
+
+    <form
+      [formGroup]="profileForm"
+      (ngSubmit)="saveProfile()"
+      class="profile-form"
+    >
+      @if (profileError(); as message) {
+        <p-message severity="error" [text]="message" />
+      }
+      @if (profileSuccess()) {
+        <p-message severity="success" text="Profile updated." />
+      }
+
+      <div class="field">
+        <label for="firstName">First name</label>
+        <input
+          pInputText
+          id="firstName"
+          type="text"
+          formControlName="firstName"
+          autocomplete="given-name"
+        />
+        @if (
+          profileForm.controls.firstName.invalid &&
+          profileForm.controls.firstName.touched
+        ) {
+          <small class="error">First name is required.</small>
+        }
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input
+          pInputText
+          id="email"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+        />
+        @if (
+          profileForm.controls.email.invalid &&
+          profileForm.controls.email.touched
+        ) {
+          <small class="error">A valid email is required.</small>
+        }
+      </div>
+
+      <p-button
+        type="submit"
+        label="Save profile"
+        [loading]="profileSubmitting()"
+        [disabled]="profileSubmitting()"
+      />
+    </form>
+  </article>
+
+  <article class="profile-card">
+    <h2>Change password</h2>
+    <p>Enter your current password to set a new one.</p>
+
+    <form
+      [formGroup]="passwordForm"
+      (ngSubmit)="changePassword()"
+      class="password-form"
+    >
+      @if (passwordError(); as message) {
+        <p-message severity="error" [text]="message" />
+      }
+      @if (passwordSuccess()) {
+        <p-message severity="success" text="Password changed." />
+      }
+
+      <div class="field">
+        <label for="currentPassword">Current password</label>
+        <p-password
+          inputId="currentPassword"
+          formControlName="currentPassword"
+          [feedback]="false"
+          [toggleMask]="true"
+          autocomplete="current-password"
+        />
+        @if (
+          passwordForm.controls.currentPassword.invalid &&
+          passwordForm.controls.currentPassword.touched
+        ) {
+          <small class="error">Current password is required.</small>
+        }
+      </div>
+
+      <div class="field">
+        <label for="newPassword">New password</label>
+        <p-password
+          inputId="newPassword"
+          formControlName="newPassword"
+          [toggleMask]="true"
+          autocomplete="new-password"
+        />
+        @if (
+          passwordForm.controls.newPassword.invalid &&
+          passwordForm.controls.newPassword.touched
+        ) {
+          <small class="error">
+            New password must be at least 8 characters.
+          </small>
+        }
+      </div>
+
+      <div class="field">
+        <label for="confirmPassword">Confirm new password</label>
+        <p-password
+          inputId="confirmPassword"
+          formControlName="confirmPassword"
+          [feedback]="false"
+          [toggleMask]="true"
+          autocomplete="new-password"
+        />
+        @if (
+          passwordMismatch() && passwordForm.controls.confirmPassword.touched
+        ) {
+          <small class="error">Passwords do not match.</small>
+        }
+      </div>
+
+      <p-button
+        type="submit"
+        label="Change password"
+        [loading]="passwordSubmitting()"
+        [disabled]="passwordSubmitting()"
+      />
+    </form>
+  </article>
+</section>
