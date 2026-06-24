@@ -12,7 +12,10 @@ import type {
   ParseTemplateInput,
   ParseTemplateResult,
 } from '@hsm/common/types';
-import { validateAgainstTemplateSchema } from '@hsm/common/utils';
+import {
+  composeTemplate,
+  validateAgainstTemplateSchema,
+} from '@hsm/common/utils';
 import {
   TemplateParseLogEntity,
   TemplatesEntity,
@@ -108,18 +111,16 @@ export class TemplatesService {
 
     let html: string;
     try {
-      const childCompiled = this.compile(template);
-      const childHtml = childCompiled(input.data);
-
-      if (
+      const baseContent =
         template.category !== TemplateCategoriesEnum.BASE &&
         template.baseTemplate
-      ) {
-        const baseCompiled = this.compile(template.baseTemplate);
-        html = baseCompiled({ ...input.data, body: childHtml });
-      } else {
-        html = childHtml;
-      }
+          ? template.baseTemplate.content
+          : null;
+      html = composeTemplate({
+        content: template.content,
+        baseContent,
+        data: input.data,
+      });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       await this.writeLog({
@@ -206,10 +207,6 @@ export class TemplatesService {
     return UUID_REGEX.test(identifier)
       ? [{ id: identifier }, { name: identifier }]
       : [{ name: identifier }];
-  }
-
-  private compile(template: TemplatesEntity): HandlebarsTemplateDelegate {
-    return Handlebars.compile(template.content, { noEscape: false });
   }
 
   private async writeLog(args: {
