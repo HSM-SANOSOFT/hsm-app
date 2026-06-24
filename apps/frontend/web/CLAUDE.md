@@ -136,15 +136,42 @@ apps/frontend/web/
     ├── index.html
     ├── styles.css          # primeicons import + base styles
     ├── environments/       # environment.ts + environment.development.ts
+    ├── test-setup.ts       # Vitest setup (matchMedia polyfill for PrimeNG)
     └── app/
-        ├── app.ts          # root standalone component (signal title)
+        ├── app.ts          # root: a bare <router-outlet /> host
         ├── app.html
         ├── app.config.ts   # zoneless, router, httpClient, PrimeNG/Aura, animations
-        ├── app.routes.ts   # empty; lazy role-gated routes added in U8/U9
+        ├── app.routes.ts   # /login (public) + Shell parent (authGuard) + lazy children
+        ├── app.routes.spec.ts
         ├── app.spec.ts     # boot smoke spec
-        └── core/editor/
-            └── monaco-setup.ts
+        ├── core/
+        │   ├── api/        # typed client (U7)
+        │   ├── auth/       # auth service, interceptor, guards, role directives (U8)
+        │   └── editor/monaco-setup.ts
+        ├── layout/         # shell + data-driven, role-gated nav (U9)
+        │   ├── shell.ts            # p-menubar top bar + user + logout + outlet
+        │   └── nav-items.ts        # NavItem model + NAV_ITEMS (adminOnly flag)
+        └── features/
+            ├── auth/login/         # U8
+            ├── profile/            # placeholder (U10 replaces)
+            ├── admin/users/        # placeholder, adminGuard (U11)
+            ├── admin/settings/     # placeholder, adminGuard (U12)
+            ├── templates/          # placeholder (U13/U14)
+            └── documents/          # placeholder (U15)
 ```
 
-Feature areas (`core/api`, `core/auth`, `layout`, `features/*`) are added in
-later units per the plan's Output Structure.
+## Shell + routing (U9)
+
+The `Shell` (`layout/shell.ts`) is the authenticated chrome: a PrimeNG
+`p-menubar` top bar (brand, role-gated nav, signed-in user, logout) over a
+`<router-outlet />`. `/login` is public and renders standalone; every other
+route is a **lazy** child of the shell parent route, which carries
+`canActivate: [authGuard]`. Admin children (`admin/users`, `admin/settings`)
+add `adminGuard`. The default route redirects `'' → profile`.
+
+Nav is **data-driven** (KTD8): `layout/nav-items.ts` exports `NAV_ITEMS`, an
+array of `{ label, icon, route, adminOnly? }`. The shell's `menuModel`
+`computed` filters out `adminOnly` entries for non-admins. **Adding a module is
+a new `NavItem` here + a new lazy child in `app.routes.ts` — no edit to the
+shell, the guards, or the interceptor.** The `features/*` entries above are
+placeholder standalone components that U10–U15 replace in place.
