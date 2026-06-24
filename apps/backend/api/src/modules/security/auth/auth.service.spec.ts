@@ -290,10 +290,11 @@ describe('AuthService', () => {
   });
 
   describe('signup', () => {
-    it('creates user, generates tokens, commits transaction', async () => {
+    it('creates an active patient, generates tokens, commits transaction', async () => {
       mockUsersService.createUser.mockResolvedValue({
         ...mockUser,
         id: 'user-uuid',
+        roles: [{ role: RolesEnum.Patient.Patient }],
         onboardingCompletedAt: new Date('2026-06-24T10:00:00.000Z'),
       });
 
@@ -303,17 +304,22 @@ describe('AuthService', () => {
         email: 'jdoe@test.com',
         firstName: 'John',
         firstLastName: 'Doe',
-        roles: [RolesEnum.Clinical.Nurse],
       } as never;
 
       const result = await service.signup(dto);
 
-      expect(mockUsersService.createUser).toHaveBeenCalled();
+      // Force-assigned Patient role + created complete (onboarding override).
+      expect(mockUsersService.createUser).toHaveBeenCalledWith(
+        expect.objectContaining({ roles: [RolesEnum.Patient.Patient] }),
+        expect.anything(),
+        expect.objectContaining({ onboardingCompletedAt: expect.any(Date) }),
+      );
       expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
       expect(mockQueryRunner.release).toHaveBeenCalled();
-      // The created user's onboarding timestamp rides into the signed token.
+      // The token carries the Patient role and the onboarding timestamp.
       expect(mockJwtService.signAsync).toHaveBeenCalledWith(
         expect.objectContaining({
+          roles: [RolesEnum.Patient.Patient],
           onboardingCompletedAt: '2026-06-24T10:00:00.000Z',
         }),
         expect.anything(),
@@ -324,16 +330,35 @@ describe('AuthService', () => {
       });
     });
 
-    it('rejects signup with developer role', async () => {
-      await expect(
-        service.signup({ roles: [RolesEnum.System.Developer] } as never),
-      ).rejects.toThrow('Cannot assign privileged roles via public signup');
-    });
+    it.each([
+      ['admin', RolesEnum.System.Admin],
+      ['developer', RolesEnum.System.Developer],
+      ['auditor', RolesEnum.System.Auditor],
+      ['family', RolesEnum.Patient.Family],
+    ])('ignores a client-supplied %s role and still provisions a Patient', async (_label, role) => {
+      mockUsersService.createUser.mockResolvedValue({
+        ...mockUser,
+        id: 'user-uuid',
+        onboardingCompletedAt: new Date('2026-06-24T10:00:00.000Z'),
+      });
 
-    it('rejects signup with admin role', async () => {
-      await expect(
-        service.signup({ roles: [RolesEnum.System.Admin] } as never),
-      ).rejects.toThrow('Cannot assign privileged roles via public signup');
+      await service.signup({
+        username: 'jdoe',
+        password: 'plain-pw',
+        email: 'jdoe@test.com',
+        firstName: 'John',
+        firstLastName: 'Doe',
+        roles: [role],
+      } as never);
+
+      // The elevated role never reaches createUser — Patient is forced.
+      expect(mockUsersService.createUser).toHaveBeenCalledWith(
+        expect.objectContaining({ roles: [RolesEnum.Patient.Patient] }),
+        expect.anything(),
+        expect.anything(),
+      );
+      const [createArg] = mockUsersService.createUser.mock.calls[0];
+      expect(createArg.roles).not.toContain(role);
     });
 
     it('rolls back transaction on error', async () => {

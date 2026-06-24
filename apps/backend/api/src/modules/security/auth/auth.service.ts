@@ -1,8 +1,8 @@
 import {
   PinGenerationPayloadDto,
   PinValidationPayloadDto,
+  PublicSignupPayloadDto,
   SignupIntegrationTokenPayloadDto,
-  SignupPayloadDto,
 } from '@hsm/common/dtos';
 import { RolesEnum } from '@hsm/common/enums';
 import {
@@ -272,20 +272,18 @@ export class AuthService implements OnModuleInit {
   }
 
   /**
-   * Handles user signup by creating a new user in the database, generating JWT tokens for the new user, and saving the hashed refresh token in the database.
-   * @param newUser - The payload containing the new user's information for signup
-   * @returns An object containing the generated access token and refresh token for the newly created user
+   * Handles public self-registration. The new account is ALWAYS a Patient: any
+   * client-supplied `roles` are ignored (force-assignment, not a block-list, so
+   * no current or future staff role can ever be self-granted). The patient is
+   * created complete (`onboardingCompletedAt = now`) — onboarding is a staff-only
+   * flow — then issued tokens with a hashed refresh token persisted.
+   * @param newUser - The public signup payload (its `roles`, if any, is discarded)
+   * @returns The access and refresh tokens for the newly created patient
    */
-  async signup(newUser: SignupPayloadDto): Promise<ITokens> {
-    const privilegedRoles = [
-      RolesEnum.System.Developer,
-      RolesEnum.System.Admin,
-    ];
-    if (newUser.roles.some(role => privilegedRoles.includes(role as never))) {
-      throw new BadRequestException(
-        'Cannot assign privileged roles via public signup',
-      );
-    }
+  async signup(newUser: PublicSignupPayloadDto): Promise<ITokens> {
+    // Strip any client-supplied roles up front so they can never reach createUser.
+    const { roles: _ignoredClientRoles, ...userInput } = newUser;
+    const patientRoles = [RolesEnum.Patient.Patient];
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -293,10 +291,13 @@ export class AuthService implements OnModuleInit {
       const hashedPassword = await this.hashData(newUser.password);
       const user = await this.usersService.createUser(
         {
-          ...newUser,
+          ...userInput,
           password: hashedPassword,
+          roles: patientRoles,
         },
         queryRunner,
+        // Patients are active immediately — only admin-created staff are pending.
+        { onboardingCompletedAt: new Date() },
       );
       const userToSign: IUnsignedUser = {
         id: user.id,
@@ -304,7 +305,7 @@ export class AuthService implements OnModuleInit {
         email: user.email,
         firstName: user.firstName,
         firstLastName: user.firstLastName,
-        roles: newUser.roles,
+        roles: patientRoles,
         onboardingCompletedAt: this.serializeOnboarding(
           user.onboardingCompletedAt,
         ),

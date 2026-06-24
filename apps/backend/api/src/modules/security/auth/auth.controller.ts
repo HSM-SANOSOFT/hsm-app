@@ -3,10 +3,10 @@ import {
   LogoutIntegrationTokenPayloadDto,
   PinGenerationPayloadDto,
   PinValidationPayloadDto,
+  PublicSignupPayloadDto,
   SignedIntegrationProfileDto,
   SignedUserProfileDto,
   SignupIntegrationTokenPayloadDto,
-  SignupPayloadDto,
   TokensDto,
 } from '@hsm/common/dtos';
 import { RolesEnum } from '@hsm/common/enums';
@@ -33,7 +33,7 @@ export class AuthController {
   @ApiDocumentation(TokensDto)
   @Public()
   @Post('signup')
-  async signup(@Body() payload: SignupPayloadDto): Promise<TokensDto> {
+  async signup(@Body() payload: PublicSignupPayloadDto): Promise<TokensDto> {
     return await this.authService.signup(payload);
   }
 

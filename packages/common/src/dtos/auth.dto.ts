@@ -1,5 +1,12 @@
-import { ApiProperty, ApiSchema } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { ApiProperty, ApiSchema, OmitType } from '@nestjs/swagger';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { PinPurposeEnum, RolesEnum } from '../enums';
 import { ITokens } from '../interfaces';
 import { RolesType } from '../types';
@@ -153,6 +160,26 @@ export class SignupIntegrationTokenPayloadDto extends CreateUserIntegrationPaylo
 
 @ApiSchema({ name: 'Sign Up User Payload' })
 export class SignupPayloadDto extends CreateUserPayloadDto {}
+
+/**
+ * Public self-registration payload. Drops the required `roles` array from
+ * {@link CreateUserPayloadDto}: the server always provisions a Patient on this
+ * path, so a role is never accepted from the client. `roles` is re-declared as
+ * an optional, ignored field purely so a legacy client that still sends it is
+ * not rejected by the global `forbidNonWhitelisted` validation pipe.
+ */
+@ApiSchema({ name: 'Public Sign Up User Payload' })
+export class PublicSignupPayloadDto extends OmitType(CreateUserPayloadDto, [
+  'roles',
+] as const) {
+  @IsOptional()
+  @IsArray()
+  @ApiProperty({
+    required: false,
+    description: 'Ignored — public signup always provisions a Patient account.',
+  })
+  roles?: RolesType[];
+}
 @ApiSchema({ name: 'Access and Refresh Token' })
 export class TokensDto implements ITokens {
   @ApiProperty({ description: 'Authorization token', type: 'string' })

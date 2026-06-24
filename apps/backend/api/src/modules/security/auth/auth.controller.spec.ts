@@ -1,4 +1,4 @@
-import type { SignupPayloadDto } from '@hsm/common/dtos';
+import type { PublicSignupPayloadDto } from '@hsm/common/dtos';
 import { RolesEnum } from '@hsm/common/enums';
 import type { IRefreshUser, ISignedUser } from '@hsm/common/interfaces';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -42,13 +42,12 @@ describe('AuthController', () => {
 
   describe('signup', () => {
     it('delegates to authService.signup and returns tokens', async () => {
-      const dto: SignupPayloadDto = {
+      const dto: PublicSignupPayloadDto = {
         username: 'jdoe',
         password: 'pw',
         email: 'jdoe@test.com',
         firstName: 'John',
         firstLastName: 'Doe',
-        roles: [RolesEnum.System.Admin],
       } as never;
 
       const result = await controller.signup(dto);
