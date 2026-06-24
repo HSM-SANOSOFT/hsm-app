@@ -5,7 +5,13 @@ import {
   UserRoleEntity,
 } from '@hsm/database/entities';
 import { DatabasesEnum } from '@hsm/database/sources';
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { QueueEnum } from '@hsm/queue/queue.enum';
+import { getQueueToken } from '@nestjs/bullmq';
+import {
+  BadRequestException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
@@ -63,6 +69,7 @@ const userRepo = {
 const userIntegrationRepo = { findOne: jest.fn() };
 const userRoleRepo = { find: jest.fn() };
 const rolesService = { findRoleDomains: jest.fn() };
+const comsQueue = { add: jest.fn() };
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -104,6 +111,7 @@ describe('UsersService', () => {
           useValue: userRoleRepo,
         },
         { provide: RolesService, useValue: rolesService },
+        { provide: getQueueToken(QueueEnum.Coms), useValue: comsQueue },
       ],
     }).compile();
 
@@ -206,6 +214,85 @@ describe('UsersService', () => {
         name: 'TestIntegration',
       });
       expect(result).toBe(mockIntegrationUser);
+    });
+  });
+
+  describe('createStaffUser', () => {
+    const staffDto = {
+      username: 'nnurse',
+      email: 'nnurse@test.com',
+      firstName: 'Nancy',
+      firstLastName: 'Nurse',
+      role: RolesEnum.Clinical.Nurse,
+      tempPassword: 'Temp-Pass-1',
+    } as never;
+
+    beforeEach(() => {
+      rolesService.findRoleDomains.mockReturnValue([
+        { role: RolesEnum.Clinical.Nurse, domain: 'Clinical' },
+      ]);
+      mockManager.save.mockResolvedValue({
+        id: 'staff-uuid',
+        username: 'nnurse',
+        email: 'nnurse@test.com',
+        firstName: 'Nancy',
+        firstLastName: 'Nurse',
+        password: 'hashed-value',
+        onboardingCompletedAt: null,
+      });
+    });
+
+    it('creates a pending staff account, hashes the temp password, and never returns it', async () => {
+      const result = await service.createStaffUser(staffDto);
+
+      // Temp password is hashed, and the staff row is created pending onboarding.
+      expect(bcrypt.hash).toHaveBeenCalledWith('Temp-Pass-1', 10);
+      expect(mockManager.save).toHaveBeenCalledWith(
+        UserEntity,
+        expect.objectContaining({
+          password: 'hashed-value',
+          onboardingCompletedAt: null,
+        }),
+      );
+      // The hashed password is stripped from the response, and the plaintext
+      // temp password never appears in it.
+      expect(result).not.toHaveProperty('password');
+      expect(JSON.stringify(result)).not.toContain('Temp-Pass-1');
+      expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
+    });
+
+    it('emails the temp password via a transactional job after commit', async () => {
+      await service.createStaffUser(staffDto);
+
+      expect(comsQueue.add).toHaveBeenCalledWith(
+        'send-transactional-email',
+        expect.objectContaining({
+          toEmail: 'nnurse@test.com',
+          html: expect.stringContaining('Temp-Pass-1'),
+        }),
+        expect.anything(),
+      );
+    });
+
+    it.each([
+      RolesEnum.Patient.Patient,
+      RolesEnum.Patient.Family,
+    ])('rejects the patient-facing role %s without creating anything', async role => {
+      await expect(
+        service.createStaffUser({ ...staffDto, role } as never),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(mockManager.save).not.toHaveBeenCalled();
+      expect(comsQueue.add).not.toHaveBeenCalled();
+    });
+
+    it('rolls back and does not email when creation fails (e.g. duplicate)', async () => {
+      mockManager.save.mockRejectedValue(new Error('duplicate key'));
+
+      await expect(service.createStaffUser(staffDto)).rejects.toThrow(
+        'duplicate key',
+      );
+      expect(mockQueryRunner.rollbackTransaction).toHaveBeenCalled();
+      expect(comsQueue.add).not.toHaveBeenCalled();
     });
   });
 

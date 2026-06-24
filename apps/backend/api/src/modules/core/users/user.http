@@ -34,3 +34,17 @@ Authorization: Bearer {{at_token}}
 {
   "role": "admin"
 }
+
+### Admin: Create a staff account (pending onboarding; temp password emailed)
+POST {{host}}/user/staff
+Content-Type: {{contentType}}
+Authorization: Bearer {{at_token}}
+
+{
+  "username": "nnurse",
+  "email": "nnurse@example.com",
+  "firstName": "Nancy",
+  "firstLastName": "Nurse",
+  "role": "nurse",
+  "tempPassword": "Temp-Pass-1"
+}

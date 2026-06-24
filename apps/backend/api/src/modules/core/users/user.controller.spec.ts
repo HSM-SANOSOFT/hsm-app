@@ -10,6 +10,7 @@ const mockUsersService = {
   findAll: jest.fn(),
   findUserById: jest.fn(),
   changeUserRole: jest.fn(),
+  createStaffUser: jest.fn(),
 };
 
 const signedReq = (id: string) => ({ user: { id } }) as never;
@@ -120,6 +121,32 @@ describe('UserController', () => {
       mockUsersService.findUserById.mockResolvedValue({ id: 'u1' });
       await controller.getUser('u1');
       expect(mockUsersService.findUserById).toHaveBeenCalledWith('u1');
+    });
+  });
+
+  describe('admin createStaff', () => {
+    it('is restricted to System.Admin', () => {
+      const roles = Reflect.getMetadata(ROLES_KEY, controller.createStaff);
+      expect(roles).toContain(RolesEnum.System.Admin);
+    });
+
+    it('delegates the payload to the service and returns the created (password-less) user', async () => {
+      const created = { id: 's1', username: 'nnurse' };
+      mockUsersService.createStaffUser.mockResolvedValue(created);
+
+      const payload = {
+        username: 'nnurse',
+        email: 'nnurse@test.com',
+        firstName: 'Nancy',
+        firstLastName: 'Nurse',
+        role: RolesEnum.Clinical.Nurse,
+        tempPassword: 'Temp-Pass-1',
+      } as never;
+
+      const res = await controller.createStaff(payload);
+
+      expect(mockUsersService.createStaffUser).toHaveBeenCalledWith(payload);
+      expect(res).toBe(created);
     });
   });
 

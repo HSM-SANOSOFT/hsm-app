@@ -1,5 +1,6 @@
 import {
   ChangePasswordDto,
+  CreateStaffPayloadDto,
   CreateUserIntegrationPayloadDto,
   CreateUserPayloadDto,
   DeleteUserPayloadDto,
@@ -7,6 +8,7 @@ import {
   UpdateOwnProfileDto,
   UpdateUserPayloadDto,
 } from '@hsm/common/dtos';
+import { RolesEnum } from '@hsm/common/enums';
 import type { ISuccessResponse } from '@hsm/common/interfaces';
 import type { RolesType } from '@hsm/common/types';
 import {
@@ -15,6 +17,11 @@ import {
   UserRoleEntity,
 } from '@hsm/database/entities';
 import { DatabasesEnum } from '@hsm/database/sources';
+// Import the enum from its leaf module, not the '@hsm/queue' barrel: the barrel
+// pulls in queue.module.ts, which reads `envs` at import time and breaks specs
+// that mock @hsm/config with a lazy getter (e.g. admin-seed.service.spec).
+import { QueueEnum } from '@hsm/queue/queue.enum';
+import { InjectQueue } from '@nestjs/bullmq';
 import {
   BadRequestException,
   Injectable,
@@ -24,6 +31,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { Queue } from 'bullmq';
 import type { QueryRunner } from 'typeorm';
 import { Repository } from 'typeorm';
 import { RolesService } from '../../security/roles/roles.service';
@@ -39,6 +47,8 @@ export class UsersService {
     @InjectRepository(UserRoleEntity, DatabasesEnum.HsmDbPostgres)
     private UserRoleRepository: Repository<UserRoleEntity>,
     private readonly rolesService: RolesService,
+    @InjectQueue(QueueEnum.Coms)
+    private readonly comsQueue: Queue,
   ) {}
 
   async findOneByUsername(username: string): Promise<UserEntity> {
@@ -100,6 +110,83 @@ export class UsersService {
     queryRunner: QueryRunner,
   ): Promise<UserIntegrationEntity> {
     return await queryRunner.manager.save(UserIntegrationEntity, user);
+  }
+
+  /**
+   * Admin-only: provision a STAFF account flagged pending onboarding. The temp
+   * password is hashed, the account is created with `onboardingCompletedAt =
+   * null` (forced first-login onboarding), and the plaintext temp password is
+   * emailed to the staff member AFTER the account commits — it is never returned
+   * in the response (and the request interceptor logs method/URL only, no body).
+   * Patient-facing roles are rejected: this path is for staff only.
+   */
+  async createStaffUser(
+    dto: CreateStaffPayloadDto,
+  ): Promise<Omit<UserEntity, 'password'>> {
+    const patientRoles = Object.values(RolesEnum.Patient) as string[];
+    if (patientRoles.includes(dto.role)) {
+      throw new BadRequestException(
+        'This endpoint provisions staff accounts only; patient/family roles are not allowed',
+      );
+    }
+
+    const { tempPassword, role, ...profile } = dto;
+    const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+    const queryRunner =
+      this.UserRepository.manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    let created: UserEntity;
+    try {
+      created = await this.createUser(
+        { ...profile, password: hashedPassword, roles: [role] },
+        queryRunner,
+        // Pending first-login onboarding until the staff member completes it.
+        { onboardingCompletedAt: null },
+      );
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+
+    await this.comsQueue.add(
+      'send-transactional-email',
+      {
+        toEmail: created.email,
+        subject: 'Your staff account is ready',
+        html: this.buildStaffWelcomeHtml(
+          created.firstName,
+          dto.username,
+          tempPassword,
+        ),
+      },
+      { attempts: 5, backoff: { type: 'exponential', delay: 5000 } },
+    );
+
+    const { password: _password, ...safe } = created;
+    return safe;
+  }
+
+  private buildStaffWelcomeHtml(
+    firstName: string,
+    username: string,
+    tempPassword: string,
+  ): string {
+    return [
+      '<div style="font-family: Arial, sans-serif; color: #11304F;">',
+      `<h2 style="color: #0E4D98;">Welcome, ${firstName}</h2>`,
+      '<p>An account has been created for you. Sign in with these temporary',
+      ' credentials and you will be asked to set your own password and complete',
+      ' your profile on first login.</p>',
+      `<p><strong>Username:</strong> ${username}<br/>`,
+      `<strong>Temporary password:</strong> ${tempPassword}</p>`,
+      '<p>For your security, please sign in and complete onboarding soon.</p>',
+      '</div>',
+    ].join('');
   }
 
   async updateUser(user: UpdateUserPayloadDto): Promise<UserEntity | null> {

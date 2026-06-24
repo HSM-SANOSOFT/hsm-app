@@ -1,6 +1,7 @@
 import {
   ChangePasswordDto,
   ChangeUserRoleDto,
+  CreateStaffPayloadDto,
   ListUsersQueryDto,
   UpdateOwnProfileDto,
 } from '@hsm/common/dtos';
@@ -61,6 +62,15 @@ export class UserController {
   @Get()
   async listUsers(@Query() query: ListUsersQueryDto) {
     return await this.usersService.findAll(query);
+  }
+
+  @ApiDocumentation(undefined, {
+    additionalErrors: [HttpStatus.BAD_REQUEST, HttpStatus.CONFLICT],
+  })
+  @Roles(RolesEnum.System.Admin)
+  @Post('staff')
+  async createStaff(@Body() payload: CreateStaffPayloadDto) {
+    return await this.usersService.createStaffUser(payload);
   }
 
   @ApiDocumentation(undefined, { additionalErrors: [HttpStatus.NOT_FOUND] })
