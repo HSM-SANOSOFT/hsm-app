@@ -45,12 +45,13 @@ with the default `/v1` URI version (Swagger UI at `http://localhost:10001/api`).
 ## API contract reminders
 
 - Talk to `/v1/...` routes; Swagger at `/api`.
-- Every successful API body is a `SuccessResponseDto`; every error is an
-  `ErrorResponseDto`. Do not bypass the global response wrapper — the typed
-  client (U7) unwraps `data` and surfaces `issue` fields.
-- Reuse shared DTOs/enums from `@hsm/common` instead of duplicating types.
+- Every successful API body is wrapped (`data` + `metadata`); every error is the
+  unsuccess wrapper (`metadata` + `issue` with `code`/`message`/`field`). Do not
+  bypass the global response wrapper — the typed client (`core/api`, U7) unwraps
+  `data`, exposes pagination at `metadata.extra.pagination`, and normalizes
+  errors into a thrown `ApiError`.
 
-## `@hsm/common` path mapping
+## `@hsm/common` consumption (IMPORTANT — read before importing shared code)
 
 `tsconfig.json` maps the shared package to its source:
 
@@ -61,9 +62,25 @@ with the default `/v1` URI version (Swagger UI at `http://localhost:10001/api`).
 }
 ```
 
-`strictPropertyInitialization` is set to `false` (matching the backend
-tsconfig) so `@hsm/common` DTO classes — written without field initializers —
-type-check when imported here.
+The split that matters for the browser build:
+
+- **Enums — import directly. Always do this.**
+  `import { RolesEnum } from '@hsm/common/enums'` (also `SettingsCategoryEnum`,
+  `TemplateCategoriesEnum`, `DocumentStatusEnum`, …). The `enums` barrel is pure
+  (no Node/decorator/TypeORM deps) and bundles cleanly. These carry **runtime
+  values that must match the backend** — never re-declare a role/category/status
+  enum locally, or the two sides will drift silently.
+
+- **DTO / interface *shapes* — mirror locally, do NOT import the barrels.**
+  `@hsm/common/dtos` and `@hsm/common/interfaces` transitively pull in
+  `@nestjs/swagger` decorators, Node `Buffer`, and `@hsm/database/entities`
+  types, so the Angular esbuild/type-check cannot consume them (even as
+  `import type`, barrel entanglement drags the whole graph in). The wire
+  contracts are mirrored 1:1 in `src/app/core/api/response.ts` against the
+  canonical `@hsm/common` field names — extend THAT file when you need a new
+  response/payload shape, and keep it in lockstep with the backend DTO.
+
+`strictPropertyInitialization` is `false` (matching the backend tsconfig).
 
 ## Monaco decision
 
