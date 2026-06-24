@@ -96,7 +96,9 @@ describe('SettingsService', () => {
 
   describe('update', () => {
     it('persists a real non-secret change and returns it on the next read', async () => {
-      mockSettingsRepo.findOne.mockResolvedValueOnce(null);
+      // First pass: update() pre-fetches existing rows for the payload keys
+      // (none exist yet).
+      mockSettingsRepo.find.mockResolvedValueOnce([]);
       // Second pass: getByCategory re-reads rows.
       mockSettingsRepo.find.mockResolvedValueOnce([
         {

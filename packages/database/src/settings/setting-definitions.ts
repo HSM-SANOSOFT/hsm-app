@@ -123,3 +123,15 @@ export function settingDefinitionForKey(
 ): SettingDefinition | undefined {
   return SETTING_DEFINITIONS.find(def => def.key === key);
 }
+
+/**
+ * Resolves the effective stored/seed value for a definition: the DB row value
+ * if present, otherwise the env seed. Returns the RAW value (never masked) —
+ * callers are responsible for masking secrets before returning to clients.
+ */
+export function resolveDefinitionValue(
+  def: SettingDefinition,
+  row?: { value: string | null },
+): string | null {
+  return row ? row.value : def.envValue();
+}

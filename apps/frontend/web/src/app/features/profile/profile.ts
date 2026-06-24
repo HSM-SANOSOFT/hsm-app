@@ -5,7 +5,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
 import { ApiClient } from '../../core/api/api-client';
-import { ApiError } from '../../core/api/api-error';
+import { toErrorMessage } from '../../core/api/api-error';
 import type { UserProfile } from '../../core/api/response';
 import { AuthService } from '../../core/auth/auth.service';
 import type {
@@ -124,9 +124,10 @@ export class Profile {
       error: (err: unknown) => {
         this.profileSubmitting.set(false);
         this.profileError.set(
-          err instanceof ApiError
-            ? err.message
-            : 'Could not update your profile. Please try again.',
+          toErrorMessage(
+            err,
+            'Could not update your profile. Please try again.',
+          ),
         );
       },
     });
@@ -158,9 +159,10 @@ export class Profile {
       error: (err: unknown) => {
         this.passwordSubmitting.set(false);
         this.passwordError.set(
-          err instanceof ApiError
-            ? err.message
-            : 'Could not change your password. Please try again.',
+          toErrorMessage(
+            err,
+            'Could not change your password. Please try again.',
+          ),
         );
       },
     });

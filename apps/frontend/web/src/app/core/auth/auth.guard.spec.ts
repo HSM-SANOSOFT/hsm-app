@@ -95,7 +95,7 @@ describe('auth guards', () => {
   it('adminGuard sends a non-admin to / (blocked)', () => {
     configure({
       isAuthenticated: () => true,
-      hasRole: () => false,
+      hasAnyRole: () => false,
     });
     const result = invokeGuard(
       adminGuard,
@@ -108,7 +108,8 @@ describe('auth guards', () => {
   it('adminGuard allows an admin', () => {
     configure({
       isAuthenticated: () => true,
-      hasRole: (role: string) => role === RolesEnum.System.Admin,
+      hasAnyRole: (roles: readonly string[]) =>
+        roles.includes(RolesEnum.System.Admin),
     });
     const result = invokeGuard(adminGuard, fakeRoute(), fakeState('/admin'));
     expect(result).toBe(true);

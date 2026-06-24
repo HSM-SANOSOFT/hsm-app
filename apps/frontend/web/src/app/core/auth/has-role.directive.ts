@@ -11,6 +11,28 @@ import { RolesEnum } from '@hsm/common/enums';
 import { AuthService } from './auth.service';
 
 /**
+ * Creates or clears the directive's embedded view to match `show`, returning the
+ * new `hasView` state. Shared by {@link HasRoleDirective} and
+ * {@link IfAdminDirective} so both toggle identically.
+ */
+function applyView(
+  vcr: ViewContainerRef,
+  tpl: TemplateRef<unknown>,
+  show: boolean,
+  hasView: boolean,
+): boolean {
+  if (show && !hasView) {
+    vcr.createEmbeddedView(tpl);
+    return true;
+  }
+  if (!show && hasView) {
+    vcr.clear();
+    return false;
+  }
+  return hasView;
+}
+
+/**
  * Structural directive that renders its host element only when the signed-in
  * user holds at least one of the given role values.
  *
@@ -39,22 +61,17 @@ export class HasRoleDirective {
     effect(() => {
       const required = this.normalize(this.hasRole());
       const allowed = this.auth.hasAnyRole(required);
-      this.toggle(allowed);
+      this.hasView = applyView(
+        this.viewContainer,
+        this.templateRef,
+        allowed,
+        this.hasView,
+      );
     });
   }
 
   private normalize(value: string | readonly string[]): readonly string[] {
     return Array.isArray(value) ? value : [value as string];
-  }
-
-  private toggle(show: boolean): void {
-    if (show && !this.hasView) {
-      this.viewContainer.createEmbeddedView(this.templateRef);
-      this.hasView = true;
-    } else if (!show && this.hasView) {
-      this.viewContainer.clear();
-      this.hasView = false;
-    }
   }
 }
 
@@ -79,13 +96,12 @@ export class IfAdminDirective {
   constructor() {
     effect(() => {
       const allowed = this.auth.hasRole(RolesEnum.System.Admin);
-      if (allowed && !this.hasView) {
-        this.viewContainer.createEmbeddedView(this.templateRef);
-        this.hasView = true;
-      } else if (!allowed && this.hasView) {
-        this.viewContainer.clear();
-        this.hasView = false;
-      }
+      this.hasView = applyView(
+        this.viewContainer,
+        this.templateRef,
+        allowed,
+        this.hasView,
+      );
     });
   }
 }

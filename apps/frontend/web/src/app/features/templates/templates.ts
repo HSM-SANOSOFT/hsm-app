@@ -4,7 +4,7 @@ import { ButtonModule } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { MessageModule } from 'primeng/message';
 
-import { ApiError } from '../../core/api/api-error';
+import { toErrorMessage } from '../../core/api/api-error';
 import { TemplateEditor } from './editor/template-editor';
 import type { SaveRequest } from './template.types';
 import { TemplateSaveFlow } from './template-save-flow';
@@ -127,7 +127,7 @@ export class Templates {
         // Draft-render failed — do NOT open the dialog, do NOT persist.
         this.pending.set(null);
         this.confirmVisible = false;
-        this.saveError.set(this.toMessage(err, 'Failed to render preview.'));
+        this.saveError.set(toErrorMessage(err, 'Failed to render preview.'));
       },
     });
   }
@@ -151,7 +151,7 @@ export class Templates {
       },
       error: (err: unknown) => {
         this.persisting.set(false);
-        this.saveError.set(this.toMessage(err, 'Failed to save template.'));
+        this.saveError.set(toErrorMessage(err, 'Failed to save template.'));
       },
     });
   }
@@ -168,12 +168,5 @@ export class Templates {
   /** Keep `pending` cleared if the dialog is dismissed via the close icon. */
   protected onDialogHide(): void {
     this.pending.set(null);
-  }
-
-  private toMessage(err: unknown, fallback: string): string {
-    if (err instanceof ApiError) {
-      return err.message;
-    }
-    return err instanceof Error ? err.message : fallback;
   }
 }

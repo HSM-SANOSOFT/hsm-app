@@ -9,7 +9,7 @@ import {
   AppSettingEntity,
 } from '@hsm/database/entities';
 import {
-  type SettingDefinition,
+  resolveDefinitionValue,
   settingDefinitionForKey,
   settingDefinitionsForCategory,
 } from '@hsm/database/settings';
@@ -36,33 +36,10 @@ export class SettingsService {
     private readonly audits: Repository<AppSettingAuditEntity>,
   ) {}
 
-  private definitionsForCategory(
-    category: SettingsCategoryEnum,
-  ): SettingDefinition[] {
-    return settingDefinitionsForCategory(category);
-  }
-
-  private definitionForKey(key: string): SettingDefinition | undefined {
-    return settingDefinitionForKey(key);
-  }
-
-  /**
-   * Resolves the effective stored/seed value for a definition: the DB row value
-   * if present, otherwise the env seed. Returns the RAW value (never masked) —
-   * callers are responsible for masking secrets before returning to clients.
-   */
-  private resolveRawValue(
-    def: SettingDefinition,
-    row: AppSettingEntity | undefined,
-  ): string | null {
-    if (row) return row.value;
-    return def.envValue();
-  }
-
   async getByCategory(
     category: SettingsCategoryEnum,
   ): Promise<GetSettingsResponseDto> {
-    const defs = this.definitionsForCategory(category);
+    const defs = settingDefinitionsForCategory(category);
     const keys = defs.map(d => d.key);
     const rows = keys.length
       ? await this.settings.find({ where: { key: In(keys) } })
@@ -70,7 +47,7 @@ export class SettingsService {
     const rowByKey = new Map(rows.map(r => [r.key, r]));
 
     const settings: SettingItemDto[] = defs.map(def => {
-      const raw = this.resolveRawValue(def, rowByKey.get(def.key));
+      const raw = resolveDefinitionValue(def, rowByKey.get(def.key));
       const isSet = raw != null && raw !== '';
       return {
         key: def.key,
@@ -89,8 +66,18 @@ export class SettingsService {
     payload: UpdateSettingsPayloadDto,
     actorId: string | null,
   ): Promise<GetSettingsResponseDto> {
+    // Pre-fetch every existing row for the payload's keys in a single query
+    // (avoids a per-key findOne in the loop below).
+    const payloadKeys = payload.settings.map(item => item.key);
+    const existingRows = payloadKeys.length
+      ? await this.settings.find({ where: { key: In(payloadKeys) } })
+      : [];
+    const rowByKey = new Map(existingRows.map(r => [r.key, r]));
+
+    const auditRows: AppSettingAuditEntity[] = [];
+
     for (const item of payload.settings) {
-      const def = this.definitionForKey(item.key);
+      const def = settingDefinitionForKey(item.key);
       if (!def || def.category !== payload.category) {
         // Ignore unknown keys / keys outside the declared category rather than
         // creating arbitrary rows.
@@ -109,10 +96,8 @@ export class SettingsService {
         continue;
       }
 
-      const existingRow = await this.settings.findOne({
-        where: { key: def.key },
-      });
-      const previousRaw = this.resolveRawValue(def, existingRow ?? undefined);
+      const existingRow = rowByKey.get(def.key);
+      const previousRaw = resolveDefinitionValue(def, existingRow ?? undefined);
       const newRaw = incoming;
 
       // Skip when the effective value is unchanged.
@@ -139,19 +124,24 @@ export class SettingsService {
       }
 
       // Audit: secret old/new values are masked, never plaintext.
-      await this.audits.save(
+      const maskedOld = def.isSecret
+        ? previousRaw != null && previousRaw !== ''
+          ? SECRET_MASK
+          : null
+        : previousRaw;
+      auditRows.push(
         this.audits.create({
           key: def.key,
           category: def.category,
           changedBy: actorId,
-          oldValue: def.isSecret
-            ? previousRaw != null && previousRaw !== ''
-              ? SECRET_MASK
-              : null
-            : previousRaw,
+          oldValue: maskedOld,
           newValue: def.isSecret ? SECRET_MASK : newRaw,
         }),
       );
+    }
+
+    if (auditRows.length > 0) {
+      await this.audits.save(auditRows);
     }
 
     return this.getByCategory(payload.category);

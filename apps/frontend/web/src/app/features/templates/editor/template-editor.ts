@@ -1,12 +1,14 @@
 import {
   Component,
   computed,
+  DestroyRef,
   effect,
   inject,
   input,
   output,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { TemplateCategoriesEnum } from '@hsm/common/enums';
 import { ButtonModule } from 'primeng/button';
@@ -67,6 +69,7 @@ const PREVIEW_DEBOUNCE_MS = 300;
 })
 export class TemplateEditor {
   private readonly api = inject(ApiClient);
+  private readonly destroyRef = inject(DestroyRef);
 
   /** Identifier (UUID or name) of an existing template to load, if editing. */
   readonly identifier = input<string | null>(null);
@@ -135,6 +138,13 @@ export class TemplateEditor {
       const baseContent = this.baseContent();
       this.schedulePreview({ content, rawSampleData, baseContent });
     });
+
+    // Clear any pending debounce timer when the component is destroyed.
+    this.destroyRef.onDestroy(() => {
+      if (this.debounceHandle) {
+        clearTimeout(this.debounceHandle);
+      }
+    });
   }
 
   /** Re-render the preview after the debounce window. */
@@ -158,6 +168,7 @@ export class TemplateEditor {
       .get<TemplateDetail[]>('/templates', {
         params: { category: TemplateCategoriesEnum.BASE },
       })
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: templates => {
           this.baseTemplates.set(

@@ -30,17 +30,16 @@ export function configureMonacoEnvironment(): void {
 
   window.MonacoEnvironment = {
     baseUrl: MONACO_BASE,
-    getWorkerUrl(_moduleId: string, label: string): string {
+    getWorkerUrl(_moduleId: string, _label: string): string {
       const base = `${MONACO_BASE}/vs`;
       const proxy = `
         self.MonacoEnvironment = { baseUrl: '${base}' };
         importScripts('${base}/base/worker/workerMain.js');
       `;
       const blob = new Blob([proxy], { type: 'text/javascript' });
-      // `label` selects a specialized worker (json/css/html/ts); the generic
+      // `_label` selects a specialized worker (json/css/html/ts); the generic
       // workerMain handles all of them, including the built-in `handlebars`
       // language used for template authoring.
-      void label;
       return URL.createObjectURL(blob);
     },
   };

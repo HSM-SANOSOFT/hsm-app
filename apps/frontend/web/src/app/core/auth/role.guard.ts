@@ -4,10 +4,37 @@ import {
   type CanActivateFn,
   Router,
   type RouterStateSnapshot,
+  type UrlTree,
 } from '@angular/router';
 import { RolesEnum } from '@hsm/common/enums';
 
 import { AuthService } from './auth.service';
+
+/**
+ * Shared role-gate check. Allows activation when the user is authenticated and
+ * holds at least one of `requiredRoles` (an empty list is unrestricted).
+ * Unauthenticated users are redirected to `/login` (with `returnUrl`);
+ * authenticated-but-unauthorized users are redirected to the app root.
+ */
+function checkRoles(
+  requiredRoles: string[],
+  state: RouterStateSnapshot,
+): boolean | UrlTree {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  if (!auth.isAuthenticated()) {
+    return router.createUrlTree(['/login'], {
+      queryParams: { returnUrl: state.url },
+    });
+  }
+
+  if (requiredRoles.length === 0 || auth.hasAnyRole(requiredRoles)) {
+    return true;
+  }
+
+  return router.createUrlTree(['/']);
+}
 
 /**
  * Data-driven role gate. Reads `route.data.roles` (a string array of role
@@ -28,21 +55,8 @@ export const roleGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot,
   state: RouterStateSnapshot,
 ) => {
-  const auth = inject(AuthService);
-  const router = inject(Router);
-
-  if (!auth.isAuthenticated()) {
-    return router.createUrlTree(['/login'], {
-      queryParams: { returnUrl: state.url },
-    });
-  }
-
   const required = (route.data?.['roles'] as string[] | undefined) ?? [];
-  if (required.length === 0 || auth.hasAnyRole(required)) {
-    return true;
-  }
-
-  return router.createUrlTree(['/']);
+  return checkRoles(required, state);
 };
 
 /**
@@ -50,19 +64,5 @@ export const roleGuard: CanActivateFn = (
  * `data: { roles: [RolesEnum.System.Admin] }`. Use when a route is simply
  * admin-only and you'd rather not repeat the `data` block.
  */
-export const adminGuard: CanActivateFn = (_route, state) => {
-  const auth = inject(AuthService);
-  const router = inject(Router);
-
-  if (!auth.isAuthenticated()) {
-    return router.createUrlTree(['/login'], {
-      queryParams: { returnUrl: state.url },
-    });
-  }
-
-  if (auth.hasRole(RolesEnum.System.Admin)) {
-    return true;
-  }
-
-  return router.createUrlTree(['/']);
-};
+export const adminGuard: CanActivateFn = (_route, state) =>
+  checkRoles([RolesEnum.System.Admin], state);

@@ -7,6 +7,10 @@ import { Select } from 'primeng/select';
 import { type TableLazyLoadEvent, TableModule } from 'primeng/table';
 
 import { ApiClient } from '../../../core/api/api-client';
+import {
+  computePage,
+  DEFAULT_PAGE_SIZE,
+} from '../../../core/api/pagination.util';
 import type {
   AdminUser,
   ChangeUserRolePayload,
@@ -15,7 +19,6 @@ import type {
 } from './users.types';
 
 const USERS_PATH = '/user';
-const DEFAULT_PAGE_SIZE = 20;
 
 /**
  * Flattens the nested `RolesEnum` const object (`System`/`Clinical`/…) into a
@@ -158,7 +161,7 @@ export class AdminUsers {
   loadUsers(event: TableLazyLoadEvent): void {
     const rows = event.rows ?? this.pageSize();
     const offset = event.first ?? 0;
-    const page = Math.floor(offset / rows) + 1;
+    const { page, limit } = computePage(offset, rows);
 
     this.pageSize.set(rows);
     this.first.set(offset);
@@ -166,7 +169,7 @@ export class AdminUsers {
 
     this.api
       .getPaginated<AdminUser>(USERS_PATH, {
-        params: { page, limit: rows },
+        params: { page, limit },
       })
       .subscribe({
         next: result => {

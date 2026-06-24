@@ -11,7 +11,7 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { ToastModule } from 'primeng/toast';
 
 import { ApiClient } from '../../../core/api/api-client';
-import { ApiError } from '../../../core/api/api-error';
+import { toErrorMessage } from '../../../core/api/api-error';
 import type {
   GetSettingsResponse,
   SettingItem,
@@ -120,7 +120,9 @@ export class AdminSettings {
         },
         error: (err: unknown) => {
           this.loading.set(false);
-          this.errorMessage.set(messageFor(err));
+          this.errorMessage.set(
+            toErrorMessage(err, 'Something went wrong. Please try again.'),
+          );
         },
       });
   }
@@ -177,7 +179,10 @@ export class AdminSettings {
       },
       error: (err: unknown) => {
         this.saving.set(false);
-        const detail = messageFor(err);
+        const detail = toErrorMessage(
+          err,
+          'Something went wrong. Please try again.',
+        );
         this.errorMessage.set(detail);
         this.messages.add({
           severity: 'error',
@@ -200,10 +205,4 @@ function toField(item: SettingItem): SettingField {
     draft: item.isSecret ? '' : (item.value ?? ''),
     dirty: false,
   };
-}
-
-function messageFor(err: unknown): string {
-  return err instanceof ApiError
-    ? err.message
-    : 'Something went wrong. Please try again.';
 }

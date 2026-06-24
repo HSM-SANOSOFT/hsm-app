@@ -39,6 +39,17 @@ export class ApiError extends Error {
 }
 
 /**
+ * Reduces an unknown thrown value to a user-facing message string. Returns the
+ * message of an {@link ApiError} or any other `Error`, falling back to the given
+ * `fallback` for non-error throwables.
+ */
+export function toErrorMessage(err: unknown, fallback: string): string {
+  if (err instanceof ApiError) return err.message;
+  if (err instanceof Error) return err.message;
+  return fallback;
+}
+
+/**
  * Collapses an `Issue.message` (string | string[] | undefined) into a single
  * human-readable string for the {@link ApiError} `message`.
  */

@@ -1,6 +1,7 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { DocumentStatusEnum } from '@hsm/common/enums';
+import { DocumentStatusEnum, TemplateCategoriesEnum } from '@hsm/common/enums';
 import { ButtonModule } from 'primeng/button';
 import { FileUpload, type FileUploadHandlerEvent } from 'primeng/fileupload';
 import { Message } from 'primeng/message';
@@ -10,6 +11,7 @@ import { TagModule } from 'primeng/tag';
 import { finalize } from 'rxjs';
 
 import { ApiClient } from '../../core/api/api-client';
+import { computePage, DEFAULT_PAGE_SIZE } from '../../core/api/pagination.util';
 import {
   type DocsTemplate,
   type DocumentRecord,
@@ -24,7 +26,6 @@ import {
 
 const DOCS_PATH = '/docs';
 const TEMPLATES_PATH = '/templates';
-const DEFAULT_PAGE_SIZE = 20;
 /** Bucket used for browser uploads (the backend keys storage by bucket). */
 const UPLOAD_BUCKET = 'documents';
 const UPLOAD_FOLDER = 'uploads';
@@ -79,7 +80,8 @@ const UPLOAD_FOLDER = 'uploads';
               <span>Title</span>
               <input
                 type="text"
-                [(ngModel)]="title"
+                [ngModel]="title()"
+                (ngModelChange)="title.set($event)"
                 [ngModelOptions]="{ standalone: true }"
                 data-testid="generate-title"
               />
@@ -226,6 +228,7 @@ const UPLOAD_FOLDER = 'uploads';
 })
 export class Documents {
   private readonly api = inject(ApiClient);
+  private readonly destroyRef = inject(DestroyRef);
 
   // ── Generate state ──────────────────────────────────────────────────
   readonly templates = signal<DocsTemplate[]>([]);
@@ -259,7 +262,10 @@ export class Documents {
   /** Loads the DOCS templates for the picker (`GET /v1/templates?category=DOCS`). */
   loadTemplates(): void {
     this.api
-      .get<DocsTemplate[]>(TEMPLATES_PATH, { params: { category: 'DOCS' } })
+      .get<DocsTemplate[]>(TEMPLATES_PATH, {
+        params: { category: TemplateCategoriesEnum.DOCS },
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: list => this.templates.set(list ?? []),
       });
@@ -356,7 +362,7 @@ export class Documents {
   loadDocuments(event?: TableLazyLoadEvent): void {
     const rows = event?.rows ?? this.pageSize();
     const offset = event?.first ?? this.first();
-    const page = Math.floor(offset / rows) + 1;
+    const { page, limit } = computePage(offset, rows);
 
     this.pageSize.set(rows);
     this.first.set(offset);
@@ -364,7 +370,7 @@ export class Documents {
 
     this.api
       .getPaginated<DocumentRecord>(DOCS_PATH, {
-        params: { page, limit: rows },
+        params: { page, limit },
       })
       .subscribe({
         next: result => {

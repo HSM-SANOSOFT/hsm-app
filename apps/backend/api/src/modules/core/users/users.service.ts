@@ -220,10 +220,7 @@ export class UsersService {
       throw new BadRequestException(`Unknown role '${role}'`);
     }
 
-    const user = await this.UserRepository.findOne({ where: { id } });
-    if (!user) {
-      throw new NotFoundException(`User with id ${id} not found`);
-    }
+    await this.findUserById(id);
 
     const queryRunner =
       this.UserRepository.manager.connection.createQueryRunner();

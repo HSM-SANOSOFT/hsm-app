@@ -6,7 +6,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
 
-import { ApiError } from '../../../core/api/api-error';
+import { toErrorMessage } from '../../../core/api/api-error';
 import { AuthService } from '../../../core/auth/auth.service';
 
 /**
@@ -60,9 +60,7 @@ export class Login {
       error: (err: unknown) => {
         this.submitting.set(false);
         this.errorMessage.set(
-          err instanceof ApiError
-            ? err.message
-            : 'Login failed. Please try again.',
+          toErrorMessage(err, 'Login failed. Please try again.'),
         );
       },
     });
