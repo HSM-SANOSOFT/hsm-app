@@ -52,6 +52,19 @@ services:
       - minio
     restart: unless-stopped
 
+  web:
+    image: hsm-app-fe-web
+    build:
+      context: ../
+      dockerfile: apps/frontend/web/Dockerfile
+    networks:
+      - hsm-app-network
+    ports:
+      - 42000:4200
+    depends_on:
+      - api
+    restart: unless-stopped
+
   postgres:
     image: postgres:18-bookworm
     networks:
