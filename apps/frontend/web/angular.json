@@ -32,6 +32,12 @@
             ],
             "styles": [
               "src/styles.css"
+            ],
+            "loader": {
+              ".ttf": "file"
+            },
+            "allowedCommonJsDependencies": [
+              "handlebars"
             ]
           },
           "configurations": {
