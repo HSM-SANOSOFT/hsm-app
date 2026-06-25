@@ -15,15 +15,15 @@
   flex-direction: column;
   gap: 2.5rem;
   padding: 3rem;
-  color: #cfe0d9;
+  color: #cdd6e0;
   background: radial-gradient(
     120% 90% at 12% 0%,
-    var(--pine-700) 0%,
-    var(--pine-900) 60%
+    var(--primary-700) 0%,
+    var(--primary-900) 60%
   );
   overflow: hidden;
 }
-/* faint clay glow — the only warm note in the pine field */
+/* faint accent-red glow — the focal warm note in the blue field */
 .auth-aside::after {
   content: "";
   position: absolute;
@@ -34,7 +34,7 @@
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgba(217, 118, 60, 0.34),
+    rgba(var(--color-accent-rgb), 0.32),
     transparent 65%
   );
   pointer-events: none;
@@ -49,9 +49,9 @@
   width: 34px;
   height: 34px;
   border-radius: 9px;
-  background: var(--clay);
+  background: var(--accent);
   position: relative;
-  box-shadow: 0 0 0 5px rgba(217, 118, 60, 0.18);
+  box-shadow: 0 0 0 5px rgba(var(--color-accent-rgb), 0.18);
 }
 .auth-brand__mark::before,
 .auth-brand__mark::after {
@@ -73,7 +73,7 @@
   color: #fff;
 }
 .auth-brand__word span {
-  color: var(--pine-200);
+  color: var(--primary-200);
   font-weight: 500;
   margin-left: 0.2em;
 }
@@ -86,7 +86,7 @@
   font-size: 0.72rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--clay);
+  color: var(--accent);
   margin: 0 0 1rem;
 }
 .auth-headline {
@@ -106,7 +106,7 @@
   display: grid;
   gap: 0.55rem;
   font-size: 0.82rem;
-  color: #9fc0b5;
+  color: #a8b6c6;
 }
 .auth-systems li {
   display: flex;
@@ -119,17 +119,17 @@
   border-radius: 50%;
 }
 .auth-dot--ok {
-  background: #38c79a;
-  box-shadow: 0 0 0 3px rgba(56, 199, 154, 0.16);
+  background: var(--ok);
+  box-shadow: 0 0 0 3px rgba(15, 122, 82, 0.2);
 }
 .auth-dot--pending {
-  background: var(--clay);
-  box-shadow: 0 0 0 3px rgba(217, 118, 60, 0.16);
+  background: var(--accent);
+  box-shadow: 0 0 0 3px rgba(var(--color-accent-rgb), 0.16);
 }
 
 .auth-foot {
   font-size: 0.72rem;
-  color: #6f8b82;
+  color: #7d8ba0;
 }
 
 /* ---- Form panel (right) -------------------------------------------------- */
@@ -150,10 +150,10 @@
   display: none;
   font-size: 1.2rem;
   margin-bottom: 2rem;
-  color: var(--pine-800);
+  color: var(--primary-800);
 }
 .auth-brand__word--compact span {
-  color: var(--pine-600);
+  color: var(--primary-600);
 }
 
 .auth-title {
@@ -197,12 +197,12 @@
 .auth-alt {
   margin-top: 1.75rem;
   padding-top: 1.5rem;
-  border-top: 1px solid var(--border, #e2e2dc);
+  border-top: 1px solid var(--line);
   font-size: 0.88rem;
   color: var(--ink-muted);
 }
 .auth-alt a {
-  color: var(--pine-700);
+  color: var(--primary-700);
   font-weight: 600;
   text-decoration: none;
 }

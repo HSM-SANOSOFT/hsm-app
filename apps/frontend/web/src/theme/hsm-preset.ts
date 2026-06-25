@@ -2,13 +2,13 @@ import { definePreset } from '@primeng/themes';
 import Aura from '@primeng/themes/aura';
 
 /**
- * "Clinical Pine" — the HSM console's PrimeNG preset.
+ * Company brand — the HSM console's PrimeNG preset.
  *
- * A deep pine-teal primary (distinct from the generic medical-blue / default
- * AI-teal) over warm-cool neutral surfaces. Defined once here so every PrimeNG
- * component — buttons, tables, inputs, dialogs, tabs, selects — inherits the
- * identity. Light scheme only: an all-day operations console reads best calm
- * and bright, so dark mode is disabled in `app.config.ts`.
+ * A deep cobalt-blue primary (brand `#0E4D98`) over neutral gray surfaces that
+ * step down to brand navy ink. Defined once here so every PrimeNG component —
+ * buttons, tables, inputs, dialogs, tabs, selects — inherits the identity.
+ * Light scheme only: an all-day operations console reads best calm and bright,
+ * so dark mode is disabled in `app.config.ts`.
  *
  * Component-level polish (typography, layout chrome, the sidebar) lives in
  * `styles.css` and the shell; this file owns colour.
@@ -25,36 +25,36 @@ export const HsmPreset = definePreset(Aura, {
     },
   },
   semantic: {
-    // Pine ramp — primary actions land on a confident, vivid pine.
+    // Brand blue ramp — primary actions land on the confident cobalt brand blue.
     primary: {
-      50: '#edfbf6',
-      100: '#d2f4e7',
-      200: '#a6e9d1',
-      300: '#6fd8b6',
-      400: '#34bf97',
-      500: '#12a37b',
-      600: '#0c8466',
-      700: '#0c6a53',
-      800: '#0b5a4e',
-      900: '#0a4338',
-      950: '#042a22',
+      50: '#eef4fb',
+      100: '#d6e5f6',
+      200: '#aac9ec',
+      300: '#74a6e0',
+      400: '#3f86d4',
+      500: '#1c6bc4',
+      600: '#175cae',
+      700: '#0e4d98',
+      800: '#0c3f7c',
+      900: '#11304f',
+      950: '#0a2138',
     },
-    // Warm-cool neutral with a faint green undertone — clinical, not cold.
+    // Neutral gray surfaces (brand neutral) stepping down to brand navy ink.
     colorScheme: {
       light: {
         surface: {
           0: '#ffffff',
-          50: '#f6f8f7',
-          100: '#eef1f0',
-          200: '#e2e7e5',
-          300: '#cdd5d2',
-          400: '#9fabA7',
-          500: '#74827d',
-          600: '#586863',
-          700: '#45524e',
-          800: '#2c3633',
-          900: '#1a211f',
-          950: '#0e1311',
+          50: '#f6f8fa',
+          100: '#eef1f4',
+          200: '#e3e6e9',
+          300: '#cdcfd1',
+          400: '#a3acb5',
+          500: '#6a7785',
+          600: '#4f5e6e',
+          700: '#3a5066',
+          800: '#243a52',
+          900: '#11304f',
+          950: '#0a2138',
         },
         primary: {
           color: '{primary.700}',

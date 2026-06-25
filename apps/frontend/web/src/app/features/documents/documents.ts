@@ -504,7 +504,7 @@ export class Documents {
   }
 
   /**
-   * Maps a {@link DocumentStatusEnum} value to a Clinical Pine status-pill
+   * Maps a {@link DocumentStatusEnum} value to a brand status-pill
    * modifier class for the library and generate status line:
    * - COMPLETED → `pill--ok`
    * - FAILED → `pill--failed`

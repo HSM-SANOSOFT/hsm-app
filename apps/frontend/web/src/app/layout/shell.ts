@@ -14,7 +14,7 @@ import { NAV_ITEMS } from './nav-items';
 /**
  * Application shell: the authenticated chrome every feature route renders
  * inside. A persistent left sidebar carries the role-gated, sectioned
- * navigation (the active item gets the clay accent rail — the console's
+ * navigation (the active item gets the accent-red rail — the console's
  * signature); a slim top bar carries the signed-in user and logout. On narrow
  * screens the sidebar becomes an off-canvas drawer toggled from the top bar.
  *
@@ -144,8 +144,8 @@ import { NAV_ITEMS } from './nav-items';
         display: flex;
         flex-direction: column;
         gap: 0.25rem;
-        background: var(--pine-900);
-        color: #cfe0d9;
+        background: var(--primary-900);
+        color: #cdd6e0;
         padding: 1.1rem 0.85rem 0.85rem;
         position: sticky;
         top: 0;
@@ -165,10 +165,10 @@ import { NAV_ITEMS } from './nav-items';
         width: 30px;
         height: 30px;
         border-radius: 8px;
-        background: var(--clay);
+        background: var(--accent);
         position: relative;
         flex: none;
-        box-shadow: 0 0 0 4px rgba(217, 118, 60, 0.16);
+        box-shadow: 0 0 0 4px rgba(var(--color-accent-rgb), 0.16);
       }
       .brand-mark::before,
       .brand-mark::after {
@@ -192,7 +192,7 @@ import { NAV_ITEMS } from './nav-items';
         color: #fff;
       }
       .brand-word__sub {
-        color: var(--pine-200);
+        color: var(--primary-200);
         font-weight: 500;
         margin-left: 0.18em;
       }
@@ -210,7 +210,7 @@ import { NAV_ITEMS } from './nav-items';
         font-size: 0.64rem;
         letter-spacing: 0.16em;
         text-transform: uppercase;
-        color: #6f8b82;
+        color: #7d8ba0;
         margin: 1.1rem 0.7rem 0.4rem;
       }
       .nav-group:first-child {
@@ -223,7 +223,7 @@ import { NAV_ITEMS } from './nav-items';
         gap: 0.7rem;
         padding: 0.55rem 0.7rem;
         border-radius: var(--r-md);
-        color: #bcd0c8;
+        color: #c2cdda;
         text-decoration: none;
         font-size: 0.92rem;
         font-weight: 450;
@@ -236,7 +236,7 @@ import { NAV_ITEMS } from './nav-items';
         font-size: 1rem;
         width: 1.1rem;
         text-align: center;
-        color: #84a399;
+        color: #8d9bb0;
         transition: color 0.15s ease;
       }
       .nav-link:hover {
@@ -244,7 +244,7 @@ import { NAV_ITEMS } from './nav-items';
         color: #fff;
       }
       .nav-link:hover .nav-link__icon {
-        color: var(--pine-200);
+        color: var(--primary-200);
       }
       .nav-link.is-active {
         background: rgba(255, 255, 255, 0.08);
@@ -252,9 +252,9 @@ import { NAV_ITEMS } from './nav-items';
         font-weight: 500;
       }
       .nav-link.is-active .nav-link__icon {
-        color: var(--clay);
+        color: var(--accent);
       }
-      /* The signature: clay rail on the active item */
+      /* The signature: accent-red rail on the active item */
       .nav-link.is-active::before {
         content: "";
         position: absolute;
@@ -263,7 +263,7 @@ import { NAV_ITEMS } from './nav-items';
         bottom: 0.4rem;
         width: 3px;
         border-radius: 0 3px 3px 0;
-        background: var(--clay);
+        background: var(--accent);
       }
 
       .nav-footer {
@@ -272,15 +272,15 @@ import { NAV_ITEMS } from './nav-items';
         gap: 0.5rem;
         padding: 0.85rem 0.7rem 0.2rem;
         border-top: 1px solid rgba(255, 255, 255, 0.08);
-        color: #6f8b82;
+        color: #7d8ba0;
         font-size: 0.7rem;
       }
       .nav-footer__dot {
         width: 7px;
         height: 7px;
         border-radius: 50%;
-        background: #38c79a;
-        box-shadow: 0 0 0 3px rgba(56, 199, 154, 0.18);
+        background: var(--ok);
+        box-shadow: 0 0 0 3px rgba(15, 122, 82, 0.22);
       }
 
       /* ---- Main column ---------------------------------------------------- */
@@ -333,8 +333,8 @@ import { NAV_ITEMS } from './nav-items';
         white-space: nowrap;
       }
       :host ::ng-deep .topbar-avatar {
-        background: var(--pine-100);
-        color: var(--pine-800);
+        background: var(--primary-100);
+        color: var(--primary-800);
         font-weight: 600;
         font-family: var(--font-display);
       }
@@ -350,7 +350,7 @@ import { NAV_ITEMS } from './nav-items';
         position: fixed;
         inset: 0;
         border: 0;
-        background: rgba(10, 26, 22, 0.45);
+        background: rgba(var(--color-ink-rgb), 0.45);
         z-index: 35;
         cursor: pointer;
       }
