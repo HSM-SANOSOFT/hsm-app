@@ -11,7 +11,6 @@ Each app and package has its own `CLAUDE.md`. **Always read it before working in
 | `@hsm/api` | [`apps/backend/api/CLAUDE.md`](apps/backend/api/CLAUDE.md) |
 | `@hsm/worker` | [`apps/backend/worker/CLAUDE.md`](apps/backend/worker/CLAUDE.md) |
 | `@hsm/web` | [`apps/frontend/web/CLAUDE.md`](apps/frontend/web/CLAUDE.md) |
-| `@hsm/mobile` | [`apps/frontend/mobile/CLAUDE.md`](apps/frontend/mobile/CLAUDE.md) |
 | `@hsm/common` | [`packages/common/CLAUDE.md`](packages/common/CLAUDE.md) |
 | `@hsm/config` | [`packages/config/CLAUDE.md`](packages/config/CLAUDE.md) |
 | `@hsm/database` | [`packages/database/CLAUDE.md`](packages/database/CLAUDE.md) |
@@ -55,6 +54,35 @@ pnpm build
 | MinIO console | 10006 |
 | RedisInsight | 10007 |
 | pgAdmin | 10008 |
+
+## Run & test locally (inside the dev container)
+
+The everyday dev loop does **not** use the app images. Only the external
+services run as compose containers; `@hsm/api`, `@hsm/worker`, and `@hsm/web`
+run directly inside the dev container via pnpm:
+
+```bash
+# Infra only (the dev container's runServices already starts these)
+docker compose -f docker/docker-compose.yaml up -d postgres redis minio
+
+# Apps — run locally, each in its own terminal
+pnpm --filter @hsm/api start:dev     # API on :3000  (wait for "Seeded default admin user")
+pnpm --filter @hsm/worker start:dev
+pnpm --filter @hsm/web dev           # Angular dev server on :4200
+```
+
+The dev container forwards **3000** (API) and **4200** (web) to the host, so the
+browser reaches the API at `localhost:3000` and the app at `localhost:4200`.
+**The Port map above is the `docker compose up` (full-stack) mapping, not the
+local-run model** — in local-run the frontend dev env
+(`apps/frontend/web/src/environments/environment.development.ts`) targets
+`http://localhost:3000/v1`.
+
+**Log in** with the seeded default admin: username `admin` (username-based — not
+the email) plus the `DEFAULT_ADMIN_PASSWORD` value from `apps/backend/api/.env`.
+After running `.devcontainer/script/get-secrets-infisical.sh`, **restart
+`start:dev`** so dotenv reloads the new `.env`. Full walkthrough:
+`docs/solutions/developer-experience/dev-container-local-run-and-login.md`.
 
 ## Documented solutions
 
