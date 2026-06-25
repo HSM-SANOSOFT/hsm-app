@@ -197,4 +197,33 @@ describe('NavService', () => {
       'reports',
     ]);
   });
+
+  it('swaps to the admin sections inside the System Admin console', async () => {
+    const { nav, router } = configure();
+    await router.navigateByUrl('/system-admin/settings');
+
+    expect(nav.adminMode()).toBe(true);
+    expect(nav.activeModule()?.id).toBe('admin-env'); // Environment = env settings
+    expect(nav.visibleTree().map(n => n.id)).toEqual([
+      'admin-exit',
+      'admin-users',
+      'admin-env',
+    ]);
+  });
+
+  it('returns to the feature tree outside the console', async () => {
+    const { nav, router } = configure();
+    await router.navigateByUrl('/system-admin/users');
+    expect(nav.adminMode()).toBe(true);
+
+    await router.navigateByUrl('/reports');
+    expect(nav.adminMode()).toBe(false);
+    expect(nav.activeModule()?.id).toBe('reports');
+    expect(nav.visibleTree().map(n => n.id)).toEqual([
+      'clinical',
+      'billing',
+      'inbox',
+      'reports',
+    ]);
+  });
 });

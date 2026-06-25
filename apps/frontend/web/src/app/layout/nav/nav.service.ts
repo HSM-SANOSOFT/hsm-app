@@ -11,12 +11,14 @@ import { filter, map } from 'rxjs';
 
 import { AuthService } from '../../core/auth/auth.service';
 import {
+  ADMIN_NAV_TREE,
   filterTree,
   isDestination,
   isLeaf,
   NAV_TREE,
   type NavNode,
   resolveRoutePath,
+  SYSTEM_ADMIN_PREFIX,
 } from './nav-node';
 
 /**
@@ -63,11 +65,23 @@ export class NavService {
   );
 
   /**
+   * True while inside the System Admin console — the rail and breadcrumb then
+   * resolve against the admin tree (the "elevated admin view", origin R13).
+   */
+  readonly adminMode = computed(() => isAdminUrl(this.url()));
+
+  /** The tree currently driving the chrome: admin sections inside the console,
+   * the feature modules otherwise. */
+  private readonly currentTree = computed(() =>
+    this.adminMode() ? ADMIN_NAV_TREE : this.tree,
+  );
+
+  /**
    * The role/audience-filtered tree the rail renders. A branch whose every leaf
    * is gated away for this user is dropped entirely (no empty flyout columns).
    */
   readonly visibleTree = computed(() =>
-    filterTree(this.tree, {
+    filterTree(this.currentTree(), {
       isStaff: this.auth.isStaff(),
       isPatient: this.auth.isPatient(),
       hasAnyRole: roles => this.auth.hasAnyRole(roles),
@@ -81,7 +95,7 @@ export class NavService {
    * chrome simply renders an empty active state.
    */
   readonly activePath = computed<readonly NavNode[]>(
-    () => resolveRoutePath(this.tree, this.url()) ?? [],
+    () => resolveRoutePath(this.currentTree(), this.url()) ?? [],
   );
 
   /** The active top-level module, or `null` when the URL is off-tree. */
@@ -133,7 +147,8 @@ export class NavService {
   }
 
   private recordLastVisited(url: string): void {
-    const path = resolveRoutePath(this.tree, url) ?? [];
+    const tree = isAdminUrl(url) ? ADMIN_NAV_TREE : this.tree;
+    const path = resolveRoutePath(tree, url) ?? [];
     const moduleNode = path[0];
     const leaf = path.at(-1);
     if (moduleNode != null && leaf != null && isLeaf(leaf) && leaf.route) {
@@ -183,6 +198,11 @@ export class NavService {
     }
     return firstLeafRoute(node);
   }
+}
+
+function isAdminUrl(url: string): boolean {
+  const path = url.split(/[?#]/, 1)[0];
+  return path === SYSTEM_ADMIN_PREFIX || path.startsWith(`${SYSTEM_ADMIN_PREFIX}/`);
 }
 
 function firstLeafRoute(node: NavNode): string | null {

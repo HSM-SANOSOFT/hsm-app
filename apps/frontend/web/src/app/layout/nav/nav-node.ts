@@ -243,5 +243,40 @@ export const NAV_TREE: readonly NavNode[] = [
   },
 ] as const;
 
+/**
+ * The rail tree shown while inside the System Admin console (the "elevated admin
+ * view", origin R13). The rail swaps to this whenever the URL is under
+ * `/system-admin`, so the console exposes its own sections — Users and
+ * Environment (the email/webhook/storage/app-behavior system settings) — plus a
+ * way back to the normal console. Reaching here is already admin-gated by the
+ * route, so the nodes carry no extra role gate.
+ */
+export const ADMIN_NAV_TREE: readonly NavNode[] = [
+  {
+    id: 'admin-exit',
+    label: 'Back to console',
+    icon: 'pi pi-arrow-left',
+    route: '/',
+    kind: 'module',
+  },
+  {
+    id: 'admin-users',
+    label: 'Users',
+    icon: 'pi pi-users',
+    route: '/system-admin/users',
+    kind: 'module',
+  },
+  {
+    id: 'admin-env',
+    label: 'Environment',
+    icon: 'pi pi-server',
+    route: '/system-admin/settings',
+    kind: 'module',
+  },
+];
+
+/** URL prefix that puts the console into the elevated admin view. */
+export const SYSTEM_ADMIN_PREFIX = '/system-admin';
+
 /** The role required to reach the System Admin console (admin gating). */
 export const ADMIN_ROLE = RolesEnum.System.Admin;
