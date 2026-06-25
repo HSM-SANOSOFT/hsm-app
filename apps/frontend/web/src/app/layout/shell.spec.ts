@@ -9,8 +9,14 @@ import { RolesEnum } from '@hsm/common/enums';
 
 import type { UserProfile } from '../core/api/response';
 import { AuthService } from '../core/auth/auth.service';
+import { VersionService } from '../core/version/version.service';
 import { NAV_ITEMS } from './nav-items';
 import { Shell } from './shell';
+
+const PATIENT_ROLES = new Set<string>([
+  RolesEnum.Patient.Patient,
+  RolesEnum.Patient.Family,
+]);
 
 function profile(roles: string[]): UserProfile {
   return {
@@ -34,9 +40,16 @@ describe('Shell', () => {
     const isAdmin = computed(() =>
       (currentUser()?.roles ?? []).includes(RolesEnum.System.Admin),
     );
+    const isStaff = computed(() => {
+      const u = currentUser();
+      return u !== null && u.roles.some(r => !PATIENT_ROLES.has(r));
+    });
+    const isPatient = computed(() => currentUser() !== null && !isStaff());
     return {
       currentUser: currentUser.asReadonly(),
       isAdmin,
+      isStaff,
+      isPatient,
       logout: () => {
         logoutCalls += 1;
         return {
@@ -59,6 +72,16 @@ describe('Shell', () => {
     currentUser.set(null);
   });
 
+  function versionStub(): Partial<VersionService> {
+    return {
+      uiVersion: '1.2.3',
+      apiVersion: signal('9.9.9').asReadonly(),
+      loadApiVersion: () => {
+        // no-op: the footer reads the stubbed signal directly.
+      },
+    };
+  }
+
   function setup() {
     TestBed.configureTestingModule({
       imports: [Shell],
@@ -66,6 +89,7 @@ describe('Shell', () => {
         provideZonelessChangeDetection(),
         provideRouter([{ path: 'login', children: [] }]),
         { provide: AuthService, useValue: authStub() },
+        { provide: VersionService, useValue: versionStub() },
       ],
     });
     const fixture = TestBed.createComponent(Shell);
@@ -91,17 +115,75 @@ describe('Shell', () => {
     expect(labels).toContain('Profile');
   });
 
-  it('hides admin nav entries from a non-admin (R3)', () => {
+  it('hides admin nav entries from a non-admin staff member (R3)', () => {
     currentUser.set(profile([RolesEnum.System.Developer]));
     const fixture = setup();
     const host = fixture.nativeElement as HTMLElement;
 
     const labels = navLabels(host);
+    expect(labels).toContain('Workspace');
     expect(labels).toContain('Profile');
     expect(labels).toContain('Templates');
     expect(labels).toContain('Documents');
     expect(labels).not.toContain('Users');
     expect(labels).not.toContain('Settings');
+  });
+
+  it('shows the staff feature group to a staff member', () => {
+    currentUser.set(profile([RolesEnum.Clinical.Doctor]));
+    const fixture = setup();
+    const host = fixture.nativeElement as HTMLElement;
+
+    // The "Workspace" group header renders only when the staff nav is non-empty.
+    const groups = Array.from(host.querySelectorAll('.nav-group')).map(el =>
+      (el.textContent ?? '').trim(),
+    );
+    expect(groups).toContain('Workspace');
+    expect(navLabels(host)).toContain('Templates');
+  });
+
+  it('a patient sees no staff nav links (wordmark + user + logout only)', () => {
+    currentUser.set(profile([RolesEnum.Patient.Patient]));
+    const fixture = setup();
+    const host = fixture.nativeElement as HTMLElement;
+
+    expect(navLabels(host)).toEqual([]);
+    // The empty "Workspace" group header is hidden when there is no staff nav.
+    const groups = Array.from(host.querySelectorAll('.nav-group')).map(el =>
+      (el.textContent ?? '').trim(),
+    );
+    expect(groups).not.toContain('Workspace');
+    expect(groups).not.toContain('Administration');
+    // The wordmark, user, and logout remain.
+    expect(host.querySelector('[data-testid="brand-word"]')).not.toBeNull();
+    expect(host.querySelector('[data-testid="logout-button"]')).not.toBeNull();
+  });
+
+  it('shows the hospital wordmark, not "Console"', () => {
+    currentUser.set(profile([RolesEnum.System.Developer]));
+    const fixture = setup();
+    const host = fixture.nativeElement as HTMLElement;
+
+    const word = host
+      .querySelector('[data-testid="brand-word"]')
+      ?.textContent?.replace(/\s+/g, ' ')
+      .trim();
+    expect(word).toBe('Hospital Santa María');
+    expect(word).not.toContain('Console');
+  });
+
+  it('renders a live UI + API version footer (no hardcoded "console v0.1")', () => {
+    currentUser.set(profile([RolesEnum.System.Developer]));
+    const fixture = setup();
+    const host = fixture.nativeElement as HTMLElement;
+
+    const footer = host
+      .querySelector('[data-testid="version-footer"]')
+      ?.textContent?.replace(/\s+/g, ' ')
+      .trim();
+    expect(footer).toContain('UI v1.2.3');
+    expect(footer).toContain('API v9.9.9');
+    expect(footer).not.toContain('console v0.1');
   });
 
   it('renders the signed-in user and a logout control', () => {

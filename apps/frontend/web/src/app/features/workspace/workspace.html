@@ -1,0 +1,28 @@
+<div class="page workspace">
+  <header class="workspace-header">
+    <span class="page-eyebrow">Workspace</span>
+    <h1 class="workspace-greeting" data-testid="workspace-greeting">
+      Welcome back, {{ firstName() }}.
+    </h1>
+    <p class="workspace-sub">Jump back into your work.</p>
+  </header>
+
+  <div class="quicklinks" data-testid="quicklinks">
+    @for (link of links(); track link.route) {
+      <a
+        class="quicklink"
+        data-testid="quicklink"
+        [routerLink]="link.route"
+      >
+        <span class="quicklink__icon" aria-hidden="true">
+          <i [class]="link.icon"></i>
+        </span>
+        <span class="quicklink__body">
+          <span class="quicklink__label">{{ link.label }}</span>
+          <span class="quicklink__desc">{{ link.description }}</span>
+        </span>
+        <i class="pi pi-arrow-right quicklink__arrow" aria-hidden="true"></i>
+      </a>
+    }
+  </div>
+</div>

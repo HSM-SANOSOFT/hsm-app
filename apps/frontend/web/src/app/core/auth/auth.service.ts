@@ -21,6 +21,17 @@ export const AUTH_LOGOUT_PATH = '/auth/logout';
 export const AUTH_ONBOARDING_PATH = '/auth/onboarding';
 
 /**
+ * The role values that, on their own, mark a user as a Patient (not staff).
+ * A user whose roles are entirely within this set is a patient; any role
+ * outside it makes them staff. Sourced from `RolesEnum.Patient` so the two
+ * sides never drift.
+ */
+const PATIENT_ROLES: ReadonlySet<string> = new Set([
+  RolesEnum.Patient.Patient,
+  RolesEnum.Patient.Family,
+]);
+
+/**
  * Holds authentication state and orchestrates login / logout / profile load.
  *
  * State is modelled with signals:
@@ -48,6 +59,31 @@ export class AuthService {
 
   /** True iff the current user's roles include `RolesEnum.System.Admin`. */
   readonly isAdmin = computed(() => this.hasRole(RolesEnum.System.Admin));
+
+  /**
+   * True iff a profile is loaded AND it carries at least one role OUTSIDE the
+   * patient set ({@link RolesEnum.Patient.Patient} / `.Family`) — i.e. any
+   * clinical, administrative, system (incl. admin), etc. role. Anonymous users
+   * are false (no profile). This is the "front door" discriminator: staff land
+   * in `/workspace`, see the staff nav, and are admin-created.
+   */
+  readonly isStaff = computed(() => {
+    const user = this.currentUserSignal();
+    if (!user) {
+      return false;
+    }
+    return user.roles.some(role => !PATIENT_ROLES.has(role));
+  });
+
+  /**
+   * True iff a profile is loaded AND every role is within the patient set
+   * ({@link RolesEnum.Patient.Patient} / `.Family`) — i.e. it is non-null and
+   * NOT staff. Anonymous users are false. Patients self-register and land in
+   * `/patient`.
+   */
+  readonly isPatient = computed(
+    () => this.currentUserSignal() !== null && !this.isStaff(),
+  );
 
   /**
    * True iff a profile is loaded AND it is still pending first-login onboarding

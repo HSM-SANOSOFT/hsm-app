@@ -1,0 +1,51 @@
+<div class="page patient">
+  <header class="patient-hero">
+    <span class="patient-eyebrow">Hospital Santa María</span>
+    <h1 class="patient-greeting" data-testid="patient-greeting">
+      Welcome, {{ firstName() }}.
+    </h1>
+    <p class="patient-lede">
+      Your account is ready. We're putting the finishing touches on your
+      personal records — for now, here's how to reach us whenever you need care.
+    </p>
+  </header>
+
+  <div class="patient-grid">
+    <section class="care-card" aria-labelledby="contact-heading">
+      <h2 id="contact-heading" class="care-card__title">
+        <i class="pi pi-phone care-card__icon" aria-hidden="true"></i>
+        Reach the hospital
+      </h2>
+      <dl class="contact-list">
+        <div class="contact-row">
+          <dt>Main line</dt>
+          <dd><a href="tel:+10000000000">+1 (000) 000-0000</a></dd>
+        </div>
+        <div class="contact-row">
+          <dt>Address</dt>
+          <dd>123 Care Avenue, Suite 100, Your City</dd>
+        </div>
+        <div class="contact-row">
+          <dt>Hours</dt>
+          <dd>Front desk open daily, 7:00 AM – 8:00 PM</dd>
+        </div>
+        <div class="contact-row contact-row--urgent">
+          <dt>Emergency</dt>
+          <dd>For a medical emergency, call your local emergency number.</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="coming-card" aria-labelledby="coming-heading">
+      <span class="pill pill--pending coming-pill">Coming soon</span>
+      <h2 id="coming-heading" class="coming-card__title">
+        Your records are on the way
+      </h2>
+      <p class="coming-card__body">
+        Soon you'll see your appointments, documents, and care team here, all in
+        one place. We'll let you know the moment it's ready — nothing for you to
+        do until then.
+      </p>
+    </section>
+  </div>
+</div>

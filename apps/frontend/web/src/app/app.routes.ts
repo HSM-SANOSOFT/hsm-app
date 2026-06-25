@@ -4,6 +4,7 @@ import { RolesEnum } from '@hsm/common/enums';
 import { authGuard } from './core/auth/auth.guard';
 import { pendingOnboardingGuard } from './core/auth/pending-onboarding.guard';
 import { adminGuard } from './core/auth/role.guard';
+import { roleHomeGuard } from './core/auth/role-home.guard';
 
 /**
  * Application routes.
@@ -13,7 +14,10 @@ import { adminGuard } from './core/auth/role.guard';
  * ```text
  * login                         public, no shell
  * '' (Shell, authGuard)         authenticated chrome (nav + outlet)
- * ├── '' -> profile             default redirect
+ * ├── '' (roleHomeGuard)        role-resolved home: patient -> /patient,
+ * │                             staff -> /workspace
+ * ├── patient                   patient landing placeholder (R17)
+ * ├── workspace                 staff home (greeting + quick links)
  * ├── profile                   any authenticated user (R5/R6, U10)
  * ├── templates                 authenticated (R12–R17, U13/U14)
  * ├── documents                 authenticated (R18–R20, U15)
@@ -75,7 +79,24 @@ export const routes: Routes = [
     canActivate: [authGuard, pendingOnboardingGuard],
     loadComponent: () => import('./layout/shell').then(m => m.Shell),
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'profile' },
+      // The one front door: a guard-only index that always redirects to the
+      // role-resolved home (patient -> /patient, staff -> /workspace).
+      {
+        path: '',
+        pathMatch: 'full',
+        canActivate: [roleHomeGuard],
+        children: [],
+      },
+      {
+        path: 'patient',
+        loadComponent: () =>
+          import('./features/patient/patient').then(m => m.Patient),
+      },
+      {
+        path: 'workspace',
+        loadComponent: () =>
+          import('./features/workspace/workspace').then(m => m.Workspace),
+      },
       {
         path: 'profile',
         loadComponent: () =>

@@ -1,0 +1,150 @@
+:host {
+  display: block;
+}
+
+.patient {
+  max-width: 920px;
+}
+
+/* ---- Hero ---------------------------------------------------------------- */
+.patient-hero {
+  margin-bottom: 2.25rem;
+}
+
+.patient-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--primary-700);
+  display: block;
+  margin-bottom: 0.7rem;
+}
+
+.patient-greeting {
+  font-size: 2.1rem;
+  line-height: 1.08;
+}
+
+.patient-lede {
+  margin: 0.85rem 0 0;
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+  max-width: 54ch;
+}
+
+/* ---- Grid ---------------------------------------------------------------- */
+.patient-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 1.25rem;
+  align-items: stretch;
+}
+
+/* ---- Contact card -------------------------------------------------------- */
+.care-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 1.6rem 1.6rem 1.3rem;
+}
+
+.care-card__title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 1.15rem;
+}
+
+.care-card__icon {
+  color: var(--primary-700);
+  font-size: 1rem;
+}
+
+.contact-list {
+  margin: 0;
+}
+
+.contact-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--line);
+}
+.contact-row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.contact-row dt {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.contact-row dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.96rem;
+}
+
+.contact-row dd a {
+  color: var(--primary-700);
+  font-weight: 500;
+  text-decoration: none;
+}
+.contact-row dd a:hover {
+  text-decoration: underline;
+}
+
+.contact-row--urgent dd {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+/* ---- Coming-soon card ---------------------------------------------------- */
+.coming-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.65rem;
+  background: var(--primary-50);
+  border: 1px solid var(--primary-100);
+  border-radius: var(--r-lg);
+  padding: 1.6rem;
+}
+
+.coming-pill {
+  margin-bottom: 0.2rem;
+}
+
+.coming-card__title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.coming-card__body {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.96rem;
+}
+
+/* ---- Responsive ---------------------------------------------------------- */
+@media (max-width: 720px) {
+  .patient-grid {
+    grid-template-columns: 1fr;
+  }
+  .patient-greeting {
+    font-size: 1.7rem;
+  }
+}

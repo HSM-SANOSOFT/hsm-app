@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import {
   Router,
   RouterLink,
@@ -9,6 +9,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
 
 import { AuthService } from '../core/auth/auth.service';
+import { VersionService } from '../core/version/version.service';
 import { NAV_ITEMS } from './nav-items';
 
 /**
@@ -36,13 +37,15 @@ import { NAV_ITEMS } from './nav-items';
       <aside class="sidebar" data-testid="sidebar">
         <a routerLink="/" class="brand" data-testid="brand" (click)="closeNav()">
           <span class="brand-mark" aria-hidden="true"></span>
-          <span class="brand-word">
-            HSM<span class="brand-word__sub">Console</span>
+          <span class="brand-word" data-testid="brand-word">
+            Hospital <span class="brand-word__sub">Santa María</span>
           </span>
         </a>
 
         <nav class="nav" aria-label="Primary">
-          <p class="nav-group">Workspace</p>
+          @if (mainNav().length) {
+            <p class="nav-group">Workspace</p>
+          }
           @for (item of mainNav(); track item.route) {
             <a
               class="nav-link"
@@ -73,9 +76,12 @@ import { NAV_ITEMS } from './nav-items';
           }
         </nav>
 
-        <div class="nav-footer">
+        <div class="nav-footer" data-testid="version-footer">
           <span class="nav-footer__dot" aria-hidden="true"></span>
-          <span class="mono">console v0.1</span>
+          <span class="mono">
+            UI v{{ version.uiVersion }} &middot; API
+            v{{ version.apiVersion() ?? 'unknown' }}
+          </span>
         </div>
       </aside>
 
@@ -194,7 +200,6 @@ import { NAV_ITEMS } from './nav-items';
       .brand-word__sub {
         color: var(--primary-200);
         font-weight: 500;
-        margin-left: 0.18em;
       }
 
       .nav {
@@ -391,9 +396,12 @@ import { NAV_ITEMS } from './nav-items';
     `,
   ],
 })
-export class Shell {
+export class Shell implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+
+  /** Version service (U8) — drives the live UI + API version footer. */
+  protected readonly version = inject(VersionService);
 
   /** The signed-in profile signal, exposed to the template. */
   protected readonly user = this.auth.currentUser;
@@ -401,16 +409,39 @@ export class Shell {
   /** Mobile off-canvas drawer state. */
   protected readonly navOpen = signal(false);
 
-  /** Non-admin (always-visible) nav entries. */
+  /**
+   * Feature ("Workspace" group) nav entries, scoped to the signed-in user.
+   *
+   * An item shows when its audience matches the user (staff items for staff,
+   * patient items for patients) and it is not admin-gated. Patients have no
+   * feature nav this round, so this is empty for them — the group header and
+   * the whole list hide.
+   */
   protected readonly mainNav = computed(() =>
-    NAV_ITEMS.filter(item => !item.adminOnly),
+    NAV_ITEMS.filter(item => !item.adminOnly && this.isForAudience(item)),
   );
 
-  /** Admin-only nav entries — empty for non-admins, so the section hides (R3). */
+  /**
+   * Admin-only nav entries — empty for non-admins (so the section hides, R3)
+   * and for patients (admin is a staff role; no patient is an admin).
+   */
   protected readonly adminNav = computed(() => {
     const isAdmin = this.auth.isAdmin();
-    return NAV_ITEMS.filter(item => item.adminOnly && isAdmin);
+    return NAV_ITEMS.filter(
+      item => item.adminOnly && isAdmin && this.isForAudience(item),
+    );
   });
+
+  /** True when a nav item's audience matches the signed-in user. */
+  private isForAudience(item: { audience?: 'staff' | 'patient' }): boolean {
+    const audience = item.audience ?? 'staff';
+    return audience === 'staff' ? this.auth.isStaff() : this.auth.isPatient();
+  }
+
+  ngOnInit(): void {
+    // Resolve the API version once for the footer (UI version is build-time).
+    this.version.loadApiVersion();
+  }
 
   protected readonly displayName = computed(() => {
     const u = this.user();

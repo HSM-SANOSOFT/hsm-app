@@ -2,6 +2,7 @@ import type { Route } from '@angular/router';
 import { routes } from './app.routes';
 import { authGuard } from './core/auth/auth.guard';
 import { pendingOnboardingGuard } from './core/auth/pending-onboarding.guard';
+import { roleHomeGuard } from './core/auth/role-home.guard';
 
 /** Finds a route by path within a (possibly nested) route tree. */
 function findRoute(tree: Route[], path: string): Route | undefined {
@@ -44,8 +45,23 @@ describe('app.routes', () => {
     // Feature children live under it.
     const childPaths = (shell?.children ?? []).map(c => c.path);
     expect(childPaths).toEqual(
-      expect.arrayContaining(['profile', 'templates', 'documents', 'admin']),
+      expect.arrayContaining([
+        'patient',
+        'workspace',
+        'profile',
+        'templates',
+        'documents',
+        'admin',
+      ]),
     );
+  });
+
+  it('exposes the role-resolved patient and workspace homes as shell children', () => {
+    const shell = routes.find(r => r.path === '' && r.children);
+    const patient = findRoute(shell?.children ?? [], 'patient');
+    const workspace = findRoute(shell?.children ?? [], 'workspace');
+    expect(patient?.loadComponent).toBeDefined();
+    expect(workspace?.loadComponent).toBeDefined();
   });
 
   it('exposes /onboarding outside the shell, auth-guarded only', () => {
@@ -85,10 +101,13 @@ describe('app.routes', () => {
     expect(settings?.loadComponent).toBeDefined();
   });
 
-  it('defaults to profile and has a wildcard fallback', () => {
+  it('resolves the index by role via roleHomeGuard and has a wildcard fallback', () => {
     const shell = routes.find(r => r.path === '' && r.children);
     const indexChild = shell?.children?.find(c => c.path === '');
-    expect(indexChild?.redirectTo).toBe('profile');
+    // The fixed `'' -> profile` redirect is gone: the index is a guard-only
+    // child that always redirects to the role-resolved home.
+    expect(indexChild?.redirectTo).toBeUndefined();
+    expect(indexChild?.canActivate).toEqual([roleHomeGuard]);
     expect(routes.some(r => r.path === '**')).toBe(true);
   });
 });

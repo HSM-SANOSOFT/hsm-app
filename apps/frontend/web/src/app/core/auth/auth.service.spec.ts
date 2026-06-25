@@ -184,6 +184,53 @@ describe('AuthService', () => {
     expect(auth.needsOnboarding()).toBe(false);
   });
 
+  it('isStaff/isPatient are both false when anonymous', () => {
+    expect(auth.isStaff()).toBe(false);
+    expect(auth.isPatient()).toBe(false);
+  });
+
+  it('a patient-only profile is a patient, not staff', () => {
+    auth.loadProfile().subscribe();
+    httpMock
+      .expectOne(`${base}/auth/profile`)
+      .flush(wrap(profile([RolesEnum.Patient.Patient])));
+
+    expect(auth.isPatient()).toBe(true);
+    expect(auth.isStaff()).toBe(false);
+  });
+
+  it('a family-only profile is a patient, not staff', () => {
+    auth.loadProfile().subscribe();
+    httpMock
+      .expectOne(`${base}/auth/profile`)
+      .flush(wrap(profile([RolesEnum.Patient.Family])));
+
+    expect(auth.isPatient()).toBe(true);
+    expect(auth.isStaff()).toBe(false);
+  });
+
+  it('an admin profile is staff, not a patient', () => {
+    auth.loadProfile().subscribe();
+    httpMock
+      .expectOne(`${base}/auth/profile`)
+      .flush(wrap(profile([RolesEnum.System.Admin])));
+
+    expect(auth.isStaff()).toBe(true);
+    expect(auth.isPatient()).toBe(false);
+  });
+
+  it('a profile mixing a patient role with a staff role is staff', () => {
+    auth.loadProfile().subscribe();
+    httpMock
+      .expectOne(`${base}/auth/profile`)
+      .flush(
+        wrap(profile([RolesEnum.Patient.Patient, RolesEnum.Clinical.Doctor])),
+      );
+
+    expect(auth.isStaff()).toBe(true);
+    expect(auth.isPatient()).toBe(false);
+  });
+
   it('completeOnboarding stores the reissued tokens and reloads the profile', () => {
     let emitted: UserProfile | undefined;
     auth

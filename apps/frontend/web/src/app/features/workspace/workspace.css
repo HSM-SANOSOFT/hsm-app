@@ -1,0 +1,111 @@
+:host {
+  display: block;
+}
+
+.workspace-header {
+  margin-bottom: 1.75rem;
+}
+
+.workspace-greeting {
+  font-size: 1.9rem;
+  line-height: 1.1;
+}
+
+.workspace-sub {
+  margin: 0.45rem 0 0;
+  color: var(--ink-muted);
+  font-size: 1rem;
+}
+
+/* ---- Quick-link cards ---------------------------------------------------- */
+.quicklinks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.quicklink {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1.1rem 1.2rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  color: var(--ink);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+.quicklink:hover {
+  border-color: var(--primary-200);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.quicklink__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex: none;
+  border-radius: var(--r-md);
+  background: var(--primary-50);
+  color: var(--primary-700);
+  font-size: 1.15rem;
+}
+
+.quicklink__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.quicklink__label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.quicklink__desc {
+  color: var(--ink-muted);
+  font-size: 0.86rem;
+}
+
+.quicklink__arrow {
+  color: var(--line-strong);
+  font-size: 0.85rem;
+  flex: none;
+  transition:
+    color 0.15s ease,
+    transform 0.15s ease;
+}
+.quicklink:hover .quicklink__arrow {
+  color: var(--accent);
+  transform: translateX(2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quicklink,
+  .quicklink__arrow {
+    transition: none;
+  }
+  .quicklink:hover {
+    transform: none;
+  }
+  .quicklink:hover .quicklink__arrow {
+    transform: none;
+  }
+}
+
+@media (max-width: 540px) {
+  .workspace-greeting {
+    font-size: 1.6rem;
+  }
+}
