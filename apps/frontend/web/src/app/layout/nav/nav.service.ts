@@ -1,8 +1,8 @@
 import {
   computed,
-  inject,
   Injectable,
   InjectionToken,
+  inject,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';

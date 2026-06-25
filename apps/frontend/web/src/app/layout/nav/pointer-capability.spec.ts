@@ -16,9 +16,9 @@ describe('PointerCapability', () => {
       onchange: null,
       addEventListener: (_type: string, cb: ChangeListener) =>
         listeners.push(cb),
-      removeEventListener: () => {},
-      addListener: () => {},
-      removeListener: () => {},
+      removeEventListener: () => undefined,
+      addListener: () => undefined,
+      removeListener: () => undefined,
       dispatchEvent: () => false,
     })) as unknown as typeof window.matchMedia;
   }

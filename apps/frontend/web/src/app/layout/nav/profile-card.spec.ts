@@ -60,7 +60,10 @@ const STAFF: StubUser = {
   roles: ['billing'],
 };
 
-function testId(fixture: ComponentFixture<unknown>, id: string): HTMLElement | null {
+function testId(
+  fixture: ComponentFixture<unknown>,
+  id: string,
+): HTMLElement | null {
   return fixture.nativeElement.querySelector(`[data-testid="${id}"]`);
 }
 
@@ -108,9 +111,7 @@ describe('ProfileCard', () => {
   it('signs out and navigates to login', () => {
     const { component, logout } = setup(STAFF, false);
     const router = TestBed.inject(Router);
-    const navigate = vi
-      .spyOn(router, 'navigateByUrl')
-      .mockResolvedValue(true);
+    const navigate = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
 
     component['signOut']();
     expect(logout).toHaveBeenCalledOnce();

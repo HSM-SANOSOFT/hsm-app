@@ -7,10 +7,9 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-
-import { type NavNode, rendersAsFlyout } from './nav-node';
+import { RouterLink } from '@angular/router';
 import { NavService } from './nav.service';
+import { type NavNode, rendersAsFlyout } from './nav-node';
 
 /** One rendered cascade column: a parent's children, labelled by the parent. */
 interface Column {
@@ -152,7 +151,6 @@ interface Column {
 })
 export class Flyout {
   private readonly nav = inject(NavService);
-  private readonly router = inject(Router);
 
   /** The module whose cascade is shown (from the rail). `null` = hidden. */
   readonly root = input<NavNode | null>(null);

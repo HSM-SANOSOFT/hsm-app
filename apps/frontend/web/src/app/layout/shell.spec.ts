@@ -38,7 +38,7 @@ function configure(installAvailable = false): {
 
   const pwaStub = {
     installAvailable: signal(installAvailable),
-    promptInstall: async () => {},
+    promptInstall: async () => undefined,
   } as unknown as PwaInstallService;
 
   TestBed.configureTestingModule({

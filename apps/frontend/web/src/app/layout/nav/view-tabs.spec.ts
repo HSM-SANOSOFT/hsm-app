@@ -8,8 +8,8 @@ import { provideRouter, Router } from '@angular/router';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { AuthService } from '../../core/auth/auth.service';
-import type { NavNode } from './nav-node';
 import { NAV_TREE_TOKEN, NavService } from './nav.service';
+import type { NavNode } from './nav-node';
 import { ViewTabs } from './view-tabs';
 
 @Component({ standalone: true, template: '' })
@@ -26,8 +26,18 @@ const FIXTURE: readonly NavNode[] = [
         label: 'Invoices',
         kind: 'group',
         children: [
-          { id: 'open', label: 'Open', kind: 'view', route: '/billing/invoices/open' },
-          { id: 'paid', label: 'Paid', kind: 'view', route: '/billing/invoices/paid' },
+          {
+            id: 'open',
+            label: 'Open',
+            kind: 'view',
+            route: '/billing/invoices/open',
+          },
+          {
+            id: 'paid',
+            label: 'Paid',
+            kind: 'view',
+            route: '/billing/invoices/paid',
+          },
         ],
       },
     ],

@@ -1,8 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-
-import { isLeaf } from './nav-node';
 import { NavService } from './nav.service';
+import { isLeaf } from './nav-node';
 
 /**
  * The horizontal view tabs in the top bar — the final level of navigation

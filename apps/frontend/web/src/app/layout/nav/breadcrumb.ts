@@ -1,8 +1,7 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-
-import { type NavNode } from './nav-node';
 import { NavService } from './nav.service';
+import { type NavNode } from './nav-node';
 
 /**
  * The top-bar breadcrumb of the current path (origin R9). Each crumb that has

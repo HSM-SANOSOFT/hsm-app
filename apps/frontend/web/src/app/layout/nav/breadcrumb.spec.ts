@@ -9,8 +9,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AuthService } from '../../core/auth/auth.service';
 import { Breadcrumb } from './breadcrumb';
-import type { NavNode } from './nav-node';
 import { NAV_TREE_TOKEN, NavService } from './nav.service';
+import type { NavNode } from './nav-node';
 
 @Component({ standalone: true, template: '' })
 class Blank {}
@@ -31,11 +31,26 @@ const FIXTURE: readonly NavNode[] = [
             label: 'CT',
             kind: 'group',
             children: [
-              { id: 'studies', label: 'Studies', kind: 'view', route: '/clinical/imaging/ct/studies' },
-              { id: 'worklist', label: 'Worklist', kind: 'view', route: '/clinical/imaging/ct/worklist' },
+              {
+                id: 'studies',
+                label: 'Studies',
+                kind: 'view',
+                route: '/clinical/imaging/ct/studies',
+              },
+              {
+                id: 'worklist',
+                label: 'Worklist',
+                kind: 'view',
+                route: '/clinical/imaging/ct/worklist',
+              },
             ],
           },
-          { id: 'mri', label: 'MRI', kind: 'view', route: '/clinical/imaging/mri' },
+          {
+            id: 'mri',
+            label: 'MRI',
+            kind: 'view',
+            route: '/clinical/imaging/mri',
+          },
         ],
       },
       { id: 'labs', label: 'Labs', kind: 'view', route: '/clinical/labs' },
@@ -87,12 +102,9 @@ describe('Breadcrumb', () => {
     await router.navigateByUrl('/clinical/imaging/ct/studies');
     fixture.detectChanges();
 
-    expect(crumbs(fixture).map(c => c.textContent?.trim().replace(/\s+/g, ' '))).toEqual([
-      'Clinical',
-      'Imaging',
-      'CT',
-      'Studies',
-    ]);
+    expect(
+      crumbs(fixture).map(c => c.textContent?.trim().replace(/\s+/g, ' ')),
+    ).toEqual(['Clinical', 'Imaging', 'CT', 'Studies']);
     const last = crumbs(fixture).at(-1);
     expect(last?.getAttribute('aria-current')).toBe('page');
   });

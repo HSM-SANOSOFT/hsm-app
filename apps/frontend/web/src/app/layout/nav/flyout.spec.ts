@@ -9,8 +9,8 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { AuthService } from '../../core/auth/auth.service';
 import { Flyout } from './flyout';
-import type { NavNode } from './nav-node';
 import { NavService } from './nav.service';
+import type { NavNode } from './nav-node';
 
 @Component({ standalone: true, template: '' })
 class Blank {}
@@ -30,10 +30,20 @@ const CLINICAL: NavNode = {
           label: 'CT',
           kind: 'group',
           children: [
-            { id: 'studies', label: 'Studies', kind: 'view', route: '/clinical/imaging/ct/studies' },
+            {
+              id: 'studies',
+              label: 'Studies',
+              kind: 'view',
+              route: '/clinical/imaging/ct/studies',
+            },
           ],
         },
-        { id: 'mri', label: 'MRI', kind: 'view', route: '/clinical/imaging/mri' },
+        {
+          id: 'mri',
+          label: 'MRI',
+          kind: 'view',
+          route: '/clinical/imaging/mri',
+        },
       ],
     },
     { id: 'labs', label: 'Labs', kind: 'view', route: '/clinical/labs' },

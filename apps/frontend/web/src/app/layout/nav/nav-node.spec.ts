@@ -33,8 +33,18 @@ const TREE: readonly NavNode[] = [
             label: 'CT',
             kind: 'group',
             children: [
-              { id: 'studies', label: 'Studies', kind: 'view', route: '/clinical/imaging/ct/studies' },
-              { id: 'worklist', label: 'Worklist', kind: 'view', route: '/clinical/imaging/ct/worklist' },
+              {
+                id: 'studies',
+                label: 'Studies',
+                kind: 'view',
+                route: '/clinical/imaging/ct/studies',
+              },
+              {
+                id: 'worklist',
+                label: 'Worklist',
+                kind: 'view',
+                route: '/clinical/imaging/ct/worklist',
+              },
             ],
           },
         ],
@@ -52,8 +62,18 @@ const TREE: readonly NavNode[] = [
         label: 'Invoices',
         kind: 'group',
         children: [
-          { id: 'open', label: 'Open', kind: 'view', route: '/billing/invoices/open' },
-          { id: 'paid', label: 'Paid', kind: 'view', route: '/billing/invoices/paid' },
+          {
+            id: 'open',
+            label: 'Open',
+            kind: 'view',
+            route: '/billing/invoices/open',
+          },
+          {
+            id: 'paid',
+            label: 'Paid',
+            kind: 'view',
+            route: '/billing/invoices/paid',
+          },
         ],
       },
     ],
@@ -96,7 +116,8 @@ describe('nav-node classification', () => {
   });
 
   it('marks only view leaves as leaves, and only leaves/childless modules carry routes', () => {
-    const studies = TREE[0].children?.[0].children?.[0].children?.[0] as NavNode;
+    const studies = TREE[0].children?.[0].children?.[0]
+      .children?.[0] as NavNode;
     expect(isLeaf(studies)).toBe(true);
     expect(studies.route).toBeDefined();
     expect(TREE[0].route).toBeUndefined(); // branch module: no route

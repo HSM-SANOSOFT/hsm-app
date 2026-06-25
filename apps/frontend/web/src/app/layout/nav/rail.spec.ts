@@ -10,15 +10,21 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { AuthService } from '../../core/auth/auth.service';
 import { VersionService } from '../../core/version/version.service';
-import type { NavNode } from './nav-node';
 import { NAV_TREE_TOKEN, NavService } from './nav.service';
+import type { NavNode } from './nav-node';
 import { Rail } from './rail';
 
 @Component({ standalone: true, template: '' })
 class Blank {}
 
 const FIXTURE: readonly NavNode[] = [
-  { id: 'home', label: 'Home', icon: 'pi pi-home', kind: 'module', route: '/home' },
+  {
+    id: 'home',
+    label: 'Home',
+    icon: 'pi pi-home',
+    kind: 'module',
+    route: '/home',
+  },
   {
     id: 'billing',
     label: 'Billing',
@@ -30,7 +36,12 @@ const FIXTURE: readonly NavNode[] = [
         label: 'Invoices',
         kind: 'group',
         children: [
-          { id: 'open', label: 'Open', kind: 'view', route: '/billing/invoices/open' },
+          {
+            id: 'open',
+            label: 'Open',
+            kind: 'view',
+            route: '/billing/invoices/open',
+          },
         ],
       },
     ],
@@ -54,7 +65,7 @@ function configure(patient = false): {
   const versionStub = {
     uiVersion: '1.2.3',
     apiVersion: () => '4.5.6',
-    loadApiVersion: () => {},
+    loadApiVersion: () => undefined,
   } as unknown as VersionService;
 
   TestBed.configureTestingModule({
@@ -170,9 +181,9 @@ describe('Rail', () => {
     scrim.click();
     fixture.detectChanges();
     expect(
-      (fixture.nativeElement.querySelector('.rail') as HTMLElement).classList.contains(
-        'rail--expanded',
-      ),
+      (
+        fixture.nativeElement.querySelector('.rail') as HTMLElement
+      ).classList.contains('rail--expanded'),
     ).toBe(false);
   });
 });

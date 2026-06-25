@@ -1,21 +1,20 @@
 import {
   Component,
   computed,
-  effect,
   ElementRef,
+  effect,
   inject,
   type OnDestroy,
   signal,
 } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-
+import { VersionService } from '../../core/version/version.service';
 import { Flyout } from './flyout';
 import { HoverIntent } from './hover-intent';
-import { isDestination, type NavNode, rendersAsFlyout } from './nav-node';
 import { NavService } from './nav.service';
+import { isDestination, type NavNode, rendersAsFlyout } from './nav-node';
 import { PointerCapability } from './pointer-capability';
 import { ProfileCard } from './profile-card';
-import { VersionService } from '../../core/version/version.service';
 
 /** A rendered rail entry: a plain link, or a disclosure that opens a flyout. */
 interface RailItem {
@@ -401,7 +400,9 @@ export class Rail implements OnDestroy {
     });
   }
 
-  protected readonly activeId = computed(() => this.nav.activeModule()?.id ?? null);
+  protected readonly activeId = computed(
+    () => this.nav.activeModule()?.id ?? null,
+  );
 
   protected readonly railItems = computed<readonly RailItem[]>(() =>
     this.nav.visibleTree().map(node => {
