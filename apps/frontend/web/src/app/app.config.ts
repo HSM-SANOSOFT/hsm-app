@@ -12,8 +12,10 @@ import {
 } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
+import { provideServiceWorker } from '@angular/service-worker';
 import { providePrimeNG } from 'primeng/config';
 import { firstValueFrom } from 'rxjs';
+import { environment } from '../environments/environment';
 import { HsmPreset } from '../theme/hsm-preset';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/auth/auth.interceptor';
@@ -52,6 +54,14 @@ export const appConfig: ApplicationConfig = {
           cssLayer: { name: 'primeng', order: 'theme, base, primeng' },
         },
       },
+    }),
+    // PWA service worker — registered in production only (orthogonal to the
+    // zoneless setup). Disabled in dev/test so the SW never intercepts the dev
+    // server or TestBed. U15 owns the offline caching strategy + SwUpdate flow;
+    // here it is asset-only via ngsw-config.json.
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: environment.production,
+      registrationStrategy: 'registerWhenStable:30000',
     }),
   ],
 };

@@ -25,6 +25,10 @@
                 "input": "public"
               },
               {
+                "glob": "manifest.webmanifest",
+                "input": "src"
+              },
+              {
                 "glob": "**/*",
                 "input": "node_modules/monaco-editor/min/vs",
                 "output": "assets/monaco/vs"
@@ -34,7 +38,8 @@
               "src/styles.css"
             ],
             "loader": {
-              ".ttf": "file"
+              ".ttf": "file",
+              ".webmanifest": "text"
             },
             "allowedCommonJsDependencies": [
               "handlebars"
@@ -54,7 +59,8 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "serviceWorker": "ngsw-config.json"
             },
             "development": {
               "optimization": false,
@@ -85,6 +91,7 @@
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
+            "buildTarget": "web:build:development",
             "setupFiles": [
               "src/test-setup.ts"
             ]

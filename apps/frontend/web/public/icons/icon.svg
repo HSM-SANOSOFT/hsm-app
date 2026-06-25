@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Hospital Santa María">
+  <!-- Brand-primary rounded square; the cross sits inside the maskable safe zone -->
+  <rect width="512" height="512" rx="96" ry="96" fill="#0E4D98"/>
+  <!-- White medical cross, centered, within the central 80% safe area -->
+  <path fill="#FFFFFF" d="M213 138h86a16 16 0 0 1 16 16v59h59a16 16 0 0 1 16 16v86a16 16 0 0 1-16 16h-59v59a16 16 0 0 1-16 16h-86a16 16 0 0 1-16-16v-59h-59a16 16 0 0 1-16-16v-86a16 16 0 0 1 16-16h59v-59a16 16 0 0 1 16-16Z"/>
+</svg>

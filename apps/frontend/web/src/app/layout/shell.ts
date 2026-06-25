@@ -9,6 +9,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
 
 import { AuthService } from '../core/auth/auth.service';
+import { PwaInstallService } from '../core/pwa/pwa-install.service';
 import { VersionService } from '../core/version/version.service';
 import { NAV_ITEMS } from './nav-items';
 
@@ -103,6 +104,17 @@ import { NAV_ITEMS } from './nav-items';
             <i class="pi pi-bars"></i>
           </button>
           <div class="topbar-spacer"></div>
+          @if (pwa.installAvailable()) {
+            <p-button
+              label="Install app"
+              icon="pi pi-download"
+              severity="secondary"
+              [text]="true"
+              size="small"
+              (onClick)="installApp()"
+              data-testid="install-button"
+            />
+          }
           @if (user(); as u) {
             <div class="topbar-user">
               <p-avatar
@@ -403,6 +415,9 @@ export class Shell implements OnInit {
   /** Version service (U8) — drives the live UI + API version footer. */
   protected readonly version = inject(VersionService);
 
+  /** PWA install affordance — exposes a captured `beforeinstallprompt`. */
+  protected readonly pwa = inject(PwaInstallService);
+
   /** The signed-in profile signal, exposed to the template. */
   protected readonly user = this.auth.currentUser;
 
@@ -461,6 +476,10 @@ export class Shell implements OnInit {
     const last = u.firstLastName?.[0] ?? '';
     return `${first}${last}`.toUpperCase();
   });
+
+  protected installApp(): void {
+    void this.pwa.promptInstall();
+  }
 
   protected toggleNav(): void {
     this.navOpen.update(v => !v);
