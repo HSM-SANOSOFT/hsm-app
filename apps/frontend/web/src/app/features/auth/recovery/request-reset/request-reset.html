@@ -1,0 +1,91 @@
+<section class="auth">
+  <aside class="auth-aside" aria-hidden="true">
+    <a class="auth-brand">
+      <span class="auth-brand__mark"></span>
+      <span class="auth-brand__word">Hospital <span>Santa María</span></span>
+    </a>
+
+    <div class="auth-pitch">
+      <p class="auth-eyebrow">Account recovery</p>
+      <h2 class="auth-headline">Let's get you back in.</h2>
+      <p class="auth-lede">
+        Enter the email on your account and we'll send a secure link to set a
+        new password. The link expires soon, so use it right away.
+      </p>
+    </div>
+
+    <ul class="auth-reassure">
+      <li><span class="auth-tick"></span> Links are single-use and time-limited</li>
+      <li><span class="auth-tick"></span> We never share whether an email is registered</li>
+    </ul>
+  </aside>
+
+  <main class="auth-main">
+    <div class="auth-card">
+      <span class="auth-brand__word auth-brand__word--compact">
+        Hospital <span>Santa María</span>
+      </span>
+
+      @if (sent()) {
+        <h1 class="auth-title">Check your email</h1>
+        <p class="auth-sub">
+          If an account exists for that email, we've sent a link to reset your
+          password. It may take a minute to arrive — and remember to check spam.
+        </p>
+
+        <p class="auth-alt">
+          <a routerLink="/login" data-testid="login-link">Back to sign in</a>
+        </p>
+      } @else {
+        <h1 class="auth-title">Reset your password</h1>
+        <p class="auth-sub">We'll email you a link to choose a new one.</p>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
+          @if (rateLimited()) {
+            <p-message
+              severity="warn"
+              text="Too many requests. Please wait a few minutes and try again."
+              styleClass="auth-msg"
+            />
+          }
+
+          <div class="field">
+            <label for="email">Email</label>
+            <input
+              pInputText
+              id="email"
+              type="email"
+              formControlName="email"
+              autocomplete="email"
+              placeholder="you@example.com"
+              fluid
+            />
+            @if (form.controls.email.invalid && form.controls.email.touched) {
+              <small class="field-error">Enter a valid email address.</small>
+            }
+          </div>
+
+          <p-button
+            type="submit"
+            label="Send reset link"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            [loading]="submitting()"
+            [disabled]="submitting()"
+            styleClass="auth-submit"
+            fluid
+          />
+        </form>
+
+        <p class="auth-alt">
+          Remembered it?
+          <a routerLink="/login" data-testid="login-link">Sign in</a>
+        </p>
+        <p class="auth-alt auth-alt--subtle">
+          Forgot your username?
+          <a routerLink="/recover-username">Recover it</a>
+        </p>
+      }
+    </div>
+  </main>
+</section>

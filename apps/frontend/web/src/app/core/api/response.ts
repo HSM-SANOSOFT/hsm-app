@@ -98,6 +98,42 @@ export interface SignupPayload {
 }
 
 /**
+ * Mirror of `@hsm/common` `ForgotPasswordPayloadDto`.
+ * Body for `POST /v1/auth/password/forgot` — request a reset link by email.
+ */
+export interface ForgotPasswordPayload {
+  email: string;
+}
+
+/**
+ * Mirror of `@hsm/common` `ResetPasswordPayloadDto`.
+ * Body for `POST /v1/auth/password/reset` — the plaintext token (delivered in
+ * the reset-email link fragment) plus the chosen new password.
+ */
+export interface ResetPasswordPayload {
+  token: string;
+  newPassword: string;
+}
+
+/**
+ * Mirror of `@hsm/common` `RecoverUsernamePayloadDto`.
+ * Body for `POST /v1/auth/username/recover` — recover the username by email.
+ */
+export interface RecoverUsernamePayload {
+  email: string;
+}
+
+/**
+ * Mirror of the `{ message }` payload returned by the account-recovery
+ * endpoints (`@hsm/common` `MessageResponseDto`). The message is intentionally
+ * generic for the forgot/recover flows so it never reveals whether an account
+ * exists; the client shows its own non-committal copy rather than echoing it.
+ */
+export interface MessageResponse {
+  message: string;
+}
+
+/**
  * Mirror of `@hsm/common` `SignedUserProfileDto` (only the fields the console
  * reads). `roles` comes back as a string array of role *values* (e.g.
  * `['admin']`) matching `RolesEnum.*` values from `@hsm/common/enums`.

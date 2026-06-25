@@ -38,6 +38,27 @@ export const routes: Routes = [
       import('./features/auth/register/register').then(m => m.Register),
   },
   {
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('./features/auth/recovery/request-reset/request-reset').then(
+        m => m.RequestReset,
+      ),
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () =>
+      import('./features/auth/recovery/reset-password/reset-password').then(
+        m => m.ResetPassword,
+      ),
+  },
+  {
+    path: 'recover-username',
+    loadComponent: () =>
+      import('./features/auth/recovery/recover-username/recover-username').then(
+        m => m.RecoverUsername,
+      ),
+  },
+  {
     path: '',
     canActivate: [authGuard],
     loadComponent: () => import('./layout/shell').then(m => m.Shell),
