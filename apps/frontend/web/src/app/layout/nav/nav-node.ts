@@ -202,19 +202,20 @@ function normalizeUrl(url: string): string {
 }
 
 /**
- * The app's live navigation tree.
+ * The app's live navigation tree — the main console modules.
  *
- * These are the modules that exist as real lazy routes today (see
- * `app.routes.ts`): each is a childless `'module'` destination, so the rail
- * shows three icons and no flyout opens (origin R8 — no sub-structure means a
- * direct landing). Admin (Users/Settings) has left the rail for the System Admin
- * console, and Profile has become personal Settings (the gear) — neither is a
- * rail entry anymore.
+ * Clinical, Scheduling, Billing, Pharmacy, and Laboratory are placeholder
+ * modules: their navigation, cascade flyouts, breadcrumb, and view tabs are
+ * fully wired (each leaf routes to a shared placeholder screen), but the feature
+ * screens themselves land later. Clinical nests deepest (Imaging › CT › views)
+ * to exercise the cascade and tabs; Workspace, Templates, and Documents are the
+ * real, built modules. The concrete module set is intended to be refined with
+ * the clinical/operational owners — this is a sensible placeholder IA, not a
+ * committed one.
  *
- * The cascade / tabs / breadcrumb machinery is depth-agnostic and exercised
- * against fixture trees in the specs; populating a genuinely nested tree
- * (e.g. Clinical › Imaging › CT › views) is a data/IA deliverable wired here
- * once the module hierarchy and its routes land.
+ * Admin (Users/Environment) lives in the System Admin console
+ * ({@link ADMIN_NAV_TREE}), not here; Profile and Settings are reached from the
+ * profile card, not the rail.
  */
 export const NAV_TREE: readonly NavNode[] = [
   {
@@ -222,6 +223,98 @@ export const NAV_TREE: readonly NavNode[] = [
     label: 'Workspace',
     icon: 'pi pi-th-large',
     route: '/workspace',
+    kind: 'module',
+    audience: 'staff',
+  },
+  {
+    id: 'clinical',
+    label: 'Clinical',
+    icon: 'pi pi-heart',
+    kind: 'module',
+    audience: 'staff',
+    children: [
+      {
+        id: 'encounters',
+        label: 'Encounters',
+        kind: 'view',
+        route: '/clinical/encounters',
+      },
+      {
+        id: 'imaging',
+        label: 'Imaging',
+        kind: 'group',
+        children: [
+          {
+            id: 'ct',
+            label: 'CT',
+            kind: 'group',
+            children: [
+              {
+                id: 'ct-studies',
+                label: 'Studies',
+                kind: 'view',
+                route: '/clinical/imaging/ct/studies',
+              },
+              {
+                id: 'ct-worklist',
+                label: 'Worklist',
+                kind: 'view',
+                route: '/clinical/imaging/ct/worklist',
+              },
+            ],
+          },
+          {
+            id: 'mri',
+            label: 'MRI',
+            kind: 'view',
+            route: '/clinical/imaging/mri',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'scheduling',
+    label: 'Scheduling',
+    icon: 'pi pi-calendar',
+    route: '/scheduling',
+    kind: 'module',
+    audience: 'staff',
+  },
+  {
+    id: 'billing',
+    label: 'Billing',
+    icon: 'pi pi-wallet',
+    kind: 'module',
+    audience: 'staff',
+    children: [
+      {
+        id: 'invoices',
+        label: 'Invoices',
+        kind: 'view',
+        route: '/billing/invoices',
+      },
+      {
+        id: 'payments',
+        label: 'Payments',
+        kind: 'view',
+        route: '/billing/payments',
+      },
+    ],
+  },
+  {
+    id: 'pharmacy',
+    label: 'Pharmacy',
+    icon: 'pi pi-plus-circle',
+    route: '/pharmacy',
+    kind: 'module',
+    audience: 'staff',
+  },
+  {
+    id: 'laboratory',
+    label: 'Laboratory',
+    icon: 'pi pi-chart-bar',
+    route: '/laboratory',
     kind: 'module',
     audience: 'staff',
   },

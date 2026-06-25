@@ -4,6 +4,7 @@ import {
   filterTree,
   isDestination,
   isLeaf,
+  NAV_TREE,
   type NavAccess,
   type NavNode,
   rendersAsFlyout,
@@ -183,5 +184,39 @@ describe('resolveRoutePath', () => {
   it('returns null for an unresolvable or non-leaf path', () => {
     expect(resolveRoutePath(TREE, '/clinical/imaging')).toBeNull(); // non-leaf
     expect(resolveRoutePath(TREE, '/settings')).toBeNull(); // off-tree
+  });
+});
+
+describe('NAV_TREE (live placeholder modules)', () => {
+  const byId = (id: string) => NAV_TREE.find(n => n.id === id) as NavNode;
+
+  it('exposes the main modules at the top level', () => {
+    expect(NAV_TREE.map(n => n.id)).toEqual([
+      'workspace',
+      'clinical',
+      'scheduling',
+      'billing',
+      'pharmacy',
+      'laboratory',
+      'templates',
+      'documents',
+    ]);
+  });
+
+  it('nests Clinical as a cascade (Imaging › CT › views) and Billing as tabs', () => {
+    expect(rendersAsFlyout(byId('clinical'))).toBe(true);
+    const imaging = byId('clinical').children?.find(n => n.id === 'imaging');
+    expect(rendersAsFlyout(imaging as NavNode)).toBe(true); // cascades to CT
+    const ct = (imaging as NavNode).children?.find(n => n.id === 'ct');
+    expect(rendersAsTabs(ct as NavNode)).toBe(true); // CT's views are tabs
+    expect(rendersAsTabs(byId('billing'))).toBe(true);
+  });
+
+  it('resolves a deep placeholder leaf URL', () => {
+    expect(
+      resolveRoutePath(NAV_TREE, '/clinical/imaging/ct/studies')?.map(
+        n => n.id,
+      ),
+    ).toEqual(['clinical', 'imaging', 'ct', 'ct-studies']);
   });
 });

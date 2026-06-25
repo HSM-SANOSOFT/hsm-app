@@ -202,7 +202,9 @@ export class NavService {
 
 function isAdminUrl(url: string): boolean {
   const path = url.split(/[?#]/, 1)[0];
-  return path === SYSTEM_ADMIN_PREFIX || path.startsWith(`${SYSTEM_ADMIN_PREFIX}/`);
+  return (
+    path === SYSTEM_ADMIN_PREFIX || path.startsWith(`${SYSTEM_ADMIN_PREFIX}/`)
+  );
 }
 
 function firstLeafRoute(node: NavNode): string | null {

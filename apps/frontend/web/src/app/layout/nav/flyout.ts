@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NavService } from './nav.service';
-import { type NavNode, rendersAsFlyout } from './nav-node';
+import { isDestination, type NavNode, rendersAsFlyout } from './nav-node';
 
 /** One rendered cascade column: a parent's children, labelled by the parent. */
 interface Column {
@@ -76,7 +76,7 @@ interface Column {
                 <a
                   class="fitem"
                   data-testid="flyout-leaf"
-                  [routerLink]="item.route"
+                  [routerLink]="leafRoute(item)"
                   (click)="select()"
                 >
                   {{ item.label }}
@@ -195,6 +195,14 @@ export class Flyout {
 
   protected hasChildren(node: NavNode): boolean {
     return rendersAsFlyout(node);
+  }
+
+  /** The route a non-cascading flyout item links to: a view's own route, or a
+   * tab-bearing sub-module's first/last view (so it lands on its tabs). */
+  protected leafRoute(node: NavNode): string | null {
+    return isDestination(node)
+      ? (node.route ?? null)
+      : this.nav.entryRouteFor(node);
   }
 
   protected isExpanded(columnIndex: number, node: NavNode): boolean {

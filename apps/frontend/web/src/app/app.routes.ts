@@ -31,6 +31,14 @@ import { roleHomeGuard } from './core/auth/role-home.guard';
  * `layout/nav-items.ts` — no change to the shell or the auth guards. The
  * feature components are placeholders today (U10–U15 replace them).
  */
+/** Shared loader for the not-yet-built main modules (Clinical, Scheduling,
+ * Billing, Pharmacy, Laboratory). The screen titles itself from the active nav
+ * node, so one component backs every placeholder leaf. */
+const placeholderModule = () =>
+  import('./features/placeholder/module-placeholder').then(
+    m => m.ModulePlaceholder,
+  );
+
 export const routes: Routes = [
   {
     path: 'login',
@@ -121,6 +129,19 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/documents/documents').then(m => m.Documents),
       },
+      // Placeholder main modules — navigation/routing wired, screens land later.
+      { path: 'clinical/encounters', loadComponent: placeholderModule },
+      { path: 'clinical/imaging/ct/studies', loadComponent: placeholderModule },
+      {
+        path: 'clinical/imaging/ct/worklist',
+        loadComponent: placeholderModule,
+      },
+      { path: 'clinical/imaging/mri', loadComponent: placeholderModule },
+      { path: 'scheduling', loadComponent: placeholderModule },
+      { path: 'billing/invoices', loadComponent: placeholderModule },
+      { path: 'billing/payments', loadComponent: placeholderModule },
+      { path: 'pharmacy', loadComponent: placeholderModule },
+      { path: 'laboratory', loadComponent: placeholderModule },
       // System Admin console — the only place admin lives now, reached from the
       // profile-card popover (admins only). adminGuard sits on the parent AND
       // each child (defense-in-depth): a child must never become reachable if it
