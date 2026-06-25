@@ -210,6 +210,14 @@ const SYSTEM_ADMIN_ROUTE = '/system-admin';
       .pmenu__item--action .pmenu__icon {
         color: var(--accent);
       }
+      /* 44px touch targets on a coarse pointer (R19). */
+      @media (hover: none), (pointer: coarse) {
+        .pcard__id,
+        .pcard__gear,
+        .pmenu__item {
+          min-height: 44px;
+        }
+      }
     `,
   ],
 })

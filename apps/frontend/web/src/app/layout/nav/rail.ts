@@ -50,12 +50,26 @@ interface RailItem {
       (focusout)="onFocusOut($event)"
       (keydown.escape)="collapse()"
     >
-      <a class="rail-brand" routerLink="/" aria-label="Home">
-        <span class="brand-mark" aria-hidden="true"></span>
-        <span class="brand-word">
-          Hospital <span class="brand-word__sub">Santa María</span>
-        </span>
-      </a>
+      <div class="rail-head">
+        <a class="rail-brand" routerLink="/" aria-label="Home">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span class="brand-word">
+            Hospital <span class="brand-word__sub">Santa María</span>
+          </span>
+        </a>
+        <!-- Touch toggle: hover-expand is inert on a coarse pointer, so tapping
+             this opens/closes the rail (R19). Hidden on hover-capable devices. -->
+        <button
+          type="button"
+          class="rail-toggle"
+          data-testid="rail-toggle"
+          [attr.aria-expanded]="expanded()"
+          aria-label="Toggle navigation"
+          (click)="toggle()"
+        >
+          <i class="pi" [class.pi-bars]="!expanded()" [class.pi-times]="expanded()"></i>
+        </button>
+      </div>
 
       <div class="rail-items">
         @for (item of railItems(); track item.node.id) {
@@ -112,6 +126,16 @@ interface RailItem {
       (mouseleave)="intent.leave()"
       (closed)="closeFlyout()"
     />
+
+    @if (expanded()) {
+      <button
+        type="button"
+        class="rail-scrim"
+        data-testid="rail-scrim"
+        aria-label="Close navigation"
+        (click)="collapse()"
+      ></button>
+    }
   `,
   styles: [
     `
@@ -140,6 +164,11 @@ interface RailItem {
         box-shadow: var(--shadow-lg);
       }
 
+      .rail-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
       .rail-brand {
         display: flex;
         align-items: center;
@@ -147,6 +176,32 @@ interface RailItem {
         text-decoration: none;
         padding: 0.4rem 0.45rem 0.9rem;
         white-space: nowrap;
+      }
+      .rail-toggle {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border: 0;
+        background: transparent;
+        color: #aebccd;
+        cursor: pointer;
+        border-radius: var(--r-md);
+        flex: none;
+      }
+      .rail-toggle:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: #fff;
+      }
+      .rail-scrim {
+        display: none;
+        position: fixed;
+        inset: 0 0 0 var(--rail-w-expanded);
+        border: 0;
+        background: rgba(var(--color-ink-rgb), 0.4);
+        z-index: 39;
+        cursor: pointer;
       }
       .brand-mark {
         width: 30px;
@@ -289,6 +344,25 @@ interface RailItem {
         transition: opacity 0.14s ease;
       }
 
+      /* Touch / coarse-pointer degradation (R19): expose the tap toggle and the
+         close scrim, give rows a 44px touch target, and hide the brand on the
+         collapsed strip so the toggle fits the 64px width. */
+      @media (hover: none), (pointer: coarse) {
+        .rail-toggle {
+          display: inline-flex;
+        }
+        .rail-scrim {
+          display: block;
+        }
+        .rail:not(.rail--expanded) .rail-brand {
+          display: none;
+        }
+        .rail-item,
+        .rail-toggle {
+          min-height: 44px;
+        }
+      }
+
       @media (prefers-reduced-motion: reduce) {
         .rail,
         .rail-item__label,
@@ -378,6 +452,15 @@ export class Rail implements OnDestroy {
     const next = event.relatedTarget as Node | null;
     if (next == null || !this.host.nativeElement.contains(next)) {
       this.collapse();
+    }
+  }
+
+  /** Tap toggle for coarse pointers (hover-expand is inert there). */
+  protected toggle(): void {
+    if (this.expanded()) {
+      this.collapse();
+    } else {
+      this.intent.openNow();
     }
   }
 

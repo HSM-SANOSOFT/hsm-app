@@ -72,6 +72,13 @@ import { NavService } from './nav.service';
         border-bottom-color: var(--primary-700);
         font-weight: 600;
       }
+      @media (hover: none), (pointer: coarse) {
+        .tab {
+          min-height: 44px;
+          display: inline-flex;
+          align-items: center;
+        }
+      }
     `,
   ],
 })

@@ -138,4 +138,41 @@ describe('Rail', () => {
     expect(footer?.textContent).toContain('UI v1.2.3');
     expect(footer?.textContent).toContain('API v4.5.6');
   });
+
+  it('toggles expansion via the touch toggle (tap path for coarse pointers)', () => {
+    const { fixture } = configure();
+    const rail = fixture.nativeElement.querySelector('.rail') as HTMLElement;
+    const toggle = fixture.nativeElement.querySelector(
+      '[data-testid="rail-toggle"]',
+    ) as HTMLElement;
+
+    expect(rail.classList.contains('rail--expanded')).toBe(false);
+    toggle.click();
+    fixture.detectChanges();
+    expect(rail.classList.contains('rail--expanded')).toBe(true);
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+  });
+
+  it('shows a close scrim when expanded and collapses on scrim tap', () => {
+    const { fixture } = configure();
+    (
+      fixture.nativeElement.querySelector(
+        '[data-testid="rail-toggle"]',
+      ) as HTMLElement
+    ).click();
+    fixture.detectChanges();
+
+    const scrim = fixture.nativeElement.querySelector(
+      '[data-testid="rail-scrim"]',
+    ) as HTMLElement;
+    expect(scrim).not.toBeNull();
+
+    scrim.click();
+    fixture.detectChanges();
+    expect(
+      (fixture.nativeElement.querySelector('.rail') as HTMLElement).classList.contains(
+        'rail--expanded',
+      ),
+    ).toBe(false);
+  });
 });
