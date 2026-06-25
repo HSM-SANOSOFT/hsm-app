@@ -1,1 +1,25 @@
+@if (!isOnline()) {
+  <div class="app-banner app-banner--offline" role="status" data-testid="offline-banner">
+    <span class="app-banner__dot" aria-hidden="true"></span>
+    <span class="app-banner__text">
+      You're offline. You can keep viewing what's already loaded; live updates
+      will resume when your connection is back.
+    </span>
+  </div>
+}
+
+@if (updateAvailable()) {
+  <div class="app-banner app-banner--update" role="status" data-testid="update-banner">
+    <span class="app-banner__text">A new version is available.</span>
+    <span class="app-banner__actions">
+      <button type="button" class="app-banner__btn app-banner__btn--primary" (click)="reload()">
+        Reload
+      </button>
+      <button type="button" class="app-banner__btn" (click)="dismissUpdate()">
+        Later
+      </button>
+    </span>
+  </div>
+}
+
 <router-outlet />
