@@ -52,7 +52,7 @@ export class Workspace {
       label: 'Your profile',
       description: 'Update your details and password.',
       icon: 'pi pi-user',
-      route: '/settings',
+      route: '/profile',
     },
     {
       label: 'Users',

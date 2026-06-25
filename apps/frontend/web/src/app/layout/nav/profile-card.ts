@@ -21,7 +21,8 @@ interface ProfileMenuItem {
   readonly route: string;
 }
 
-/** Where personal Settings and the System Admin console live. */
+/** Where the profile page, personal Settings, and the admin console live. */
+const PROFILE_ROUTE = '/profile';
 const SETTINGS_ROUTE = '/settings';
 const SYSTEM_ADMIN_ROUTE = '/system-admin';
 
@@ -283,7 +284,7 @@ export class ProfileCard {
   /** Popover navigation entries — System Admin only for admins (origin R12). */
   protected readonly menuItems = computed<readonly ProfileMenuItem[]>(() => {
     const items: ProfileMenuItem[] = [
-      { label: 'Profile', icon: 'pi pi-user', route: SETTINGS_ROUTE },
+      { label: 'Profile', icon: 'pi pi-user', route: PROFILE_ROUTE },
     ];
     if (this.auth.isAdmin()) {
       items.push({

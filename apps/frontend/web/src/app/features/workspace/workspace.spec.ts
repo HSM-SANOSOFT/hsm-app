@@ -64,7 +64,7 @@ describe('Workspace', () => {
     const routes = linkRoutes(host);
     expect(routes).toContain('/templates');
     expect(routes).toContain('/documents');
-    expect(routes).toContain('/settings');
+    expect(routes).toContain('/profile');
   });
 
   it('hides admin quick links from a non-admin staff member', () => {

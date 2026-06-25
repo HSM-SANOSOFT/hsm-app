@@ -104,11 +104,22 @@ describe('app.routes', () => {
     expect(settings?.loadComponent).toBeDefined();
   });
 
-  it('redirects the pre-redesign admin and profile paths for back-compat', () => {
+  it('keeps Settings and Profile as distinct pages', async () => {
+    const settings = findRoute(routes, 'settings');
+    const profile = findRoute(routes, 'profile');
+    expect(settings?.redirectTo).toBeUndefined();
+    expect(profile?.redirectTo).toBeUndefined();
+    const settingsCmp = await settings?.loadComponent?.();
+    const profileCmp = await profile?.loadComponent?.();
+    expect(settingsCmp).toBeDefined();
+    expect(profileCmp).toBeDefined();
+    expect(settingsCmp).not.toBe(profileCmp);
+  });
+
+  it('redirects the pre-redesign admin paths for back-compat', () => {
     const shell = routes.find(r => r.path === '' && r.children);
     const kids = shell?.children ?? [];
     const find = (path: string) => kids.find(c => c.path === path);
-    expect(find('profile')?.redirectTo).toBe('settings');
     expect(find('admin')?.redirectTo).toBe('system-admin');
     expect(find('admin/users')?.redirectTo).toBe('system-admin/users');
     expect(find('admin/settings')?.redirectTo).toBe('system-admin/settings');

@@ -97,15 +97,20 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/workspace/workspace').then(m => m.Workspace),
       },
-      // Personal Settings — the self-service account page, identical for every
-      // user including admins (no admin section, origin R15). Re-homed from the
-      // old /profile, which now redirects here.
+      // Personal app Settings — user-controllable preferences, identical for
+      // every user including admins (no admin section, origin R15). System/env
+      // configuration lives in the System Admin console, not here.
       {
         path: 'settings',
         loadComponent: () =>
+          import('./features/settings/settings').then(m => m.Settings),
+      },
+      // The self-service Profile/account page (name, password, contact).
+      {
+        path: 'profile',
+        loadComponent: () =>
           import('./features/profile/profile').then(m => m.Profile),
       },
-      { path: 'profile', pathMatch: 'full', redirectTo: 'settings' },
       {
         path: 'templates',
         loadComponent: () =>
