@@ -18,12 +18,12 @@ import { roleHomeGuard } from './core/auth/role-home.guard';
  * │                             staff -> /workspace
  * ├── patient                   patient landing placeholder (R17)
  * ├── workspace                 staff home (greeting + quick links)
- * ├── profile                   any authenticated user (R5/R6, U10)
+ * ├── settings                  personal settings (any user); /profile -> here
  * ├── templates                 authenticated (R12–R17, U13/U14)
  * ├── documents                 authenticated (R18–R20, U15)
- * └── admin
- *     ├── users    (adminGuard) R7, U11
- *     └── settings (adminGuard) R8–R11, U12
+ * └── system-admin (adminGuard) admin console; /admin/* redirects here
+ *     ├── users    (adminGuard)
+ *     └── settings (adminGuard)
  * ```
  *
  * Every authenticated route is a **lazy** child of the `Shell` parent, so a new
@@ -97,11 +97,15 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/workspace/workspace').then(m => m.Workspace),
       },
+      // Personal Settings — the self-service account page, identical for every
+      // user including admins (no admin section, origin R15). Re-homed from the
+      // old /profile, which now redirects here.
       {
-        path: 'profile',
+        path: 'settings',
         loadComponent: () =>
           import('./features/profile/profile').then(m => m.Profile),
       },
+      { path: 'profile', pathMatch: 'full', redirectTo: 'settings' },
       {
         path: 'templates',
         loadComponent: () =>
@@ -112,8 +116,14 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/documents/documents').then(m => m.Documents),
       },
+      // System Admin console — the only place admin lives now, reached from the
+      // profile-card popover (admins only). adminGuard sits on the parent AND
+      // each child (defense-in-depth): a child must never become reachable if it
+      // is ever re-nested or the parent guard is dropped.
       {
-        path: 'admin',
+        path: 'system-admin',
+        canActivate: [adminGuard],
+        data: { roles: [RolesEnum.System.Admin] },
         children: [
           { path: '', pathMatch: 'full', redirectTo: 'users' },
           {
@@ -134,6 +144,11 @@ export const routes: Routes = [
           },
         ],
       },
+      // Back-compat redirects for the pre-redesign admin paths, so bookmarks and
+      // the login `returnUrl` round-trip keep resolving (origin R16).
+      { path: 'admin', pathMatch: 'full', redirectTo: 'system-admin' },
+      { path: 'admin/users', redirectTo: 'system-admin/users' },
+      { path: 'admin/settings', redirectTo: 'system-admin/settings' },
     ],
   },
   { path: '**', redirectTo: '' },

@@ -52,20 +52,20 @@ export class Workspace {
       label: 'Your profile',
       description: 'Update your details and password.',
       icon: 'pi pi-user',
-      route: '/profile',
+      route: '/settings',
     },
     {
       label: 'Users',
       description: 'Manage staff accounts and access.',
       icon: 'pi pi-users',
-      route: '/admin/users',
+      route: '/system-admin/users',
       adminOnly: true,
     },
     {
       label: 'Settings',
       description: 'Configure system settings.',
       icon: 'pi pi-cog',
-      route: '/admin/settings',
+      route: '/system-admin/settings',
       adminOnly: true,
     },
   ];

@@ -64,22 +64,22 @@ describe('Workspace', () => {
     const routes = linkRoutes(host);
     expect(routes).toContain('/templates');
     expect(routes).toContain('/documents');
-    expect(routes).toContain('/profile');
+    expect(routes).toContain('/settings');
   });
 
   it('hides admin quick links from a non-admin staff member', () => {
     currentUser.set(profile([RolesEnum.Clinical.Doctor]));
     const routes = linkRoutes(setup());
 
-    expect(routes).not.toContain('/admin/users');
-    expect(routes).not.toContain('/admin/settings');
+    expect(routes).not.toContain('/system-admin/users');
+    expect(routes).not.toContain('/system-admin/settings');
   });
 
   it('shows admin quick links to an admin', () => {
     currentUser.set(profile([RolesEnum.System.Admin]));
     const routes = linkRoutes(setup());
 
-    expect(routes).toContain('/admin/users');
-    expect(routes).toContain('/admin/settings');
+    expect(routes).toContain('/system-admin/users');
+    expect(routes).toContain('/system-admin/settings');
   });
 });

@@ -48,10 +48,10 @@ describe('app.routes', () => {
       expect.arrayContaining([
         'patient',
         'workspace',
-        'profile',
+        'settings',
         'templates',
         'documents',
-        'admin',
+        'system-admin',
       ]),
     );
   });
@@ -77,28 +77,41 @@ describe('app.routes', () => {
   });
 
   it('exposes feature routes as lazy loadComponent slots', () => {
-    for (const path of ['profile', 'templates', 'documents']) {
+    for (const path of ['settings', 'templates', 'documents']) {
       const route = findRoute(routes, path);
       expect(route?.loadComponent).toBeDefined();
     }
   });
 
   it('lazy-loads a feature component on demand', async () => {
-    const profile = findRoute(routes, 'profile');
+    const settings = findRoute(routes, 'settings');
     // Invoking loadComponent resolves the standalone component class.
-    const cmp = await profile?.loadComponent?.();
+    const cmp = await settings?.loadComponent?.();
     expect(cmp).toBeDefined();
   });
 
-  it('role-gates admin routes without touching the shared auth wiring', () => {
-    // KTD8 structural check: admin gating is per-route data + guard, so adding
-    // a route never edits the guard implementation.
-    const users = findRoute(routes, 'users');
-    const settings = findRoute(routes, 'settings');
+  it('nests admin under a guarded system-admin console (parent + each child)', () => {
+    // adminGuard on the parent AND each child (defense-in-depth) so a child is
+    // never reachable if it is ever re-nested or the parent guard is dropped.
+    const systemAdmin = findRoute(routes, 'system-admin');
+    expect(systemAdmin?.canActivate).toHaveLength(1);
+    const children = systemAdmin?.children ?? [];
+    const users = children.find(c => c.path === 'users');
+    const settings = children.find(c => c.path === 'settings');
     expect(users?.canActivate).toHaveLength(1);
     expect(settings?.canActivate).toHaveLength(1);
     expect(users?.loadComponent).toBeDefined();
     expect(settings?.loadComponent).toBeDefined();
+  });
+
+  it('redirects the pre-redesign admin and profile paths for back-compat', () => {
+    const shell = routes.find(r => r.path === '' && r.children);
+    const kids = shell?.children ?? [];
+    const find = (path: string) => kids.find(c => c.path === path);
+    expect(find('profile')?.redirectTo).toBe('settings');
+    expect(find('admin')?.redirectTo).toBe('system-admin');
+    expect(find('admin/users')?.redirectTo).toBe('system-admin/users');
+    expect(find('admin/settings')?.redirectTo).toBe('system-admin/settings');
   });
 
   it('resolves the index by role via roleHomeGuard and has a wildcard fallback', () => {
