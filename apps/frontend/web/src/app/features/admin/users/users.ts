@@ -1,9 +1,16 @@
 import { Component, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { RolesEnum } from '@hsm/common/enums';
 import { ButtonModule } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
+import { PasswordModule } from 'primeng/password';
 import { Select } from 'primeng/select';
 import { type TableLazyLoadEvent, TableModule } from 'primeng/table';
 
@@ -16,23 +23,35 @@ import {
 import type {
   AdminUser,
   ChangeUserRolePayload,
+  CreateStaffPayload,
   RoleOption,
   UserRole,
 } from './users.types';
 
 const USERS_PATH = '/user';
+const CREATE_STAFF_PATH = '/user/staff';
+
+/** `RolesEnum` group key whose members are patient/family — never staff. */
+const PATIENT_GROUP = 'Patient';
 
 /**
  * Flattens the nested `RolesEnum` const object (`System`/`Clinical`/…) into a
- * flat option list for the role-change dropdown. Each group is an enum whose
- * *values* are the role strings the backend expects (`RolesType`); the label is
- * `<Group> / <Member>` so admins can tell same-named members apart.
+ * flat option list. Each group is an enum whose *values* are the role strings
+ * the backend expects (`RolesType`); the label is `<Group> / <Member>` so
+ * admins can tell same-named members apart.
  *
- * Built once at module load — `RolesEnum` is static.
+ * When `staffOnly` is true the `Patient` group (patient/family) is excluded —
+ * the create-staff endpoint rejects those roles server-side (R5), so the
+ * dropdown must not offer them.
+ *
+ * Built at module load — `RolesEnum` is static.
  */
-function buildRoleOptions(): RoleOption[] {
+function buildRoleOptions(staffOnly = false): RoleOption[] {
   const options: RoleOption[] = [];
   for (const [groupName, group] of Object.entries(RolesEnum)) {
+    if (staffOnly && groupName === PATIENT_GROUP) {
+      continue;
+    }
     for (const [memberName, value] of Object.entries(group)) {
       options.push({
         label: `${groupName} / ${memberName}`,
@@ -44,12 +63,15 @@ function buildRoleOptions(): RoleOption[] {
 }
 
 /**
- * Admin user-management screen (U11, R7/R3; AE4).
+ * Admin user-management screen (U11/U13, R7/R3/R5; AE4).
  *
  * Lists users with **server-side** pagination via PrimeNG `p-table`
  * (`[lazy]="true"` + `(onLazyLoad)`), lets an admin view a single user in a
- * dialog (`GET /v1/user/:id`), and change a user's role
- * (`PATCH /v1/user/:id/role`), reflecting the new role in the row on success.
+ * dialog (`GET /v1/user/:id`), change a user's role
+ * (`PATCH /v1/user/:id/role`), and **provision a new staff account**
+ * (`POST /v1/user/staff`, U13) via a reactive-form dialog. Each row shows a
+ * Pending/Active status pill driven by `onboardingCompletedAt`: a freshly
+ * created staff account is Pending until it completes first-login onboarding.
  *
  * Admin-only access is enforced by the route's `adminGuard` (U9) — not
  * re-implemented here. R6 (a user cannot change their own role) is enforced
@@ -57,7 +79,17 @@ function buildRoleOptions(): RoleOption[] {
  */
 @Component({
   selector: 'app-admin-users',
-  imports: [FormsModule, TableModule, Select, Dialog, ButtonModule, Message],
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    TableModule,
+    Select,
+    Dialog,
+    ButtonModule,
+    InputTextModule,
+    PasswordModule,
+    Message,
+  ],
   template: `
     <div class="page admin-users" data-testid="admin-users">
       <header class="page-header">
@@ -68,6 +100,12 @@ function buildRoleOptions(): RoleOption[] {
             Review console accounts and manage their assigned roles.
           </p>
         </div>
+        <p-button
+          label="Create staff"
+          icon="pi pi-user-plus"
+          (onClick)="openCreate()"
+          data-testid="create-staff-open"
+        />
       </header>
 
       @if (error(); as err) {
@@ -93,6 +131,7 @@ function buildRoleOptions(): RoleOption[] {
               <th>Email</th>
               <th>Name</th>
               <th>Role(s)</th>
+              <th>Status</th>
               <th>Actions</th>
             </tr>
           </ng-template>
@@ -106,6 +145,23 @@ function buildRoleOptions(): RoleOption[] {
                   <span class="pill pill--neutral">{{ role.role }}</span>
                 } @empty {
                   <span class="muted">—</span>
+                }
+              </td>
+              <td>
+                @if (isPending(user)) {
+                  <span
+                    class="pill pill--pending"
+                    [attr.data-testid]="'status-' + user.id"
+                  >
+                    Pending
+                  </span>
+                } @else {
+                  <span
+                    class="pill pill--ok"
+                    [attr.data-testid]="'status-' + user.id"
+                  >
+                    Active
+                  </span>
                 }
               </td>
               <td>
@@ -132,7 +188,7 @@ function buildRoleOptions(): RoleOption[] {
           </ng-template>
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="5">
+              <td colspan="6">
                 <div class="empty-state">
                   <i class="pi pi-users"></i>
                   No users found.
@@ -177,6 +233,180 @@ function buildRoleOptions(): RoleOption[] {
           </div>
         }
       </p-dialog>
+
+      <p-dialog
+        header="Create staff account"
+        [(visible)]="createVisible"
+        [modal]="true"
+        [style]="{ width: '32rem' }"
+        [breakpoints]="{ '40rem': '92vw' }"
+        (onHide)="onCreateHide()"
+        data-testid="create-staff-dialog"
+      >
+        <p class="dialog-lede">
+          Provision a console account. A temporary password is emailed to the
+          new staff member, who sets their own on first sign-in.
+        </p>
+
+        <form
+          [formGroup]="createForm"
+          (ngSubmit)="submitCreate()"
+          class="create-staff-form"
+        >
+          @if (createError(); as message) {
+            <p-message
+              severity="error"
+              [text]="message"
+              styleClass="create-staff-msg"
+              data-testid="create-staff-error"
+            />
+          }
+          @if (createSuccess(); as message) {
+            <p-message
+              severity="success"
+              [text]="message"
+              styleClass="create-staff-msg"
+              data-testid="create-staff-success"
+            />
+          }
+
+          <div class="auth-row">
+            <div class="field">
+              <label for="cs-firstName">First name</label>
+              <input
+                pInputText
+                id="cs-firstName"
+                type="text"
+                formControlName="firstName"
+                autocomplete="off"
+                fluid
+              />
+              @if (
+                createForm.controls.firstName.invalid &&
+                createForm.controls.firstName.touched
+              ) {
+                <small class="field-error">First name is required.</small>
+              }
+            </div>
+
+            <div class="field">
+              <label for="cs-firstLastName">Last name</label>
+              <input
+                pInputText
+                id="cs-firstLastName"
+                type="text"
+                formControlName="firstLastName"
+                autocomplete="off"
+                fluid
+              />
+              @if (
+                createForm.controls.firstLastName.invalid &&
+                createForm.controls.firstLastName.touched
+              ) {
+                <small class="field-error">Last name is required.</small>
+              }
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="cs-username">Username</label>
+            <input
+              pInputText
+              id="cs-username"
+              type="text"
+              formControlName="username"
+              autocomplete="off"
+              placeholder="e.g. jdoe"
+              fluid
+            />
+            @if (
+              createForm.controls.username.invalid &&
+              createForm.controls.username.touched
+            ) {
+              <small class="field-error">Username is required.</small>
+            }
+          </div>
+
+          <div class="field">
+            <label for="cs-email">Email</label>
+            <input
+              pInputText
+              id="cs-email"
+              type="email"
+              formControlName="email"
+              autocomplete="off"
+              placeholder="name@hospital.org"
+              fluid
+            />
+            @if (
+              createForm.controls.email.invalid &&
+              createForm.controls.email.touched
+            ) {
+              <small class="field-error">Enter a valid email address.</small>
+            }
+          </div>
+
+          <div class="field">
+            <label for="cs-role">Role</label>
+            <p-select
+              inputId="cs-role"
+              formControlName="role"
+              [options]="staffRoleOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Select a staff role"
+              [filter]="true"
+              filterBy="label"
+              appendTo="body"
+              fluid
+              data-testid="create-staff-role"
+            />
+            @if (
+              createForm.controls.role.invalid &&
+              createForm.controls.role.touched
+            ) {
+              <small class="field-error">Select a staff role.</small>
+            }
+          </div>
+
+          <div class="field">
+            <label for="cs-tempPassword">Temporary password</label>
+            <p-password
+              inputId="cs-tempPassword"
+              formControlName="tempPassword"
+              [feedback]="false"
+              [toggleMask]="true"
+              autocomplete="off"
+              placeholder="At least 8 characters"
+              fluid
+            />
+            @if (
+              createForm.controls.tempPassword.invalid &&
+              createForm.controls.tempPassword.touched
+            ) {
+              <small class="field-error">Use at least 8 characters.</small>
+            }
+          </div>
+
+          <div class="dialog-actions">
+            <p-button
+              label="Cancel"
+              [text]="true"
+              type="button"
+              (onClick)="createVisible = false"
+              data-testid="create-staff-cancel"
+            />
+            <p-button
+              type="submit"
+              label="Create staff"
+              icon="pi pi-user-plus"
+              [loading]="creating()"
+              [disabled]="creating()"
+              data-testid="create-staff-submit"
+            />
+          </div>
+        </form>
+      </p-dialog>
     </div>
   `,
   styles: `
@@ -193,13 +423,37 @@ function buildRoleOptions(): RoleOption[] {
     [data-testid='user-detail'] .field span .pill + .pill {
       margin-left: 0.35rem;
     }
+
+    .dialog-lede {
+      margin: 0 0 1.25rem;
+      color: var(--ink-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .create-staff-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.6rem;
+      margin-top: 0.5rem;
+    }
   `,
 })
 export class AdminUsers {
   private readonly api = inject(ApiClient);
+  private readonly fb = inject(FormBuilder);
 
-  /** Flattened `RolesEnum` options for the role-change dropdown. */
+  /** Flattened `RolesEnum` options for the role-change dropdown (all roles). */
   readonly roleOptions = buildRoleOptions();
+
+  /** STAFF-only role options for create-staff (patient/family excluded, R5). */
+  readonly staffRoleOptions = buildRoleOptions(true);
 
   readonly users = signal<AdminUser[]>([]);
   readonly totalRecords = signal(0);
@@ -213,6 +467,21 @@ export class AdminUsers {
 
   /** Surfaces view/role-change failures to the admin. */
   readonly error = signal<string | null>(null);
+
+  // --- Create-staff dialog state (U13) ---
+  createVisible = false;
+  readonly creating = signal(false);
+  readonly createError = signal<string | null>(null);
+  readonly createSuccess = signal<string | null>(null);
+
+  readonly createForm = this.fb.nonNullable.group({
+    username: ['', [Validators.required]],
+    email: ['', [Validators.required, Validators.email]],
+    firstName: ['', [Validators.required]],
+    firstLastName: ['', [Validators.required]],
+    role: ['', [Validators.required]],
+    tempPassword: ['', [Validators.required, Validators.minLength(8)]],
+  });
 
   /**
    * `p-table` lazy-load handler. Translates the table's `first`/`rows` offset
@@ -244,6 +513,74 @@ export class AdminUsers {
           this.loading.set(false);
         },
       });
+  }
+
+  /** Re-fetches the page currently shown (used after a create-staff success). */
+  refreshCurrentPage(): void {
+    this.loadUsers({ first: this.first(), rows: this.pageSize() });
+  }
+
+  /** Opens the create-staff dialog with a clean form. */
+  openCreate(): void {
+    this.createForm.reset();
+    this.createError.set(null);
+    this.createSuccess.set(null);
+    this.createVisible = true;
+  }
+
+  /** Resets transient create-staff state when the dialog closes. */
+  onCreateHide(): void {
+    this.createForm.reset();
+    this.createError.set(null);
+    this.createSuccess.set(null);
+    this.creating.set(false);
+  }
+
+  /**
+   * Provisions a staff account via `POST /v1/user/staff` (U3). On success:
+   * closes the dialog, resets the form, shows a brief confirmation, and
+   * refreshes the list so the new (Pending) account appears. A duplicate
+   * username/email — or any server error — surfaces inline and keeps the
+   * dialog open.
+   */
+  submitCreate(): void {
+    if (this.createForm.invalid || this.creating()) {
+      this.createForm.markAllAsTouched();
+      return;
+    }
+
+    const raw = this.createForm.getRawValue();
+    const payload: CreateStaffPayload = {
+      username: raw.username.trim(),
+      email: raw.email.trim(),
+      firstName: raw.firstName.trim(),
+      firstLastName: raw.firstLastName.trim(),
+      role: raw.role,
+      tempPassword: raw.tempPassword,
+    };
+
+    this.creating.set(true);
+    this.createError.set(null);
+    this.createSuccess.set(null);
+
+    this.api.post<AdminUser>(CREATE_STAFF_PATH, payload).subscribe({
+      next: created => {
+        this.creating.set(false);
+        this.createVisible = false;
+        this.createForm.reset();
+        this.error.set(null);
+        this.createSuccess.set(
+          `Staff account "${created.username}" created. A temporary password was emailed.`,
+        );
+        this.refreshCurrentPage();
+      },
+      error: (err: unknown) => {
+        this.creating.set(false);
+        this.createError.set(
+          toErrorMessage(err, 'Could not create the staff account.'),
+        );
+      },
+    });
   }
 
   /** Opens the detail dialog, loading the freshest copy via `GET /v1/user/:id`. */
@@ -297,5 +634,14 @@ export class AdminUsers {
   /** Comma-joined role values for display in the table / dialog. */
   roleLabels(user: AdminUser): string {
     return (user.roles ?? []).map((r: UserRole) => r.role).join(', ');
+  }
+
+  /**
+   * A user is pending onboarding when `onboardingCompletedAt` is null/absent —
+   * i.e. an admin-created staff account that hasn't completed first-login
+   * onboarding yet. Drives the Pending vs Active status pill.
+   */
+  isPending(user: AdminUser): boolean {
+    return user.onboardingCompletedAt == null;
   }
 }

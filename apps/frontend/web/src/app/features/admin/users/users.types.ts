@@ -37,12 +37,39 @@ export interface AdminUser {
   firstName: string;
   firstLastName?: string;
   roles: UserRole[];
+  /**
+   * Pending-onboarding marker (mirror of the backend `onboardingCompletedAt`):
+   * `null` for an admin-created staff account that still has to complete
+   * first-login onboarding, an ISO timestamp once it has. Drives the
+   * Pending/Active status pill in the list.
+   */
+  onboardingCompletedAt?: string | null;
 }
 
 /** Mirror of `@hsm/common` `ChangeUserRoleDto` — the PATCH body. */
 export interface ChangeUserRolePayload {
   /** A flattened `RolesEnum` value (e.g. `'admin'`). */
   role: string;
+}
+
+/**
+ * Mirror of `@hsm/common` `CreateStaffDto` — the `POST /v1/user/staff` body
+ * (admin-only). `role` MUST be a STAFF role value (patient/family are rejected
+ * server-side); `tempPassword` (min 8 chars) is emailed to the new staff member
+ * and is never returned. The optional fields are sent only when filled.
+ */
+export interface CreateStaffPayload {
+  username: string;
+  email: string;
+  firstName: string;
+  firstLastName: string;
+  /** A flattened STAFF `RolesEnum` value (e.g. `'doctor'`). */
+  role: string;
+  /** Min 8 chars; emailed to the new staff member, never returned. */
+  tempPassword: string;
+  secondName?: string;
+  secondLastName?: string;
+  phoneNumber?: string;
 }
 
 /** A flattened `RolesEnum` entry for the role-change dropdown. */

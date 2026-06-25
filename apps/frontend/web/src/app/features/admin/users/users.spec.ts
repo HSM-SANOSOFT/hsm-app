@@ -175,4 +175,192 @@ describe('AdminUsers component', () => {
     // Multiple groups are flattened, not just System.
     expect(cmp.roleOptions.some(o => o.value === 'doctor')).toBe(true);
   });
+
+  it('excludes patient/family from the staff-role options', () => {
+    const fixture = TestBed.createComponent(AdminUsers);
+    const cmp = fixture.componentInstance;
+
+    // Staff options keep real staff roles…
+    expect(cmp.staffRoleOptions.some(o => o.value === 'doctor')).toBe(true);
+    expect(cmp.staffRoleOptions.some(o => o.value === 'admin')).toBe(true);
+    // …but never patient or family (R5: those are rejected server-side).
+    expect(cmp.staffRoleOptions.some(o => o.value === 'patient')).toBe(false);
+    expect(cmp.staffRoleOptions.some(o => o.value === 'family')).toBe(false);
+    // The all-roles dropdown still includes patient for contrast.
+    expect(cmp.roleOptions.some(o => o.value === 'patient')).toBe(true);
+  });
+
+  it('submits a valid create-staff form, POSTs /user/staff, then refreshes', () => {
+    const fixture = TestBed.createComponent(AdminUsers);
+    const cmp = fixture.componentInstance;
+    fixture.detectChanges();
+
+    // Drain the initial auto-fired page load.
+    httpMock.expectOne(`${base}/user?page=1&limit=20`).flush(
+      wrapList(pageOne, {
+        page: 1,
+        pageSize: 20,
+        totalItems: 2,
+        totalPages: 1,
+      }),
+    );
+
+    cmp.createForm.setValue({
+      username: 'dnew',
+      email: 'dnew@x.com',
+      firstName: 'Dana',
+      firstLastName: 'New',
+      role: 'doctor',
+      tempPassword: 'temp1234',
+    });
+    cmp.createVisible = true;
+    cmp.submitCreate();
+
+    const post = httpMock.expectOne(`${base}/user/staff`);
+    expect(post.request.method).toBe('POST');
+    // A single `role` is sent — never a `roles` array.
+    expect(post.request.body).toEqual({
+      username: 'dnew',
+      email: 'dnew@x.com',
+      firstName: 'Dana',
+      firstLastName: 'New',
+      role: 'doctor',
+      tempPassword: 'temp1234',
+    });
+    expect(post.request.body.roles).toBeUndefined();
+
+    const created: AdminUser = {
+      id: 'u9',
+      username: 'dnew',
+      email: 'dnew@x.com',
+      firstName: 'Dana',
+      roles: [{ id: 'r9', role: 'doctor', domain: 'prod' }],
+      onboardingCompletedAt: null,
+    };
+    post.flush(wrap(created));
+
+    // The dialog closes and the list re-fetches the current page.
+    expect(cmp.createVisible).toBe(false);
+    const refresh = httpMock.expectOne(`${base}/user?page=1&limit=20`);
+    expect(refresh.request.method).toBe('GET');
+    refresh.flush(
+      wrapList([...pageOne, created], {
+        page: 1,
+        pageSize: 20,
+        totalItems: 3,
+        totalPages: 1,
+      }),
+    );
+    expect(cmp.users().some(u => u.id === 'u9')).toBe(true);
+  });
+
+  it('surfaces a 409 conflict and keeps the create dialog open', () => {
+    const fixture = TestBed.createComponent(AdminUsers);
+    const cmp = fixture.componentInstance;
+    fixture.detectChanges();
+
+    httpMock.expectOne(`${base}/user?page=1&limit=20`).flush(
+      wrapList(pageOne, {
+        page: 1,
+        pageSize: 20,
+        totalItems: 2,
+        totalPages: 1,
+      }),
+    );
+
+    cmp.createForm.setValue({
+      username: 'alice',
+      email: 'alice@x.com',
+      firstName: 'Alice',
+      firstLastName: 'Dup',
+      role: 'nurse',
+      tempPassword: 'temp1234',
+    });
+    cmp.createVisible = true;
+    cmp.submitCreate();
+
+    const post = httpMock.expectOne(`${base}/user/staff`);
+    post.flush(
+      {
+        metadata: {
+          success: false,
+          statusCode: 409,
+          timestamp: '2026-06-24T00:00:00.000Z',
+          path: '/v1/user/staff',
+          message: 'Conflict',
+        },
+        issue: {
+          code: 'USER_ALREADY_EXISTS',
+          message: 'Username already in use.',
+          field: 'username',
+        },
+      },
+      { status: 409, statusText: 'Conflict' },
+    );
+
+    // The error surfaces and the dialog stays open; no list refresh fires.
+    expect(cmp.createError()).toBe('Username already in use.');
+    expect(cmp.createVisible).toBe(true);
+    expect(cmp.creating()).toBe(false);
+  });
+
+  it('does not POST when the create-staff form is invalid', () => {
+    const fixture = TestBed.createComponent(AdminUsers);
+    const cmp = fixture.componentInstance;
+    fixture.detectChanges();
+
+    httpMock.expectOne(`${base}/user?page=1&limit=20`).flush(
+      wrapList(pageOne, {
+        page: 1,
+        pageSize: 20,
+        totalItems: 2,
+        totalPages: 1,
+      }),
+    );
+
+    // Bad email + short password → invalid; required role left empty.
+    cmp.createForm.setValue({
+      username: 'eve',
+      email: 'not-an-email',
+      firstName: 'Eve',
+      firstLastName: 'X',
+      role: '',
+      tempPassword: 'short',
+    });
+    cmp.createVisible = true;
+    cmp.submitCreate();
+
+    // No request is issued (httpMock.verify() in afterEach would fail otherwise).
+    expect(cmp.createForm.invalid).toBe(true);
+    expect(cmp.createVisible).toBe(true);
+  });
+
+  it('marks a user with no onboarding timestamp as pending, else active', () => {
+    const fixture = TestBed.createComponent(AdminUsers);
+    const cmp = fixture.componentInstance;
+
+    const pending: AdminUser = {
+      id: 'p1',
+      username: 'pend',
+      email: 'pend@x.com',
+      firstName: 'Pat',
+      roles: [],
+      onboardingCompletedAt: null,
+    };
+    const active: AdminUser = {
+      id: 'a1',
+      username: 'act',
+      email: 'act@x.com',
+      firstName: 'Ada',
+      roles: [{ id: 'r', role: 'doctor', domain: 'prod' }],
+      onboardingCompletedAt: '2026-06-24T00:00:00.000Z',
+    };
+
+    expect(cmp.isPending(pending)).toBe(true);
+    expect(cmp.isPending(active)).toBe(false);
+    // A user lacking the field entirely is treated as pending.
+    expect(
+      cmp.isPending({ ...pending, onboardingCompletedAt: undefined }),
+    ).toBe(true);
+  });
 });
