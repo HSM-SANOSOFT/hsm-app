@@ -1,6 +1,7 @@
 ---
 title: NestJS unit test mocking patterns for TypeORM, BullMQ, DataSource, and bcrypt
 date: 2026-05-06
+last_refreshed: 2026-06-25
 category: developer-experience
 module: testing
 problem_type: developer_experience
@@ -57,11 +58,16 @@ Omitting the `DatabasesEnum` argument generates a different token from the one t
 
 ### BullMQ queues
 
-Use `getQueueToken` from `@nestjs/bullmq` with the `QueueEnum` string value:
+Use `getQueueToken` from `@nestjs/bullmq` with the `QueueEnum` string value.
+Import `QueueEnum` from the side-effect-free leaf `@hsm/queue/queue.enum`, **not**
+the `@hsm/queue` barrel — the barrel re-exports `queue.module.ts`, which reads
+`envs` inside `BullModule.forRoot(...)` at import time. Pulling that into a spec's
+import graph crashes any suite that mocks `@hsm/config` with a lazy getter (TDZ
+`Cannot access 'mockEnvs' before initialization`):
 
 ```typescript
 import { getQueueToken } from '@nestjs/bullmq';
-import { QueueEnum } from '@hsm/queue';
+import { QueueEnum } from '@hsm/queue/queue.enum'; // leaf — avoids the barrel's import-time envs read
 
 const mockComsQueue = { add: jest.fn() };
 
@@ -177,4 +183,5 @@ Reference implementation: `apps/backend/api/src/modules/security/auth/auth.servi
 
 - `docs/brainstorms/api-unit-tests-requirements.md` — requirements doc that captured this pattern during planning
 - `docs/solutions/test-failures/nestjs-config-joi-validation-dotenv-conflict-2026-05-06.md` — the env shim setup required before these patterns work
+- `docs/solutions/test-failures/queue-barrel-import-breaks-config-mock-tdz.md` — why the BullMQ example imports `QueueEnum` from `@hsm/queue/queue.enum` (leaf), not the `@hsm/queue` barrel
 - `apps/backend/api/src/test-setup.ts` — env shim that makes `@hsm/config` importable in tests
