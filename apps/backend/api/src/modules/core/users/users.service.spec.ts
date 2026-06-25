@@ -217,6 +217,57 @@ describe('UsersService', () => {
     });
   });
 
+  describe('completeOnboarding', () => {
+    it('sets password/phone, verifies email, clears the pending flag, and returns the refreshed user', async () => {
+      userRepo.findOne
+        .mockResolvedValueOnce({
+          id: 'u1',
+          email: 'n@test.com',
+          onboardingCompletedAt: null,
+          roles: [],
+        })
+        .mockResolvedValueOnce({
+          id: 'u1',
+          email: 'n@test.com',
+          onboardingCompletedAt: new Date(),
+          roles: [],
+        });
+      userRepo.update.mockResolvedValue({ affected: 1 });
+
+      const result = await service.completeOnboarding('u1', {
+        hashedPassword: 'hashed-value',
+        phoneNumber: '+1 555 0100',
+      });
+
+      expect(userRepo.update).toHaveBeenCalledWith(
+        'u1',
+        expect.objectContaining({
+          password: 'hashed-value',
+          phoneNumber: '+1 555 0100',
+          emailVerified: true,
+          onboardingCompletedAt: expect.any(Date),
+        }),
+      );
+      expect(result.onboardingCompletedAt).toBeInstanceOf(Date);
+    });
+
+    it('rejects an already-completed account and never updates', async () => {
+      userRepo.findOne.mockResolvedValue({
+        id: 'u1',
+        onboardingCompletedAt: new Date(),
+        roles: [],
+      });
+
+      await expect(
+        service.completeOnboarding('u1', {
+          hashedPassword: 'hashed-value',
+          phoneNumber: '+1 555 0100',
+        }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(userRepo.update).not.toHaveBeenCalled();
+    });
+  });
+
   describe('createStaffUser', () => {
     const staffDto = {
       username: 'nnurse',

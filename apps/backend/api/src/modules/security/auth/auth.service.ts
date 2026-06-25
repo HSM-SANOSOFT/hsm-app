@@ -1,4 +1,5 @@
 import {
+  CompleteOnboardingDto,
   PinGenerationPayloadDto,
   PinValidationPayloadDto,
   PublicSignupPayloadDto,
@@ -481,6 +482,54 @@ export class AuthService implements OnModuleInit {
     const tokens: ITokens = await this.generateTokens(userToSign);
     const newRefreshToken = await this.hashData(tokens.refresh_token);
     await this.refreshToken(user, newRefreshToken);
+    return tokens;
+  }
+
+  /**
+   * Completes first-login onboarding for the authenticated pending user: confirms
+   * the account email, sets the new password + phone and clears the pending flag
+   * (delegated to the users service), then REISSUES a fresh token pair so the
+   * cleared flag reaches the client immediately and the pre-onboarding refresh
+   * token can't be replayed.
+   * @param userId - The authenticated user's id
+   * @param dto - New password + contact confirmation
+   * @returns A fresh access/refresh token pair reflecting the cleared flag
+   */
+  async completeOnboarding(
+    userId: string,
+    dto: CompleteOnboardingDto,
+  ): Promise<ITokens> {
+    const user = await this.usersService.findUserById(userId);
+    if (user.onboardingCompletedAt != null) {
+      throw new BadRequestException('Onboarding already completed');
+    }
+    if (dto.confirmEmail.toLowerCase() !== user.email.toLowerCase()) {
+      throw new BadRequestException(
+        'Confirmation email does not match the account email',
+      );
+    }
+
+    const hashedPassword = await this.hashData(dto.newPassword);
+    const updated = await this.usersService.completeOnboarding(userId, {
+      hashedPassword,
+      phoneNumber: dto.phoneNumber,
+    });
+
+    const userToSign: IUnsignedUser = {
+      id: updated.id,
+      username: updated.username,
+      email: updated.email,
+      firstName: updated.firstName,
+      firstLastName: updated.firstLastName,
+      roles: updated.roles.map(role => role.role),
+      onboardingCompletedAt: this.serializeOnboarding(
+        updated.onboardingCompletedAt,
+      ),
+    };
+    const tokens: ITokens = await this.generateTokens(userToSign);
+    const hashedRefreshToken = await this.hashData(tokens.refresh_token);
+    // Deactivates the pre-onboarding refresh token and stores the new one.
+    await this.refreshToken(userToSign, hashedRefreshToken);
     return tokens;
   }
 

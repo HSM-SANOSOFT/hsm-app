@@ -302,6 +302,34 @@ export class UsersService {
   }
 
   /**
+   * Completes first-login onboarding for a pending user: sets the new (already
+   * hashed) password and phone, marks the email verified, and clears the pending
+   * flag (`onboardingCompletedAt = now`) — in a single atomic UPDATE so the
+   * account never lands half-onboarded. Rejects an already-completed account.
+   * Returns
+   * the refreshed user (with roles) so the caller can reissue a token reflecting
+   * the cleared flag.
+   */
+  async completeOnboarding(
+    id: string,
+    fields: { hashedPassword: string; phoneNumber: string },
+  ): Promise<UserEntity> {
+    const user = await this.findUserById(id);
+    if (user.onboardingCompletedAt != null) {
+      throw new BadRequestException('Onboarding already completed');
+    }
+
+    await this.UserRepository.update(id, {
+      password: fields.hashedPassword,
+      phoneNumber: fields.phoneNumber,
+      emailVerified: true,
+      onboardingCompletedAt: new Date(),
+    });
+
+    return await this.findUserById(id);
+  }
+
+  /**
    * Admin-only role change. Replaces the target user's role rows in the
    * `UserRoleEntity` junction within a single transaction.
    */

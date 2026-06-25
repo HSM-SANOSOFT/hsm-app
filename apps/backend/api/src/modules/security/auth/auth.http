@@ -34,6 +34,17 @@ Authorization: Bearer {{at_token}}
 GET {{host}}/auth/refresh
 Authorization: Bearer {{rt_token}}
 
+### Complete first-login onboarding (pending staff) — returns a reissued token pair
+POST {{host}}/auth/onboarding
+Content-Type: {{contentType}}
+Authorization: Bearer {{at_token}}
+
+{
+  "newPassword": "New-Passw0rd",
+  "phoneNumber": "+593969883869",
+  "confirmEmail": "staff@example.com"
+}
+
 ### Signup Integration Token
 POST {{host}}/auth/signup/integration
 Authorization: Bearer {{at_token}}

@@ -64,8 +64,10 @@ const refreshTokenUserIntegrationRepo = {
 };
 const mockUsersService = {
   findOneByUsername: jest.fn(),
+  findUserById: jest.fn(),
   createUser: jest.fn(),
   createUserIntegration: jest.fn(),
+  completeOnboarding: jest.fn(),
 };
 const mockJwtService = {
   signAsync: jest.fn().mockResolvedValue('signed-token'),
@@ -369,6 +371,79 @@ describe('AuthService', () => {
       );
       expect(mockQueryRunner.rollbackTransaction).toHaveBeenCalled();
       expect(mockQueryRunner.release).toHaveBeenCalled();
+    });
+  });
+
+  describe('completeOnboarding', () => {
+    const pendingUser = {
+      id: 'u1',
+      username: 'nnurse',
+      email: 'Nurse@Example.com',
+      firstName: 'Nancy',
+      firstLastName: 'Nurse',
+      onboardingCompletedAt: null,
+      roles: [{ role: RolesEnum.Clinical.Nurse }],
+    };
+    const dto = {
+      newPassword: 'New-Passw0rd',
+      phoneNumber: '+1 555 0100',
+      confirmEmail: 'nurse@example.com',
+    } as never;
+
+    it('clears the flag, reissues tokens, and rotates the refresh token', async () => {
+      mockUsersService.findUserById.mockResolvedValue(pendingUser);
+      mockUsersService.completeOnboarding.mockResolvedValue({
+        ...pendingUser,
+        onboardingCompletedAt: new Date('2026-06-25T10:00:00.000Z'),
+      });
+      refreshTokenUserRepo.findOne.mockResolvedValue(null);
+
+      const result = await service.completeOnboarding('u1', dto);
+
+      // Delegates the row mutation with a HASHED password (never the plaintext).
+      expect(mockUsersService.completeOnboarding).toHaveBeenCalledWith('u1', {
+        hashedPassword: 'hashed-value',
+        phoneNumber: '+1 555 0100',
+      });
+      // Reissues a token carrying the now-cleared flag.
+      expect(mockJwtService.signAsync).toHaveBeenCalledWith(
+        expect.objectContaining({
+          onboardingCompletedAt: '2026-06-25T10:00:00.000Z',
+        }),
+        expect.anything(),
+      );
+      // Rotates (deactivates + saves) the refresh token.
+      expect(mockManager.update).toHaveBeenCalledWith(
+        RefreshTokenUserEntity,
+        expect.objectContaining({ user: { id: 'u1' }, isActive: true }),
+        { isActive: false },
+      );
+      expect(result).toEqual({
+        access_token: 'signed-token',
+        refresh_token: 'signed-token',
+      });
+    });
+
+    it('rejects an already-completed account without mutating it', async () => {
+      mockUsersService.findUserById.mockResolvedValue({
+        ...pendingUser,
+        onboardingCompletedAt: new Date(),
+      });
+      await expect(service.completeOnboarding('u1', dto)).rejects.toThrow(
+        'already completed',
+      );
+      expect(mockUsersService.completeOnboarding).not.toHaveBeenCalled();
+    });
+
+    it('rejects a confirmation email that does not match the account', async () => {
+      mockUsersService.findUserById.mockResolvedValue(pendingUser);
+      await expect(
+        service.completeOnboarding('u1', {
+          ...dto,
+          confirmEmail: 'someone-else@example.com',
+        } as never),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(mockUsersService.completeOnboarding).not.toHaveBeenCalled();
     });
   });
 

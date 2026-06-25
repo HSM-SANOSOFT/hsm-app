@@ -18,6 +18,7 @@ const authService = {
   logoutIntegration: jest.fn().mockResolvedValue(undefined),
   generatePin: jest.fn().mockResolvedValue(undefined),
   validatePin: jest.fn().mockResolvedValue(undefined),
+  completeOnboarding: jest.fn().mockResolvedValue(mockTokens),
 };
 
 const accountRecoveryService = {
@@ -148,6 +149,22 @@ describe('AuthController', () => {
       const user = { id: 'user-uuid' };
       const req = makeReq({ user: user as never });
       expect(controller.profile(req)).toBe(user);
+    });
+  });
+
+  describe('completeOnboarding', () => {
+    it('delegates the caller id and payload to authService.completeOnboarding', async () => {
+      const dto = {
+        newPassword: 'New-Passw0rd',
+        phoneNumber: '+1 555 0100',
+        confirmEmail: 'nurse@example.com',
+      } as never;
+      const req = makeReq({ user: { id: 'u1' } as never });
+
+      const result = await controller.completeOnboarding(req, dto);
+
+      expect(authService.completeOnboarding).toHaveBeenCalledWith('u1', dto);
+      expect(result).toBe(mockTokens);
     });
   });
 

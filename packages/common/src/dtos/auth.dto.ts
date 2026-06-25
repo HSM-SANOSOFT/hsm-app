@@ -7,6 +7,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  MinLength,
 } from 'class-validator';
 import { PinPurposeEnum, RolesEnum } from '../enums';
 import { ITokens } from '../interfaces';
@@ -181,6 +182,36 @@ export class PublicSignupPayloadDto extends OmitType(CreateUserPayloadDto, [
   })
   roles?: RolesType[];
 }
+/**
+ * First-login onboarding payload for a pending (admin-created) staff member.
+ * They set a new password and confirm contact info; on success the pending flag
+ * is cleared and a fresh token pair is reissued.
+ */
+@ApiSchema({ name: 'Complete Onboarding Payload' })
+export class CompleteOnboardingDto {
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(8)
+  @ApiProperty({
+    required: true,
+    description: 'New password replacing the temporary one (min 8 chars).',
+  })
+  newPassword!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ required: true, description: 'Contact phone number.' })
+  phoneNumber!: string;
+
+  @IsEmail()
+  @ApiProperty({
+    required: true,
+    description: 'Re-entry of the account email to confirm it; must match.',
+    example: 'staff@example.com',
+  })
+  confirmEmail!: string;
+}
+
 /**
  * Request a password reset for the account owning `email`. The response is the
  * same generic message whether or not an account exists (non-enumerating).

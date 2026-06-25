@@ -1,4 +1,5 @@
 import {
+  CompleteOnboardingDto,
   ForgotPasswordDto,
   LoginPayloadDto,
   LogoutIntegrationTokenPayloadDto,
@@ -18,6 +19,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
   Ip,
   Post,
   Req,
@@ -25,7 +27,7 @@ import {
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
-import { ApiDocumentation, Public } from '../../../decorator';
+import { AllowPending, ApiDocumentation, Public } from '../../../decorator';
 import { AuthJwtRtGuard, AuthLocalGuard } from '../../../guards';
 import { Roles } from '../../security/roles/roles.decorator';
 import { AccountRecoveryService } from './account-recovery.service';
@@ -73,11 +75,30 @@ export class AuthController {
   }
 
   @ApiDocumentation(TokensDto)
+  @AllowPending()
   @UseGuards(AuthJwtRtGuard)
   @Get('refresh')
   async refresh(@Req() req: Request): Promise<TokensDto> {
     const user = req.user as IRefreshUser;
     return await this.authService.refresh(user);
+  }
+
+  /**
+   * Completes first-login onboarding for the authenticated pending user.
+   * @AllowPending so a pending user can reach it; returns a reissued token pair
+   * reflecting the cleared flag.
+   */
+  @ApiDocumentation(TokensDto, { additionalErrors: [HttpStatus.BAD_REQUEST] })
+  @AllowPending()
+  @Post('onboarding')
+  async completeOnboarding(
+    @Req() req: Request,
+    @Body() payload: CompleteOnboardingDto,
+  ): Promise<TokensDto> {
+    return await this.authService.completeOnboarding(
+      (req.user as ISignedUser).id,
+      payload,
+    );
   }
 
   @ApiDocumentation(TokensDto)
@@ -98,6 +119,7 @@ export class AuthController {
   }
 
   @ApiDocumentation([SignedUserProfileDto, SignedIntegrationProfileDto])
+  @AllowPending()
   @Get('profile')
   profile(@Req() req: Request) {
     return req.user;

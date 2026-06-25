@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
-import { AuthJwtAtGuard } from '../../guards';
+import { AuthJwtAtGuard, OnboardingGuard } from '../../guards';
 import { AuthModule } from './auth/auth.module';
 import { RolesGuard } from './roles/roles.guard';
 import { RolesModule } from './roles/roles.module';
@@ -15,6 +15,12 @@ import { RolesModule } from './roles/roles.module';
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
+    },
+    // Runs after auth + roles: blocks pending users from feature routes
+    // (server-side enforcement of first-login onboarding, R6).
+    {
+      provide: APP_GUARD,
+      useClass: OnboardingGuard,
     },
   ],
 })
