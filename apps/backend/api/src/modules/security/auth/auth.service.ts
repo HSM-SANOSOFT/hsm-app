@@ -500,9 +500,8 @@ export class AuthService implements OnModuleInit {
     dto: CompleteOnboardingDto,
   ): Promise<ITokens> {
     const user = await this.usersService.findUserById(userId);
-    if (user.onboardingCompletedAt != null) {
-      throw new BadRequestException('Onboarding already completed');
-    }
+    // The already-completed guard is enforced by UsersService.completeOnboarding
+    // (canonical, atomic with the mutation); no need to duplicate it here.
     if (dto.confirmEmail.toLowerCase() !== user.email.toLowerCase()) {
       throw new BadRequestException(
         'Confirmation email does not match the account email',

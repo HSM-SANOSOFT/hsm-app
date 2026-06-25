@@ -73,7 +73,7 @@ describe('EmailService', () => {
     update: jest.Mock;
     find: jest.Mock;
   };
-  let docsRepo: { findOne: jest.Mock };
+  let docsRepo: { findOne: jest.Mock; find: jest.Mock };
 
   beforeEach(async () => {
     templatesService = {
@@ -94,7 +94,7 @@ describe('EmailService', () => {
       update: jest.fn().mockResolvedValue(undefined),
       find: jest.fn(),
     };
-    docsRepo = { findOne: jest.fn() };
+    docsRepo = { findOne: jest.fn(), find: jest.fn() };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -170,13 +170,9 @@ describe('EmailService', () => {
         }),
       );
 
-      // Both recipients updated SENT
+      // Both recipients updated SENT in a single bulk UPDATE
       expect(recipientRepo.update).toHaveBeenCalledWith(
-        'r-001',
-        expect.objectContaining({ status: EmailRecipientStatusEnum.SENT }),
-      );
-      expect(recipientRepo.update).toHaveBeenCalledWith(
-        'r-002',
+        { id: expect.objectContaining({ _value: ['r-001', 'r-002'] }) },
         expect.objectContaining({ status: EmailRecipientStatusEnum.SENT }),
       );
 
@@ -215,14 +211,10 @@ describe('EmailService', () => {
           to: ['ada@example.com'],
         }),
       );
+      // Only r-001 is targeted by the bulk UPDATE (r-002 is not in the id set)
       expect(recipientRepo.update).toHaveBeenCalledWith(
-        'r-001',
+        { id: expect.objectContaining({ _value: ['r-001'] }) },
         expect.objectContaining({ status: EmailRecipientStatusEnum.SENT }),
-      );
-      // r-002 should not be updated
-      expect(recipientRepo.update).not.toHaveBeenCalledWith(
-        'r-002',
-        expect.anything(),
       );
     });
   });
@@ -279,10 +271,13 @@ describe('EmailService', () => {
         'SMTP timeout',
       );
 
-      expect(recipientRepo.update).toHaveBeenCalledWith('r-001', {
-        status: EmailRecipientStatusEnum.FAILED,
-        errorMessage: 'SMTP timeout',
-      });
+      expect(recipientRepo.update).toHaveBeenCalledWith(
+        { id: expect.objectContaining({ _value: ['r-001'] }) },
+        {
+          status: EmailRecipientStatusEnum.FAILED,
+          errorMessage: 'SMTP timeout',
+        },
+      );
 
       // Batch recomputed to FAILED (all recipients failed)
       expect(batchRepo.update).toHaveBeenCalledWith('batch-001', {
@@ -302,7 +297,7 @@ describe('EmailService', () => {
 
       const batch = makeBatch({ documentIds: ['doc-001'] });
       batchRepo.findOne.mockResolvedValue(batch);
-      docsRepo.findOne.mockResolvedValue(pendingDoc);
+      docsRepo.find.mockResolvedValue([pendingDoc]);
 
       await expect(service.sendEmail(makePayload())).rejects.toThrow(
         `Document doc-001 is not ready (status: ${DocumentStatusEnum.PENDING})`,

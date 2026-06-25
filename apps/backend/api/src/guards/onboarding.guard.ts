@@ -59,6 +59,9 @@ export class OnboardingGuard implements CanActivate {
     // integration principal (integrations don't onboard) → not gated.
     if (!user?.id) return true;
     if (user.roles?.includes(RolesEnum.System.Integration)) return true;
+    // Admins are never forced through first-login onboarding — the seeded
+    // default admin (and any admin) must always be able to reach the app.
+    if (user.roles?.includes(RolesEnum.System.Admin)) return true;
 
     // Trust a completed claim; only the DB can clear a pending one.
     if (user.onboardingCompletedAt != null) return true;
@@ -67,7 +70,13 @@ export class OnboardingGuard implements CanActivate {
       where: { id: user.id },
       select: { id: true, onboardingCompletedAt: true },
     });
-    if (dbUser && dbUser.onboardingCompletedAt == null) {
+    // Pending claim → the DB is authoritative. Fail CLOSED: block a still-
+    // pending account, and also block when the row is gone (a deleted/vanished
+    // user holding a valid token must not fall through to feature routes).
+    if (!dbUser) {
+      throw new ForbiddenException('Account is no longer available');
+    }
+    if (dbUser.onboardingCompletedAt == null) {
       throw new ForbiddenException(
         'Onboarding required: complete first-login onboarding to continue',
       );

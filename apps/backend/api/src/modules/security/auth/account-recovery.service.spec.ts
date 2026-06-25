@@ -1,5 +1,9 @@
 import { createHash } from 'node:crypto';
-import { PasswordResetTokenEntity, UserEntity } from '@hsm/database/entities';
+import {
+  PasswordResetTokenEntity,
+  RefreshTokenUserEntity,
+  UserEntity,
+} from '@hsm/database/entities';
 import { DatabasesEnum } from '@hsm/database/sources';
 import { QueueEnum } from '@hsm/queue';
 import { getQueueToken } from '@nestjs/bullmq';
@@ -174,6 +178,17 @@ describe('AccountRecoveryService', () => {
       );
       expect(tokenUpdate).toBeDefined();
       expect(tokenUpdate![2].usedAt).toBeInstanceOf(Date);
+
+      // Active refresh tokens are revoked so a pre-reset session cannot survive.
+      const rtUpdate = mockManager.update.mock.calls.find(
+        c => c[0] === RefreshTokenUserEntity,
+      );
+      expect(rtUpdate).toBeDefined();
+      expect(rtUpdate![1]).toMatchObject({
+        user: { id: 'u1' },
+        isActive: true,
+      });
+      expect(rtUpdate![2]).toMatchObject({ isActive: false });
 
       expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
     });

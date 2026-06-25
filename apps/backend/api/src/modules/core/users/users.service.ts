@@ -11,6 +11,7 @@ import {
 import { RolesEnum } from '@hsm/common/enums';
 import type { ISuccessResponse } from '@hsm/common/interfaces';
 import type { RolesType } from '@hsm/common/types';
+import { buildPaginationMeta, escapeHtml } from '@hsm/common/utils';
 import {
   UserEntity,
   UserIntegrationEntity,
@@ -44,24 +45,46 @@ export class UsersService {
     private UserRepository: Repository<UserEntity>,
     @InjectRepository(UserIntegrationEntity, DatabasesEnum.HsmDbPostgres)
     private UserIntegrationRepository: Repository<UserIntegrationEntity>,
-    @InjectRepository(UserRoleEntity, DatabasesEnum.HsmDbPostgres)
-    private UserRoleRepository: Repository<UserRoleEntity>,
     private readonly rolesService: RolesService,
     @InjectQueue(QueueEnum.Coms)
     private readonly comsQueue: Queue,
   ) {}
 
   async findOneByUsername(username: string): Promise<UserEntity> {
-    const user = await this.UserRepository.findOne({ where: { username } });
+    // Single JOIN instead of a separate roles query — `relations` attaches the
+    // role rows in one round-trip (matches `findUserById`).
+    const user = await this.UserRepository.findOne({
+      where: { username },
+      relations: { roles: true },
+    });
     if (!user) {
       throw new NotFoundException(`User with username ${username} not found`);
     }
-    const userRoles = await this.UserRoleRepository.find({
-      where: { user: { username: user.username } },
-    });
-
-    Object.assign(user, { roles: userRoles });
     return user;
+  }
+
+  /**
+   * Runs `work` inside a single transaction, committing on success and rolling
+   * back on any error. Centralizes the connect/start/commit/rollback/release
+   * boilerplate shared by the write paths below.
+   */
+  private async runInTransaction<T>(
+    work: (queryRunner: QueryRunner) => Promise<T>,
+  ): Promise<T> {
+    const queryRunner =
+      this.UserRepository.manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const result = await work(queryRunner);
+      await queryRunner.commitTransaction();
+      return result;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async findOneById(
@@ -133,39 +156,37 @@ export class UsersService {
     const { tempPassword, role, ...profile } = dto;
     const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
-    const queryRunner =
-      this.UserRepository.manager.connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    let created: UserEntity;
-    try {
-      created = await this.createUser(
+    const created = await this.runInTransaction(queryRunner =>
+      this.createUser(
         { ...profile, password: hashedPassword, roles: [role] },
         queryRunner,
         // Pending first-login onboarding until the staff member completes it.
         { onboardingCompletedAt: null },
-      );
-      await queryRunner.commitTransaction();
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
-
-    await this.comsQueue.add(
-      'send-transactional-email',
-      {
-        toEmail: created.email,
-        subject: 'Your staff account is ready',
-        html: this.buildStaffWelcomeHtml(
-          created.firstName,
-          dto.username,
-          tempPassword,
-        ),
-      },
-      { attempts: 5, backoff: { type: 'exponential', delay: 5000 } },
+      ),
     );
+
+    // The account is already committed; enqueuing the welcome email is a
+    // best-effort side effect. If the queue is down, log and continue rather
+    // than surfacing a 500 for an account that was in fact created.
+    try {
+      await this.comsQueue.add(
+        'send-transactional-email',
+        {
+          toEmail: created.email,
+          subject: 'Your staff account is ready',
+          html: this.buildStaffWelcomeHtml(
+            created.firstName,
+            dto.username,
+            tempPassword,
+          ),
+        },
+        { attempts: 5, backoff: { type: 'exponential', delay: 5000 } },
+      );
+    } catch (error) {
+      this.logger.error(
+        `Staff account ${created.id} created but welcome email could not be enqueued: ${(error as Error).message}`,
+      );
+    }
 
     const { password: _password, ...safe } = created;
     return safe;
@@ -176,14 +197,15 @@ export class UsersService {
     username: string,
     tempPassword: string,
   ): string {
+    // Escape dynamic values so a crafted name/username can't inject markup.
     return [
       '<div style="font-family: Arial, sans-serif; color: #11304F;">',
-      `<h2 style="color: #0E4D98;">Welcome, ${firstName}</h2>`,
+      `<h2 style="color: #0E4D98;">Welcome, ${escapeHtml(firstName)}</h2>`,
       '<p>An account has been created for you. Sign in with these temporary',
       ' credentials and you will be asked to set your own password and complete',
       ' your profile on first login.</p>',
-      `<p><strong>Username:</strong> ${username}<br/>`,
-      `<strong>Temporary password:</strong> ${tempPassword}</p>`,
+      `<p><strong>Username:</strong> ${escapeHtml(username)}<br/>`,
+      `<strong>Temporary password:</strong> ${escapeHtml(tempPassword)}</p>`,
       '<p>For your security, please sign in and complete onboarding soon.</p>',
       '</div>',
     ].join('');
@@ -199,7 +221,7 @@ export class UsersService {
     if (!updatedUser) {
       return null;
     }
-    return updatedUser;
+    return this.stripPassword(updatedUser);
   }
 
   async deleteUser(user: DeleteUserPayloadDto): Promise<void> {
@@ -225,21 +247,21 @@ export class UsersService {
       take: limit,
     });
 
-    const totalPages = limit > 0 ? Math.ceil(totalItems / limit) : 0;
-
     return {
-      data,
-      metadata: {
-        extra: {
-          pagination: {
-            page,
-            pageSize: limit,
-            totalItems,
-            totalPages,
-          },
-        },
-      },
+      data: data.map(user => this.stripPassword(user)),
+      metadata: buildPaginationMeta({ page, pageSize: limit, totalItems }),
     };
+  }
+
+  /**
+   * Removes the bcrypt password hash from a user before it is returned in any
+   * API response. The hash is only ever needed internally (login compare,
+   * self-service password change) — never in a response body. Mirrors the
+   * destructuring guard already used by `createStaffUser`.
+   */
+  private stripPassword<T extends UserEntity>(user: T): T {
+    (user as { password?: string }).password = undefined;
+    return user;
   }
 
   /**
@@ -254,7 +276,7 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
-    return user;
+    return this.stripPassword(user);
   }
 
   /**
@@ -341,11 +363,7 @@ export class UsersService {
 
     await this.findUserById(id);
 
-    const queryRunner =
-      this.UserRepository.manager.connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    try {
+    await this.runInTransaction(async queryRunner => {
       await queryRunner.manager.delete(UserRoleEntity, { user: { id } });
       await Promise.all(
         roleDomains.map(({ role: r, domain }) =>
@@ -356,13 +374,7 @@ export class UsersService {
           }),
         ),
       );
-      await queryRunner.commitTransaction();
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
+    });
 
     return await this.findUserById(id);
   }

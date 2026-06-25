@@ -424,15 +424,19 @@ describe('AuthService', () => {
       });
     });
 
-    it('rejects an already-completed account without mutating it', async () => {
+    it('propagates the already-completed rejection from the canonical users-service guard', async () => {
       mockUsersService.findUserById.mockResolvedValue({
         ...pendingUser,
         onboardingCompletedAt: new Date(),
       });
+      // The already-completed check lives in UsersService.completeOnboarding
+      // (atomic with the mutation); the auth service surfaces its rejection.
+      mockUsersService.completeOnboarding.mockRejectedValue(
+        new BadRequestException('Onboarding already completed'),
+      );
       await expect(service.completeOnboarding('u1', dto)).rejects.toThrow(
         'already completed',
       );
-      expect(mockUsersService.completeOnboarding).not.toHaveBeenCalled();
     });
 
     it('rejects a confirmation email that does not match the account', async () => {

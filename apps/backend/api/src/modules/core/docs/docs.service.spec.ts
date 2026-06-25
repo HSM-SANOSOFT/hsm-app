@@ -39,12 +39,21 @@ const mockDocument: Partial<DocumentsEntity> = {
   versions: [mockVersion as DocumentsVersionEntity],
 };
 
+// Shared transaction EntityManager mock — uploadDocuments persists through
+// `docs.manager.transaction(cb)`, so saves route here rather than the repos.
+const mockTxManager = {
+  save: jest.fn(),
+};
+
 const mockDocsRepo = {
   create: jest.fn(),
   save: jest.fn(),
   findOne: jest.fn(),
   softDelete: jest.fn().mockResolvedValue(undefined),
   createQueryBuilder: jest.fn(),
+  manager: {
+    transaction: jest.fn(),
+  },
 };
 
 const mockVersionsRepo = {
@@ -121,6 +130,18 @@ describe('DocsService', () => {
     );
     mockLinkRepo.save.mockImplementation(
       async (entity: DocumentLinkEntity) => entity,
+    );
+
+    // The tx manager assigns ids on save (mimicking the DB) so the service can
+    // collect createdDocIds, and runs the callback inline.
+    mockTxManager.save.mockImplementation((entity: Record<string, unknown>) => {
+      if ('title' in entity && entity.id == null) entity.id = 'doc-uuid';
+      else if ('version' in entity && entity.id == null)
+        entity.id = 'version-uuid';
+      return Promise.resolve(entity);
+    });
+    mockDocsRepo.manager.transaction.mockImplementation(
+      (cb: (m: typeof mockTxManager) => Promise<unknown>) => cb(mockTxManager),
     );
 
     const module: TestingModule = await Test.createTestingModule({
@@ -401,7 +422,13 @@ describe('DocsService', () => {
           entityType: 'PATIENT',
         }),
       );
-      expect(mockLinkRepo.save).toHaveBeenCalled();
+      // The link is persisted through the transaction manager, not the repo.
+      expect(mockTxManager.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          entityId: 'entity-123',
+          entityType: 'PATIENT',
+        }),
+      );
     });
 
     it('does not create DocumentLinkEntity when entityId is absent', async () => {

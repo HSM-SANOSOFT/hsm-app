@@ -14,7 +14,7 @@ import { DatabasesEnum } from '@hsm/database/sources';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Attachment } from 'nodemailer/lib/mailer';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { DocsService } from '../../docs/docs.service';
 import { TemplatesService } from '../../templates/templates.service';
 import { SmtpTransportProvider } from './smtp-transport.provider';
@@ -88,14 +88,12 @@ export class EmailService {
         attachments,
       });
 
-      // Update recipient rows to SENT
+      // Update recipient rows to SENT in a single bulk UPDATE
       const now = new Date();
-      for (const r of recipients) {
-        await this.recipientRepo.update(r.id, {
-          status: EmailRecipientStatusEnum.SENT,
-          sentAt: now,
-        });
-      }
+      await this.recipientRepo.update(
+        { id: In(recipients.map(r => r.id)) },
+        { status: EmailRecipientStatusEnum.SENT, sentAt: now },
+      );
 
       // Update batch providerMessageId and aggregate overallStatus
       const allRecipients = await this.recipientRepo.find({
@@ -111,14 +109,12 @@ export class EmailService {
         `Email sent to ${recipients.map(r => r.toEmail).join(', ')}, messageId: ${result.messageId}`,
       );
     } catch (err) {
-      // Update failed recipients
+      // Update failed recipients in a single bulk UPDATE
       const errorMessage = err instanceof Error ? err.message : String(err);
-      for (const r of recipients) {
-        await this.recipientRepo.update(r.id, {
-          status: EmailRecipientStatusEnum.FAILED,
-          errorMessage,
-        });
-      }
+      await this.recipientRepo.update(
+        { id: In(recipients.map(r => r.id)) },
+        { status: EmailRecipientStatusEnum.FAILED, errorMessage },
+      );
 
       // Recompute batch status
       const allRecipients = await this.recipientRepo.find({
@@ -156,12 +152,17 @@ export class EmailService {
   ): Promise<Attachment[]> {
     if (!documentIds.length) return [];
 
+    // Fetch every requested document in one query, then resolve attachments
+    // from the in-memory map (avoids an N+1 findOne per document id).
+    const docs = await this.docsRepo.find({
+      where: { id: In(documentIds) },
+      relations: { versions: { storage: true } },
+    });
+    const docsById = new Map(docs.map(d => [d.id, d]));
+
     const attachments: Attachment[] = [];
     for (const docId of documentIds) {
-      const doc = await this.docsRepo.findOne({
-        where: { id: docId },
-        relations: { versions: { storage: true } },
-      });
+      const doc = docsById.get(docId);
 
       if (!doc) {
         throw new Error(`Document ${docId} not found`);

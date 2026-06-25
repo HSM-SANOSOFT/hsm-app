@@ -51,9 +51,12 @@ export class ChangePasswordDto {
 
   @IsString()
   @IsNotEmpty()
+  @MinLength(8)
   @ApiProperty({
     required: true,
-    description: 'Nueva contraseña que reemplazará a la actual',
+    minLength: 8,
+    description:
+      'Nueva contraseña que reemplazará a la actual (mínimo 8 caracteres)',
   })
   newPassword!: string;
 }

@@ -58,8 +58,13 @@ async function bootstrap() {
   });
 
   // The web frontend is served from a different origin (the containerized
-  // `web` service / the dev server on :4200), so allow cross-origin requests.
-  app.enableCors();
+  // `web` service / the dev server on :4200), so allow cross-origin requests —
+  // but only from the configured web origin, not every origin. APP_BASE_URL
+  // drives the allowlist so dev (:4200) and prod differ without code changes.
+  app.enableCors({
+    origin: envs.APP_BASE_URL,
+    credentials: true,
+  });
 
   app.enableShutdownHooks();
 

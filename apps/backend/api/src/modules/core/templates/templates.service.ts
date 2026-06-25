@@ -180,7 +180,9 @@ export class TemplatesService {
     }
 
     await this.dataSource.transaction(async manager => {
-      const patch: Partial<TemplatesEntity> = {};
+      const patch: Partial<TemplatesEntity> & {
+        baseTemplate?: TemplatesEntity | null;
+      } = {};
       if (dto.name !== undefined) patch.name = dto.name;
       if (dto.description !== undefined) patch.description = dto.description;
       if (dto.isActive !== undefined) patch.isActive = dto.isActive;
@@ -190,7 +192,7 @@ export class TemplatesService {
         // null clears the relation; TypeORM accepts null for nullable ManyToOne columns
         patch.baseTemplate = dto.baseTemplateId
           ? ({ id: dto.baseTemplateId } as TemplatesEntity)
-          : (null as unknown as TemplatesEntity);
+          : null;
       }
       if (Object.keys(patch).length > 0) {
         await manager.update(TemplatesEntity, existing.template.id, patch);

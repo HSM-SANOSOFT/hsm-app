@@ -1,7 +1,11 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { SendTransactionalEmailJobDto } from '@hsm/common/dtos';
 import { envs } from '@hsm/config';
-import { PasswordResetTokenEntity, UserEntity } from '@hsm/database/entities';
+import {
+  PasswordResetTokenEntity,
+  RefreshTokenUserEntity,
+  UserEntity,
+} from '@hsm/database/entities';
 import { DatabasesEnum } from '@hsm/database/sources';
 import { QueueEnum } from '@hsm/queue';
 import { InjectQueue } from '@nestjs/bullmq';
@@ -110,8 +114,20 @@ export class AccountRecoveryService {
       subject: 'Reset your password',
       html: this.buildResetEmailHtml(resetLink),
     };
-    // NEVER log the plaintext token or the reset link.
-    await this.comsQueue.add('send-transactional-email', job, EMAIL_JOB_OPTS);
+    try {
+      // NEVER log the plaintext token or the reset link.
+      await this.comsQueue.add('send-transactional-email', job, EMAIL_JOB_OPTS);
+    } catch (error) {
+      // Enqueue failed: compensate by deleting the token we just saved (so it
+      // doesn't linger unusable and doesn't burn a rate-limit slot). Swallow the
+      // error and return the generic outcome — surfacing a 500 only for known
+      // accounts would break the non-enumeration property.
+      await this.tokenRepository.delete({ tokenHash });
+      this.logger.error(
+        `Password reset email could not be enqueued for user ${user.id}; token rolled back: ${(error as Error).message}`,
+      );
+      return;
+    }
     this.logger.log(`Password reset email enqueued for user ${user.id}`);
   }
 
@@ -159,6 +175,13 @@ export class AccountRecoveryService {
         { id: tokenRow!.user.id },
         { password: hashedPassword },
       );
+      // Revoke any active refresh tokens so a session stolen before the reset
+      // (the account-takeover-recovery case) cannot outlive the password change.
+      await queryRunner.manager.update(
+        RefreshTokenUserEntity,
+        { user: { id: tokenRow!.user.id }, isActive: true },
+        { isActive: false },
+      );
       await queryRunner.commitTransaction();
     } catch (error) {
       await queryRunner.rollbackTransaction();
@@ -182,7 +205,16 @@ export class AccountRecoveryService {
       subject: 'Your username',
       html: this.buildUsernameEmailHtml(user.username),
     };
-    await this.comsQueue.add('send-transactional-email', job, EMAIL_JOB_OPTS);
+    try {
+      await this.comsQueue.add('send-transactional-email', job, EMAIL_JOB_OPTS);
+    } catch (error) {
+      // Swallow to preserve non-enumeration (a known account must not 500 while
+      // an unknown one returns the generic outcome).
+      this.logger.error(
+        `Username recovery email could not be enqueued for user ${user.id}: ${(error as Error).message}`,
+      );
+      return;
+    }
     this.logger.log(`Username recovery email enqueued for user ${user.id}`);
   }
 

@@ -6,13 +6,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import {
-  type AbstractControl,
-  FormBuilder,
-  ReactiveFormsModule,
-  type ValidationErrors,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -21,13 +15,7 @@ import { PasswordModule } from 'primeng/password';
 
 import { toErrorMessage } from '../../core/api/api-error';
 import { AuthService } from '../../core/auth/auth.service';
-
-/** Cross-field validator: the confirm field must match `newPassword`. */
-function passwordsMatch(group: AbstractControl): ValidationErrors | null {
-  const password = group.get('newPassword')?.value;
-  const confirm = group.get('confirmPassword')?.value;
-  return password === confirm ? null : { mismatch: true };
-}
+import { passwordsMatch } from '../../core/validators/password.validators';
 
 /**
  * Forced first-login onboarding for an admin-created staff account.

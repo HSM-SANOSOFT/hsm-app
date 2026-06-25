@@ -19,6 +19,13 @@ export const pendingOnboardingGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
+  // Admins are never forced through first-login onboarding (mirrors the
+  // server-side onboarding guard), so the seeded default admin lands straight
+  // in the app.
+  if (auth.isAdmin()) {
+    return true;
+  }
+
   if (auth.needsOnboarding()) {
     return router.parseUrl('/onboarding');
   }

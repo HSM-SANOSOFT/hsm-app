@@ -119,15 +119,17 @@ describe('UsersService', () => {
   });
 
   describe('findOneByUsername', () => {
-    it('returns user with roles attached', async () => {
-      userRepo.findOne.mockResolvedValue(mockUser);
-      userRoleRepo.find.mockResolvedValue([mockRole]);
+    it('returns user with roles attached in a single query', async () => {
+      userRepo.findOne.mockResolvedValue({ ...mockUser, roles: [mockRole] });
 
       const result = await service.findOneByUsername('jdoe');
 
       expect(result).toMatchObject({ ...mockUser, roles: [mockRole] });
-      expect(userRoleRepo.find).toHaveBeenCalledWith(
-        expect.objectContaining({ where: { user: { username: 'jdoe' } } }),
+      expect(userRepo.findOne).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { username: 'jdoe' },
+          relations: { roles: true },
+        }),
       );
     });
 
@@ -420,6 +422,8 @@ describe('UsersService', () => {
       userRepo.findOne.mockResolvedValue({ ...mockUser, roles: [mockRole] });
       const result = await service.findUserById('user-uuid');
       expect(result).toMatchObject({ id: 'user-uuid' });
+      // The bcrypt password hash must never be returned to a caller.
+      expect(result.password).toBeUndefined();
       expect(userRepo.findOne).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { id: 'user-uuid' },

@@ -77,6 +77,12 @@ export class SmtpTransportProvider {
         pass: values.SMTP_PASSWORD ?? undefined,
       },
       secure,
+      // Bound every phase so a dead/slow relay fails fast and the BullMQ job
+      // retries instead of pinning a worker concurrency slot on nodemailer's
+      // multi-minute defaults.
+      connectionTimeout: 10_000,
+      greetingTimeout: 10_000,
+      socketTimeout: 30_000,
     });
 
     // Close the old transport before replacing it so its pooled connections

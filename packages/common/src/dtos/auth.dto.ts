@@ -242,12 +242,15 @@ export class ResetPasswordDto {
   })
   token!: string;
 
-  // Mirrors ChangePasswordDto.newPassword constraints.
+  // Mirrors CompleteOnboardingDto.newPassword / CreateStaffPayloadDto.tempPassword:
+  // enforce the min-8 policy server-side, not just in the UI.
   @IsString()
   @IsNotEmpty()
+  @MinLength(8)
   @ApiProperty({
     required: true,
-    description: 'The new password to set for the account.',
+    minLength: 8,
+    description: 'The new password to set for the account (min 8 chars).',
   })
   newPassword!: string;
 }

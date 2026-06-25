@@ -1,4 +1,4 @@
-import { createHmac } from 'node:crypto';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 import { EmailWebhookEventTypeEnum } from '@hsm/common/enums';
 
 import { IEmailWebhookAdapter } from '@hsm/common/interfaces';
@@ -15,12 +15,20 @@ export class MandrillWebhookAdapter implements IEmailWebhookAdapter {
     const signature = headers['x-mandrill-signature'];
     if (!signature) return false;
 
-    // Mandrill signature: HMAC-SHA1 over the webhook URL + sorted POST params
-    // For simplicity: verify over the raw body bytes with the signing key
+    // This service receives the events as a JSON body (see ComsWebhookService),
+    // so the signature is HMAC-SHA1 of the raw body bytes with the signing key.
+    // (A native Mandrill form-post integration would instead sign the webhook
+    // URL + sorted POST params — switch the input here if that format is added.)
     const computed = createHmac('sha1', signingKey)
       .update(rawBody)
       .digest('base64');
-    return computed === signature;
+
+    // Constant-time comparison so a mismatch can't be probed by timing. Buffers
+    // of differing length make timingSafeEqual throw, so guard on length first.
+    const computedBuf = Buffer.from(computed);
+    const signatureBuf = Buffer.from(signature);
+    if (computedBuf.length !== signatureBuf.length) return false;
+    return timingSafeEqual(computedBuf, signatureBuf);
   }
 
   normalize(rawPayload: unknown): NormalizedWebhookEvent[] {

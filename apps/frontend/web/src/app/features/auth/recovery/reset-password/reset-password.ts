@@ -1,25 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
-import {
-  type AbstractControl,
-  FormBuilder,
-  ReactiveFormsModule,
-  type ValidationErrors,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
 
 import { ApiError } from '../../../../core/api/api-error';
+import { passwordsMatch } from '../../../../core/validators/password.validators';
 import { RecoveryService } from '../recovery.service';
-
-/** Cross-field validator: the confirm field must match `newPassword`. */
-function passwordsMatch(group: AbstractControl): ValidationErrors | null {
-  const password = group.get('newPassword')?.value;
-  const confirm = group.get('confirmPassword')?.value;
-  return password === confirm ? null : { mismatch: true };
-}
 
 /** Reads `token=<value>` out of a URL fragment string. */
 function tokenFromFragment(fragment: string | null): string | null {

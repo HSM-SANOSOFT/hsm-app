@@ -11,6 +11,7 @@ import {
   DocumentStatusEnum,
   DocumentTypeEnum,
 } from '@hsm/common/enums';
+import { buildPaginationMeta } from '@hsm/common/utils';
 import {
   DocumentLinkEntity,
   DocumentStorageObjectEntity,
@@ -68,16 +69,11 @@ export class DocsService {
     const [data, total] = await qb.getManyAndCount();
     return {
       data,
-      metadata: {
-        extra: {
-          pagination: {
-            page,
-            pageSize: limit,
-            totalItems: total,
-            totalPages: Math.ceil(total / limit),
-          },
-        },
-      },
+      metadata: buildPaginationMeta({
+        page,
+        pageSize: limit,
+        totalItems: total,
+      }),
     };
   }
 
@@ -278,50 +274,55 @@ export class DocsService {
 
     const s3Result = await this.s3Service.uploadFiles(data);
 
-    // Persist DocumentsEntity rows for each uploaded file
+    // Persist the rows for every uploaded file in ONE transaction so a mid-loop
+    // failure can't leave a half-written document graph (doc without its
+    // version/storage, or some files persisted and others not). The S3 objects
+    // are already uploaded above; this guarantees DB consistency.
     const createdDocIds: string[] = [];
-    for (const bucket of s3Result) {
-      for (const file of bucket.files) {
-        const originalFile = fileByName.get(file.filename ?? '');
+    await this.docs.manager.transaction(async manager => {
+      for (const bucket of s3Result) {
+        for (const file of bucket.files) {
+          const originalFile = fileByName.get(file.filename ?? '');
 
-        const doc = this.docs.create({
-          title: file.filename ?? file.fileId,
-          type: DocumentTypeEnum.UPLOADED,
-          status: DocumentStatusEnum.COMPLETED,
-          source: DocumentSourceEnum.MANUAL,
-          createdBy: userId,
-        });
-        await this.docs.save(doc);
-
-        const version = this.versions.create({
-          version: 1,
-          filename: file.filename,
-          mimeType: originalFile?.mimetype,
-          size: originalFile?.size,
-          document: doc,
-        });
-        await this.versions.save(version);
-
-        const storage = this.storageRepo.create({
-          id: file.fileId,
-          path: file.key,
-          bucket: bucket.bucket,
-        });
-        storage.version = version;
-        await this.storageRepo.save(storage);
-
-        if (payload.entityId && payload.entityType) {
-          const link = this.linkRepo.create({
-            document: doc,
-            entityId: payload.entityId,
-            entityType: payload.entityType,
+          const doc = this.docs.create({
+            title: file.filename ?? file.fileId,
+            type: DocumentTypeEnum.UPLOADED,
+            status: DocumentStatusEnum.COMPLETED,
+            source: DocumentSourceEnum.MANUAL,
+            createdBy: userId,
           });
-          await this.linkRepo.save(link);
-        }
+          await manager.save(doc);
 
-        createdDocIds.push(doc.id);
+          const version = this.versions.create({
+            version: 1,
+            filename: file.filename,
+            mimeType: originalFile?.mimetype,
+            size: originalFile?.size,
+            document: doc,
+          });
+          await manager.save(version);
+
+          const storage = this.storageRepo.create({
+            id: file.fileId,
+            path: file.key,
+            bucket: bucket.bucket,
+          });
+          storage.version = version;
+          await manager.save(storage);
+
+          if (payload.entityId && payload.entityType) {
+            const link = this.linkRepo.create({
+              document: doc,
+              entityId: payload.entityId,
+              entityType: payload.entityType,
+            });
+            await manager.save(link);
+          }
+
+          createdDocIds.push(doc.id);
+        }
       }
-    }
+    });
 
     return { s3Result, documentIds: createdDocIds };
   }

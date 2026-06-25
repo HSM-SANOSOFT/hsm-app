@@ -9,6 +9,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  MinLength,
 } from 'class-validator';
 
 @ApiSchema({ name: 'Create User Integration Payload' })
@@ -42,7 +43,8 @@ export class CreateUserPayloadDto {
 
   @IsNotEmpty()
   @IsString()
-  @ApiProperty({ required: true })
+  @MinLength(8)
+  @ApiProperty({ required: true, minLength: 8 })
   password!: string;
 
   @IsNotEmpty()

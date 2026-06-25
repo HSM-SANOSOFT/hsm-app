@@ -71,7 +71,10 @@ export class ComsWebhookService {
       return { received: 0 };
     }
 
-    // Persist + enqueue each event
+    // Persist + enqueue each event. Keep the save and the enqueue atomic per
+    // event: if the enqueue fails, roll back the just-saved row so it isn't
+    // left orphaned (persisted but never processed) — the provider will retry.
+    let received = 0;
     for (const event of events) {
       const entity = this.webhookEventRepo.create({
         provider,
@@ -82,16 +85,22 @@ export class ComsWebhookService {
       });
       const saved = await this.webhookEventRepo.save(entity);
 
-      await this.comsQueue.add(
-        'process-webhook-event',
-        { webhookEventId: saved.id },
-        { attempts: 5, backoff: { type: 'exponential', delay: 3000 } },
-      );
+      try {
+        await this.comsQueue.add(
+          'process-webhook-event',
+          { webhookEventId: saved.id },
+          { attempts: 5, backoff: { type: 'exponential', delay: 3000 } },
+        );
+        received += 1;
+      } catch (error) {
+        await this.webhookEventRepo.delete({ id: saved.id });
+        this.logger.error(
+          `Webhook event ${saved.id} saved but could not be enqueued; rolled back: ${(error as Error).message}`,
+        );
+      }
     }
 
-    this.logger.log(
-      `Received ${events.length} webhook events from ${provider}`,
-    );
-    return { received: events.length };
+    this.logger.log(`Received ${received} webhook events from ${provider}`);
+    return { received };
   }
 }
