@@ -9,11 +9,6 @@
    unlayered rules win without `!important`.
    ============================================================================ */
 @import "primeicons/primeicons.css";
-/* CDK overlay positioning styles — backs the rail flyout columns and the
-   breadcrumb/profile popovers. CDK 21.2 uses the classic .cdk-overlay-container
-   (z-index) stacking, the same world as PrimeNG overlays, so no special
-   coexistence config is needed at this version. */
-@import "@angular/cdk/overlay-prebuilt.css";
 
 :root {
   /* ---- Brand palette (source of truth — brand-color-style-guide.md) ------ */

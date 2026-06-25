@@ -1,6 +1,7 @@
 import {
   Component,
   computed,
+  effect,
   ElementRef,
   inject,
   type OnDestroy,
@@ -8,6 +9,7 @@ import {
 } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
+import { Flyout } from './flyout';
 import { HoverIntent } from './hover-intent';
 import { isDestination, type NavNode, rendersAsFlyout } from './nav-node';
 import { NavService } from './nav.service';
@@ -36,7 +38,7 @@ interface RailItem {
  */
 @Component({
   selector: 'app-rail',
-  imports: [RouterLink, RouterLinkActive, ProfileCard],
+  imports: [RouterLink, RouterLinkActive, ProfileCard, Flyout],
   template: `
     <nav
       class="rail"
@@ -103,6 +105,13 @@ interface RailItem {
 
       <app-profile-card [expanded]="expanded()" />
     </nav>
+
+    <app-flyout
+      [root]="flyoutModule()"
+      (mouseenter)="intent.openNow()"
+      (mouseleave)="intent.leave()"
+      (closed)="closeFlyout()"
+    />
   `,
   styles: [
     `
@@ -308,6 +317,16 @@ export class Rail implements OnDestroy {
   /** The module whose flyout is open, or `null`. Consumed by the flyout (U6). */
   readonly flyoutModule = signal<NavNode | null>(null);
 
+  constructor() {
+    // When the rail fully collapses (pointer left both rail and flyout, after
+    // the close delay), drop any open flyout so it never orphans over content.
+    effect(() => {
+      if (!this.expanded() && this.flyoutModule() != null) {
+        this.closeFlyout();
+      }
+    });
+  }
+
   protected readonly activeId = computed(() => this.nav.activeModule()?.id ?? null);
 
   protected readonly railItems = computed<readonly RailItem[]>(() =>
@@ -322,8 +341,10 @@ export class Rail implements OnDestroy {
     }),
   );
 
-  /** Open a module's flyout (hover/focus/click on a disclosure module). */
+  /** Open a module's flyout (hover/focus/click on a disclosure module). Expands
+   * the rail immediately so the collapse effect never races the open delay. */
   openModule(node: NavNode): void {
+    this.intent.openNow();
     this.flyoutModule.set(node);
     this.nav.open('flyout');
   }
@@ -348,8 +369,9 @@ export class Rail implements OnDestroy {
   }
 
   protected onLeave(): void {
+    // Collapse after the close delay; the flyout is closed by the collapse
+    // effect, so moving the pointer rightward into the flyout keeps it open.
     this.intent.leave();
-    this.closeFlyout();
   }
 
   protected onFocusOut(event: FocusEvent): void {
