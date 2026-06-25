@@ -1,0 +1,131 @@
+<section class="auth">
+  <aside class="auth-aside" aria-hidden="true">
+    <a class="auth-brand">
+      <span class="auth-brand__mark"></span>
+      <span class="auth-brand__word">Hospital <span>Santa María</span></span>
+    </a>
+
+    <div class="auth-pitch">
+      <p class="auth-eyebrow">First sign-in</p>
+      <h2 class="auth-headline">Let's set up your account.</h2>
+      <p class="auth-lede">
+        Your account was created by an administrator. Choose your own password
+        and confirm how we can reach you — then you're ready to work.
+      </p>
+    </div>
+
+    <ul class="auth-reassure">
+      <li><span class="auth-tick"></span> Replace your temporary password</li>
+      <li><span class="auth-tick"></span> Confirm your contact details</li>
+      <li><span class="auth-tick"></span> You only do this once</li>
+    </ul>
+  </aside>
+
+  <main class="auth-main">
+    <div class="auth-card">
+      <span class="auth-brand__word auth-brand__word--compact">
+        Hospital <span>Santa María</span>
+      </span>
+
+      <h1 #heading tabindex="-1" class="auth-title onboarding-title">
+        Finish setting up
+      </h1>
+      <p class="auth-sub">
+        Set a new password and confirm your contact details to continue.
+      </p>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
+        @if (errorMessage(); as message) {
+          <p-message
+            severity="error"
+            [text]="message"
+            styleClass="auth-msg"
+            data-testid="onboarding-error"
+          />
+        }
+
+        <div class="field">
+          <label for="newPassword">New password</label>
+          <p-password
+            inputId="newPassword"
+            formControlName="newPassword"
+            [feedback]="true"
+            [toggleMask]="true"
+            autocomplete="new-password"
+            placeholder="At least 8 characters"
+            fluid
+          />
+          @if (form.controls.newPassword.invalid && form.controls.newPassword.touched) {
+            <small class="field-error">Use at least 8 characters.</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="confirmPassword">Confirm password</label>
+          <p-password
+            inputId="confirmPassword"
+            formControlName="confirmPassword"
+            [feedback]="false"
+            [toggleMask]="true"
+            autocomplete="new-password"
+            placeholder="Re-enter your new password"
+            fluid
+          />
+          @if (
+            form.controls.confirmPassword.touched &&
+            form.hasError('mismatch') &&
+            form.controls.confirmPassword.valid
+          ) {
+            <small class="field-error">Passwords don't match.</small>
+          }
+          @if (form.controls.confirmPassword.invalid && form.controls.confirmPassword.touched) {
+            <small class="field-error">Confirm your new password.</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="phoneNumber">Phone number</label>
+          <input
+            pInputText
+            id="phoneNumber"
+            formControlName="phoneNumber"
+            type="tel"
+            autocomplete="tel"
+            placeholder="Where we can reach you"
+            fluid
+          />
+          @if (form.controls.phoneNumber.invalid && form.controls.phoneNumber.touched) {
+            <small class="field-error">Enter a phone number.</small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="confirmEmail">Confirm email</label>
+          <input
+            pInputText
+            id="confirmEmail"
+            formControlName="confirmEmail"
+            type="email"
+            autocomplete="email"
+            placeholder="The email on your account"
+            fluid
+          />
+          @if (form.controls.confirmEmail.invalid && form.controls.confirmEmail.touched) {
+            <small class="field-error">Enter the email on your account.</small>
+          }
+        </div>
+
+        <p-button
+          type="submit"
+          label="Complete setup"
+          icon="pi pi-arrow-right"
+          iconPos="right"
+          [loading]="submitting()"
+          [disabled]="submitting()"
+          styleClass="auth-submit"
+          fluid
+        />
+      </form>
+    </div>
+  </main>
+</section>

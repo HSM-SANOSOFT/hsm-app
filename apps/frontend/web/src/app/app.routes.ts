@@ -2,6 +2,7 @@ import type { Routes } from '@angular/router';
 import { RolesEnum } from '@hsm/common/enums';
 
 import { authGuard } from './core/auth/auth.guard';
+import { pendingOnboardingGuard } from './core/auth/pending-onboarding.guard';
 import { adminGuard } from './core/auth/role.guard';
 
 /**
@@ -59,8 +60,19 @@ export const routes: Routes = [
       ),
   },
   {
-    path: '',
+    // Forced first-login onboarding — a focused full-page flow, OUTSIDE the
+    // shell. `authGuard` ensures a profile is loaded; the component itself
+    // bounces a non-pending (already-completed) user back to `/`.
+    path: 'onboarding',
     canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/onboarding/onboarding').then(m => m.Onboarding),
+  },
+  {
+    path: '',
+    // `authGuard` first (anonymous -> /login), then `pendingOnboardingGuard`
+    // (pending authenticated staff -> /onboarding). Order matters.
+    canActivate: [authGuard, pendingOnboardingGuard],
     loadComponent: () => import('./layout/shell').then(m => m.Shell),
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'profile' },

@@ -37,6 +37,7 @@ const profile: UserProfile = {
   firstName: 'Raul',
   firstLastName: 'S',
   roles: [],
+  onboardingCompletedAt: '2026-01-01T00:00:00.000Z',
   iat: 1,
   exp: 2,
 };

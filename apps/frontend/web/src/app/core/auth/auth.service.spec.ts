@@ -13,7 +13,10 @@ import { TokenStorage } from './token-storage';
 
 const base = environment.apiBaseUrl;
 
-function profile(roles: string[]): UserProfile {
+function profile(
+  roles: string[],
+  onboardingCompletedAt: string | null = '2026-01-01T00:00:00.000Z',
+): UserProfile {
   return {
     id: 'u1',
     username: 'raul',
@@ -21,6 +24,7 @@ function profile(roles: string[]): UserProfile {
     firstName: 'Raul',
     firstLastName: 'Santamaria',
     roles,
+    onboardingCompletedAt,
     iat: 1,
     exp: 2,
   };
@@ -156,5 +160,61 @@ describe('AuthService', () => {
     });
     httpMock.expectNone(`${base}/auth/profile`);
     expect(value).toBeNull();
+  });
+
+  it('needsOnboarding is false when anonymous', () => {
+    expect(auth.needsOnboarding()).toBe(false);
+  });
+
+  it('needsOnboarding is true for a pending profile (null timestamp)', () => {
+    auth.loadProfile().subscribe();
+    httpMock
+      .expectOne(`${base}/auth/profile`)
+      .flush(wrap(profile([RolesEnum.System.Auditor], null)));
+
+    expect(auth.needsOnboarding()).toBe(true);
+  });
+
+  it('needsOnboarding is false for a completed profile (patient/admin)', () => {
+    auth.loadProfile().subscribe();
+    httpMock
+      .expectOne(`${base}/auth/profile`)
+      .flush(wrap(profile([RolesEnum.System.Admin])));
+
+    expect(auth.needsOnboarding()).toBe(false);
+  });
+
+  it('completeOnboarding stores the reissued tokens and reloads the profile', () => {
+    let emitted: UserProfile | undefined;
+    auth
+      .completeOnboarding({
+        newPassword: 'sup3rsecret',
+        phoneNumber: '+10000000000',
+        confirmEmail: 'raul@example.com',
+      })
+      .subscribe(p => {
+        emitted = p;
+      });
+
+    const onboardReq = httpMock.expectOne(`${base}/auth/onboarding`);
+    expect(onboardReq.request.method).toBe('POST');
+    expect(onboardReq.request.body).toEqual({
+      newPassword: 'sup3rsecret',
+      phoneNumber: '+10000000000',
+      confirmEmail: 'raul@example.com',
+    });
+    onboardReq.flush(
+      wrap<Tokens>({ access_token: 'AT2', refresh_token: 'RT2' }),
+    );
+
+    // The reloaded profile carries a cleared (non-null) onboarding timestamp.
+    httpMock
+      .expectOne(`${base}/auth/profile`)
+      .flush(wrap(profile([RolesEnum.System.Auditor])));
+
+    expect(tokenStorage.getAccessToken()).toBe('AT2');
+    expect(tokenStorage.getRefreshToken()).toBe('RT2');
+    expect(auth.needsOnboarding()).toBe(false);
+    expect(emitted?.username).toBe('raul');
   });
 });

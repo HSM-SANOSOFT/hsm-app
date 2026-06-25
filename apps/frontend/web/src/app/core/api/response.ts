@@ -137,6 +137,12 @@ export interface MessageResponse {
  * Mirror of `@hsm/common` `SignedUserProfileDto` (only the fields the console
  * reads). `roles` comes back as a string array of role *values* (e.g.
  * `['admin']`) matching `RolesEnum.*` values from `@hsm/common/enums`.
+ *
+ * `onboardingCompletedAt` is the DB-authoritative pending-onboarding marker:
+ * an ISO timestamp once first-login onboarding is done, or `null` for an
+ * admin-created staff account that still has to onboard. Patients and the
+ * seeded admin are created complete, so theirs is non-null. Keep this field in
+ * lockstep with the backend `SignedUserProfileDto`.
  */
 export interface UserProfile {
   id: string;
@@ -145,6 +151,20 @@ export interface UserProfile {
   firstName: string;
   firstLastName: string;
   roles: string[];
+  onboardingCompletedAt: string | null;
   iat: number;
   exp: number;
+}
+
+/**
+ * Mirror of `@hsm/common` `OnboardingPayloadDto`.
+ * Body for `POST /v1/auth/onboarding` — a pending staff member's first-login
+ * completion: a new password plus required contact info. `confirmEmail` must
+ * equal the account's email (the backend 400s on mismatch); `newPassword` is
+ * min-8. The endpoint returns a reissued token pair (`Tokens`).
+ */
+export interface OnboardingPayload {
+  newPassword: string;
+  phoneNumber: string;
+  confirmEmail: string;
 }

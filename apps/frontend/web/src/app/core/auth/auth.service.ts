@@ -5,6 +5,7 @@ import { catchError, map, type Observable, of, switchMap, tap } from 'rxjs';
 import { ApiClient } from '../api/api-client';
 import type {
   LoginPayload,
+  OnboardingPayload,
   SignupPayload,
   Tokens,
   UserProfile,
@@ -17,6 +18,7 @@ export const AUTH_SIGNUP_PATH = '/auth/signup';
 export const AUTH_REFRESH_PATH = '/auth/refresh';
 export const AUTH_PROFILE_PATH = '/auth/profile';
 export const AUTH_LOGOUT_PATH = '/auth/logout';
+export const AUTH_ONBOARDING_PATH = '/auth/onboarding';
 
 /**
  * Holds authentication state and orchestrates login / logout / profile load.
@@ -46,6 +48,17 @@ export class AuthService {
 
   /** True iff the current user's roles include `RolesEnum.System.Admin`. */
   readonly isAdmin = computed(() => this.hasRole(RolesEnum.System.Admin));
+
+  /**
+   * True iff a profile is loaded AND it is still pending first-login onboarding
+   * (`onboardingCompletedAt == null`). Anonymous users are false (no profile);
+   * patients and the seeded admin are created complete, so they are false too.
+   * The pending-onboarding guard reads this to force staff to `/onboarding`.
+   */
+  readonly needsOnboarding = computed(() => {
+    const user = this.currentUserSignal();
+    return user !== null && user.onboardingCompletedAt == null;
+  });
 
   /** True iff the current user's roles include the given role value. */
   hasRole(role: string): boolean {
@@ -88,6 +101,23 @@ export class AuthService {
    */
   register(payload: SignupPayload): Observable<UserProfile> {
     return this.api.post<Tokens>(AUTH_SIGNUP_PATH, payload).pipe(
+      tap(tokens => this.tokenStorage.save(tokens)),
+      switchMap(() => this.loadProfile()),
+    );
+  }
+
+  /**
+   * Completes first-login onboarding for a pending staff member via
+   * `POST /v1/auth/onboarding` (sets a new password + required contact info).
+   * The backend returns a REISSUED token pair so the cleared pending flag is
+   * reflected: store the new tokens, then reload the profile — mirroring
+   * {@link login}. After this emits, {@link needsOnboarding} is false (the
+   * reloaded profile carries a non-null `onboardingCompletedAt`). Errors with
+   * the `ApiError` thrown by {@link ApiClient} (e.g. a 400 for a confirm-email
+   * mismatch or a too-short password).
+   */
+  completeOnboarding(payload: OnboardingPayload): Observable<UserProfile> {
+    return this.api.post<Tokens>(AUTH_ONBOARDING_PATH, payload).pipe(
       tap(tokens => this.tokenStorage.save(tokens)),
       switchMap(() => this.loadProfile()),
     );

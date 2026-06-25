@@ -1,0 +1,20 @@
+/*
+ * Onboarding-specific overrides on top of the shared auth chrome (auth.css).
+ * The form has four fields, so give the card a touch more room than the
+ * sign-in screens. All values derive from brand tokens — no hardcoded hexes.
+ */
+
+.auth-card {
+  max-width: 420px;
+}
+
+/*
+ * The heading is programmatically focused on the forced redirect (WCAG 2.4.3).
+ * It uses the global :focus-visible ring (an --accent outline from styles.css)
+ * only for keyboard users; a mouse user who never tabs in won't see a ring on
+ * a non-interactive heading. We remove the persistent (non-:focus-visible)
+ * outline so the moved focus doesn't read as a stray box.
+ */
+.onboarding-title:focus:not(:focus-visible) {
+  outline: none;
+}

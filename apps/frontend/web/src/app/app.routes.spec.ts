@@ -1,6 +1,7 @@
 import type { Route } from '@angular/router';
-
 import { routes } from './app.routes';
+import { authGuard } from './core/auth/auth.guard';
+import { pendingOnboardingGuard } from './core/auth/pending-onboarding.guard';
 
 /** Finds a route by path within a (possibly nested) route tree. */
 function findRoute(tree: Route[], path: string): Route | undefined {
@@ -33,17 +34,30 @@ describe('app.routes', () => {
     expect(register?.loadComponent).toBeDefined();
   });
 
-  it('mounts all authenticated routes inside a single auth-guarded shell', () => {
+  it('mounts all authenticated routes inside a single guarded shell', () => {
     const shell = routes.find(r => r.path === '' && r.children);
     expect(shell).toBeDefined();
-    // The shell itself is lazy + auth-guarded.
+    // The shell is lazy and guarded by authGuard THEN pendingOnboardingGuard
+    // (anonymous -> /login; pending staff -> /onboarding). Order matters.
     expect(shell?.loadComponent).toBeDefined();
-    expect(shell?.canActivate).toHaveLength(1);
+    expect(shell?.canActivate).toEqual([authGuard, pendingOnboardingGuard]);
     // Feature children live under it.
     const childPaths = (shell?.children ?? []).map(c => c.path);
     expect(childPaths).toEqual(
       expect.arrayContaining(['profile', 'templates', 'documents', 'admin']),
     );
+  });
+
+  it('exposes /onboarding outside the shell, auth-guarded only', () => {
+    const onboarding = findRoute(routes, 'onboarding');
+    expect(onboarding).toBeDefined();
+    // Auth-guarded so a profile is loaded, but NOT pending-guarded (that would
+    // bounce the very users who need this screen). The component sends a
+    // non-pending user away itself.
+    expect(onboarding?.canActivate).toEqual([authGuard]);
+    expect(onboarding?.loadComponent).toBeDefined();
+    // It is a top-level route, not a shell child.
+    expect(routes.some(r => r.path === 'onboarding')).toBe(true);
   });
 
   it('exposes feature routes as lazy loadComponent slots', () => {
