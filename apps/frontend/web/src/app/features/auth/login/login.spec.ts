@@ -41,6 +41,14 @@ const profile: UserProfile = {
   exp: 2,
 };
 
+/** The login loads the API version on init; flush it so http verifies clean. */
+function flushVersion(
+  httpMock: HttpTestingController,
+  version = '1.0.0',
+): void {
+  httpMock.expectOne(`${base}/health/version`).flush(wrap({ version }));
+}
+
 describe('Login component', () => {
   let httpMock: HttpTestingController;
   let router: Router;
@@ -67,13 +75,42 @@ describe('Login component', () => {
     localStorage.clear();
   });
 
-  it('valid login navigates away on success', () => {
+  it('renders the recovery and register links, no staff-only copy', () => {
+    const fixture = TestBed.createComponent(Login);
+    fixture.detectChanges();
+    flushVersion(httpMock);
+
+    const html = (fixture.nativeElement as HTMLElement).innerHTML;
+    expect(html).toContain('Trouble signing in?');
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="register-link"]'),
+    ).toBeTruthy();
+    const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(text.toLowerCase()).not.toContain('staff access only');
+    expect(text.toLowerCase()).not.toContain('internal operations');
+  });
+
+  it('shows the UI version and the loaded API version in the footer', () => {
+    const fixture = TestBed.createComponent(Login);
+    fixture.detectChanges();
+    flushVersion(httpMock, '2.5.0');
+    fixture.detectChanges();
+
+    const footer = (fixture.nativeElement as HTMLElement).querySelector(
+      '.auth-version',
+    );
+    expect(footer?.textContent).toContain(`UI v${environment.appVersion}`);
+    expect(footer?.textContent).toContain('API v2.5.0');
+  });
+
+  it('valid login navigates away and remembers the username', () => {
     const fixture = TestBed.createComponent(Login);
     const cmp = fixture.componentInstance as unknown as {
       form: { setValue: (v: unknown) => void };
       submit: () => void;
     };
     fixture.detectChanges();
+    flushVersion(httpMock);
 
     cmp.form.setValue({ username: 'raul', password: 'pw' });
     cmp.submit();
@@ -84,6 +121,7 @@ describe('Login component', () => {
     httpMock.expectOne(`${base}/auth/profile`).flush(wrap(profile));
 
     expect(navigateSpy).toHaveBeenCalled();
+    expect(localStorage.getItem('hsm.lastUsername')).toBe('raul');
   });
 
   it('surfaces the ApiError and does not navigate on invalid creds', () => {
@@ -94,6 +132,7 @@ describe('Login component', () => {
       errorMessage: () => string | null;
     };
     fixture.detectChanges();
+    flushVersion(httpMock);
 
     cmp.form.setValue({ username: 'x', password: 'y' });
     cmp.submit();

@@ -2,32 +2,32 @@
   <aside class="auth-aside" aria-hidden="true">
     <a class="auth-brand">
       <span class="auth-brand__mark"></span>
-      <span class="auth-brand__word">HSM<span>Console</span></span>
+      <span class="auth-brand__word">Hospital <span>Santa María</span></span>
     </a>
 
     <div class="auth-pitch">
-      <p class="auth-eyebrow">Internal operations</p>
-      <h2 class="auth-headline">
-        Request access to templates, documents, and runtime configuration.
-      </h2>
+      <p class="auth-eyebrow">New here</p>
+      <h2 class="auth-headline">Create your patient account.</h2>
+      <p class="auth-lede">
+        A single, secure account to keep your care with Hospital Santa María in
+        one place — set it up in a minute.
+      </p>
     </div>
 
-    <ul class="auth-systems mono">
-      <li><span class="auth-dot auth-dot--ok"></span> staff &middot; auditor access</li>
-      <li><span class="auth-dot auth-dot--pending"></span> admin &middot; granted by an administrator</li>
+    <ul class="auth-reassure">
+      <li><span class="auth-tick"></span> Free to set up, yours to keep</li>
+      <li><span class="auth-tick"></span> Your details stay private and protected</li>
     </ul>
-
-    <p class="auth-foot mono">HSM backend &middot; staff access only</p>
   </aside>
 
   <main class="auth-main">
     <div class="auth-card">
       <span class="auth-brand__word auth-brand__word--compact">
-        HSM<span>Console</span>
+        Hospital <span>Santa María</span>
       </span>
 
       <h1 class="auth-title">Create account</h1>
-      <p class="auth-sub">Sets up a staff account with auditor access.</p>
+      <p class="auth-sub">Set up your patient account to get started.</p>
 
       <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
         @if (errorMessage(); as message) {

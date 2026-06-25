@@ -1,7 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { RolesEnum } from '@hsm/common/enums';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
@@ -11,14 +10,14 @@ import { toErrorMessage } from '../../../core/api/api-error';
 import { AuthService } from '../../../core/auth/auth.service';
 
 /**
- * Self-registration screen. Posts to `POST /v1/auth/signup` via
+ * Patient self-registration screen. Posts to `POST /v1/auth/signup` via
  * {@link AuthService.register}, which returns a token pair and logs the new
  * user straight in. On success it navigates to the app root.
  *
- * This is an internal staff console, so self-registrants are always created
- * with the non-privileged {@link RolesEnum.System.Auditor} role — the backend
- * additionally rejects any attempt to self-assign `admin`/`developer`. New
- * admins are still minted from Admin → Users, never here.
+ * Public signup always creates a Patient account: the backend forces the
+ * Patient role server-side and ignores any client-supplied role, so the client
+ * sends the form values only and never a `roles` field. Staff accounts are
+ * provisioned by an admin, never here.
  */
 @Component({
   selector: 'app-register',
@@ -58,22 +57,17 @@ export class Register {
     this.submitting.set(true);
     this.errorMessage.set(null);
 
-    this.auth
-      .register({
-        ...this.form.getRawValue(),
-        roles: [RolesEnum.System.Auditor],
-      })
-      .subscribe({
-        next: () => {
-          this.submitting.set(false);
-          void this.router.navigateByUrl('/');
-        },
-        error: (err: unknown) => {
-          this.submitting.set(false);
-          this.errorMessage.set(
-            toErrorMessage(err, 'Could not create your account. Try again.'),
-          );
-        },
-      });
+    this.auth.register(this.form.getRawValue()).subscribe({
+      next: () => {
+        this.submitting.set(false);
+        void this.router.navigateByUrl('/');
+      },
+      error: (err: unknown) => {
+        this.submitting.set(false);
+        this.errorMessage.set(
+          toErrorMessage(err, 'Could not create your account. Try again.'),
+        );
+      },
+    });
   }
 }

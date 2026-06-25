@@ -1,10 +1,14 @@
 /**
  * Development environment.
  *
- * Talks to the API on host port 10001 with the default `/v1` URI version
- * (see repo-root CLAUDE.md port map and `@hsm/api` bootstrap).
+ * The API is run locally inside the dev container (`pnpm --filter @hsm/api
+ * start:dev`), which listens on 3000 — the port VS Code forwards to the host.
+ * (Port 10001 is the docker-compose `api` host mapping, only used when running
+ * the full stack via `docker compose up`, not the local-api dev workflow.)
  */
 export const environment = {
   production: false,
-  apiBaseUrl: 'http://localhost:10001/v1',
+  apiBaseUrl: 'http://localhost:3000/v1',
+  // Build-time UI version; CI replaces 'dev' with the git short SHA / build number.
+  appVersion: 'dev',
 };

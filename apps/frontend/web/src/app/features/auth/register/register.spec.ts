@@ -36,7 +36,7 @@ const profile: UserProfile = {
   email: 'jdoe@x.com',
   firstName: 'Jane',
   firstLastName: 'Doe',
-  roles: ['auditor'],
+  roles: ['patient'],
   iat: 1,
   exp: 2,
 };
@@ -75,7 +75,7 @@ describe('Register component', () => {
     localStorage.clear();
   });
 
-  it('posts a non-privileged role and navigates in on success', () => {
+  it('posts a patient signup with no role in the payload', () => {
     const fixture = TestBed.createComponent(Register);
     const cmp = fixture.componentInstance as unknown as {
       form: { setValue: (v: unknown) => void };
@@ -87,12 +87,25 @@ describe('Register component', () => {
     cmp.submit();
 
     const signup = httpMock.expectOne(`${base}/auth/signup`);
-    // The console never lets a self-registrant pick a privileged role.
-    expect(signup.request.body.roles).toEqual(['auditor']);
+    // Public signup is patient-only; the client sends no role (server forces it).
+    expect(signup.request.body.roles).toBeUndefined();
+    expect(Object.keys(signup.request.body)).not.toContain('roles');
     signup.flush(wrap<Tokens>({ access_token: 'AT', refresh_token: 'RT' }));
     httpMock.expectOne(`${base}/auth/profile`).flush(wrap(profile));
 
     expect(navigateSpy).toHaveBeenCalledWith('/');
+  });
+
+  it('renders patient-account copy with no staff or auditor language', () => {
+    const fixture = TestBed.createComponent(Register);
+    fixture.detectChanges();
+
+    const text = (
+      (fixture.nativeElement as HTMLElement).textContent ?? ''
+    ).toLowerCase();
+    expect(text).toContain('patient account');
+    expect(text).not.toContain('staff');
+    expect(text).not.toContain('auditor');
   });
 
   it('surfaces the ApiError and does not navigate when signup fails', () => {

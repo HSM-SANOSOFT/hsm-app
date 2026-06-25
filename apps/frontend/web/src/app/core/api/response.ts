@@ -82,10 +82,11 @@ export interface LoginPayload {
 }
 
 /**
- * Mirror of the `roles`-bearing fields of `@hsm/common` `SignupPayloadDto`
- * (which extends `CreateUserPayloadDto`). Public self-registration via
- * `POST /v1/auth/signup`; the backend rejects privileged roles
- * (`admin`/`developer`), so the console only ever sends a non-privileged role.
+ * Mirror of the public-signup fields of `@hsm/common` `SignupPayloadDto`.
+ * Public self-registration via `POST /v1/auth/signup` always creates a Patient
+ * account: the backend forces the Patient role server-side and ignores any
+ * client-supplied role. The client therefore sends no `roles` — the field is
+ * optional only for backward-compatibility and should be left unset.
  */
 export interface SignupPayload {
   username: string;
@@ -93,7 +94,7 @@ export interface SignupPayload {
   password: string;
   firstName: string;
   firstLastName: string;
-  roles: string[];
+  roles?: string[];
 }
 
 /**

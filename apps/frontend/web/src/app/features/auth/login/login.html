@@ -2,34 +2,32 @@
   <aside class="auth-aside" aria-hidden="true">
     <a class="auth-brand">
       <span class="auth-brand__mark"></span>
-      <span class="auth-brand__word">HSM<span>Console</span></span>
+      <span class="auth-brand__word">Hospital <span>Santa María</span></span>
     </a>
 
     <div class="auth-pitch">
-      <p class="auth-eyebrow">Internal operations</p>
-      <h2 class="auth-headline">
-        One console for templates, documents, and runtime configuration.
-      </h2>
+      <p class="auth-eyebrow">Your hospital, online</p>
+      <h2 class="auth-headline">Your care, all in one place.</h2>
+      <p class="auth-lede">
+        Sign in to reach your records, your team, and everything Hospital Santa
+        María keeps for you — securely, whenever you need it.
+      </p>
     </div>
 
-    <ul class="auth-systems mono">
-      <li><span class="auth-dot auth-dot--ok"></span> templates &middot; render</li>
-      <li><span class="auth-dot auth-dot--ok"></span> documents &middot; generate</li>
-      <li><span class="auth-dot auth-dot--ok"></span> settings &middot; live</li>
-      <li><span class="auth-dot auth-dot--pending"></span> comms &middot; webhook</li>
+    <ul class="auth-reassure">
+      <li><span class="auth-tick"></span> One account for everything you do here</li>
+      <li><span class="auth-tick"></span> Private and protected, always</li>
     </ul>
-
-    <p class="auth-foot mono">HSM backend &middot; staff access only</p>
   </aside>
 
   <main class="auth-main">
     <div class="auth-card">
       <span class="auth-brand__word auth-brand__word--compact">
-        HSM<span>Console</span>
+        Hospital <span>Santa María</span>
       </span>
 
-      <h1 class="auth-title">Sign in</h1>
-      <p class="auth-sub">Use your staff credentials to continue.</p>
+      <h1 class="auth-title">Welcome back</h1>
+      <p class="auth-sub">Sign in to continue.</p>
 
       <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
         @if (errorMessage(); as message) {
@@ -44,7 +42,7 @@
             type="text"
             formControlName="username"
             autocomplete="username"
-            placeholder="e.g. admin"
+            placeholder="Your username"
             fluid
           />
           @if (form.controls.username.invalid && form.controls.username.touched) {
@@ -68,6 +66,10 @@
           }
         </div>
 
+        <a class="auth-link auth-link--quiet" routerLink="/forgot-password">
+          Trouble signing in?
+        </a>
+
         <p-button
           type="submit"
           label="Sign in"
@@ -80,9 +82,14 @@
         />
       </form>
 
-      <p class="auth-alt">
-        No account yet?
-        <a routerLink="/register" data-testid="register-link">Create one</a>
+      <p class="auth-alt auth-alt--subtle">
+        New patient?
+        <a routerLink="/register" data-testid="register-link">Create an account</a>
+      </p>
+
+      <p class="auth-version mono">
+        UI v{{ version.uiVersion }} &middot; API
+        v{{ version.apiVersion() ?? 'unknown' }}
       </p>
     </div>
   </main>

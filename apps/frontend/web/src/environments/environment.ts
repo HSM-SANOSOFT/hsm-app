@@ -7,4 +7,6 @@
 export const environment = {
   production: true,
   apiBaseUrl: 'http://localhost:10001/v1',
+  // Build-time UI version; CI replaces 'dev' with the git short SHA / build number.
+  appVersion: 'dev',
 };
