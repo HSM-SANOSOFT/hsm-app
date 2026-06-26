@@ -187,36 +187,106 @@ describe('resolveRoutePath', () => {
   });
 });
 
-describe('NAV_TREE (live placeholder modules)', () => {
+describe('NAV_TREE (committed module taxonomy)', () => {
   const byId = (id: string) => NAV_TREE.find(n => n.id === id) as NavNode;
 
-  it('exposes the main modules at the top level', () => {
-    expect(NAV_TREE.map(n => n.id)).toEqual([
+  const STAFF_ACCESS: NavAccess = {
+    isStaff: true,
+    isPatient: false,
+    hasAnyRole: () => false,
+  };
+  const PATIENT_ACCESS: NavAccess = {
+    isStaff: false,
+    isPatient: true,
+    hasAnyRole: () => false,
+  };
+
+  /** Depth-first walk of every node in the live tree. */
+  const everyNode = (nodes: readonly NavNode[]): NavNode[] =>
+    nodes.flatMap(n => [n, ...everyNode(n.children ?? [])]);
+
+  it('exposes Workspace + the five staff domains as the staff rail, in order', () => {
+    expect(filterTree(NAV_TREE, STAFF_ACCESS).map(n => n.id)).toEqual([
       'workspace',
       'clinical',
-      'scheduling',
-      'billing',
-      'pharmacy',
-      'laboratory',
-      'templates',
-      'documents',
+      'diagnostics',
+      'business',
+      'governance',
+      'platform',
     ]);
   });
 
-  it('nests Clinical as a cascade (Imaging › CT › views) and Billing as tabs', () => {
-    expect(rendersAsFlyout(byId('clinical'))).toBe(true);
-    const imaging = byId('clinical').children?.find(n => n.id === 'imaging');
-    expect(rendersAsFlyout(imaging as NavNode)).toBe(true); // cascades to CT
-    const ct = (imaging as NavNode).children?.find(n => n.id === 'ct');
-    expect(rendersAsTabs(ct as NavNode)).toBe(true); // CT's views are tabs
-    expect(rendersAsTabs(byId('billing'))).toBe(true);
+  it('shows a patient only the Patient Portal domain', () => {
+    expect(filterTree(NAV_TREE, PATIENT_ACCESS).map(n => n.id)).toEqual([
+      'patient-portal',
+    ]);
   });
 
-  it('resolves a deep placeholder leaf URL', () => {
+  it('renders each domain as a flyout and each module as tabs', () => {
+    // Domain: children are groups -> flyout.
+    expect(rendersAsFlyout(byId('clinical'))).toBe(true);
+    // Module: children are all views -> tabs.
+    const pm = byId('clinical').children?.find(
+      n => n.id === 'clinical-patient-management',
+    );
+    expect(rendersAsTabs(pm as NavNode)).toBe(true);
+  });
+
+  it('resolves a deep placeholder leaf URL root-first', () => {
     expect(
-      resolveRoutePath(NAV_TREE, '/clinical/imaging/ct/studies')?.map(
-        n => n.id,
-      ),
-    ).toEqual(['clinical', 'imaging', 'ct', 'ct-studies']);
+      resolveRoutePath(
+        NAV_TREE,
+        '/clinical/patient-management/registration',
+      )?.map(n => n.id),
+    ).toEqual([
+      'clinical',
+      'clinical-patient-management',
+      'clinical-pm-registration',
+    ]);
+  });
+
+  it('authors ADT and Imaging flat (all-view modules -> tabs, no modality nesting)', () => {
+    const adt = byId('clinical').children?.find(n => n.id === 'clinical-adt');
+    const imaging = byId('diagnostics').children?.find(
+      n => n.id === 'diagnostics-imaging',
+    );
+    expect((adt as NavNode).children?.every(c => c.kind === 'view')).toBe(true);
+    expect((imaging as NavNode).children?.every(c => c.kind === 'view')).toBe(
+      true,
+    );
+  });
+
+  it("keeps every node's children homogeneous in kind (all view or all group)", () => {
+    for (const node of everyNode(NAV_TREE)) {
+      const kinds = new Set((node.children ?? []).map(c => c.kind));
+      expect(kinds.size).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it('renders Patient Portal as a flyout whose home resolves to a nav chain', () => {
+    expect(rendersAsFlyout(byId('patient-portal'))).toBe(true); // has a group child
+    // The patient home `/patient` resolves to rail highlight + breadcrumb.
+    expect(resolveRoutePath(NAV_TREE, '/patient')?.map(n => n.id)).toEqual([
+      'patient-portal',
+      'portal-my-health',
+      'portal-home',
+    ]);
+  });
+
+  it('absorbs Documents and Templates under Platform with their real routes', () => {
+    const platform = byId('platform');
+    const routesUnderPlatform = everyNode(platform.children ?? [])
+      .map(n => n.route)
+      .filter(Boolean);
+    expect(routesUnderPlatform).toContain('/documents');
+    expect(routesUnderPlatform).toContain('/templates');
+    // Scheduling is present as a placeholder module.
+    expect(platform.children?.map(n => n.id)).toContain('platform-scheduling');
+  });
+
+  it('carries no roles gate on any node (roles are greenfield — KTD5)', () => {
+    for (const node of everyNode(NAV_TREE)) {
+      expect(node.roles).toBeUndefined();
+    }
   });
 });
