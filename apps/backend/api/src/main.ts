@@ -1,7 +1,7 @@
 import { freePort } from '@hsm/common/utils';
 import { envs } from '@hsm/config';
 import { ConsoleLogger, ValidationPipe, VersioningType } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpLoggingInterceptor } from './interceptors';
 import { MainModule } from './main.module';
@@ -39,7 +39,7 @@ async function bootstrap() {
 
   app.useGlobalGuards();
   app.useGlobalFilters();
-  app.useGlobalInterceptors(new HttpLoggingInterceptor());
+  app.useGlobalInterceptors(new HttpLoggingInterceptor(app.get(Reflector)));
 
   app.enableShutdownHooks();
   app.useGlobalPipes(

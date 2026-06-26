@@ -11,17 +11,31 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { Request, Response } from 'express';
 import { map, Observable } from 'rxjs';
+import { FHIR_ENDPOINT_KEY } from '../modules/clinical/fhir/fhir.decorator';
 
 @Injectable()
 export class ResponseInterceptor<T>
-  implements NestInterceptor<T, SuccessResponseDto<T>>
+  implements NestInterceptor<T, SuccessResponseDto<T> | T>
 {
+  constructor(private readonly reflector: Reflector) {}
+
   intercept(
     ctx: ExecutionContext,
     next: CallHandler,
-  ): Observable<SuccessResponseDto<T>> {
+  ): Observable<SuccessResponseDto<T> | T> {
+    // KTD7: FHIR routes emit raw FHIR (Resource/Bundle/OperationOutcome) — never
+    // the app success envelope. Reflector-gated; default behavior is unchanged.
+    const isFhir = this.reflector.getAllAndOverride<boolean>(
+      FHIR_ENDPOINT_KEY,
+      [ctx.getHandler(), ctx.getClass()],
+    );
+    if (isFhir) {
+      return next.handle();
+    }
+
     const http = ctx.switchToHttp();
     const req: Request = http.getRequest();
     const res: Response = http.getResponse();
