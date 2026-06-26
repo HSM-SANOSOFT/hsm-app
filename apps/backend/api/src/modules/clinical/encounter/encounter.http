@@ -1,0 +1,37 @@
+### FHIR Encounter — VERSION_NEUTRAL, served at /fhir/R4/... (no /v1 prefix).
+
+@fhirBase = http://127.0.0.1:3000/fhir/R4
+
+### Create an Encounter referencing an existing Patient
+### (replace SUBJECT_ID with a Patient uuid returned by Patient create)
+POST {{fhirBase}}/Encounter
+Content-Type: application/fhir+json
+Authorization: Bearer {{at_token}}
+
+{
+  "resourceType": "Encounter",
+  "status": "in-progress",
+  "class": { "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode", "code": "IMP", "display": "inpatient encounter" },
+  "subject": { "reference": "Patient/SUBJECT_ID" },
+  "period": { "start": "2026-06-26T08:00:00Z" }
+}
+
+### Read an Encounter by id
+GET {{fhirBase}}/Encounter/REPLACE_WITH_ID
+Authorization: Bearer {{at_token}}
+
+### Search by subject → searchset Bundle
+GET {{fhirBase}}/Encounter?subject=Patient/SUBJECT_ID
+Authorization: Bearer {{at_token}}
+
+### Dangling reference → 422 OperationOutcome (service pre-resolution)
+POST {{fhirBase}}/Encounter
+Content-Type: application/fhir+json
+Authorization: Bearer {{at_token}}
+
+{
+  "resourceType": "Encounter",
+  "status": "planned",
+  "class": { "code": "AMB" },
+  "subject": { "reference": "Patient/00000000-0000-0000-0000-000000000000" }
+}

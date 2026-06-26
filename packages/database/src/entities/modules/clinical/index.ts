@@ -14,5 +14,7 @@
 // NOTE: `clinical-resource.base` is an abstract mapped base (no `@Entity`) — it is
 // intentionally NOT re-exported here so it never reaches `Object.values()` for
 // `forFeature` registration (and `isEntity()` would filter it regardless).
+
+export * from './encounter.entity';
 export * from './patient.entity';
 export * from './patient-identifier.entity';
