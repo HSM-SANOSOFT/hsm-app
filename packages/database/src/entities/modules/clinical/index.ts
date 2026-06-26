@@ -16,5 +16,7 @@
 // `forFeature` registration (and `isEntity()` would filter it regardless).
 
 export * from './encounter.entity';
+export * from './medication-request.entity';
 export * from './patient.entity';
 export * from './patient-identifier.entity';
+export * from './service-request.entity';

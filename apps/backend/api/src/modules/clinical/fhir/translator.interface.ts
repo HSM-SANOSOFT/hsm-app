@@ -24,12 +24,15 @@ export interface Translator<TEntity, TResource extends Resource> {
  * KTD3. Returns `undefined` for a null/absent FK so optional references omit
  * cleanly.
  */
-export function toRelativeReference(
+export function toRelativeReference<T extends Reference = Reference>(
   resourceType: string,
   id: string | null | undefined,
-): Reference | undefined {
+): T | undefined {
   if (!id) return undefined;
-  return { reference: `${resourceType}/${id}` };
+  // The target resource union is constrained by the entity's FK (a Patient FK
+  // only ever yields a Patient reference), so the cast to the caller's typed
+  // Reference<...> is sound.
+  return { reference: `${resourceType}/${id}` } as T;
 }
 
 /**

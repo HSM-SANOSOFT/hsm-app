@@ -27,8 +27,11 @@ export class EncounterTranslator
     };
 
     if (entity.type?.length) encounter.type = entity.type;
-    const subject = toRelativeReference('Patient', entity.subjectId);
-    if (subject) encounter.subject = subject as Encounter['subject'];
+    const subject = toRelativeReference<NonNullable<Encounter['subject']>>(
+      'Patient',
+      entity.subjectId,
+    );
+    if (subject) encounter.subject = subject;
 
     if (entity.periodStart || entity.periodEnd) {
       encounter.period = {
