@@ -5,6 +5,8 @@ import { authGuard } from './core/auth/auth.guard';
 import { pendingOnboardingGuard } from './core/auth/pending-onboarding.guard';
 import { adminGuard } from './core/auth/role.guard';
 import { roleHomeGuard } from './core/auth/role-home.guard';
+import { NAV_TREE } from './layout/nav/nav-node';
+import { placeholderRoutesFromTree } from './layout/nav/nav-routes';
 
 /**
  * Application routes.
@@ -26,14 +28,17 @@ import { roleHomeGuard } from './core/auth/role-home.guard';
  *     └── settings (adminGuard)
  * ```
  *
- * Every authenticated route is a **lazy** child of the `Shell` parent, so a new
- * module is a new `loadComponent` entry here plus a `NavItem` in
- * `layout/nav-items.ts` — no change to the shell or the auth guards. The
- * feature components are placeholders today (U10–U15 replace them).
+ * Every authenticated route is a **lazy** child of the `Shell` parent. Built
+ * modules keep explicit `loadComponent` entries; every not-yet-built taxonomy
+ * leaf is generated from `NAV_TREE` via `placeholderRoutesFromTree` (KTD3), so
+ * adding a module is a tree edit in `layout/nav/nav-node.ts` — its placeholder
+ * route appears automatically, with no change to the shell or the auth guards.
  */
-/** Shared loader for the not-yet-built main modules (Clinical, Scheduling,
- * Billing, Pharmacy, Laboratory). The screen titles itself from the active nav
- * node, so one component backs every placeholder leaf. */
+/** Shared loader for every not-yet-built taxonomy leaf. The screen titles
+ * itself from the active nav node, so one component backs all ~150 placeholder
+ * leaves. The placeholder routes themselves are generated from `NAV_TREE` by
+ * `placeholderRoutesFromTree` (below) rather than hand-listed, so the tree stays
+ * the single source of truth. */
 const placeholderModule = () =>
   import('./features/placeholder/module-placeholder').then(
     m => m.ModulePlaceholder,
@@ -129,19 +134,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/documents/documents').then(m => m.Documents),
       },
-      // Placeholder main modules — navigation/routing wired, screens land later.
-      { path: 'clinical/encounters', loadComponent: placeholderModule },
-      { path: 'clinical/imaging/ct/studies', loadComponent: placeholderModule },
-      {
-        path: 'clinical/imaging/ct/worklist',
-        loadComponent: placeholderModule,
-      },
-      { path: 'clinical/imaging/mri', loadComponent: placeholderModule },
-      { path: 'scheduling', loadComponent: placeholderModule },
-      { path: 'billing/invoices', loadComponent: placeholderModule },
-      { path: 'billing/payments', loadComponent: placeholderModule },
-      { path: 'pharmacy', loadComponent: placeholderModule },
-      { path: 'laboratory', loadComponent: placeholderModule },
+      // Placeholder taxonomy leaves — every not-yet-built submodule in
+      // `NAV_TREE`, generated from the tree (KTD3) so the ~150 leaves are not
+      // hand-listed. Built/special routes (workspace, documents, templates,
+      // patient, settings, profile) are excluded via `BUILT_MODULE_ROUTES`, so
+      // these never collide with the explicit lazy routes above. Each resolves
+      // to the shared self-titling `ModulePlaceholder`.
+      ...placeholderRoutesFromTree(NAV_TREE, placeholderModule),
       // System Admin console — the only place admin lives now, reached from the
       // profile-card popover (admins only). adminGuard sits on the parent AND
       // each child (defense-in-depth): a child must never become reachable if it

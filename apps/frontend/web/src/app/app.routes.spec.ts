@@ -3,6 +3,13 @@ import { routes } from './app.routes';
 import { authGuard } from './core/auth/auth.guard';
 import { pendingOnboardingGuard } from './core/auth/pending-onboarding.guard';
 import { roleHomeGuard } from './core/auth/role-home.guard';
+import { ModulePlaceholder } from './features/placeholder/module-placeholder';
+import { BUILT_MODULE_ROUTES } from './layout/nav/nav-routes';
+
+/** The authenticated shell route whose children hold every feature/leaf route. */
+function shellChildren(): Route[] {
+  return routes.find(r => r.path === '' && r.children)?.children ?? [];
+}
 
 /** Finds a route by path within a (possibly nested) route tree. */
 function findRoute(tree: Route[], path: string): Route | undefined {
@@ -133,5 +140,50 @@ describe('app.routes', () => {
     expect(indexChild?.redirectTo).toBeUndefined();
     expect(indexChild?.canActivate).toEqual([roleHomeGuard]);
     expect(routes.some(r => r.path === '**')).toBe(true);
+  });
+
+  it('generates a placeholder route for a deep taxonomy leaf (KTD3)', async () => {
+    const leaf = findRoute(
+      shellChildren(),
+      'clinical/patient-management/registration',
+    );
+    expect(leaf).toBeDefined();
+    const cmp = await leaf?.loadComponent?.();
+    expect(cmp).toBe(ModulePlaceholder);
+  });
+
+  it('keeps built modules on their real components, not the placeholder', async () => {
+    for (const path of ['documents', 'templates', 'workspace']) {
+      const route = findRoute(shellChildren(), path);
+      const cmp = await route?.loadComponent?.();
+      expect(cmp).toBeDefined();
+      expect(cmp).not.toBe(ModulePlaceholder);
+    }
+  });
+
+  it('has no duplicate child paths (generated + explicit never collide)', () => {
+    const paths = shellChildren().map(c => c.path);
+    const duplicates = paths.filter((p, i) => paths.indexOf(p) !== i);
+    expect(duplicates).toEqual([]);
+  });
+
+  it('covers every built (non-placeholder) shell route in BUILT_MODULE_ROUTES', async () => {
+    // Collision guard: any shell child that loads a REAL component (not the
+    // shared placeholder) must be in the skip-set, so a future built route added
+    // without a matching entry fails here rather than being silently shadowed by
+    // a generated placeholder at runtime.
+    const builtRoutes: string[] = [];
+    for (const child of shellChildren()) {
+      if (child.loadComponent == null || !child.path) {
+        continue; // index, redirects, and the system-admin parent have none
+      }
+      const cmp = await child.loadComponent();
+      if (cmp !== ModulePlaceholder) {
+        builtRoutes.push(`/${child.path}`);
+      }
+    }
+    for (const route of builtRoutes) {
+      expect(BUILT_MODULE_ROUTES).toContain(route);
+    }
   });
 });
