@@ -8,7 +8,7 @@ import { ResponseFilter } from './filters';
 import { ResponseInterceptor } from './interceptors';
 import { MainController } from './main.controller';
 import { MainService } from './main.service';
-import { CoreModule, SecurityModule } from './modules';
+import { ClinicalModule, CoreModule, SecurityModule } from './modules';
 
 @Module({
   imports: [
@@ -34,6 +34,7 @@ import { CoreModule, SecurityModule } from './modules';
     DatabaseModule,
     QueueModule,
     CoreModule,
+    ClinicalModule,
     SecurityModule,
     TerminusModule,
   ],

@@ -1,0 +1,3 @@
+# TypeORM migrations (KTD9). The baseline clinical migration is generated in U8
+# (`pnpm --filter @hsm/database migration:generate`) against a clean, non-
+# synchronized Postgres — it cannot be generated in an environment without a DB.

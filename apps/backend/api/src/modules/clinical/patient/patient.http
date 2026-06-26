@@ -1,0 +1,42 @@
+### FHIR Patient — note: FHIR routes are VERSION_NEUTRAL, so they are served at
+### /fhir/R4/... WITHOUT the /v1 prefix. {{host}} includes /v1, so these requests
+### target the host root explicitly.
+
+@fhirBase = http://127.0.0.1:3000/fhir/R4
+
+### Create a Patient
+POST {{fhirBase}}/Patient
+Content-Type: application/fhir+json
+Authorization: Bearer {{at_token}}
+
+{
+  "resourceType": "Patient",
+  "active": true,
+  "identifier": [
+    { "system": "urn:hsm:mrn", "value": "MRN-0001", "use": "official" }
+  ],
+  "name": [{ "use": "official", "family": "Doe", "given": ["Jane"] }],
+  "gender": "female",
+  "birthDate": "1990-01-01"
+}
+
+### Read a Patient by id (replace the id with one returned by Create)
+GET {{fhirBase}}/Patient/REPLACE_WITH_ID
+Authorization: Bearer {{at_token}}
+
+### Search by identifier (system|value) → searchset Bundle
+GET {{fhirBase}}/Patient?identifier=urn:hsm:mrn|MRN-0001
+Authorization: Bearer {{at_token}}
+
+### Search by bare identifier value
+GET {{fhirBase}}/Patient?identifier=MRN-0001
+Authorization: Bearer {{at_token}}
+
+### Invalid create — missing resourceType → 422 OperationOutcome
+POST {{fhirBase}}/Patient
+Content-Type: application/fhir+json
+Authorization: Bearer {{at_token}}
+
+{
+  "gender": "female"
+}

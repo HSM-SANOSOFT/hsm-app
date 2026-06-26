@@ -1,4 +1,5 @@
 import { isEntity } from '@hsm/common/utils';
+import * as clinicalEntities from '../../entities/modules/clinical';
 import * as comsEntities from '../../entities/modules/core/coms';
 import * as docsEntities from '../../entities/modules/core/docs';
 import * as settingsEntities from '../../entities/modules/core/settings';
@@ -15,4 +16,5 @@ export const databasePostgresEntities = [
   ...Object.values(docsEntities),
   ...Object.values(settingsEntities),
   ...Object.values(templateEntities),
+  ...Object.values(clinicalEntities),
 ].filter(isEntity);

@@ -19,6 +19,10 @@ import { DatabasePostgresSchemasEnum } from './database-postgres.schemas';
       database: envs.DB_POSTGRES_DB,
       synchronize: false,
       entities: databasePostgresEntities,
+      migrations: [`${__dirname}/../../migrations/*.{ts,js}`],
+      migrationsTableName: '_clinical_migrations',
+      // Never auto-run on connection — onModuleInit owns the gated decision below.
+      migrationsRun: false,
     }),
     TypeOrmModule.forFeature(
       databasePostgresEntities,
@@ -45,6 +49,7 @@ export class DatabasePostgresModule implements OnModuleInit {
     }
 
     if (envs.ENVIRONMENT === 'dev') {
+      // Dev path (unchanged): schema is delivered via synchronize.
       this.logger.debug('Synchronizing database schema...');
       if (databasePostgresEntities.length !== 0) {
         await this.dataSource.synchronize();
@@ -52,6 +57,22 @@ export class DatabasePostgresModule implements OnModuleInit {
       } else {
         this.logger.debug('No entities to synchronize');
       }
+      return;
+    }
+
+    // Non-dev migration runner (KTD9): exists but stays INERT unless explicitly
+    // activated by config. The spine ships dev-only; the first prod-bound module
+    // flips DB_POSTGRES_RUN_MIGRATIONS to enable schema delivery via migrations.
+    if (envs.DB_POSTGRES_RUN_MIGRATIONS) {
+      this.logger.debug('Running pending migrations...');
+      const applied = await this.dataSource.runMigrations();
+      this.logger.debug(
+        `Migrations applied: ${applied.map(m => m.name).join(', ') || 'none'}`,
+      );
+    } else {
+      this.logger.debug(
+        'Migration runner inert (DB_POSTGRES_RUN_MIGRATIONS not set)',
+      );
     }
   }
 }

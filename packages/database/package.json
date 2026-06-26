@@ -7,11 +7,17 @@
     "build": "tsc -p tsconfig.lib.json",
     "generator:entity": "ts-node -r tsconfig-paths/register src/generator/generators/entity.generator.ts",
     "generator:schema": "ts-node -r tsconfig-paths/register src/generator/generators/schema.generator.ts",
-    "generator:test:query": "ts-node -r tsconfig-paths/register src/generator/tests/query.test.ts"
+    "generator:test:query": "ts-node -r tsconfig-paths/register src/generator/tests/query.test.ts",
+    "typeorm": "ts-node -r tsconfig-paths/register ../../node_modules/typeorm/cli.js -d src/sources/postgres/database-postgres.datasource.ts",
+    "migration:generate": "pnpm typeorm migration:generate src/migrations/Clinical",
+    "migration:run": "pnpm typeorm migration:run",
+    "migration:revert": "pnpm typeorm migration:revert",
+    "migration:show": "pnpm typeorm migration:show"
   },
   "dependencies": {
     "@hsm/common": "workspace:*",
     "@hsm/config": "workspace:*",
+    "@medplum/fhirtypes": "5.1.22",
     "@nestjs/common": "^11.1.19",
     "@nestjs/core": "^11.1.19",
     "@nestjs/typeorm": "^11.0.1",

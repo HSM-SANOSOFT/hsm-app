@@ -44,9 +44,52 @@ MainModule
 ├── SecurityModule       (registers AuthJwtAtGuard + RolesGuard as APP_GUARDs)
 │   ├── AuthModule       (JWT AT+RT, Passport local)
 │   └── RolesModule
+└── ClinicalModule       (FHIR R4 clinical data spine — see recipe below)
+    ├── PatientModule        (/fhir/R4/Patient — identity / MPI seam)
+    ├── EncounterModule      (/fhir/R4/Encounter — Patient reference)
+    └── ServiceRequestModule (/fhir/R4/ServiceRequest — orders routing spine)
 ```
 
 `AdministrativeModule` / `SchedulingModule` were removed — don't re-add without a real use case.
+
+## Adding a FHIR resource (clinical spine)
+
+The clinical spine (`src/modules/clinical/`) is a reusable
+`entity → translator → service → FHIR controller` seam. Adding a resource is
+mechanical — follow the **Patient** files as the worked example. The shared FHIR
+mechanics live in `src/modules/clinical/fhir/` (don't reinvent them):
+
+1. **Entity** (`@hsm/database`): `packages/database/src/entities/modules/clinical/<resource>.entity.ts`,
+   extending `ClinicalResourceBaseEntity` (uuid PK + timestamps + soft-delete).
+   Searchable scalars → real columns; complex datatypes → `jsonb`; cross-resource
+   refs → FK columns (KTD3/KTD4). Export it from the clinical barrel `index.ts`
+   (the four-link chain — see `packages/database/CLAUDE.md`).
+2. **Translator** (`<resource>.translator.ts`): implement
+   `Translator<TEntity, TResource>`. Use `toRelativeReference` /
+   `fromRelativeReference` for FK ⇄ `Type/{uuid}` references.
+3. **Service** (`<resource>.service.ts`): inject the repo with
+   `@InjectRepository(Entity, DatabasesEnum.HsmDbPostgres)`. This is the typed
+   internal API (KTD10) — platform modules call it directly, never the facade.
+   Pre-resolve referenced resources (existence-check → 422), and validate
+   routing-critical enum codes against `@hsm/common/enums` `clinical.enum.ts`
+   (KTD6 — `validateResource` does NOT check code bindings).
+4. **Controller** (`<resource>.controller.ts`): decorate the class with
+   `@FhirController('<ResourceType>')` (supplies the `/fhir/R4/...` path,
+   `VERSION_NEUTRAL`, the envelope/error bypass, and the clinical `@Roles` PHI
+   gate — KTD7/KTD11). Validate POST bodies with `@Body(FhirValidationPipe)`;
+   validate search params with a per-resource `FhirSearchPipe` config; build
+   search Bundles with `toSearchsetBundle`.
+5. **Module** (`<resource>.module.ts`): declare controller + service +
+   translator + `FhirValidationPipe`; import `PatientModule` if you reference
+   patients. Wire it into `clinical.module.ts`.
+6. **`.http` + co-located `*.spec.ts`** (translator round-trip, service with
+   MOCKED repos, controller authz). Then `start:dev` to verify DI + entity
+   registration (build success proves nothing — see the entity-barrel hazard).
+
+**Schema delivery:** dev uses `synchronize`; prod migrations are tooling-only and
+inert until activated (KTD9). After adding/altering an entity, regenerate the
+baseline against a clean DB: `pnpm --filter @hsm/database migration:generate` (CI
+drift check enforces this) — see `packages/database/CLAUDE.md`.
 
 ## Globals registered in `MainModule`
 

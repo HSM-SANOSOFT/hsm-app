@@ -1,4 +1,5 @@
 export * from './auth.enum';
+export * from './clinical.enum';
 export * from './common-response.enum';
 export * from './coms.enum';
 export * from './docs.enum';

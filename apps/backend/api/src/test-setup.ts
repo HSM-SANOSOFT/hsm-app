@@ -16,6 +16,7 @@ process.env.DB_POSTGRES_PORT = '5432';
 process.env.DB_POSTGRES_USER = 'test';
 process.env.DB_POSTGRES_PASSWORD = 'test';
 process.env.DB_POSTGRES_DB = 'test';
+process.env.DB_POSTGRES_RUN_MIGRATIONS = 'false';
 process.env.DB_ORACLE_HOST = 'localhost';
 process.env.DB_ORACLE_PORT = '1521';
 process.env.DB_ORACLE_USER = 'test';

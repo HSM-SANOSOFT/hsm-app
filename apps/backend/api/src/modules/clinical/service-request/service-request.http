@@ -1,0 +1,35 @@
+### FHIR ServiceRequest — orders routing spine. VERSION_NEUTRAL, /fhir/R4/...
+
+@fhirBase = http://127.0.0.1:3000/fhir/R4
+
+### Create a lab order (replace SUBJECT_ID with a Patient uuid)
+POST {{fhirBase}}/ServiceRequest
+Content-Type: application/fhir+json
+Authorization: Bearer {{at_token}}
+
+{
+  "resourceType": "ServiceRequest",
+  "status": "active",
+  "intent": "order",
+  "category": [
+    { "coding": [{ "system": "http://snomed.info/sct", "code": "laboratory", "display": "Laboratory" }] }
+  ],
+  "code": { "coding": [{ "system": "http://loinc.org", "code": "58410-2", "display": "CBC panel" }] },
+  "subject": { "reference": "Patient/SUBJECT_ID" }
+}
+
+### Read a ServiceRequest by id
+GET {{fhirBase}}/ServiceRequest/REPLACE_WITH_ID
+Authorization: Bearer {{at_token}}
+
+### Routing poll — active lab orders (the fulfilling-module contract)
+GET {{fhirBase}}/ServiceRequest?category=laboratory&status=active
+Authorization: Bearer {{at_token}}
+
+### Search a patient's orders
+GET {{fhirBase}}/ServiceRequest?subject=Patient/SUBJECT_ID
+Authorization: Bearer {{at_token}}
+
+### Invalid routing code → 422 OperationOutcome
+GET {{fhirBase}}/ServiceRequest?category=not-a-category
+Authorization: Bearer {{at_token}}
