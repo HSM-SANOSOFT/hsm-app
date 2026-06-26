@@ -1,4 +1,5 @@
 export * from './fhir.decorator';
+export * from './fhir-bundle.util';
 export * from './fhir-controller.base';
 export * from './fhir-definitions';
 export * from './fhir-operation-outcome.filter';

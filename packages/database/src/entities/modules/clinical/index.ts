@@ -10,4 +10,9 @@
 //
 // Entities are added by U5 (Patient + identifier), U6 (Encounter), U7
 // (ServiceRequest + MedicationRequest stub).
-export {};
+//
+// NOTE: `clinical-resource.base` is an abstract mapped base (no `@Entity`) — it is
+// intentionally NOT re-exported here so it never reaches `Object.values()` for
+// `forFeature` registration (and `isEntity()` would filter it regardless).
+export * from './patient.entity';
+export * from './patient-identifier.entity';

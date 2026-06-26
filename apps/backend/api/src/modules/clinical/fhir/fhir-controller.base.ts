@@ -4,7 +4,6 @@ import {
   Controller,
   UseFilters,
   VERSION_NEUTRAL,
-  Version,
 } from '@nestjs/common';
 import { Roles } from '../../security/roles/roles.decorator';
 import { FhirEndpoint } from './fhir.decorator';
@@ -16,10 +15,12 @@ import { FhirOperationOutcomeFilter } from './fhir-operation-outcome.filter';
  * shared behavior, not a speculative abstraction — every FHIR controller needs all
  * of it:
  *
- * - `@Controller('fhir/R4/<resourceType>')` — the advertised FHIR base path.
- * - `@Version(VERSION_NEUTRAL)` — the app uses global URI versioning
- *   (`defaultVersion: '1'`); without this a controller would serve at
- *   `/v1/fhir/R4/...`. VERSION_NEUTRAL serves at the un-prefixed `/fhir/R4/...`.
+ * - `@Controller({ path: 'fhir/R4/<resourceType>', version: VERSION_NEUTRAL })` —
+ *   the advertised FHIR base path. The app uses global URI versioning
+ *   (`defaultVersion: '1'`); without VERSION_NEUTRAL a controller would serve at
+ *   `/v1/fhir/R4/...`. Version is set via the `@Controller` options object (NOT
+ *   the `@Version` decorator, which is method-scope only and breaks at class
+ *   level), so every route is served at the un-prefixed `/fhir/R4/...`.
  * - `@FhirEndpoint()` (class-level) — marks every route so the global
  *   `ResponseInterceptor` returns raw FHIR (no envelope) and the
  *   `HttpLoggingInterceptor` suppresses PHI bodies.
@@ -34,8 +35,7 @@ export const CLINICAL_STAFF_ROLES = Object.values(RolesClinicalEnum);
 
 export function FhirController(resourceType: string): ClassDecorator {
   return applyDecorators(
-    Controller(`fhir/R4/${resourceType}`),
-    Version(VERSION_NEUTRAL),
+    Controller({ path: `fhir/R4/${resourceType}`, version: VERSION_NEUTRAL }),
     FhirEndpoint(),
     UseFilters(FhirOperationOutcomeFilter),
     Roles(...CLINICAL_STAFF_ROLES),
