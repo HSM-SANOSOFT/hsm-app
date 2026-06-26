@@ -16,6 +16,7 @@ function fakeState(url: string): RouterStateSnapshot {
 const fakeRoute = {} as ActivatedRouteSnapshot;
 
 interface AuthStub {
+  isAdmin: () => boolean;
   needsOnboarding: () => boolean;
 }
 
@@ -39,13 +40,18 @@ describe('pendingOnboardingGuard', () => {
   }
 
   it('redirects a pending user to /onboarding (UrlTree)', () => {
-    configure({ needsOnboarding: () => true });
+    configure({ isAdmin: () => false, needsOnboarding: () => true });
     const result = invoke() as UrlTree;
     expect(router.serializeUrl(result)).toBe('/onboarding');
   });
 
   it('allows a non-pending user', () => {
-    configure({ needsOnboarding: () => false });
+    configure({ isAdmin: () => false, needsOnboarding: () => false });
+    expect(invoke()).toBe(true);
+  });
+
+  it('lets an admin straight through without onboarding', () => {
+    configure({ isAdmin: () => true, needsOnboarding: () => true });
     expect(invoke()).toBe(true);
   });
 });
