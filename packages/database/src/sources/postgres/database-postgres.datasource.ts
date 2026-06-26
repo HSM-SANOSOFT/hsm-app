@@ -17,7 +17,10 @@ import { databasePostgresEntities } from './database-postgres.entities';
  * change. Generating against a synchronized DB would produce empty/wrong diffs,
  * the classic TypeORM trap.
  */
-export const PostgresMigrationDataSource = new DataSource({
+// Single export only: the TypeORM CLI rejects a data-source file that exports
+// more than one DataSource instance, so this stays un-exported and is surfaced
+// solely via the `export default` below.
+const PostgresMigrationDataSource = new DataSource({
   type: 'postgres',
   host: envs.DB_POSTGRES_HOST,
   port: envs.DB_POSTGRES_PORT,

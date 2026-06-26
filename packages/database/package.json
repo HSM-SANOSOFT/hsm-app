@@ -8,7 +8,7 @@
     "generator:entity": "ts-node -r tsconfig-paths/register src/generator/generators/entity.generator.ts",
     "generator:schema": "ts-node -r tsconfig-paths/register src/generator/generators/schema.generator.ts",
     "generator:test:query": "ts-node -r tsconfig-paths/register src/generator/tests/query.test.ts",
-    "typeorm": "ts-node -r tsconfig-paths/register ../../node_modules/typeorm/cli.js -d src/sources/postgres/database-postgres.datasource.ts",
+    "typeorm": "ts-node --transpile-only -r tsconfig-paths/register node_modules/typeorm/cli.js -d src/sources/postgres/database-postgres.datasource.ts",
     "migration:generate": "pnpm typeorm migration:generate src/migrations/Clinical",
     "migration:run": "pnpm typeorm migration:run",
     "migration:revert": "pnpm typeorm migration:revert",

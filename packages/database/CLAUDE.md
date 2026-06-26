@@ -161,6 +161,19 @@ drift.yml`) runs `migration:run` on a fresh DB then asserts `migration:generate`
 produces **nothing** — a non-empty diff means entities changed without a matching
 migration and fails the build. Migrations table: `_clinical_migrations`.
 
+**Known gap (prod-activation TODO).** TypeORM `migration:generate` emits
+`CREATE TABLE "<schema>"."…"` but **never** `CREATE SCHEMA` — for *any* of the
+non-`public` schemas (the app creates them in `onModuleInit`, dev-only). So a
+generated baseline fails on a truly fresh DB with `schema "<x>" does not exist`.
+Before prod migration activation, the first prod-bound module must deliver schema
+creation in the migration path — e.g. a hand-written `0000-init-schemas`
+migration doing `CREATE SCHEMA IF NOT EXISTS` for every
+`DatabasePostgresSchemasEnum` value, ordered before the table migrations. This is
+repo-wide (not clinical-specific) and is part of the deferred prod-activation
+work, not the spine. The CLI itself is verified working
+(`migration:generate` produces the correct clinical baseline, incl. the
+`uq_patient_identifier_system_value` unique index).
+
 ## Don't
 
 - Don't open new TypeORM data sources from app code — extend `sources/` instead.
