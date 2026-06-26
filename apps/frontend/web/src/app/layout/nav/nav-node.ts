@@ -194,7 +194,7 @@ function routeMatches(route: string | undefined, url: string): boolean {
 }
 
 /** Strips the query/fragment and any trailing slash so route matching is exact. */
-function normalizeUrl(url: string): string {
+export function normalizeUrl(url: string): string {
   const withoutQuery = url.split(/[?#]/, 1)[0];
   return withoutQuery.length > 1 && withoutQuery.endsWith('/')
     ? withoutQuery.slice(0, -1)
