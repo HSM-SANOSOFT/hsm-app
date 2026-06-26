@@ -23,6 +23,7 @@ interface EnvVars {
   DB_POSTGRES_USER: string;
   DB_POSTGRES_PASSWORD: string;
   DB_POSTGRES_DB: string;
+  DB_POSTGRES_RUN_MIGRATIONS: boolean;
 
   DB_ORACLE_HOST: string;
   DB_ORACLE_PORT: number;
@@ -66,6 +67,11 @@ const EnvSchema = joi
     DB_POSTGRES_USER: joi.string().required(),
     DB_POSTGRES_PASSWORD: joi.string().required(),
     DB_POSTGRES_DB: joi.string().required(),
+    // KTD9: the non-dev TypeORM migration runner exists but stays INERT unless
+    // this flag is explicitly enabled by the first prod-bound module's deploy.
+    // Defaults off so the spine ships dev-only (synchronize) with no standing
+    // prod ops obligation.
+    DB_POSTGRES_RUN_MIGRATIONS: joi.boolean().default(false),
 
     DB_ORACLE_HOST: joi.string().required(),
     DB_ORACLE_PORT: joi.number().default(1521),
@@ -126,6 +132,7 @@ export const envs = Object.freeze({
   DB_POSTGRES_USER: envVars.DB_POSTGRES_USER,
   DB_POSTGRES_PASSWORD: envVars.DB_POSTGRES_PASSWORD,
   DB_POSTGRES_DB: envVars.DB_POSTGRES_DB,
+  DB_POSTGRES_RUN_MIGRATIONS: envVars.DB_POSTGRES_RUN_MIGRATIONS,
 
   DB_ORACLE_HOST: envVars.DB_ORACLE_HOST,
   DB_ORACLE_PORT: envVars.DB_ORACLE_PORT,

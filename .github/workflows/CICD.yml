@@ -17,8 +17,10 @@ permissions:
 jobs:
   lint:
     uses: ./.github/workflows/lint.yml
+  migration-drift:
+    uses: ./.github/workflows/migration-drift.yml
   build:
-    needs: lint
+    needs: [lint, migration-drift]
     strategy:
       matrix:
         app_type: [main, worker]

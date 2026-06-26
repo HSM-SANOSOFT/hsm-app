@@ -1,0 +1,103 @@
+name: Migration Drift Check
+
+# KTD9 drift guard. Dev `synchronize` and migration-generated schema can silently
+# diverge — the classic TypeORM trap, and the clinical spine is the first
+# prod-bound entity set with no prior baseline to lean on. This job asserts that:
+#   1. the committed migrations apply cleanly to a fresh DB, and
+#   2. `migration:generate` against the migrated DB produces NO new migration
+#      (i.e. the committed migrations fully describe the current entities — no
+#      pending diff after an entity change without a matching migration).
+#
+# A non-empty generated migration => entities changed without a migration => fail.
+
+on:
+  workflow_call: {}
+  pull_request:
+    paths:
+      - 'packages/database/src/entities/**'
+      - 'packages/database/src/migrations/**'
+      - 'packages/database/src/sources/postgres/**'
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: drift
+          POSTGRES_PASSWORD: drift
+          POSTGRES_DB: drift
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U drift"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      # Non-dev so synchronize is OFF — migrations are generated/run against a
+      # clean DB (KTD9). Migration env points the CLI data source at the service.
+      ENVIRONMENT: ci
+      DB_POSTGRES_HOST: localhost
+      DB_POSTGRES_PORT: '5432'
+      DB_POSTGRES_USER: drift
+      DB_POSTGRES_PASSWORD: drift
+      DB_POSTGRES_DB: drift
+      DB_POSTGRES_RUN_MIGRATIONS: 'false'
+      # Dummy values so @hsm/config Joi validation passes in the CLI context.
+      SWAGGER_FAVICON: http://localhost/favicon.ico
+      SWAGGER_SITE_TITLE: CI
+      SMTP_ADDRESS: smtp.test.local
+      SMTP_USERNAME: ci@test.local
+      SMTP_PASSWORD: ci
+      SMTP_PORT: '587'
+      SMTP_SECURE: 'false'
+      JWT_AT_SECRET: ci-at-secret-32-chars-padding!!!!
+      JWT_RT_SECRET: ci-rt-secret-32-chars-padding!!!!
+      DB_ORACLE_HOST: localhost
+      DB_ORACLE_PORT: '1521'
+      DB_ORACLE_USER: ci
+      DB_ORACLE_PASSWORD: ci
+      DB_ORACLE_DB: ci
+      DB_REDIS_HOST: localhost
+      DB_REDIS_PORT: '6379'
+      DB_REDIS_USER: ci
+      DB_REDIS_PASSWORD: ci
+      STRG_S3_ACCESS_KEY: ci
+      STRG_S3_FORCE_PATH_STYLE: 'true'
+      STRG_S3_HOST: http://localhost:9000
+      STRG_S3_HOST_EXTERNAL: http://localhost:9000
+      STRG_S3_REGION: us-east-1
+      STRG_S3_SECRET_KEY: ci
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Ensure clinical schema exists
+        run: |
+          PGPASSWORD=drift psql -h localhost -U drift -d drift \
+            -c 'CREATE SCHEMA IF NOT EXISTS clinical;'
+
+      - name: Apply committed migrations to a fresh DB
+        run: pnpm --filter @hsm/database migration:run
+
+      - name: Assert no drift (migration:generate must produce nothing)
+        run: |
+          # `migration:generate` exits non-zero ("No changes in database schema
+          # were found") when there is no diff — that is the success case here.
+          if pnpm --filter @hsm/database migration:generate; then
+            echo "::error::Entities changed without a matching migration. Run 'pnpm --filter @hsm/database migration:generate' and commit the result."
+            exit 1
+          else
+            echo "No schema drift detected."
+          fi
