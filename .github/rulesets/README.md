@@ -1,32 +1,22 @@
-# GitHub rulesets — release-train enforcement
+# GitHub rulesets — branch protection
 
-These JSON files are the **source of truth** for branch/tag protection that enforces
-the release strategy in
-[`docs/brainstorms/2026-07-02-legacy-oracle-coexistence-requirements.md`](../../docs/brainstorms/2026-07-02-legacy-oracle-coexistence-requirements.md) §6–7.
+Source of truth for branch protection. Applied with
+[`scripts/apply-github-rulesets.sh`](../../scripts/apply-github-rulesets.sh) (needs repo-admin).
 
 | File | Target | What it enforces |
 |------|--------|------------------|
-| `branch-main.json` | `main` | PR required (**0 approvals while solo** — raise to 1 when a second reviewer exists), `pr-gate` status check, linear history, no direct push / force-push / deletion |
-| `branch-development.json` | `development` | same, for the alpha integration branch |
-| `branch-release.json` | `release/**` | same, for beta stabilization branches |
-| `tags-immutable.json` | `v*` tags | no deletion, no force-update (release tags are immutable) |
+| `branch-main.json` | `main` | PR required (0 approvals while solo), linear history, no direct push / force-push / deletion |
+| `branch-development.json` | `development` | same, for the default integration branch |
 
-**No `bypass_actors`** — automation goes through PRs too. The release-tag workflow
-only *creates* tags (allowed); the back-merge workflow opens a *PR* into
-`development` (allowed). Nothing pushes a protected branch directly.
+**Deliberately simple right now.** No required status checks — the CI pipelines are still being
+reworked, so they run informationally and do **not** gate merges. Add a
+`required_status_checks` rule (context `pr-gate`) back to each file once the pipelines are final.
 
-## The "no direct push" rule
+**Model:** `development` is the default branch. Work on a personal branch (`feat/*`, `fix/*` —
+unprotected, push freely) → PR into `development` → PR `development` → `main`. Direct pushes to
+`main`/`development` are blocked; everything lands via PR.
 
-The `pull_request` rule on each protected branch means every change must arrive via a
-merged PR. Personal branches (`feat/*`, `fix/*`, …) are unmatched by any ruleset, so
-developers push those freely — exactly the intended model.
-
-## The "main only from release/\*" rule
-
-GitHub rulesets can't restrict a PR's *source* branch, so that rule is enforced in CI
-by the `branch-policy` job in `pr-validation.yml`, which fails a PR into `main` whose
-head isn't `release/*` (or `hotfix/*`). `branch-policy` feeds `pr-gate`, the required
-check.
+Raise `required_approving_review_count` to `1` when a second reviewer exists.
 
 ## Applying
 
@@ -35,5 +25,4 @@ check.
 ./scripts/apply-github-rulesets.sh
 ```
 
-The script is idempotent — it updates a ruleset in place if one with the same name
-already exists, otherwise creates it. Edit the JSON and re-run to change protection.
+Idempotent — updates a ruleset in place if one with the same name exists, else creates it.
