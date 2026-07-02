@@ -34,10 +34,10 @@ jobs:
         run: |
           if [ "$BASE" = "main" ]; then
             case "$HEAD" in
-              release/*|hotfix/*)
+              development|release/*|hotfix/*)
                 echo "OK: main <- $HEAD" ;;
               *)
-                echo "::error::main only accepts PRs from a release/* (or hotfix/*) branch. Got: $HEAD"
+                echo "::error::main only accepts PRs from development, release/*, or hotfix/*. Got: $HEAD"
                 exit 1 ;;
             esac
           else
