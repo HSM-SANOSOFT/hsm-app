@@ -1,22 +1,29 @@
-# GitHub rulesets — branch protection
+# GitHub rulesets — branch & tag protection
 
-Source of truth for branch protection. Applied with
+Source of truth for repo protection, mirroring the ScoutSportTechnology pattern
+(`sst-cam-proto` / `-firmware` / `-app`). Applied with
 [`scripts/apply-github-rulesets.sh`](../../scripts/apply-github-rulesets.sh) (needs repo-admin).
 
-| File | Target | What it enforces |
-|------|--------|------------------|
-| `branch-main.json` | `main` | PR required (0 approvals while solo), linear history, no direct push / force-push / deletion |
-| `branch-development.json` | `development` | same, for the default integration branch |
+| File | Ruleset | Target | Approvals | Required check |
+|------|---------|--------|:---------:|----------------|
+| `branch-main.json` | `main` | `refs/heads/main` | **1** | `pr-gate` |
+| `branch-development.json` | `development` | `refs/heads/development` | 0 | `pr-gate` |
+| `branch-release.json` | `release-branches` | `refs/heads/release/**` | 0 | `pr-gate` |
+| `release-tags.json` | `Release Tags` | `refs/tags/v*` | — | — |
 
-**Deliberately simple right now.** No required status checks — the CI pipelines are still being
-reworked, so they run informationally and do **not** gate merges. Add a
-`required_status_checks` rule (context `pr-gate`) back to each file once the pipelines are final.
+**Every ruleset bypasses for `OrganizationAdmin` (`always`)** — org admins can override, so a
+solo maintainer is never deadlocked while normal contributors still go through PR + CI.
 
-**Model:** `development` is the default branch. Work on a personal branch (`feat/*`, `fix/*` —
-unprotected, push freely) → PR into `development` → PR `development` → `main`. Direct pushes to
-`main`/`development` are blocked; everything lands via PR.
+**Branch rules:** PR required, no direct push, no force-push, no deletion, `dismiss_stale_reviews_on_push`.
+Status checks are **required but not strict** (`strict=false` → no rebase-up-to-date churn).
+**No linear-history requirement** — merge/squash/rebase all allowed.
 
-Raise `required_approving_review_count` to `1` when a second reviewer exists.
+**Tags:** `v*` are immutable (no delete / update / force) and must match semver
+`^v\d+\.\d+\.\d+(-…)?(\+…)?$`.
+
+**Model:** personal branch (`feat/*`, `fix/*` — unprotected) → PR → `development` (default) →
+PR → `main`; `release/**` for stabilization. The required `pr-gate` check comes from
+`pr-validation.yml`; admins can bypass while the pipelines are still being finalized.
 
 ## Applying
 

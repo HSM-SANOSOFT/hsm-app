@@ -1,8 +1,8 @@
 {
-  "name": "development",
+  "name": "release-branches",
   "target": "branch",
   "enforcement": "active",
-  "conditions": { "ref_name": { "include": ["refs/heads/development"], "exclude": [] } },
+  "conditions": { "ref_name": { "include": ["refs/heads/release/**"], "exclude": [] } },
   "bypass_actors": [
     { "actor_id": 1, "actor_type": "OrganizationAdmin", "bypass_mode": "always" }
   ],

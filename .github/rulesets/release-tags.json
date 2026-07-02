@@ -1,0 +1,23 @@
+{
+  "name": "Release Tags",
+  "target": "tag",
+  "enforcement": "active",
+  "conditions": { "ref_name": { "include": ["refs/tags/v*"], "exclude": [] } },
+  "bypass_actors": [
+    { "actor_id": 1, "actor_type": "OrganizationAdmin", "bypass_mode": "always" }
+  ],
+  "rules": [
+    { "type": "deletion" },
+    { "type": "update" },
+    { "type": "non_fast_forward" },
+    {
+      "type": "tag_name_pattern",
+      "parameters": {
+        "name": "Semver vX.Y.Z",
+        "negate": false,
+        "operator": "regex",
+        "pattern": "^v\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$"
+      }
+    }
+  ]
+}
