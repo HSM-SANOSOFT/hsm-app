@@ -1,0 +1,159 @@
+name: PR Validation
+
+# Required check for every PR into a protected branch (development, release/*, main).
+# Enforces the release-train rules from
+# docs/brainstorms/2026-07-02-legacy-oracle-coexistence-requirements.md §6–7.
+#
+# The `pr-gate` job at the bottom is the single status check to mark "required" in
+# the branch rulesets — it only succeeds if every upstream job did.
+
+on:
+  pull_request:
+    branches:
+      - development
+      - main
+      - 'release/**'
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: pr-validation-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  # --- policy: main may only be merged from a release/* candidate (§6.3.3) -------
+  branch-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enforce main <- release/* only
+        env:
+          BASE: ${{ github.base_ref }}
+          HEAD: ${{ github.head_ref }}
+        run: |
+          if [ "$BASE" = "main" ]; then
+            case "$HEAD" in
+              release/*|hotfix/*)
+                echo "OK: main <- $HEAD" ;;
+              *)
+                echo "::error::main only accepts PRs from a release/* (or hotfix/*) branch. Got: $HEAD"
+                exit 1 ;;
+            esac
+          else
+            echo "OK: base is $BASE, no source-branch restriction."
+          fi
+
+  lint:
+    uses: ./.github/workflows/lint.yml
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build (typecheck + compile)
+        run: pnpm build
+
+  # --- unit tests: pg-native, no live DB (specs mock repositories) ---------------
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Run unit tests
+        # Web (@hsm/web) unit tests need a browser runner; excluded here and run
+        # in a dedicated headless job once configured. Backend + packages run now.
+        run: pnpm turbo run test --filter=!@hsm/web
+
+  # --- integration tests: real read/write/delete against a throwaway Postgres ----
+  # This is the "integration" bar from §8. The app-boot env mirrors migration-drift.
+  # NOTE: expand the `test:e2e` suites per cluster as modules are ported.
+  integration-tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: hsm
+          POSTGRES_PASSWORD: hsm
+          POSTGRES_DB: hsm_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U hsm"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      ENVIRONMENT: ci
+      DB_POSTGRES_HOST: localhost
+      DB_POSTGRES_PORT: '5432'
+      DB_POSTGRES_USER: hsm
+      DB_POSTGRES_PASSWORD: hsm
+      DB_POSTGRES_DB: hsm_test
+      DB_POSTGRES_RUN_MIGRATIONS: 'true'
+      # Dummy values so @hsm/config Joi validation passes (see migration-drift.yml).
+      SWAGGER_FAVICON: http://localhost/favicon.ico
+      SWAGGER_SITE_TITLE: CI
+      SMTP_ADDRESS: smtp.test.local
+      SMTP_USERNAME: ci@test.local
+      SMTP_PASSWORD: ci
+      SMTP_PORT: '587'
+      SMTP_SECURE: 'false'
+      JWT_AT_SECRET: ci-at-secret-32-chars-padding!!!!
+      JWT_RT_SECRET: ci-rt-secret-32-chars-padding!!!!
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build workspace deps
+        run: pnpm build
+      - name: API integration (e2e)
+        run: pnpm --filter @hsm/api test:e2e
+      - name: Worker integration (e2e)
+        run: pnpm --filter @hsm/worker test:e2e
+
+  # --- single required status check -> reference this name in the rulesets --------
+  # integration-tests is intentionally NOT gated yet: the app cannot boot Oracle-free
+  # until that refactor lands (§1/§2.1), so its e2e would fail today. It runs as an
+  # informational job. Add it to `needs` below once the app boots without Oracle.
+  pr-gate:
+    if: always()
+    needs: [branch-policy, lint, build, unit-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assert all checks passed
+        run: |
+          results="${{ needs.branch-policy.result }} ${{ needs.lint.result }} ${{ needs.build.result }} ${{ needs.unit-tests.result }}"
+          echo "Upstream results: $results"
+          for r in $results; do
+            if [ "$r" != "success" ]; then
+              echo "::error::A required check did not pass ($r)."
+              exit 1
+            fi
+          done
+          echo "All required checks passed."
