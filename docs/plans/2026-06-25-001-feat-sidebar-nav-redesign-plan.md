@@ -3,6 +3,14 @@ title: "feat: Sidebar navigation redesign — hover-expand rail, cascade flyouts
 type: feat
 date: 2026-06-25
 origin: docs/brainstorms/2026-06-25-sidebar-redesign-requirements.md
+status: completed
+completed: 2026-06-25
+completion_note: >-
+  Executed and verified against the codebase (2026-07-02). Hover-expand icon
+  rail, cascade flyouts, and CDK overlay model all shipped
+  (layout/nav/{rail,flyout,hover-intent,pointer-capability,breadcrumb,profile-card}.ts).
+  Unit-named commits e21e19d (U3), 406e3bb (U5), ff5319a (U6) confirm execution;
+  the nav-taxonomy scaffold (plan 06-26-001) builds on this chrome.
 ---
 
 # feat: Sidebar Navigation Redesign — Hover-Expand Rail, Cascade Flyouts, Overlay Model
