@@ -1,0 +1,507 @@
+<title>@hsm v2 — Foundation Plan & Module Build Order</title>
+<style>
+  :root{
+    --ink:#14181f;--ink-soft:#2b333d;--paper:#eef1f2;--card:#fff;
+    --line:#d8dee2;--line-soft:#e7ebee;--muted:#5c6771;--muted-2:#869099;
+    --accent:#2d6a8e;--accent-ink:#1d4d68;
+    --green:#2d6a8e;--green-bg:#eaf2f7;--green-line:#bcd6e5;
+    --amber:#bd5f27;--amber-bg:#f9efe6;--amber-line:#eccdae;
+    --live:#2f8f5b;--live-bg:#e8f3ec;--live-line:#bfe0cc;
+    --danger:#b23b3b;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+    --maxw:1140px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:radial-gradient(120% 80% at 50% -10%,#f6f8f9 0%,var(--paper) 55%) fixed;color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;}
+  a{color:var(--accent-ink);}
+
+  header.top{border-bottom:1px solid var(--line);background:rgba(255,255,255,.72);backdrop-filter:blur(6px);position:sticky;top:0;z-index:40;}
+  header.top .wrap{display:flex;align-items:center;gap:18px;padding:12px 24px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:baseline;gap:10px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--green-bg);}
+  .brand b{font-size:14px;letter-spacing:-.01em;}
+  .brand span{font-family:var(--mono);font-size:11px;color:var(--muted);}
+  nav.jump{margin-left:auto;display:flex;gap:2px;flex-wrap:wrap;}
+  nav.jump a{font-size:12px;text-decoration:none;color:var(--muted);padding:5px 9px;border-radius:6px;white-space:nowrap;}
+  nav.jump a:hover{color:var(--ink);background:var(--paper);}
+
+  .hero{padding:44px 0 28px;}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink);display:flex;align-items:center;gap:10px;}
+  .eyebrow::after{content:"";height:1px;flex:1;background:var(--line);}
+  h1{font-size:clamp(27px,4.2vw,44px);line-height:1.06;letter-spacing:-.025em;margin:16px 0 14px;text-wrap:balance;font-weight:680;}
+  .lede{max-width:66ch;color:var(--ink-soft);font-size:16.5px;}
+  .lede b{color:var(--ink);font-weight:640;}
+  .filemeta{margin-top:14px;font-family:var(--mono);font-size:11.5px;color:var(--muted);}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px;}
+  @media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr);}}
+  .stat{border:1px solid var(--line);border-radius:10px;background:var(--card);padding:14px 16px;}
+  .stat .n{font-size:22px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;}
+  .stat .l{font-size:12px;color:var(--muted);margin-top:2px;}
+  .stat.green .n{color:var(--green);}.stat.amber .n{color:var(--amber);}.stat.live .n{color:var(--live);}
+
+  section{padding:32px 0;border-top:1px solid var(--line-soft);}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:20px;flex-wrap:wrap;}
+  .sec-head .num{font-family:var(--mono);font-size:12px;color:var(--muted-2);}
+  .sec-head h2{font-size:21px;letter-spacing:-.02em;margin:0;font-weight:660;}
+  .sec-head .sub{margin-left:auto;font-size:13px;color:var(--muted);}
+
+  /* foundation units */
+  .units{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+  @media(max-width:720px){.units{grid-template-columns:1fr;}}
+  .unit{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:17px;position:relative;transition:box-shadow .15s,transform .15s;}
+  .unit:hover{box-shadow:0 6px 22px rgba(20,24,31,.07);transform:translateY(-1px);}
+  .unit .top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .unit .uid{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--accent-ink);background:var(--green-bg);border:1px solid var(--green-line);border-radius:6px;padding:2px 8px;}
+  .unit h3{margin:0;font-size:14.5px;letter-spacing:-.01em;}
+  .unit .st{margin-left:auto;font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:20px;}
+  .st.todo{background:var(--paper);color:var(--muted);}
+  .st.part{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-line);}
+  .st.done{background:var(--live-bg);color:var(--live);border:1px solid var(--live-line);}
+  .unit p{margin:0;font-size:13px;color:var(--ink-soft);}
+  .unit code{font-family:var(--mono);font-size:11.5px;background:var(--paper);padding:1px 5px;border-radius:4px;}
+  .unit .dep{margin-top:9px;font-family:var(--mono);font-size:10.5px;color:var(--muted-2);}
+
+  /* prerequisites */
+  .prereqs{border:1px solid var(--line);border-radius:12px;background:var(--card);overflow-x:auto;}
+  .prereqs table{border-collapse:collapse;width:100%;min-width:560px;font-size:13px;}
+  .prereqs th,.prereqs td{text-align:left;padding:10px 15px;border-bottom:1px solid var(--line-soft);}
+  .prereqs thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:var(--paper);}
+  .prereqs tbody tr:last-child td{border-bottom:none;}
+  .prereqs .ent{font-family:var(--mono);font-size:12px;font-weight:650;color:var(--accent-ink);}
+  .chain{margin-top:12px;font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 15px;line-height:1.9;overflow-x:auto;}
+  .chain b{color:var(--ink-soft);}
+  .chain .ar{color:var(--accent);}
+
+  /* wave timeline */
+  .waves{display:flex;flex-direction:column;gap:0;}
+  .wave{display:grid;grid-template-columns:64px 1fr;gap:16px;position:relative;}
+  .wrail{display:flex;flex-direction:column;align-items:center;}
+  .wnum{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;font-family:var(--mono);font-weight:700;font-size:15px;background:var(--card);border:1px solid var(--line);color:var(--accent-ink);flex:none;z-index:2;}
+  .wave.w0 .wnum{background:var(--live-bg);border-color:var(--live-line);color:var(--live);}
+  .wave.core .wnum{background:var(--green-bg);border-color:var(--green-line);color:var(--accent-ink);}
+  .wline{width:2px;flex:1;background:var(--line);margin:4px 0;}
+  .wave:last-child .wline{display:none;}
+  .wbody{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:15px 17px;margin-bottom:14px;}
+  .wbody .wh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px;}
+  .wbody .wh h3{margin:0;font-size:15.5px;letter-spacing:-.01em;}
+  .wbody .wh .rid{font-family:var(--mono);font-size:10.5px;color:var(--muted-2);}
+  .wbody .anchor{font-family:var(--mono);font-size:11px;color:var(--amber);background:var(--amber-bg);border:1px solid var(--amber-line);border-radius:5px;padding:1px 7px;}
+  .wbody .wst{margin-left:auto;font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:20px;}
+  .wst.active{background:var(--live-bg);color:var(--live);border:1px solid var(--live-line);}
+  .wst.queued{background:var(--paper);color:var(--muted);}
+  .mods{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px;}
+  .mod{font-family:var(--mono);font-size:11.5px;background:var(--paper);border:1px solid var(--line-soft);border-radius:6px;padding:3px 8px;color:var(--ink-soft);}
+  .mod.x{background:var(--amber-bg);border-color:var(--amber-line);color:var(--amber);}
+  .mod.x::after{content:" ⊕";opacity:.7;}
+  .mod.big{background:var(--green-bg);border-color:var(--green-line);color:var(--accent-ink);font-weight:600;}
+  .wnote{margin-top:9px;font-size:12px;color:var(--muted);}
+  .wnote b{color:var(--ink-soft);}
+  .sublist{margin-top:10px;display:flex;flex-direction:column;gap:2px;}
+  .sub{display:flex;gap:10px;align-items:baseline;padding:5px 0;border-top:1px dashed var(--line-soft);font-size:12.5px;color:var(--ink-soft);}
+  .sub:first-child{border-top:none;}
+  .sub .sid{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--accent-ink);flex:none;min-width:34px;}
+  .sub .sname{font-weight:600;color:var(--ink);}
+  .sub .sx{font-family:var(--mono);font-size:9px;color:#fff;background:var(--amber);border-radius:3px;padding:1px 4px;letter-spacing:.03em;}
+  .sub .sbig{font-family:var(--mono);font-size:9px;color:var(--accent-ink);background:var(--green-bg);border:1px solid var(--green-line);border-radius:3px;padding:0 4px;}
+  .sub .sr{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--muted-2);flex:none;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:18px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .legend .sw{width:11px;height:11px;border-radius:3px;display:inline-block;}
+  .legend .sw.big{background:var(--green-bg);border:1px solid var(--green-line);}
+  .legend .sw.x{background:var(--amber-bg);border:1px solid var(--amber-line);}
+
+  /* domain inventory */
+  .domains{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  @media(max-width:900px){.domains{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:600px){.domains{grid-template-columns:1fr;}}
+  .dom{border:1px solid var(--line);border-top-width:3px;border-radius:12px;background:var(--card);padding:15px;}
+  .dom.clin{border-top-color:var(--live);}
+  .dom.diag{border-top-color:var(--green);}
+  .dom.erp{border-top-color:var(--amber);}
+  .dom.gov{border-top-color:#7a6bbd;}
+  .dom.pf{border-top-color:#2f8f8f;}
+  .dom.plat{border-top-color:var(--muted-2);}
+  .dom h3{margin:0 0 3px;font-size:13.5px;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;}
+  .dom .subsys{font-family:var(--mono);font-size:10px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.06em;}
+  .dom ul{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:5px;}
+  .dom li{font-size:12.5px;color:var(--ink-soft);display:flex;gap:7px;align-items:baseline;}
+  .dom li .lg{font-family:var(--mono);font-size:11px;color:var(--accent-ink);font-weight:600;}
+  .dom li.x .lg{color:var(--amber);}
+  .dom li.x::before{content:"⊕";color:var(--amber);font-size:10px;}
+
+  .excl{margin-top:16px;border:1px solid var(--line);border-left:3px solid var(--danger);border-radius:10px;background:var(--card);padding:13px 16px;font-size:12.5px;color:var(--ink-soft);}
+  .excl b{color:var(--ink);}
+  .excl code{font-family:var(--mono);font-size:11px;background:var(--paper);padding:1px 5px;border-radius:4px;}
+
+  /* hexagonal */
+  .hex{display:grid;grid-template-columns:1fr 1.05fr 1.5fr;gap:12px;align-items:stretch;}
+  @media(max-width:820px){.hex{grid-template-columns:1fr;}}
+  .hexcol,.hexcore{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:16px;}
+  .hexcore{border-color:var(--green-line);background:var(--green-bg);display:flex;flex-direction:column;justify-content:center;gap:5px;text-align:center;}
+  .hexcore-t{font-weight:680;font-size:15px;letter-spacing:-.01em;color:var(--accent-ink);}
+  .hexcore-d{font-size:12.5px;color:var(--ink-soft);}
+  .hexcore-d code{font-family:var(--mono);font-size:11.5px;background:#fff;border:1px solid var(--green-line);padding:1px 5px;border-radius:4px;}
+  .hexlabel{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted-2);margin-bottom:10px;}
+  .hexcol.driving{border-left:3px solid var(--accent);}
+  .hexcol.driven{border-left:3px solid var(--amber);}
+  .hexnote{font-size:12px;color:var(--muted);margin-top:9px;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .hexchip{font-family:var(--mono);font-size:11px;background:var(--paper);border:1px solid var(--line-soft);border-radius:6px;padding:3px 8px;color:var(--ink-soft);}
+  .hexcol.driving .hexchip{background:var(--green-bg);border-color:var(--green-line);color:var(--accent-ink);}
+
+  /* recap model + enforcement */
+  .grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr;}}
+  .panel{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:17px;}
+  .panel h3{margin:0 0 10px;font-size:14.5px;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;}
+  .panel .row{display:flex;gap:11px;padding:8px 0;border-top:1px solid var(--line-soft);font-size:12.5px;color:var(--ink-soft);align-items:flex-start;}
+  .panel .row:first-of-type{border-top:none;}
+  .panel .row .f{font-family:var(--mono);font-size:10.5px;color:var(--accent-ink);background:var(--green-bg);border:1px solid var(--green-line);border-radius:5px;padding:2px 7px;height:fit-content;white-space:nowrap;}
+  .panel .row b{color:var(--ink);}
+  .rs{display:flex;gap:8px;align-items:center;padding:7px 0;border-top:1px solid var(--line-soft);font-size:12.5px;}
+  .rs:first-of-type{border-top:none;}
+  .rs .ok{color:var(--live);font-weight:700;}
+  .rs code{font-family:var(--mono);font-size:11px;background:var(--paper);padding:1px 6px;border-radius:4px;}
+  .live-badge{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--live);background:var(--live-bg);border:1px solid var(--live-line);padding:2px 8px;border-radius:20px;}
+
+  footer{padding:28px 0 60px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line-soft);margin-top:20px;}
+  footer .wrap{display:flex;gap:14px;flex-wrap:wrap;align-items:center;}
+  footer .mono{font-family:var(--mono);}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px;}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><span class="dot" aria-hidden="true"></span><b>Foundation Plan &amp; Build Order</b><span>@hsm&nbsp;v2</span></div>
+    <nav class="jump" aria-label="Jump to section">
+      <a href="#plan">Foundation</a>
+      <a href="#prereq">Prerequisites</a>
+      <a href="#waves">Build waves</a>
+      <a href="#inventory">Modules I have</a>
+      <a href="#arch">Hexagonal</a>
+      <a href="#model">Model</a>
+      <a href="#enforce">Release train</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Implementation plan &nbsp;·&nbsp; feat &nbsp;·&nbsp; status: active &nbsp;·&nbsp; 2026-07-02</div>
+    <h1>Standalone pg-native foundation, then rebuild SanoSoft wave by wave</h1>
+    <p class="lede">
+      First: cut the app loose from Oracle and land the release train (this plan, 4 units).
+      Then rebuild <b>~50+ legacy modules</b> greenfield, wave by wave through the <b>legacy
+      subsystems</b> — platform core → HIS (clinical) → HAS (business/ERP) → SGI (governance) —
+      each module hexagonal, cutting a cluster over only once its whole dependency graph is ported.
+    </p>
+    <div class="filemeta">docs/plans/2026-07-02-001-feat-standalone-pg-native-foundation-plan.md</div>
+    <div class="stats">
+      <div class="stat green"><div class="n">5</div><div class="l">Foundation units (U1–U5)</div></div>
+      <div class="stat amber"><div class="n">~50+</div><div class="l">Legacy modules to rebuild · ~250 Oracle tables</div></div>
+      <div class="stat live"><div class="n">5</div><div class="l">Subsystem waves (W0–W4), sub-numbered</div></div>
+      <div class="stat"><div class="n">6</div><div class="l">High-fan-in entities that force the order</div></div>
+    </div>
+  </div>
+
+  <!-- FOUNDATION UNITS -->
+  <section id="plan">
+    <div class="sec-head"><span class="num">W0</span><h2>The foundation plan — 5 units</h2><span class="sub">Legend: ☐ not-started · 🟡 in-progress · ⛔ blocked · 👀 review · ✅ done · ✔️ verified</span></div>
+    <div class="units">
+      <div class="unit">
+        <div class="top"><span class="uid">U1</span><h3>Unwire Oracle datasource — keep files</h3><span class="st todo">to build</span></div>
+        <p>One edit: drop <code>DatabaseOracleModule</code> from <code>database-sources.module.ts</code> → both apps stop dialing Oracle at boot. Nothing queries it, so no service breaks. Files stay on disk for the cutoff-migration generator.</p>
+        <div class="dep">deps: none · fixes ORA-12170</div>
+      </div>
+      <div class="unit">
+        <div class="top"><span class="uid">U2</span><h3>Relax <code>DB_ORACLE_*</code> config</h3><span class="st todo">to build</span></div>
+        <p>Make the Oracle env vars optional so the app + Jest validate without creds. Atomic across <code>envs.ts</code> + <code>test-setup.ts</code> + <code>.env.example</code> (dotenv back-fill trap).</p>
+        <div class="dep">deps: U1</div>
+      </div>
+      <div class="unit">
+        <div class="top"><span class="uid">U3</span><h3>CI: API boots Oracle-free</h3><span class="st todo">to build</span></div>
+        <p>Regression e2e: app bootstraps + serves a pg-native endpoint with no Oracle host, Postgres-only. Once green, add <code>integration-tests</code> to the required <code>pr-gate</code>.</p>
+        <div class="dep">deps: U1, U2</div>
+      </div>
+      <div class="unit">
+        <div class="top"><span class="uid">U4</span><h3>Land &amp; activate the release train</h3><span class="st part">☐ rulesets live</span></div>
+        <p>Commit workflows + rulesets, create <code>development</code>, bootstrap. <b>4 rulesets applied</b>; approval count set to <b>0</b> (solo-workable). Back-merge PR still needs a PAT (only matters after a stable release).</p>
+        <div class="dep">deps: none · independent of U1–U3</div>
+      </div>
+      <div class="unit">
+        <div class="top"><span class="uid">U5</span><h3>Progress tracking dashboard</h3><span class="st part">🟡 in-progress</span></div>
+        <p>This surface. Markdown status doc + this HTML companion (no Angular). Tracks units U1–U5 &amp; waves W0–W4; updated on each merge.</p>
+        <div class="dep">deps: none · updated by every unit's done-criteria</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PREREQUISITES -->
+  <section id="prereq">
+    <div class="sec-head"><span class="num">why this order</span><h2>Dependency prerequisites</h2><span class="sub">High fan-in — almost everything reads these</span></div>
+    <div class="prereqs">
+      <table>
+        <thead><tr><th>Legacy entity</th><th>Role</th><th>Consumed by</th></tr></thead>
+        <tbody>
+          <tr><td class="ent">CG_REF_CODES</td><td>System-wide enum / reference-code dictionary</td><td>Nearly every module</td></tr>
+          <tr><td class="ent">CG_CODE_CONTROLS</td><td>App-managed numbering counters (concurrency-critical)</td><td>Invoices, docs, orders</td></tr>
+          <tr><td class="ent">PERSONAL</td><td>Staff master = app users (identity anchor)</td><td>RBAC, schedules, signatures, honoraria</td></tr>
+          <tr><td class="ent">PACIENTES</td><td>Patient master</td><td>Every HIS / HAS / SGI / Api module</td></tr>
+          <tr><td class="ent">PERMANENCIAS_Y_ATENCIONES</td><td>Admission / stay = <b>episode key</b></td><td>All clinical notes, diagnoses, CUENTAS</td></tr>
+          <tr><td class="ent">CUENTAS</td><td>Patient account = charge bus</td><td>Billing, AR, SRI, insurer planillas</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="chain">
+      <b>PACIENTES</b> <span class="ar">→</span> PERMANENCIAS <span class="ar">→</span> {evolución, diagnósticos, <b>CUENTAS</b>}<br>
+      <b>CUENTAS</b> <span class="ar">→</span> FACTURAS <span class="ar">→</span> {DETALLES, CxC, FACTURA_ELECTRONICA_SRI}<br>
+      <b>PERSONAL</b> <span class="ar">→</span> privilegios <span class="ar">→</span> menú &nbsp;(RBAC) &nbsp;·&nbsp; <b>PACIENTES</b> <span class="ar">→</span> TURNOS_CE <span class="ar">→</span> HORARIOS_MEDICO <span class="ar">→</span> PERSONAL
+    </div>
+  </section>
+
+  <!-- WAVES -->
+  <section id="waves">
+    <div class="sec-head"><span class="num">roadmap</span><h2>Build waves — W0 → W9</h2><span class="sub">Each cluster = its own brainstorm → plan → work → cutover</span></div>
+    <div class="legend">
+      <span><span class="sw big"></span> anchor / high-fan-in module</span>
+      <span><span class="sw x"></span> ⊕ audit-surfaced (missing from generic R6–R37)</span>
+    </div>
+    <div class="waves">
+
+      <div class="wave w0">
+        <div class="wrail"><div class="wnum">W0</div><div class="wline"></div></div>
+        <div class="wbody">
+          <div class="wh"><h3>Foundation</h3><span class="rid">this plan</span><span class="wst active">active</span></div>
+          <div class="mods"><span class="mod big">standalone pg-native</span><span class="mod big">release train</span><span class="mod">Documents ✓</span><span class="mod">Templates &amp; Comms ✓</span><span class="mod">FHIR spine (partial)</span><span class="mod">System Admin (partial)</span></div>
+        </div>
+      </div>
+
+      <div class="wave core">
+        <div class="wrail"><div class="wnum">W1</div><div class="wline"></div></div>
+        <div class="wbody">
+          <div class="wh"><h3>Platform core</h3><span class="rid">SIS / TIC · shared services</span><span class="wst queued">queued</span></div>
+          <div class="wnote">Read/written by <b>every</b> later module — goes first.</div>
+          <div class="sublist">
+            <div class="sub"><span class="sid">W1.1</span><span><span class="sname">Identity + data-driven RBAC</span> — replace PERSONAL.CARGO + menu grants</span><span class="sr">R2·R36</span></div>
+            <div class="sub"><span class="sid">W1.2</span><span><span class="sname">Reference-code dictionary</span> — CG_REF_CODES <span class="sbig">anchor</span></span><span class="sr">R3</span></div>
+            <div class="sub"><span class="sid">W1.3</span><span><span class="sname">Atomic numbering</span> — CG_CODE_CONTROLS <span class="sbig">anchor</span></span><span class="sr"></span></div>
+            <div class="sub"><span class="sid">W1.4</span><span><span class="sname">Module registry</span></span><span class="sr">R1</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wave core">
+        <div class="wrail"><div class="wnum">W2</div><div class="wline"></div></div>
+        <div class="wbody">
+          <div class="wh"><h3>HIS — clinical</h3><span class="rid">419 files call oci_*</span><span class="anchor">PACIENTES · PERMANENCIAS</span><span class="wst queued">queued</span></div>
+          <div class="sublist">
+            <div class="sub"><span class="sid">W2.1</span><span><span class="sname">Paciente</span> — PACIENTES: registration, MPI/merge, insurance stub <span class="sbig">anchor</span></span><span class="sr">R6</span></div>
+            <div class="sub"><span class="sid">W2.2</span><span><span class="sname">Encounters / HCU</span> — episode key, MSP forms, <span class="sx">referrals</span> <span class="sx">infection ctrl</span></span><span class="sr">R7·R8</span></div>
+            <div class="sub"><span class="sid">W2.3</span><span><span class="sname">Médicos</span> — Hoja hub: anamnesis, dx, orders, Rx; <span class="sx">anesthesia</span> <span class="sx">neonatal</span></span><span class="sr">R8·R9</span></div>
+            <div class="sub"><span class="sid">W2.4</span><span><span class="sname">Enfermería</span> — eMAR/kardex, vitals; transfusión → <span class="sx">Blood Bank (SMT)</span></span><span class="sr">R10</span></div>
+            <div class="sub"><span class="sid">W2.5</span><span><span class="sname">Laboratorio (LIS)</span> — order→sample→result; <span class="sx">pathology</span> · <b>Resultados</b> endpoint (app+API+portal)</span><span class="sr">R15</span></div>
+            <div class="sub"><span class="sid">W2.6</span><span><span class="sname">Farmacia</span> — CNMB, dispensing, kardex TRANSACCIONES, ITEMS</span><span class="sr">R17</span></div>
+            <div class="sub"><span class="sid">W2.7</span><span><span class="sname">Imágenes / RIS</span> — scheduling + Orthanc PACS</span><span class="sr">R16·R5</span></div>
+            <div class="sub"><span class="sid">W2.8</span><span><span class="sname">Specialty</span> — Cirugía/OR, <span class="sx">Maternidad</span> <span class="sx">Odontología</span> <span class="sx">Nutrición</span> Fisio <span class="sx">T. respiratoria</span></span><span class="sr">R11–R14</span></div>
+            <div class="sub"><span class="sid">W2.9</span><span><span class="sname">DTM</span> — <span class="sx">medical / billing audit</span></span><span class="sr"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wave">
+        <div class="wrail"><div class="wnum">W3</div><div class="wline"></div></div>
+        <div class="wbody">
+          <div class="wh"><h3>HAS — business / ERP</h3><span class="rid">admin &amp; financial</span><span class="anchor">CUENTAS → FACTURAS</span><span class="wst queued">queued</span></div>
+          <div class="sublist">
+            <div class="sub"><span class="sid">W3.1</span><span><span class="sname">Admisión / ADT</span> — beds, stays, turnos; <b>creates the episode key</b> (↔ W2.2) · <b>AutoAdmisión</b> endpoint (app+API)</span><span class="sr">R7·R32</span></div>
+            <div class="sub"><span class="sid">W3.2</span><span><span class="sname">Facturación</span> — Facturar; <span class="sx">SRI e-invoice</span> <span class="sx">Convenios</span> · Pagos en línea (Api/PAGOS). Heaviest PL/SQL <span class="sbig">anchor</span></span><span class="sr">R19</span></div>
+            <div class="sub"><span class="sid">W3.3</span><span><span class="sname">Cobranza / AR</span> — cuenta_cobrar</span><span class="sr">R19</span></div>
+            <div class="sub"><span class="sid">W3.4</span><span><span class="sname">GFN / Contabilidad</span> — <b>Panacea SQL Server → PG double-migration</b></span><span class="sr">R18</span></div>
+            <div class="sub"><span class="sid">W3.5</span><span><span class="sname">Inventario + Compras</span> — item master, stock, POs → AP</span><span class="sr">R20·R21</span></div>
+            <div class="sub"><span class="sid">W3.6</span><span><span class="sname">Activos / Biomédica</span> — <span class="sx">Facilities / MSGMNT</span></span><span class="sr">R22</span></div>
+            <div class="sub"><span class="sid">W3.7</span><span><span class="sname">MKT / CRM</span> — cotizador, pipeline</span><span class="sr">R24</span></div>
+            <div class="sub"><span class="sid">W3.8</span><span><span class="sname">MSG</span> — <span class="sx">Nómina (SQL Server)</span> <span class="sx">Desechos</span> <span class="sx">Lavandería</span> Mantenimiento</span><span class="sr">R23</span></div>
+            <div class="sub"><span class="sid">W3.9</span><span><span class="sname">Physician honoraria</span> — <span class="sx">DTM / GGR</span></span><span class="sr"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wave">
+        <div class="wrail"><div class="wnum">W4</div><div class="wline"></div></div>
+        <div class="wbody">
+          <div class="wh"><h3>SGI — governance</h3><span class="rid">management systems</span><span class="wst queued">queued</span></div>
+          <div class="wnote">In legacy these write into the clinical/billing schema — the rebuild gives them clean boundaries.</div>
+          <div class="sublist">
+            <div class="sub"><span class="sid">W4.1</span><span><span class="sname">SGC</span> — calidad &amp; compliance (ISO, CAPA)</span><span class="sr">R26</span></div>
+            <div class="sub"><span class="sid">W4.2</span><span><span class="sname">SSA</span> — <span class="sx">salud ocupacional</span> (risk matrix, occupational files)</span><span class="sr"></span></div>
+            <div class="sub"><span class="sid">W4.3</span><span><span class="sname">GSP</span> — <span class="sx">seguridad del paciente</span> (adverse events, brazalete)</span><span class="sr"></span></div>
+            <div class="sub"><span class="sid">W4.4</span><span><span class="sname">SGD</span> — document management</span><span class="sr">R33</span></div>
+            <div class="sub"><span class="sid">W4.5</span><span><span class="sname">SGI</span> — indicadores / BSC; Reporting / Analytics / BI; <span class="sx">INEC/MSP reporting</span> → <b>v2 GA</b></span><span class="sr">R35</span></div>
+            <div class="sub"><span class="sid">W4.6</span><span><span class="sname">Support</span> — <span class="sx">GTH HR certs</span> Legal Investigación T.Social Helpdesk</span><span class="sr">R27–R30</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="excl">
+      <b>Not rigid phases.</b> Sub-modules within a wave start once their prerequisites are ported (W1 shared services, W2.1 Paciente, then the episode key at the W2.2 / W3.1 seam). <b>Admisión (W3.1) creates the episode key</b> HIS encounters (W2.2) consume, and <b>HIS produces the charges (CUENTAS)</b> HAS billing (W3.2) bills — so the seams interleave. Cutover stays per-cluster (origin §5).
+    </div>
+  </section>
+
+  <!-- INVENTORY -->
+  <section id="inventory">
+    <div class="sec-head"><span class="num">what I have</span><h2>Module inventory — by domain</h2><span class="sub">SanoSoft · Hospital Santa María · ⊕ = audit-surfaced extra</span></div>
+    <div class="domains">
+      <div class="dom clin">
+        <h3>Clinical</h3><div class="subsys">subsystem HIS · 419 files call oci_*</div>
+        <ul>
+          <li><span class="lg">FARMACIA</span> pharmacy · CNMB · kardex</li>
+          <li><span class="lg">HCU</span> historia clínica · MSP forms</li>
+          <li><span class="lg">MEDICOS</span> physician workstation (Hoja hub)</li>
+          <li><span class="lg">ENFERMERIA</span> nursing · MAR · vitals</li>
+          <li><span class="lg">LABORATORIO</span> lab orders → results</li>
+          <li><span class="lg">DTM</span> medical / billing audit</li>
+          <li class="x"><span class="lg">SMT</span> blood bank / transfusion</li>
+          <li class="x"><span class="lg">Nutrición</span> dietas · bariátrica</li>
+        </ul>
+      </div>
+      <div class="dom diag">
+        <h3>Diagnostics &amp; Therapeutics</h3><div class="subsys">HIS subset</div>
+        <ul>
+          <li><span class="lg">Laboratorio</span> hema · química · micro · citología</li>
+          <li><span class="lg">IMAGENES / RIS</span> scheduling + Orthanc PACS</li>
+          <li class="x"><span class="lg">Anatomía patológica</span> biopsia · citología</li>
+          <li class="x"><span class="lg">Terapia respiratoria</span> TRES</li>
+          <li class="x"><span class="lg">Anestesia</span> pre/trans/post records</li>
+        </ul>
+      </div>
+      <div class="dom erp">
+        <h3>Business / ERP</h3><div class="subsys">subsystem HAS</div>
+        <ul>
+          <li><span class="lg">FACTURACION</span> billing (Facturar) · SRI</li>
+          <li><span class="lg">COB</span> collections / AR (cuenta_cobrar)</li>
+          <li><span class="lg">ADM</span> admisión · beds · turnos (~50 apps)</li>
+          <li><span class="lg">GFN</span> finance · dual-DB bridge</li>
+          <li><span class="lg">MKT</span> CRM · cotizador</li>
+          <li><span class="lg">MSG</span> nómina · desechos · lavandería</li>
+          <li class="x"><span class="lg">MSGMNT</span> facilities / maintenance</li>
+        </ul>
+      </div>
+      <div class="dom gov">
+        <h3>Governance / SGI</h3><div class="subsys">subsystem SGI</div>
+        <ul>
+          <li><span class="lg">SGC</span> quality · ISO · CAPA</li>
+          <li><span class="lg">SGI</span> strategic indicators / BSC</li>
+          <li><span class="lg">SGD</span> document management</li>
+          <li class="x"><span class="lg">GSP</span> patient safety · brazalete</li>
+          <li class="x"><span class="lg">SSA</span> occupational health · odontograma</li>
+          <li class="x"><span class="lg">GGR</span> médico honoraria reporting</li>
+          <li class="x"><span class="lg">GTH</span> HR rest / leave certificates</li>
+        </ul>
+      </div>
+      <div class="dom pf">
+        <h3>Patient-facing</h3><div class="subsys">web + Node services</div>
+        <ul>
+          <li><span class="lg">AutoAdmisión</span> self-registration + API</li>
+          <li><span class="lg">Resultados_Exámenes</span> portal · OTP</li>
+          <li><span class="lg">CHATBOT</span> WhatsApp (bot_ventas)</li>
+          <li><span class="lg">VIDEOS</span> waiting-room signage</li>
+          <li><span class="lg">PagosenLinea</span> online payments</li>
+        </ul>
+      </div>
+      <div class="dom plat">
+        <h3>Platform / Security</h3><div class="subsys">TIC · SIS · Api</div>
+        <ul>
+          <li><span class="lg">TIC/SEG</span> RBAC · users · firma · token</li>
+          <li><span class="lg">SIS/core</span> bootstrap · login · query</li>
+          <li><span class="lg">Api</span> MAIL · HSM_DOCS · ORTHANC · PAGOS</li>
+          <li class="x"><span class="lg">SRI</span> e-invoice signing (firmar.exe)</li>
+          <li class="x"><span class="lg">Referencias</span> derivaciones (SOAMWEB)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="excl">
+      <b>Excluded from the rebuild (dead / duplicate):</b> backups &amp; clones (<code>- Copy</code>, <code>-RESPALDO</code>, <code>_dev</code>, <code>evolucion_enfermeria_1..13</code>), empty stubs (<code>ETIQUETAS_SANGRE</code>, <code>HAS/GAA/GTH</code>), and the full <code>Modulos/respaldo</code> mirror (~220 modules). Confirm live-vs-dead against <code>SN_CONTENIDO_MENU.NOMBRE_ARCHIVO</code> before dropping.
+    </div>
+  </section>
+
+  <!-- HEXAGONAL -->
+  <section id="arch">
+    <div class="sec-head"><span class="num">architecture</span><h2>Hexagonal — ports &amp; adapters</h2><span class="sub">Swap any provider — or the DB — without touching logic</span></div>
+    <div class="hex">
+      <div class="hexcol driving">
+        <div class="hexlabel">Driving adapter = the API →</div>
+        <div class="chips"><span class="hexchip">REST endpoints</span></div>
+        <div class="hexnote"><b>The backend IS the API.</b> Each module exposes REST endpoints — runs <b>with or without a frontend</b>. The Angular app is just one client, no different from an external caller.</div>
+      </div>
+      <div class="hexcore">
+        <div class="hexcore-t">Domain / business logic</div>
+        <div class="hexcore-d">depends only on <code>ports</code> (interfaces)</div>
+      </div>
+      <div class="hexcol driven">
+        <div class="hexlabel">→ Driven adapters</div>
+        <div class="chips">
+          <span class="hexchip">Postgres / TypeORM</span><span class="hexchip">SRI signing</span><span class="hexchip">Payment gateway</span><span class="hexchip">Email / SMS</span><span class="hexchip">Orthanc PACS</span><span class="hexchip">Panacea SQL Server (cutoff)</span><span class="hexchip">Citizen lookup</span><span class="hexchip">Biometric</span><span class="hexchip">WhatsApp</span>
+        </div>
+        <div class="hexnote">Each hides behind a port — swapping one never edits domain code. <b>The DB is an adapter too</b> (already true via the ORM).</div>
+      </div>
+    </div>
+    <div class="excl" style="border-left-color:var(--accent);">
+      <b>Corollaries:</b> the backend <b>is</b> the API, so <code>Api/*</code> apps are just normal module endpoints living where their data does (<b>Pagos → billing, AutoAdmisión → admissions, Resultados → lab</b>) — nothing to "fold into a layer." <b>Patient-facing is frontend</b> (Angular calling those same endpoints), not a backend wave. Dropping Oracle = removing one driven adapter; domain untouched. <b>Chatbot &amp; signage: deferred</b> (documented as extra clients of the same endpoints).
+    </div>
+  </section>
+
+  <!-- MODEL RECAP -->
+  <section id="model">
+    <div class="sec-head"><span class="num">context</span><h2>Why it works — the standalone model</h2><span class="sub">Full model in the brainstorm doc</span></div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>pg-native, no runtime Oracle</h3>
+        <div class="row"><span class="f">build</span><div>Every module = <b>full greenfield CRUD</b> + unit + integration tests. Postgres is truth from day one.</div></div>
+        <div class="row"><span class="f">parallel</span><div>Legacy stays the system of record with real users; new app runs as a <b>standalone beta</b>. No runtime link.</div></div>
+        <div class="row"><span class="f">one writer</span><div>Legacy is the only production writer of a cluster until its cutover.</div></div>
+      </div>
+      <div class="panel">
+        <h3>Cutoff — the one legacy touch</h3>
+        <div class="row"><span class="f">per cluster</span><div>Once a whole wave/cluster is ported: <b>one-time bulk migration</b> Oracle (+ Panacea) → Postgres.</div></div>
+        <div class="row"><span class="f">prove</span><div>Reconcile + end-to-end on migrated data, then flip: new app becomes the writer.</div></div>
+        <div class="row"><span class="f">GA</span><div>Repeat per cluster → legacy fully retired → <b>v2 GA</b>.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ENFORCEMENT -->
+  <section id="enforce">
+    <div class="sec-head"><span class="num">U4</span><h2>Release train — landed &amp; enforced</h2><span class="sub live-badge">rulesets active</span></div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>CI/CD workflows</h3>
+        <div class="row"><span class="f">pr-validation</span><div><b>Required check.</b> branch-policy → lint → build → unit tests, aggregated as <b>pr-gate</b>. Integration (Oracle-free boot) joins once green.</div></div>
+        <div class="row"><span class="f">release-tag</span><div>alpha on <code style="font-family:var(--mono)">development</code>, beta on <code style="font-family:var(--mono)">release/*</code>, stable on <code style="font-family:var(--mono)">main</code>.</div></div>
+        <div class="row"><span class="f">back-merge</span><div>Cascade PR main → development after a stable release.</div></div>
+      </div>
+      <div class="panel">
+        <h3>GitHub rulesets <span class="live-badge">4 active</span></h3>
+        <div class="rs"><span class="ok">✓</span><code>protect-main</code><span style="color:var(--muted)">PR · pr-gate · linear · no force/delete</span></div>
+        <div class="rs"><span class="ok">✓</span><code>protect-development</code><span style="color:var(--muted)">alpha branch</span></div>
+        <div class="rs"><span class="ok">✓</span><code>protect-release</code><span style="color:var(--muted)">release/**</span></div>
+        <div class="rs"><span class="ok">✓</span><code>immutable-version-tags</code><span style="color:var(--muted)">v* — no delete/force</span></div>
+        <div style="margin-top:11px;font-size:12px;color:var(--muted);border-top:1px solid var(--line-soft);padding-top:9px;">No direct push to protected branches · main only from <code style="font-family:var(--mono)">release/*</code> · no bypass actors.</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span class="mono">docs/plans/2026-07-02-001-feat-standalone-pg-native-foundation-plan.md</span>
+    <span>·</span>
+    <span>origin: legacy-oracle-coexistence brainstorm</span>
+    <span>·</span>
+    <span class="mono">status: active</span>
+  </div>
+</footer>

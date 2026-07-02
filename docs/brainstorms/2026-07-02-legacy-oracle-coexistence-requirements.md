@@ -1,8 +1,10 @@
 ---
-title: Legacy Oracle ⇄ New App Coexistence Architecture
+title: Legacy → New App Migration & Release Strategy
 status: draft — awaiting review
 created: 2026-07-02
+updated: 2026-07-02
 authors: Raul Santamaria (+ Claude)
+supersedes: the earlier "Legacy Oracle ⇄ Coexistence / Legacy Bridge" draft of this file
 related:
   - docs/migration/2026-06-29-legacy-system-audit.md
   - docs/migration/2026-06-29-legacy-modules-detail.md
@@ -10,312 +12,275 @@ related:
   - docs/roadmap/2026-06-26-hospital-platform-build-tracker.md
 ---
 
-# Legacy Oracle ⇄ New App Coexistence Architecture
+# Legacy → New App Migration & Release Strategy
 
-## Planning inputs (required reading before planning)
-
-This brainstorm defines the **coexistence mechanism**. The plan derived from it
-(`/ce-plan`) MUST NOT be written from this document alone — it must first deep-dive
-the legacy audits and reconcile them against the roadmap, because *which* modules to
-rebuild and *in what order* depends on the legacy inventory, not on this mechanism doc.
-
-Required reading, and how each feeds the plan:
-
-- **`docs/migration/2026-06-29-legacy-system-audit.md`** — the authoritative subsystem →
-  module → table/PL-SQL inventory (~250 Oracle tables, ~30 procs, integrations, auth model).
-  Use it to enumerate every module that must be rebuilt and every legacy table/proc each one
-  touches.
-- **`docs/migration/2026-06-29-legacy-modules-detail.md`** — the per-sub-app deep pass
-  (~370 folders, W=writes, dead/duplicate flags). Use it to scope a module precisely and to
-  avoid porting dead/duplicate folders.
-- **`docs/roadmap/2026-06-26-hospital-platform-build-tracker.md`** — the living module roadmap
-  (R6–R37 + cross-cutting). The plan must **reconcile the audit against this tracker**: add the
-  modules the audit surfaces that the generic taxonomy is missing (Blood Bank, Occupational
-  Health, Dental, Patient Safety, Physician Honoraria/Audit, Referrals, Infection Control,
-  Facilities, SRI e-invoicing, Insurance/Convenios, …) and the cross-cutting services
-  (identity/RBAC, reference-code dictionary, atomic numbering, the Legacy Bridge itself), then
-  **sequence the build waves** and update the tracker's UI-frame/Build status accordingly.
-
-The plan must, for each module it schedules, state its **archetype** (`pg-native` /
-`legacy-owned` / `cutover`, §2 below), the legacy tables/procs it depends on (from the audits),
-and — for `legacy-owned` modules — the `Legacy<Entity>Adapter`(s) needed for read-through.
+> **Direction change (2026-07-02).** An earlier version of this doc designed a
+> runtime *Legacy Bridge* (live read-through from Oracle, resolve-or-hydrate, UUID
+> ⇄ legacy-key mirroring). **That approach is dropped.** The new app stands on its
+> own: **pure pg-native, no runtime connection to Oracle at all.** This doc records
+> the replacement model and the branch/release strategy that ships it.
 
 ## 1. Problem & context
 
-We are rebuilding the legacy hospital system **SanoSoft** (server-rendered PHP + Oracle,
-system of record `10.1.1.10/SMARIA`) as a new platform (`@hsm/api` NestJS + TypeORM +
-Postgres, `@hsm/web` Angular). The rebuild is **incremental and long-running**: the legacy
-app stays in production and keeps writing Oracle the entire time, and we are **not allowed
-to modify the legacy codebase**.
+We are rebuilding **SanoSoft** (server-rendered PHP + Oracle, system of record
+`10.1.1.10/SMARIA`) as a new platform (`@hsm/api` NestJS + TypeORM + Postgres,
+`@hsm/web` Angular). Constraints:
 
-Two hard requirements drive this design:
+- The legacy app **stays in production** and keeps writing Oracle the whole time.
+- We are **not allowed to modify the legacy codebase or Oracle** (SELECT/UPDATE
+  only per CLAUDE.md — no DDL, no triggers).
+- **Panacea (SQL Server)** is a *double migration*: Panacea is itself being folded
+  into legacy, and legacy is then being rebuilt into the new app. Panacea → legacy
+  → new app. It is **not** a separate coexistence problem to solve at runtime; it
+  collapses into the same one-time data migration at cutoff (§5).
 
-1. **Dev must not require Oracle.** The new app currently fails to boot when the Oracle host
-   is unreachable (`ORA-12170` at startup). Local development and CI must run against the new
-   Postgres tables alone, with no Oracle dependency.
-2. **The new app must still read live legacy data** — in both dev (opt-in) and prod — because
-   most entities (patients, encounters, billing, …) live only in Oracle until their module is
-   ported.
+### The framing decision
 
-A critical framing fact discovered during design: **the new app is not used by floor staff
-for Oracle-tied modules.** Those modules are rebuilt and *validated* by a small team (the
-developers + a few users). Only the **greenfield modules — coms, documents, templates, auth —
-are genuinely "live"**, and even those serve a limited user set. This is what makes the design
-tractable: the new app is effectively a **reader** of legacy-owned data and a **writer** only
-of its own greenfield data, until each module is deliberately cut over.
+The earlier draft assumed the new app had to **read live legacy data at request
+time** and therefore needed a bridge into Oracle. We reject that. Reasons:
 
-## 2. Module archetypes
+- **Everything in legacy is interconnected.** You cannot meaningfully wire one
+  entity to live Oracle without dragging in its whole dependency graph.
+- A runtime coupling makes the new app forever dependent on the very system we are
+  trying to retire, and it re-introduces the Oracle-at-boot fragility.
+- We would rather the new app **owns its own data and schema completely**, and
+  proves each subsystem greenfield, than mirror a "badly-configured, outdated"
+  legacy schema.
 
-Every module falls into exactly one of three states at any given time:
+So the model is: **build every module greenfield and complete, run the new app as a
+standalone beta with its own data, and integrate with legacy only once — as a
+one-time bulk data migration at cutoff.**
 
-| State | Meaning | Source of truth | New app can write? | Oracle consulted? |
-|-------|---------|-----------------|--------------------|-------------------|
-| **pg-native** | Greenfield; data originates in the new app | Postgres | Yes | No |
-| **legacy-owned** | Exists & is transacted live in legacy | Oracle | **No** (read-only mirror) | Yes (read-through) |
-| **cutover** | Formerly legacy-owned; data migrated + validated; legacy no longer uses it | Postgres | Yes | No |
+## 2. The core model
 
-- **pg-native today:** coms, documents, templates, auth/users, and any brand-new module.
-- **legacy-owned today:** patients, encounters/HCU, orders/lab, pharmacy, billing/SRI, admissions, etc.
-- **cutover** is a *destination*, reached per-module via the process in §8.
+### 2.1 pg-native is primordial
+Every module is rebuilt as a **full greenfield module**: complete
+**create / read / update / delete** against Postgres, with **unit and integration
+tests**. Not a read-only mirror — the real thing. Postgres is the source of truth
+for the new app from day one. The new app has **no Oracle datasource, no bridge, no
+read-through.** Dev and CI need only Postgres. (This dissolves the old `ORA-12170`
+boot problem entirely — there is nothing to connect to.)
 
-## 3. The four load-bearing decisions
+### 2.2 "Module" means a whole subsystem (HAS), with its dependencies
+A *module* here is a legacy **HAS / subsystem**, not a small folder. Modules are
+**interconnected**, and that dependency graph is load-bearing:
 
-These were settled during brainstorming and anchor everything below.
+> **Facturación (FAC)** needs **Paciente** data. Migrating FAC in isolation buys
+> nothing if Paciente isn't there. You port the cluster, not the leaf.
 
-### D1 — Write model: one-directional, no dual-write
-The new app **never writes Oracle.** Sync flows **Oracle → Postgres only**. There is no
-dual-write and no field/record-level split ownership. This is safe precisely because staff do
-not edit legacy-owned data in the new app. It also honors the CLAUDE.md Oracle constraint
-(SELECT-only; never DELETE/DDL) by construction — the bridge issues **only `SELECT`**.
+So scope work by **dependency cluster**: a subsystem plus everything it reads. The
+plan (`/ce-plan`) must sequence build waves along this graph, using the audits to
+enumerate each subsystem's dependencies.
 
-### D2 — Read model: live read-through, but Oracle is lazy/optional
-The new app reads legacy data **live at request time** (read-through), but **Oracle
-connectivity is a runtime capability, not a boot requirement**:
+### 2.3 Coexistence during the build = parallel, not wired together
+While we build, the two systems run **side by side but independent**:
 
-- The Oracle datasource initializes **lazily** and **never blocks startup** (this fixes the
-  `ORA-12170` boot stall directly — the stall exists only because the connection is eager).
-- A single flag `LEGACY_ORACLE_ENABLED` (default derived from creds presence) gates it:
-  - **dev default: off** → pure Postgres; work against new tables + seed/mirror data.
-  - **dev opt-in: on** → developer points at read-only Oracle when a task needs live legacy reads.
-  - **prod: on** → live read-through always.
+| | Legacy (SanoSoft) | New app (@hsm) |
+|---|---|---|
+| Role | System of record, real users | Greenfield beta, small validation team |
+| Data | Live Oracle | Own Postgres (seed / test / dev data) |
+| Writes | **The only writer** of legacy-owned data, until cutoff | Writes its own pg-native data |
+| Runtime link | — | **None.** No Oracle connection |
 
-### D3 — Identity: UUIDv7 PKs + legacy key as a nullable attribute
-- Every entity that needs a PK uses a **UUID (v7, time-ordered)** primary key — stable across
-  the migration, independent of Oracle sequences/composite keys, and preserved through the
-  eventual data transfer. (Junction tables may use composite UUID PKs; small reference catalogs
-  may keep a natural `code` PK — don't dogmatically UUID everything.)
-- The **legacy natural key is stored as a plain, nullable attribute** on the mirror entity
-  (e.g. `patients.national_id`, `patients.hc`), with **partial unique indexes** (`WHERE key IS
-  NOT NULL`). Nullable because newborns, foreigners, and unidentified ER patients have no cédula
-  — the surrogate UUID is exactly what saves us here.
-- **All references point at the PG UUID, never at the legacy id.** The legacy key lives *once*,
-  on the entity's own row; nothing else carries it. This avoids scattering legacy ids across
-  tables and rewriting them at cutover.
+The new app is **not** a live reader of legacy. The single point of contact between
+the two systems is the **cutoff data migration**, and nothing before it.
 
-### D4 — Auth: fully greenfield, re-provision users
-Legacy login *is* an Oracle account (`oci_connect`; `ALTER USER` for password changes; the
-`PERSONAL.PASSWORD_HASH` column is vestigial and unusable). Passwords **cannot** be migrated.
-Therefore:
-- The new app has its **own independent credential store** (the JWT/roles stack already built).
-- User **identity/roster** is seeded from legacy `PERSONAL` (read-only): name, email, cédula,
-  `CODIGO`, `CARGO` → new-app users **with no password**.
-- Users set credentials via an **invite/reset flow**. Migration happens **user by user** as they
-  are onboarded to the new app.
-- Roles are the new data-driven RBAC registry; legacy `CARGO` (decoded via `CG_REF_CODES`) is a
-  *seeding hint*, not a carried-over structure.
+### 2.4 The one write, until cutoff
+Until a subsystem is cut over, the **legacy app remains the one place production
+data is written** for that subsystem — because it's the system real staff use.
+The new app implements the *full* read/write/delete functionality regardless; it
+just isn't the production writer of that subsystem's live data yet. Cutoff is what
+promotes it to writer.
 
-## 4. Architecture — the Legacy Bridge
+### 2.5 Auth stays greenfield
+Legacy login *is* an Oracle account; passwords cannot be migrated. The new app keeps
+its **own credential store** (the JWT/roles stack already built). User roster is
+**seeded once** from legacy `PERSONAL` (read-only, name/email/cédula/`CODIGO`/
+`CARGO`) into passwordless users; each user sets credentials via an invite/reset
+flow. Roles are the new data-driven RBAC; `CARGO` is a seeding hint, not a carried
+structure.
 
-All Oracle access is encapsulated in one seam so the rest of the app never imports OCI/Oracle
-concepts. Proposed unit: a `LegacyBridge` module in `@hsm/api` (backed by the existing
-read-only Oracle datasource, `DatabasesEnum.HsmDbOracle`).
+### 2.6 Hexagonal architecture (ports & adapters)
+The app is built **hexagonally**: domain/business logic sits at the center and depends only
+on **ports** (interfaces). Everything external is a swappable **adapter**, so any provider —
+**including the database** — can be replaced without touching the logic. We already do this
+with the ORM (persistence is a driven adapter behind a repository port).
+
+- **Driven (secondary) adapters** — persistence (Postgres via TypeORM), SRI e-invoice signing,
+  payment gateway, email/SMS, Orthanc PACS, Panacea SQL Server (only at cutoff), citizen
+  lookup, biometric, WhatsApp. Each hides behind a port; swapping one never edits domain code.
+- **Driving (primary) adapters** — the REST controllers. **The backend *is* the API**: each
+  module exposes REST endpoints as its public port, and the backend runs **with or without a
+  frontend**. The Angular app is just one client of those endpoints — no different from an
+  external integrator (auth-scoped by session vs API token). There is no separate "API layer,"
+  no "internal vs external" API, and no patient-facing backend.
+- This is why dropping Oracle (§2.1) is clean: **Oracle was just a driven adapter** — removing
+  it leaves the domain untouched. The same seam later hosts the one-time cutoff-migration
+  adapter (§5).
+
+**Corollaries for module structure:** because the backend is the API, the legacy `Api/*` apps
+are just **normal module endpoints** — each lives in the module that owns its data (Pagos →
+billing, AutoAdmisión → admissions, Resultados → lab/imaging). There's nothing to "fold into a
+layer"; the endpoints simply belong to their module. **Patient-facing is frontend** (Angular
+calling those same module endpoints), never a backend of its own.
+
+## 3. Module states
+
+| State | Meaning | Writes | Oracle at runtime |
+|-------|---------|--------|-------------------|
+| **greenfield (building)** | Being built pg-native; validated by the small team against seed data | Yes (to PG) | No |
+| **ported** | Feature-complete pg-native with unit + integration tests; ready, but legacy is still the production writer | Yes (to PG, non-prod) | No |
+| **cutover** | Data migrated from Oracle; new app is the production writer; legacy retired for this subsystem | Yes (to PG, prod) | No |
+
+Note there is **no "legacy-owned read-through" state** anymore. A subsystem is
+either being built, ported-and-waiting, or fully cut over. Oracle is never in the
+request path in any state.
+
+## 4. Identity & data model
+
+The new app **owns its identity scheme.** It does **not** permanently carry legacy
+keys as live foreign relations (the old UUID ⇄ legacy-key mirroring idea is **not**
+adopted — it was an idea, now dropped in favor of standing on our own).
+
+- Use whatever PK fits each entity (time-ordered UUIDs are a fine default; small
+  reference catalogs can keep natural `code` PKs). References point at the new app's
+  own keys.
+- Legacy natural keys (cédula, HC, …) may be stored as **plain attributes** where
+  useful for humans/search — but they are **not** the linkage mechanism and not
+  required to be present (newborns, foreigners, unidentified ER patients have none).
+- The **only** place legacy ids matter is the **cutoff migration** (§5), where a
+  one-time mapping table translates Oracle rows into new-app rows. That mapping is
+  migration scaffolding, not a permanent runtime coupling.
+
+## 5. Cutoff — the one-time migration (final stage)
+
+This is the *only* stage where Oracle (and SQL Server / Panacea) data touches the
+new app, and it happens **per dependency-cluster**, only once that whole cluster is
+ported and validated:
+
+1. **All interconnected functionality ported.** Every subsystem in the cluster is
+   feature-complete pg-native, with unit + integration tests green. Cutoff is the
+   *final* part — you don't cut over a leaf while its dependencies still live in
+   legacy.
+2. **Bulk data migration.** One-time extract from Oracle (and Panacea's data, folded
+   in — the double migration) → transform into the new schema → load into Postgres.
+   Reconcile counts, spot-check.
+3. **Sync only if needed.** A short sync/hydration window is a **fallback for the
+   migration itself** — e.g. catching rows the legacy app writes during the
+   migration window — **not** a permanent runtime service. If a clean freeze-and-load
+   is possible, we skip it. (This is the only place "sync/hydration" appears; the
+   earlier draft over-weighted it.)
+4. **Prove the PG tables end-to-end** on migrated data — the pre-production gate.
+5. **Go live.** New app becomes the production writer for the cluster; legacy is
+   retired for it. Repeat per cluster until legacy is fully replaced → **v2 GA.**
+
+**Honest dependency:** a cluster is only *safe* to cut over once the legacy app is no
+longer the required writer for it — a business/rollout decision, external to the
+code. The architecture makes the switch clean; the timing is organizational.
+
+## 6. Release strategy — branches, PRs, tags
+
+We ship this as a **release train** with three long-lived branches and short-lived
+personal branches. **The whole point: nothing reaches a shared branch except through
+a PR that passes CI/CD.**
+
+### 6.1 Branches
+
+| Branch | Purpose | Release channel | Who writes it |
+|--------|---------|-----------------|---------------|
+| `feat/*`, `fix/*`, … (personal) | A developer's own work | — | **The only branch you may push to directly** |
+| `development` | Integration of finished work | **alpha** (`v2-beta.N`… see tags) | PR only, from a personal branch |
+| `release/vX.Y` | Cut from `development` at a milestone; stabilization | **beta** | PR only, from a personal branch (fixes) |
+| `main` | Stable, production | **stable** | PR only, from a `release/*` candidate |
+
+### 6.2 Flow
 
 ```
-                         ┌─────────────────────────────────────────────┐
-   request (PG UUID or   │                 New app (@hsm/api)           │
-   legacy natural key)   │                                             │
-        ──────────────►  │   Feature module (coms / patient / …)       │
-                         │        │                                    │
-                         │        ▼                                    │
-                         │   ResolveOrHydrateService                   │
-                         │        │ 1. Postgres lookup ────────────►  Postgres (source of
-                         │        │ 2. miss + Oracle available ─┐      truth for pg-native
-                         │        │                             │      + cutover; mirror for
-                         │        ▼                             │      legacy-owned)
-                         │   LegacyAvailabilityService (gate)   │
-                         │        │ ok                          │
-                         │        ▼                             │
-                         │   Legacy<Entity>Adapter  ──SELECT──► Oracle (read-only, lazy)
-                         │        │ translate Oracle row → new  │
-                         │        ▼ entity shape, mint UUIDv7   │
-                         │   upsert mirror row ─────────────────┘
-                         └─────────────────────────────────────────────┘
+ feat/my-work ──PR+CI──▶ development ──cut──▶ release/vX.Y ──PR(candidate)──▶ main
+      ▲  (direct push OK, personal only)            │                          │
+      │                                             └──PR+CI (fixes)           │
+      └──────────────── back-merge (cascade) ◀──────────────────── main ───────┘
+                         main → development so trunk never falls behind stable
 ```
 
-Components (each independently testable):
+- A personal branch merges into **`development`** or a **`release/*`** branch via
+  **PR + CI**. Merges to `development` cut **alpha** builds; merges to `release/*`
+  cut **beta** builds.
+- **`main` only ever receives a release candidate** — a PR whose head is a
+  `release/*` branch. No feature branch merges to main.
+- After a release lands on `main`, it **cascades back down**: an automatic
+  back-merge PR `main → development` keeps the trunk from drifting behind stable.
 
-- **`LegacyOracleDataSource`** — lazy, optional, **read-only** TypeORM datasource. Never
-  eager-connects; boot never depends on it. Issues only `SELECT`.
-- **`LegacyAvailabilityService`** — a small circuit-breaker: is Oracle configured *and*
-  currently reachable? Cheap health check + short-lived cache so a downed Oracle doesn't add
-  latency to every request. When it reports "unavailable," the bridge degrades gracefully.
-- **`Legacy<Entity>Adapter`** (one per mirrored entity, e.g. `LegacyPatientAdapter`) — the
-  *only* place that knows Oracle's schema/dialect for that entity. Maps an Oracle row
-  (`PACIENTES`, Oracle idioms, composite keys) → the new entity shape. This is where translation
-  of the "outdated, badly-configured" legacy schema happens.
-- **`ResolveOrHydrateService`** — the generic idempotent pattern (see §5).
+### 6.3 Hard rules (enforced by rulesets, §7)
 
-The bridge exposes intent-named methods (`resolvePatientByNationalId`, `resolveStaffByCodigo`,
-…), not raw Oracle queries. Feature modules depend on the bridge interface, not on Oracle.
+1. **No direct push to `development`, `release/*`, or `main`.** Ever. Only personal
+   branches accept direct pushes.
+2. **Every merge requires a PR that passes CI/CD** (lint + build + unit + integration
+   tests) and at least one approval.
+3. **`main` PRs must originate from a `release/*` branch** (enforced by a CI policy
+   check, since GitHub rulesets can't restrict a PR's source branch).
+4. **Linear history** on the protected branches; no force-push, no branch deletion.
 
-## 5. Core flow — resolve-or-hydrate (idempotent)
+### 6.4 Tags / release channels
 
-Given a legacy natural key, return a stable PG UUID, hydrating on demand:
+Tags are the release artifacts; they are **immutable** (protected against deletion
+and overwrite):
 
-```
-resolvePatientByNationalId(cedula):
-  1. row = SELECT * FROM patients WHERE national_id = cedula          -- Postgres
-  2. if row exists:
-        if legacy-owned AND Oracle available AND stale(row) beyond TTL:
-            re-hydrate row from Oracle (refresh fields, bump legacy_synced_at)
-        return row.id                                                 -- the UUID
-  3. if no row:
-        if Oracle available:
-            oracleRow = LegacyPatientAdapter.fetchByCedula(cedula)    -- SELECT only
-            if oracleRow:
-                row = INSERT patients (id = uuidv7(), national_id = cedula,
-                                       …translated fields…, legacy_synced_at = now())
-                return row.id
-        return NotAvailable   -- graceful: caller shows "not synced yet", never crashes
-```
+| Channel | Branch | Tag pattern | Example |
+|---------|--------|-------------|---------|
+| alpha | `development` | `vX.Y.Z-alpha.N` | `v2.0.0-alpha.14` |
+| beta | `release/vX.Y` | `vX.Y.Z-beta.N` | `v2.0.0-beta.3` |
+| stable | `main` | `vX.Y.Z` | `v2.0.0` |
 
-Guarantees:
-- **The UUID is minted once and is permanent** — the same legacy patient always maps to the
-  same UUID, so references never break.
-- **Oracle is only touched on miss or staleness**, and only via `SELECT`.
-- **Oracle down ⇒ degraded, not broken** — pg-native features keep working; legacy-owned reads
-  serve whatever is already mirrored, or return `NotAvailable`.
+During the build the product ships publicly as **`v2-beta.x`** (e.g. the email
+template + document functionality goes out as a beta) until every cluster is cut
+over and we tag the first stable **`v2.0.0`** GA.
 
-### Freshness policy (legacy-owned entities)
-Because D2 wants "live" reads but we also cache in the mirror, legacy-owned reads use a
-**configurable TTL** (e.g. a few minutes): serve the mirror if fresh; re-hydrate from Oracle if
-stale and Oracle is up. Backstopped by the **nightly sync** (§6). pg-native and cutover entities
-are never subject to this — they are the source of truth.
+## 7. Enforcement — CI/CD & GitHub rulesets
 
-## 6. Sync / hydration jobs (one-directional)
+Committed in this repo:
 
-Runs in `@hsm/worker`. **Never writes Oracle.**
+- **`.github/workflows/pr-validation.yml`** — the required check on every PR into
+  `development`, `release/*`, and `main`: lint → build → test (unit + integration).
+  Includes the **`main`-only-from-`release/*`** policy gate.
+- **`.github/workflows/release-tag.yml`** — cuts the channel tag/prerelease on push
+  to `development` (alpha), `release/*` (beta), and `main` (stable).
+- **`.github/workflows/back-merge.yml`** — opens the cascade PR `main → development`
+  after a stable release.
+- **`.github/rulesets/*.json`** — GitHub repository rulesets (branch + tag
+  protection) matching §6.3/§6.4. Apply with **`scripts/apply-github-rulesets.sh`**
+  (needs repo-admin). See `.github/rulesets/README.md`.
 
-- **Nightly full refresh (02:00):** for each mirrored (legacy-owned) entity, re-read the legacy
-  rows the mirror already tracks (and optionally newly-appeared rows) and upsert into Postgres.
-  Keeps the mirror from drifting for entities the legacy app keeps mutating.
-- **On-demand hydrate/refresh:** a triggerable job ("sync this entity now") for when someone
-  needs a just-created legacy row immediately — covers the freshness gap without putting Oracle
-  in every request.
-- **Incremental where possible:** use legacy audit columns / timestamps when they exist; fall
-  back to bounded full pulls where they don't (many legacy tables lack reliable change markers —
-  see audit §4.4 / Open Questions).
+## 8. Testing strategy
 
-We deliberately **do not** build log-based CDC / GoldenGate. It's heavy, and adding Oracle
-triggers would be DDL — forbidden by the Oracle constraint. SELECT-based sync is sufficient for
-a dev-validated, incrementally-cutover system.
+- **Every module: unit + integration tests, pg-native, no Oracle.** This is the bar
+  for calling a subsystem "ported."
+- **Integration tests** exercise real read/write/delete against a Postgres test DB
+  (the cluster's own behavior), independent of legacy.
+- **Cutoff migration** gets its own validation: row-count reconciliation, spot
+  checks, and an end-to-end pass on migrated data before go-live (§5.4).
+- **CI gate:** `pr-validation` must be green before any protected-branch merge.
 
-## 7. Data model conventions (new tables)
+## 9. Non-goals / out of scope
 
-1. **PK:** `id uuid` default UUIDv7, on every entity needing a PK.
-2. **Legacy correlation:** nullable `national_id` / `hc` / `codigo` columns on mirror entities;
-   partial unique indexes `WHERE col IS NOT NULL`.
-3. **Provenance:** `legacy_synced_at timestamptz NULL` on mirror entities (null ⇒ born in new app).
-4. **References:** always the target's PG UUID.
-5. **Polymorphic attachments** (coms/docs): `(subject_type text, subject_id uuid)`. No DB FK is
-   possible across types — integrity is **app-enforced**. If a table only ever targets a small,
-   stable set, prefer separate nullable typed FKs (`patient_id`, `user_id`) instead.
-
-Worked example:
-
-```sql
-CREATE TABLE patients (
-  id               uuid PRIMARY KEY DEFAULT uuidv7(),
-  national_id      text,          -- cédula (legacy handle) — nullable
-  hc               text,          -- historia clínica       — nullable
-  -- …patient fields, translated from Oracle on hydration…
-  legacy_synced_at timestamptz
-);
-CREATE UNIQUE INDEX ux_patients_national_id ON patients(national_id) WHERE national_id IS NOT NULL;
-CREATE UNIQUE INDEX ux_patients_hc          ON patients(hc)          WHERE hc          IS NOT NULL;
-
-CREATE TABLE documents (
-  id           uuid PRIMARY KEY DEFAULT uuidv7(),
-  subject_type text NOT NULL,     -- 'patient' | 'user' | …
-  subject_id   uuid NOT NULL,     -- → patients.id (the UUID, NOT the cédula)
-  -- …document fields…
-);
-```
-
-(If Postgres lacks a native `uuidv7()`, generate v7 in the app layer or via a small SQL function;
-the point is time-ordered UUIDs, not a specific built-in.)
-
-## 8. Cutover process (per module)
-
-Moving a module from **legacy-owned → cutover**:
-
-1. **Build** the new schema + module; entities modeled cleanly (not 1:1 with Oracle).
-2. **Mirror & validate:** run read-through + nightly sync; the team validates the new module
-   against live legacy data.
-3. **Bulk migrate:** one-time Oracle → Postgres migration that *translates* into the new schema,
-   preserving/minting UUIDs consistently with any rows already hydrated (reuse the same
-   national_id → UUID mapping so nothing is duplicated). Reconcile counts/spot-check.
-4. **Prove the PG tables work** end-to-end on migrated data (the pre-production gate).
-5. **Flip state → cutover:** stop consulting Oracle for that module; Postgres becomes the writer.
-
-**Honest dependency:** because we cannot touch legacy, a module is only *safe* to cut over once
-the legacy app is no longer writing that data — a rollout/business decision per module, external
-to the code. Until then the module stays `legacy-owned` (read-only mirror). The architecture
-supports the switch; the timing is organizational.
-
-## 9. Dev vs prod behavior (summary)
-
-| | Boot needs Oracle? | Legacy reads | New (pg-native) modules |
-|---|---|---|---|
-| **Dev (default)** | No | Off — use new tables + seed/mirror | Fully functional |
-| **Dev (opt-in)** | No | Read-only Oracle when flag on | Fully functional |
-| **Prod** | No (lazy) | Live read-through + sync | Fully functional |
-
-The invariant: **the request path reads Postgres; Oracle is reached only through the bridge, only
-via SELECT, and never at boot.**
-
-## 10. Non-goals / out of scope
-
-- **No dual-write, ever.** No writing Oracle from the new app.
-- **No Oracle password migration.** Auth is re-provisioned (D4).
-- **No changes to the legacy codebase or Oracle schema** (no DDL, no triggers).
+- **No runtime Legacy Bridge / read-through / resolve-or-hydrate.** (Dropped.)
+- **No dual-write, ever.** The new app never writes Oracle.
+- **No permanent UUID ⇄ legacy-key runtime coupling.** (Dropped; mapping exists only
+  during the cutoff migration.)
+- **No Oracle datasource in the app at all** — not lazy, not optional, none.
+- **No changes to legacy code or Oracle/SQL Server schema** (no DDL, no triggers).
 - **No log-based CDC / GoldenGate.**
-- **SQL Server (Panacea accounting, citizen lookup, token service)** coexistence is a *separate*
-  problem (a second heterogeneous DBMS) — noted in the audit, not solved here.
-- **Reimplementing legacy PL/SQL business logic** (billing/AR/credit-note/close/kardex) is
-  required eventually for the *write* side of those modules at cutover, but is per-module work,
-  not part of this coexistence layer.
+- **No Oracle password migration** — auth is re-provisioned (§2.5).
 
-## 11. Testing strategy
+## 10. Open questions / follow-ups
 
-- **pg-native modules:** standard unit/integration tests, no Oracle.
-- **Adapters:** unit-test each `Legacy<Entity>Adapter` translation against fixture Oracle rows
-  (no live DB).
-- **ResolveOrHydrate:** integration tests for both paths — Oracle **off** (graceful
-  `NotAvailable`, no crash) and Oracle **on** (hydrate + mint stable UUID + idempotent on repeat).
-- **Boot-without-Oracle guarantee:** a CI check that the API boots and serves a pg-native
-  endpoint with `LEGACY_ORACLE_ENABLED=off` and no Oracle host reachable. This is the regression
-  test for goal #1 and the `ORA-12170` stall.
-
-## 12. Open questions / follow-ups (not blocking this design)
-
-1. **Per-entity freshness TTLs** — tune per legacy-owned entity (patients vs slowly-changing
-   catalogs).
-2. **First entities to mirror** — patients + `PERSONAL` (for user-roster seeding) are the
-   likely first adapters.
-3. **Change-marker availability** — which legacy tables have reliable timestamps for incremental
-   sync vs need bounded full pulls (audit Open Q #1/#2; the 7 MB `SIS/query/archivo.sql` and
-   PL/SQL bodies are the source for the eventual write-side reimplementation).
-4. **Bulk-migration tooling** — built per module at cutover (§8.3), out of scope here.
-5. **Polymorphic vs typed FKs** — decided case-by-case per new module (§7.5).
-```
+1. **Cluster sequencing** — which dependency-cluster to build & cut over first
+   (Paciente is a prerequisite for most; likely wave 1).
+2. **Migration tooling** — built per cluster at cutoff (§5.2); Panacea's data folds
+   in here (the double migration).
+3. **Migration-window sync** — decide per cluster whether a freeze-and-load is
+   feasible or a short catch-up sync (§5.3) is needed.
+4. **Versioning source** — where `vX.Y.Z` is authored (root `package.json` vs a
+   dedicated VERSION) and how alpha/beta counters increment.
+5. **Reference-code & shared services** — identity/RBAC, reference-code dictionary,
+   atomic numbering: shared across clusters, sequenced early.
