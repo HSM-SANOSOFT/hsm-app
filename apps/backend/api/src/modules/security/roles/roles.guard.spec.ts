@@ -50,7 +50,7 @@ describe('RolesGuard', () => {
 
   describe('@Public() routes', () => {
     beforeEach(() => {
-      jest.spyOn(reflector, 'getAllAndOverride').mockImplementation((key) => {
+      jest.spyOn(reflector, 'getAllAndOverride').mockImplementation(key => {
         if (key === IS_PUBLIC_KEY) return true;
         return undefined;
       });
@@ -62,13 +62,15 @@ describe('RolesGuard', () => {
     });
 
     it('throws InternalServerErrorException when @Public() and @Roles() are combined', () => {
-      jest.spyOn(reflector, 'getAllAndOverride').mockImplementation((key) => {
+      jest.spyOn(reflector, 'getAllAndOverride').mockImplementation(key => {
         if (key === IS_PUBLIC_KEY) return true;
         if (key === ROLES_KEY) return [RolesEnum.System.Admin];
         return undefined;
       });
       const ctx = makeContext({ user: undefined });
-      expect(() => guard.canActivate(ctx)).toThrow(InternalServerErrorException);
+      expect(() => guard.canActivate(ctx)).toThrow(
+        InternalServerErrorException,
+      );
     });
   });
 
@@ -89,7 +91,7 @@ describe('RolesGuard', () => {
 
   describe('Admin role bypass', () => {
     beforeEach(() => {
-      jest.spyOn(reflector, 'getAllAndOverride').mockImplementation((key) => {
+      jest.spyOn(reflector, 'getAllAndOverride').mockImplementation(key => {
         if (key === ROLES_KEY) return [RolesEnum.Clinical.Nurse];
         return undefined;
       });
@@ -112,8 +114,9 @@ describe('RolesGuard', () => {
 
   describe('role matching', () => {
     beforeEach(() => {
-      jest.spyOn(reflector, 'getAllAndOverride').mockImplementation((key) => {
-        if (key === ROLES_KEY) return [RolesEnum.Clinical.Doctor, RolesEnum.Clinical.Nurse];
+      jest.spyOn(reflector, 'getAllAndOverride').mockImplementation(key => {
+        if (key === ROLES_KEY)
+          return [RolesEnum.Clinical.Doctor, RolesEnum.Clinical.Nurse];
         return undefined;
       });
     });
@@ -133,7 +136,7 @@ describe('RolesGuard', () => {
 
   describe('null user on protected route', () => {
     it('throws UnauthorizedException when user is undefined on a protected endpoint', () => {
-      jest.spyOn(reflector, 'getAllAndOverride').mockImplementation((key) => {
+      jest.spyOn(reflector, 'getAllAndOverride').mockImplementation(key => {
         if (key === ROLES_KEY) return [RolesEnum.System.Admin];
         return undefined;
       });

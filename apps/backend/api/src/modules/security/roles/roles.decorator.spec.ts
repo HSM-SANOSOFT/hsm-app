@@ -24,7 +24,10 @@ describe('Roles decorator', () => {
     Roles(RolesEnum.System.Admin, RolesEnum.Clinical.Nurse)();
     expect(SetMetadata).toHaveBeenCalledWith(
       ROLES_KEY,
-      expect.arrayContaining([RolesEnum.System.Admin, RolesEnum.Clinical.Nurse]),
+      expect.arrayContaining([
+        RolesEnum.System.Admin,
+        RolesEnum.Clinical.Nurse,
+      ]),
     );
   });
 
@@ -39,7 +42,9 @@ describe('Roles decorator', () => {
   it('deduplicates roles when the same role appears multiple times', () => {
     Roles(RolesEnum.System.Admin, RolesEnum.System.Admin)();
     const storedRoles = (SetMetadata as jest.Mock).mock.calls[0][1] as string[];
-    expect(storedRoles.filter(r => r === RolesEnum.System.Admin)).toHaveLength(1);
+    expect(storedRoles.filter(r => r === RolesEnum.System.Admin)).toHaveLength(
+      1,
+    );
   });
 
   it('handles mixed string roles and branch enum objects', () => {

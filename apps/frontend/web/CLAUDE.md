@@ -30,14 +30,17 @@ pnpm --filter @hsm/web build    # ng build -> apps/frontend/web/dist
 pnpm --filter @hsm/web test     # Vitest smoke + future unit specs
 ```
 
-The dev server runs on **4200**. It talks to the API on host port **10001**
-with the default `/v1` URI version (Swagger UI at `http://localhost:10001/api`).
+The dev server runs on **4200**. With the API run locally (`pnpm --filter
+@hsm/api start:dev`) it talks to the API on host port **3000**, default `/v1`
+URI version (Swagger UI at `http://localhost:3000/api`). Port **10001** is the
+API host port only under full-stack `docker compose up`.
 
 ## API base URL / environments
 
-- `src/environments/environment.ts` — production (`apiBaseUrl:
-  'http://localhost:10001/v1'`).
-- `src/environments/environment.development.ts` — dev override, swapped in via
+- `src/environments/environment.ts` — production / full-stack `docker compose
+  up` (`apiBaseUrl: 'http://localhost:10001/v1'`, the compose API mapping).
+- `src/environments/environment.development.ts` — dev override for the local-run
+  model (`apiBaseUrl: 'http://localhost:3000/v1'`), swapped in via
   `fileReplacements` in `angular.json` for the `development` configuration.
 - Import `environment` from `src/environments/environment`; the dev file is
   substituted at build time. Do **not** hardcode the API URL elsewhere.

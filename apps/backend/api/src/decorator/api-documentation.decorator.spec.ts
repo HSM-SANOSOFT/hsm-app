@@ -8,9 +8,8 @@ import {
   ApiOkResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-
-import { IS_PUBLIC_KEY } from './public.decorator';
 import { ApiDocumentation } from './api-documentation.decorator';
+import { IS_PUBLIC_KEY } from './public.decorator';
 
 jest.mock('../guards', () => ({
   AuthJwtAtGuard: class AuthJwtAtGuard {},

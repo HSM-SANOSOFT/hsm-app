@@ -22,8 +22,12 @@ WORKSPACE_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 # @hsm/config does `import 'dotenv/config'`, which reads .env from process.cwd().
 # pnpm -F runs scripts from each app's package dir, so write per-app .env files.
 printf '%s\n' "$SECRETS_DOTENV" > "$WORKSPACE_DIR/apps/backend/api/.env"
-printf '%s\n' "$SECRETS_DOTENV" > "$WORKSPACE_DIR/apps/backend/worker/.env"
-
 echo "Wrote $WORKSPACE_DIR/apps/backend/api/.env"
+
+printf '%s\n' "$SECRETS_DOTENV" > "$WORKSPACE_DIR/apps/backend/worker/.env"
 echo "Wrote $WORKSPACE_DIR/apps/backend/worker/.env"
+
+printf '%s\n' "$SECRETS_DOTENV" > "$WORKSPACE_DIR/apps/frontend/.env"
+echo "Wrote $WORKSPACE_DIR/apps/frontend/.env"
+
 echo "Restart your dev server to pick up changes."
