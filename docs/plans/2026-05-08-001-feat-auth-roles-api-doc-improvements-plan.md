@@ -3,7 +3,7 @@ title: "feat: Auth foundation — role taxonomy, dev tokens, guard refactor, and
 type: feat
 status: active
 date: 2026-05-08
-origin: docs/brainstorms/auth-roles-api-doc-improvements-requirements.md
+origin: docs/brainstorms/2026-05-08-auth-roles-api-doc-improvements-requirements.md
 ---
 
 # feat: Auth foundation — role taxonomy, dev tokens, guard refactor, and API documentation
@@ -16,7 +16,7 @@ Implements five targeted improvements to the HSM API's auth/security foundation:
 
 ## Problem Frame
 
-The current dev bypass (`return true` in every guard) leaves `req.user` undefined in dev, breaking any controller that reads from it. The role taxonomy is incomplete and has no branch-level grant ergonomics. The `@ApiDocumentation` decorator documents the same generic error set unconditionally, and `@hsm/common/errors` has no role-access exception type. (See origin: `docs/brainstorms/auth-roles-api-doc-improvements-requirements.md`)
+The current dev bypass (`return true` in every guard) leaves `req.user` undefined in dev, breaking any controller that reads from it. The role taxonomy is incomplete and has no branch-level grant ergonomics. The `@ApiDocumentation` decorator documents the same generic error set unconditionally, and `@hsm/common/errors` has no role-access exception type. (See origin: `docs/brainstorms/2026-05-08-auth-roles-api-doc-improvements-requirements.md`)
 
 ---
 
@@ -69,9 +69,9 @@ The current dev bypass (`return true` in every guard) leaves `req.user` undefine
 
 ### Institutional Learnings
 
-- `docs/solutions/developer-experience/nestjs-unit-test-mocking-patterns-2026-05-06.md` — `JwtService` mock must use `useValue`; named-connection token requires `DatabasesEnum` arg
-- `docs/solutions/developer-experience/http-test-files-vscode-rest-client-convention-2026-05-07.md` — `.vscode/settings.json` uses `at_token`/`rt_token`; `settings.local.json` is the per-developer local override file
-- `docs/solutions/test-failures/nestjs-config-joi-validation-dotenv-conflict-2026-05-06.md` — new env vars added to `@hsm/config` must also be added to `apps/backend/api/src/test-setup.ts`
+- `docs/solutions/developer-experience/2026-05-06-nestjs-unit-test-mocking-patterns.md` — `JwtService` mock must use `useValue`; named-connection token requires `DatabasesEnum` arg
+- `docs/solutions/developer-experience/2026-05-07-http-test-files-vscode-rest-client-convention.md` — `.vscode/settings.json` uses `at_token`/`rt_token`; `settings.local.json` is the per-developer local override file
+- `docs/solutions/test-failures/2026-05-06-nestjs-config-joi-validation-dotenv-conflict.md` — new env vars added to `@hsm/config` must also be added to `apps/backend/api/src/test-setup.ts`
 
 ---
 
@@ -478,7 +478,7 @@ The current dev bypass (`return true` in every guard) leaves `req.user` undefine
 
 ## Sources & References
 
-- **Origin document:** [docs/brainstorms/auth-roles-api-doc-improvements-requirements.md](docs/brainstorms/auth-roles-api-doc-improvements-requirements.md)
+- **Origin document:** [docs/brainstorms/2026-05-08-auth-roles-api-doc-improvements-requirements.md](docs/brainstorms/2026-05-08-auth-roles-api-doc-improvements-requirements.md)
 - Related code: `apps/backend/api/src/modules/security/auth/`
 - Related code: `apps/backend/api/src/modules/security/roles/`
 - Related code: `packages/common/src/enums/roles.enum.ts`

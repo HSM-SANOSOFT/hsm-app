@@ -127,4 +127,4 @@ For any PostgreSQL enum in a schema other than `public`, always use additive `AL
 
 ## Related Issues
 
-- `docs/solutions/runtime-errors/typeorm-entity-circular-import-silent-drop-2026-05-04.md` — different TypeORM gotcha in the same `@hsm/database` package (circular import causing entity groups to drop from `forFeature` registration). Not the same problem, but both are TypeORM startup failures in the templates domain.
+- `docs/solutions/runtime-errors/2026-05-04-typeorm-entity-circular-import-silent-drop.md` — different TypeORM gotcha in the same `@hsm/database` package (circular import causing entity groups to drop from `forFeature` registration). Not the same problem, but both are TypeORM startup failures in the templates domain.

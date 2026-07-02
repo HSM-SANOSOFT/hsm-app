@@ -3,7 +3,7 @@ title: "feat: Complete email and document modules with send logging and entity l
 type: feat
 status: completed
 date: 2026-05-13
-origin: docs/brainstorms/email-and-document-modules-requirements.md
+origin: docs/brainstorms/2026-05-13-email-and-document-modules-requirements.md
 deepened: 2026-05-13
 ---
 
@@ -75,12 +75,12 @@ The templates module is live but its two primary consumers are stubs. Email send
 
 ### Institutional Learnings
 
-- **BullMQ S3 orphan + UNIQUE constraint** (`docs/solutions/logic-errors/bullmq-retry-unique-constraint-s3-orphan-version-hardcode-2026-05-04.md`): track S3 upload key before DB transaction; delete it in the catch block. Use `COALESCE(MAX(v), 0) + 1` with pessimistic write lock for versioned unique fields. Wrap FAILED status update in its own nested try/catch.
-- **TypeORM enum migration failure** (`docs/solutions/database-issues/typeorm-enum-schema-qualified-migration-failure-2026-05-12.md`): non-public schema enum additions crash TypeORM synchronize. Use `queryRunner.query('ALTER TYPE ... ADD VALUE IF NOT EXISTS ...')` in explicit migrations.
-- **Entity barrel circular import** (`docs/solutions/runtime-errors/typeorm-entity-circular-import-silent-drop-2026-05-04.md`): add `export * from './coms'` to `entities/modules/core/index.ts`; never re-export entity arrays from `sources/postgres/index.ts`; import via `@hsm/database/entities` root path only.
-- **Config Joi test failures** (`docs/solutions/test-failures/nestjs-config-joi-validation-dotenv-conflict-2026-05-06.md`): any new required env vars (SMTP creds already exist) must have dummy values in `apps/backend/api/src/test-setup.ts`.
-- **Unit test mocking** (`docs/solutions/developer-experience/nestjs-unit-test-mocking-patterns-2026-05-06.md`): use `getRepositoryToken(Entity, DatabasesEnum.HsmDbPostgres)` not bare `getRepositoryToken(Entity)`.
-- **HTTP file convention** (`docs/solutions/developer-experience/http-test-files-vscode-rest-client-convention-2026-05-07.md`): co-locate `.http` files; use `[variable]` notation (not `{{variable}}`) in example Handlebars-containing bodies.
+- **BullMQ S3 orphan + UNIQUE constraint** (`docs/solutions/logic-errors/2026-05-04-bullmq-retry-unique-constraint-s3-orphan-version-hardcode.md`): track S3 upload key before DB transaction; delete it in the catch block. Use `COALESCE(MAX(v), 0) + 1` with pessimistic write lock for versioned unique fields. Wrap FAILED status update in its own nested try/catch.
+- **TypeORM enum migration failure** (`docs/solutions/database-issues/2026-05-12-typeorm-enum-schema-qualified-migration-failure.md`): non-public schema enum additions crash TypeORM synchronize. Use `queryRunner.query('ALTER TYPE ... ADD VALUE IF NOT EXISTS ...')` in explicit migrations.
+- **Entity barrel circular import** (`docs/solutions/runtime-errors/2026-05-04-typeorm-entity-circular-import-silent-drop.md`): add `export * from './coms'` to `entities/modules/core/index.ts`; never re-export entity arrays from `sources/postgres/index.ts`; import via `@hsm/database/entities` root path only.
+- **Config Joi test failures** (`docs/solutions/test-failures/2026-05-06-nestjs-config-joi-validation-dotenv-conflict.md`): any new required env vars (SMTP creds already exist) must have dummy values in `apps/backend/api/src/test-setup.ts`.
+- **Unit test mocking** (`docs/solutions/developer-experience/2026-05-06-nestjs-unit-test-mocking-patterns.md`): use `getRepositoryToken(Entity, DatabasesEnum.HsmDbPostgres)` not bare `getRepositoryToken(Entity)`.
+- **HTTP file convention** (`docs/solutions/developer-experience/2026-05-07-http-test-files-vscode-rest-client-convention.md`): co-locate `.http` files; use `[variable]` notation (not `{{variable}}`) in example Handlebars-containing bodies.
 
 ---
 
@@ -785,12 +785,12 @@ erDiagram
 
 ## Sources & References
 
-- **Origin document:** [docs/brainstorms/email-and-document-modules-requirements.md](docs/brainstorms/email-and-document-modules-requirements.md)
-- BullMQ S3 orphan learning: `docs/solutions/logic-errors/bullmq-retry-unique-constraint-s3-orphan-version-hardcode-2026-05-04.md`
-- TypeORM enum migration: `docs/solutions/database-issues/typeorm-enum-schema-qualified-migration-failure-2026-05-12.md`
-- Entity barrel wiring: `docs/solutions/runtime-errors/typeorm-entity-circular-import-silent-drop-2026-05-04.md`
-- Unit test mocking: `docs/solutions/developer-experience/nestjs-unit-test-mocking-patterns-2026-05-06.md`
-- HTTP file convention: `docs/solutions/developer-experience/http-test-files-vscode-rest-client-convention-2026-05-07.md`
+- **Origin document:** [docs/brainstorms/2026-05-13-email-and-document-modules-requirements.md](docs/brainstorms/2026-05-13-email-and-document-modules-requirements.md)
+- BullMQ S3 orphan learning: `docs/solutions/logic-errors/2026-05-04-bullmq-retry-unique-constraint-s3-orphan-version-hardcode.md`
+- TypeORM enum migration: `docs/solutions/database-issues/2026-05-12-typeorm-enum-schema-qualified-migration-failure.md`
+- Entity barrel wiring: `docs/solutions/runtime-errors/2026-05-04-typeorm-entity-circular-import-silent-drop.md`
+- Unit test mocking: `docs/solutions/developer-experience/2026-05-06-nestjs-unit-test-mocking-patterns.md`
+- HTTP file convention: `docs/solutions/developer-experience/2026-05-07-http-test-files-vscode-rest-client-convention.md`
 - Reference processor: `apps/backend/worker/src/modules/core/docs/docs-processor.service.ts`
 - Reference service: `apps/backend/api/src/modules/core/docs/docs.service.ts`
 - Template schema validation util: `packages/common/src/utils/template-schema.util.ts`

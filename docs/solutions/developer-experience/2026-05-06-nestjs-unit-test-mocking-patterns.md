@@ -182,6 +182,6 @@ Reference implementation: `apps/backend/api/src/modules/security/auth/auth.servi
 ## Related
 
 - `docs/brainstorms/api-unit-tests-requirements.md` — requirements doc that captured this pattern during planning
-- `docs/solutions/test-failures/nestjs-config-joi-validation-dotenv-conflict-2026-05-06.md` — the env shim setup required before these patterns work
-- `docs/solutions/test-failures/queue-barrel-import-breaks-config-mock-tdz.md` — why the BullMQ example imports `QueueEnum` from `@hsm/queue/queue.enum` (leaf), not the `@hsm/queue` barrel
+- `docs/solutions/test-failures/2026-05-06-nestjs-config-joi-validation-dotenv-conflict.md` — the env shim setup required before these patterns work
+- `docs/solutions/test-failures/2026-06-25-queue-barrel-import-breaks-config-mock-tdz.md` — why the BullMQ example imports `QueueEnum` from `@hsm/queue/queue.enum` (leaf), not the `@hsm/queue` barrel
 - `apps/backend/api/src/test-setup.ts` — env shim that makes `@hsm/config` importable in tests

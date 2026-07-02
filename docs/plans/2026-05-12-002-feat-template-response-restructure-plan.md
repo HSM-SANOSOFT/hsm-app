@@ -3,7 +3,7 @@ title: "feat: Template response restructure and SMS support"
 type: feat
 status: completed
 date: 2026-05-12
-origin: docs/brainstorms/template-response-restructure-requirements.md
+origin: docs/brainstorms/2026-05-12-template-response-restructure-requirements.md
 ---
 
 # feat: Template response restructure and SMS support
@@ -65,9 +65,9 @@ The API's template endpoints currently return raw `TemplatesEntity` objects, mea
 
 ### Institutional Learnings
 
-- `docs/solutions/runtime-errors/typeorm-entity-circular-import-silent-drop-2026-05-04.md` — entity circular import silently drops entity group; always import entities via `@hsm/database/entities` root path, never deep subpaths; run `start:dev` after any entity/module change to catch DI failures build alone won't surface.
-- `docs/solutions/developer-experience/nestjs-unit-test-mocking-patterns-2026-05-06.md` — use `getRepositoryToken(Entity, DatabasesEnum.HsmDbPostgres)` composite token (not plain entity class); re-apply `mockResolvedValue` in `beforeEach` after `jest.clearAllMocks()`.
-- `docs/solutions/developer-experience/http-test-files-vscode-rest-client-convention-2026-05-07.md` — use bracket notation `[variable]` (not `{{variable}}`) in `.http` file example bodies to avoid VS Code REST Client false-positive variable substitution.
+- `docs/solutions/runtime-errors/2026-05-04-typeorm-entity-circular-import-silent-drop.md` — entity circular import silently drops entity group; always import entities via `@hsm/database/entities` root path, never deep subpaths; run `start:dev` after any entity/module change to catch DI failures build alone won't surface.
+- `docs/solutions/developer-experience/2026-05-06-nestjs-unit-test-mocking-patterns.md` — use `getRepositoryToken(Entity, DatabasesEnum.HsmDbPostgres)` composite token (not plain entity class); re-apply `mockResolvedValue` in `beforeEach` after `jest.clearAllMocks()`.
+- `docs/solutions/developer-experience/2026-05-07-http-test-files-vscode-rest-client-convention.md` — use bracket notation `[variable]` (not `{{variable}}`) in `.http` file example bodies to avoid VS Code REST Client false-positive variable substitution.
 
 ---
 
@@ -242,7 +242,7 @@ Response envelope (unchanged, added by `ResponseInterceptor`):
 - Add SMS `delete` test (verifies `TemplateComSmsEntity` delete is called).
 
 **Patterns to follow:**
-- `docs/solutions/developer-experience/nestjs-unit-test-mocking-patterns-2026-05-06.md` — `getRepositoryToken` composite token, `beforeEach` mock reset.
+- `docs/solutions/developer-experience/2026-05-06-nestjs-unit-test-mocking-patterns.md` — `getRepositoryToken` composite token, `beforeEach` mock reset.
 - Existing `toMatchObject` assertions in the same file.
 
 **Test scenarios:**
@@ -370,7 +370,7 @@ Response envelope (unchanged, added by `ResponseInterceptor`):
 - Add a request block for SMS_INTERNAL create (POST with `category: SMS_INTERNAL`, `sms` block, `baseTemplateId`).
 
 **Patterns to follow:**
-- `docs/solutions/developer-experience/http-test-files-vscode-rest-client-convention-2026-05-07.md` — bracket notation for Handlebars in body examples.
+- `docs/solutions/developer-experience/2026-05-07-http-test-files-vscode-rest-client-convention.md` — bracket notation for Handlebars in body examples.
 
 **Test scenarios:**
 - Test expectation: none — manual test file; no automated coverage needed.
@@ -405,7 +405,7 @@ Response envelope (unchanged, added by `ResponseInterceptor`):
 
 ## Sources & References
 
-- **Origin document:** [docs/brainstorms/template-response-restructure-requirements.md](docs/brainstorms/template-response-restructure-requirements.md)
+- **Origin document:** [docs/brainstorms/2026-05-12-template-response-restructure-requirements.md](docs/brainstorms/2026-05-12-template-response-restructure-requirements.md)
 - Entity: `packages/database/src/entities/modules/core/template/`
 - Seeder registry: `packages/database/src/seeder/seeder.seeds.ts`
-- Institutional learnings: `docs/solutions/runtime-errors/typeorm-entity-circular-import-silent-drop-2026-05-04.md`, `docs/solutions/developer-experience/nestjs-unit-test-mocking-patterns-2026-05-06.md`, `docs/solutions/developer-experience/http-test-files-vscode-rest-client-convention-2026-05-07.md`
+- Institutional learnings: `docs/solutions/runtime-errors/2026-05-04-typeorm-entity-circular-import-silent-drop.md`, `docs/solutions/developer-experience/2026-05-06-nestjs-unit-test-mocking-patterns.md`, `docs/solutions/developer-experience/2026-05-07-http-test-files-vscode-rest-client-convention.md`

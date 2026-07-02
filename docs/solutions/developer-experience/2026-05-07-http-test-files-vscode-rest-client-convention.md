@@ -175,4 +175,4 @@ src/
 
 - Convention documented in `apps/backend/api/CLAUDE.md` — `## HTTP test files` section
 - VS Code REST Client extension: `humao.rest-client`
-- Related solution: `docs/solutions/developer-experience/nestjs-unit-test-mocking-patterns-2026-05-06.md` (same DX category, different topic)
+- Related solution: `docs/solutions/developer-experience/2026-05-06-nestjs-unit-test-mocking-patterns.md` (same DX category, different topic)

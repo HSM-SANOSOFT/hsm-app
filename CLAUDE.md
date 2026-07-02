@@ -82,7 +82,7 @@ local-run model** — in local-run the frontend dev env
 the email) plus the `DEFAULT_ADMIN_PASSWORD` value from `apps/backend/api/.env`.
 After running `.devcontainer/script/get-secrets-infisical.sh`, **restart
 `start:dev`** so dotenv reloads the new `.env`. Full walkthrough:
-`docs/solutions/developer-experience/dev-container-local-run-and-login.md`.
+`docs/solutions/developer-experience/2026-06-25-dev-container-local-run-and-login.md`.
 
 ## Documented solutions
 

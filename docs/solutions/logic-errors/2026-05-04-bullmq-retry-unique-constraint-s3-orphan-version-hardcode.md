@@ -180,4 +180,4 @@ try {
 
 ## Related Issues
 
-- `docs/solutions/runtime-errors/typeorm-entity-circular-import-silent-drop-2026-05-04.md` — TypeORM entity registration failure; different problem but same `@hsm/worker`/`@hsm/database` module area.
+- `docs/solutions/runtime-errors/2026-05-04-typeorm-entity-circular-import-silent-drop.md` — TypeORM entity registration failure; different problem but same `@hsm/worker`/`@hsm/database` module area.

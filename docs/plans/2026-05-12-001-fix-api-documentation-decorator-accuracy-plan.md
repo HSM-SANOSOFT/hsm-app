@@ -3,7 +3,7 @@ title: "fix: API documentation decorator accuracy"
 type: fix
 status: active
 date: 2026-05-12
-origin: docs/brainstorms/api-documentation-accuracy-requirements.md
+origin: docs/brainstorms/2026-05-12-api-documentation-accuracy-requirements.md
 ---
 
 # fix: API documentation decorator accuracy
@@ -22,7 +22,7 @@ The `@ApiDocumentation` decorator auto-generates Swagger documentation — usefu
 
 ## Requirements
 
-- R1. `metadata.path` example in all response schemas reflects the actual endpoint path, derived from route metadata at decoration time. (see origin: `docs/brainstorms/api-documentation-accuracy-requirements.md`)
+- R1. `metadata.path` example in all response schemas reflects the actual endpoint path, derived from route metadata at decoration time. (see origin: `docs/brainstorms/2026-05-12-api-documentation-accuracy-requirements.md`)
 - R2. `ApiHeader({ name: 'Authorization' })` calls removed; `ApiBearerAuth` remains as the sole auth link to the global Swagger security scheme. (see origin)
 - R3. `success ? success : true` replaced with `success ?? true` in `metadataSchema()` so error responses correctly show `success: false`. (see origin)
 - R4. Error response `issue` examples use status-code-specific neutral values (`VALIDATION_ERROR` for 400, `UNAUTHORIZED` for 401, `FORBIDDEN` for 403, `INTERNAL_SERVER_ERROR` for 500) instead of the auth-specific hardcoded values from `IssueDto`. *(Added during planning — user decision from brainstorm session, deliberately overriding the origin document's initial deferral of this feature. No origin AE maps to R4; test scenarios in U1 are the acceptance criteria.)*
@@ -57,7 +57,7 @@ The `@ApiDocumentation` decorator auto-generates Swagger documentation — usefu
 
 ### Institutional Learnings
 
-- `docs/solutions/developer-experience/nestjs-unit-test-mocking-patterns-2026-05-06.md` — NestJS unit test mocking patterns; relevant when structuring the new spec file
+- `docs/solutions/developer-experience/2026-05-06-nestjs-unit-test-mocking-patterns.md` — NestJS unit test mocking patterns; relevant when structuring the new spec file
 
 ---
 
@@ -187,7 +187,7 @@ The `@ApiDocumentation` decorator auto-generates Swagger documentation — usefu
 
 ## Sources & References
 
-- **Origin document:** [`docs/brainstorms/api-documentation-accuracy-requirements.md`](docs/brainstorms/api-documentation-accuracy-requirements.md)
+- **Origin document:** [`docs/brainstorms/2026-05-12-api-documentation-accuracy-requirements.md`](docs/brainstorms/2026-05-12-api-documentation-accuracy-requirements.md)
 - Decorator under modification: `apps/backend/api/src/decorator/api-documentation.decorator.ts`
 - NestJS v11 constants: `@nestjs/common/constants` — `PATH_METADATA = 'path'`, `GUARDS_METADATA = '__guards__'`
-- NestJS unit test patterns: `docs/solutions/developer-experience/nestjs-unit-test-mocking-patterns-2026-05-06.md`
+- NestJS unit test patterns: `docs/solutions/developer-experience/2026-05-06-nestjs-unit-test-mocking-patterns.md`

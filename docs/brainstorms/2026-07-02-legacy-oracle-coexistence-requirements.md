@@ -4,13 +4,41 @@ status: draft — awaiting review
 created: 2026-07-02
 authors: Raul Santamaria (+ Claude)
 related:
-  - docs/migration/legacy-system-audit.md
-  - docs/migration/modules-detail.md
-  - docs/migration/legacy-audit-instructions.md
-  - docs/roadmap/hospital-platform-build-tracker.md
+  - docs/migration/2026-06-29-legacy-system-audit.md
+  - docs/migration/2026-06-29-legacy-modules-detail.md
+  - docs/migration/2026-06-29-legacy-audit-instructions.md
+  - docs/roadmap/2026-06-26-hospital-platform-build-tracker.md
 ---
 
 # Legacy Oracle ⇄ New App Coexistence Architecture
+
+## Planning inputs (required reading before planning)
+
+This brainstorm defines the **coexistence mechanism**. The plan derived from it
+(`/ce-plan`) MUST NOT be written from this document alone — it must first deep-dive
+the legacy audits and reconcile them against the roadmap, because *which* modules to
+rebuild and *in what order* depends on the legacy inventory, not on this mechanism doc.
+
+Required reading, and how each feeds the plan:
+
+- **`docs/migration/2026-06-29-legacy-system-audit.md`** — the authoritative subsystem →
+  module → table/PL-SQL inventory (~250 Oracle tables, ~30 procs, integrations, auth model).
+  Use it to enumerate every module that must be rebuilt and every legacy table/proc each one
+  touches.
+- **`docs/migration/2026-06-29-legacy-modules-detail.md`** — the per-sub-app deep pass
+  (~370 folders, W=writes, dead/duplicate flags). Use it to scope a module precisely and to
+  avoid porting dead/duplicate folders.
+- **`docs/roadmap/2026-06-26-hospital-platform-build-tracker.md`** — the living module roadmap
+  (R6–R37 + cross-cutting). The plan must **reconcile the audit against this tracker**: add the
+  modules the audit surfaces that the generic taxonomy is missing (Blood Bank, Occupational
+  Health, Dental, Patient Safety, Physician Honoraria/Audit, Referrals, Infection Control,
+  Facilities, SRI e-invoicing, Insurance/Convenios, …) and the cross-cutting services
+  (identity/RBAC, reference-code dictionary, atomic numbering, the Legacy Bridge itself), then
+  **sequence the build waves** and update the tracker's UI-frame/Build status accordingly.
+
+The plan must, for each module it schedules, state its **archetype** (`pg-native` /
+`legacy-owned` / `cutover`, §2 below), the legacy tables/procs it depends on (from the audits),
+and — for `legacy-owned` modules — the `Legacy<Entity>Adapter`(s) needed for read-through.
 
 ## 1. Problem & context
 
