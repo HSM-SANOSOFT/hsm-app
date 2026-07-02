@@ -3,7 +3,17 @@ title: "feat: Unified hospital frontend — one door (patients + staff), brand r
 date: 2026-06-24
 type: feat
 origin: docs/brainstorms/2026-06-23-web-frontend-internal-console-requirements.md (superseded framing — see Problem Frame)
-status: ready
+status: completed
+completed: 2026-06-24
+completion_note: >-
+  Executed and verified against the codebase (2026-07-02). U1–U16 all present:
+  onboardingCompletedAt on UserEntity, patient-only signup, admin create-staff
+  (POST /v1/user/staff), POST /auth/onboarding + pending guard, password-reset-token
+  entity + password/forgot|reset + username/recover, @Public() version endpoint,
+  brand token reskin, login/register/recovery/onboarding screens, role-aware
+  routing + workspace + patient placeholder, admin create-staff UI, PWA
+  (manifest + ngsw-config), and the mobile app retired. Unit-named commits
+  e2a3780/dedb120/64cac4e/a5009eb (U10–U13) confirm execution.
 ---
 
 # feat: Unified hospital frontend — one door (patients + staff), brand reskin, PWA

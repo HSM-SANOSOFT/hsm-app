@@ -3,6 +3,16 @@ title: "Internal web console for the HSM backend (auth, users/admin, docs)"
 type: feat
 date: 2026-06-24
 origin: docs/brainstorms/2026-06-23-web-frontend-internal-console-requirements.md
+status: completed
+completed: 2026-06-24
+completion_note: >-
+  Executed and verified against the codebase (2026-07-02). All backend units
+  present (composeTemplate util, POST /v1/templates/draft-render, settings
+  store + audit entity, user self-service + admin endpoints) and all frontend
+  units present (real Angular app, core/api + core/auth, shell, profile, admin
+  users + settings, templates editor, documents). Superseded/evolved by plan
+  002 (unified-hospital-frontend) and later nav work — routes were re-homed
+  (/profile→/settings, /admin/*→/system-admin/*), but every deliverable shipped.
 ---
 
 # Internal web console for the HSM backend (auth, users/admin, docs)
