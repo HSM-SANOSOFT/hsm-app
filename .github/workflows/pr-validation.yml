@@ -102,13 +102,33 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-      ENVIRONMENT: ci
+      # ENVIRONMENT=dev so schema is delivered via `synchronize` — the same path
+      # the local dev loop and the plan's "app booted" signal use, delivering ALL
+      # tables (core/security/settings/clinical). Migration-based delivery is
+      # guarded separately by migration-drift.yml; this job proves the app BOOTS
+      # Oracle-free, not that migrations are complete.
+      ENVIRONMENT: dev
       DB_POSTGRES_HOST: localhost
       DB_POSTGRES_PORT: '5432'
       DB_POSTGRES_USER: hsm
       DB_POSTGRES_PASSWORD: hsm
       DB_POSTGRES_DB: hsm_test
-      DB_POSTGRES_RUN_MIGRATIONS: 'true'
+      DB_POSTGRES_RUN_MIGRATIONS: 'false'
+      # Redis (BullMQ) and MinIO (S3) are eager boot dependencies exactly as Oracle
+      # WAS: AppModule connects BullMQ at forRoot and awaits
+      # S3Initializer.ensureBuckets() at init. So this job provisions the full
+      # local-run infra set (postgres+redis+minio). Only Oracle is intentionally
+      # absent — no DB_ORACLE_* env, no Oracle host reachable (that is the regression).
+      DB_REDIS_HOST: localhost
+      DB_REDIS_PORT: '6379'
+      DB_REDIS_USER: redis
+      DB_REDIS_PASSWORD: redis
+      STRG_S3_ACCESS_KEY: minio_user
+      STRG_S3_SECRET_KEY: minio_password
+      STRG_S3_FORCE_PATH_STYLE: 'true'
+      STRG_S3_HOST: http://localhost:9000
+      STRG_S3_HOST_EXTERNAL: http://localhost:9000
+      STRG_S3_REGION: us-east-1
       # Dummy values so @hsm/config Joi validation passes (see migration-drift.yml).
       SWAGGER_FAVICON: http://localhost/favicon.ico
       SWAGGER_SITE_TITLE: CI
@@ -121,6 +141,34 @@ jobs:
       JWT_RT_SECRET: ci-rt-secret-32-chars-padding!!!!
     steps:
       - uses: actions/checkout@v4
+      # Redis and MinIO run as plain `docker run` containers (not `services:`) so
+      # we can pass MinIO's required `server /data` command and mount Redis's repo
+      # ACL/config — neither is expressible with the `services:` block. Config
+      # mirrors docker/docker-compose.yaml so CI auth matches dev exactly.
+      - name: Start Redis (repo ACL — user "redis")
+        run: |
+          docker run -d --name redis -p 6379:6379 \
+            -v "$PWD/docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro" \
+            -v "$PWD/docker/redis/users.acl:/usr/local/etc/redis/users.acl:ro" \
+            redis:8-bookworm redis-server /usr/local/etc/redis/redis.conf
+      - name: Start MinIO
+        run: |
+          docker run -d --name minio -p 9000:9000 \
+            -e MINIO_ROOT_USER=minio_user \
+            -e MINIO_ROOT_PASSWORD=minio_password \
+            minio/minio:latest server /data
+      - name: Wait for Redis + MinIO to be ready
+        run: |
+          for i in $(seq 1 30); do
+            redis_ok=$(docker exec redis redis-cli -u redis://redis:redis@localhost:6379 ping 2>/dev/null || true)
+            if [ "$redis_ok" = "PONG" ] && curl -sf http://localhost:9000/minio/health/live >/dev/null; then
+              echo "Redis + MinIO ready"; exit 0
+            fi
+            echo "waiting for infra ($i/30)"; sleep 2
+          done
+          echo "::error::Redis/MinIO did not become ready in time"
+          docker logs redis || true; docker logs minio || true
+          exit 1
       - name: Install pnpm
         uses: pnpm/action-setup@v4
       - name: Set up Node.js
@@ -132,23 +180,23 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Build workspace deps
         run: pnpm build
-      - name: API integration (e2e)
+      - name: API integration (e2e) — boots Oracle-free
         run: pnpm --filter @hsm/api test:e2e
-      - name: Worker integration (e2e)
+      - name: Worker integration (e2e) — boots Oracle-free
         run: pnpm --filter @hsm/worker test:e2e
 
   # --- single required status check -> reference this name in the rulesets --------
-  # integration-tests is intentionally NOT gated yet: the app cannot boot Oracle-free
-  # until that refactor lands (§1/§2.1), so its e2e would fail today. It runs as an
-  # informational job. Add it to `needs` below once the app boots without Oracle.
+  # integration-tests is now GATED: the app boots Oracle-free (this plan's U1/U2),
+  # so its e2e is a hard requirement — a regression that re-introduces an eager
+  # Oracle boot dependency (or breaks pg/redis/minio boot) fails the gate.
   pr-gate:
     if: always()
-    needs: [branch-policy, lint, build, unit-tests]
+    needs: [branch-policy, lint, build, unit-tests, integration-tests]
     runs-on: ubuntu-latest
     steps:
       - name: Assert all checks passed
         run: |
-          results="${{ needs.branch-policy.result }} ${{ needs.lint.result }} ${{ needs.build.result }} ${{ needs.unit-tests.result }}"
+          results="${{ needs.branch-policy.result }} ${{ needs.lint.result }} ${{ needs.build.result }} ${{ needs.unit-tests.result }} ${{ needs.integration-tests.result }}"
           echo "Upstream results: $results"
           for r in $results; do
             if [ "$r" != "success" ]; then

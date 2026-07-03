@@ -55,11 +55,7 @@ jobs:
       SMTP_SECURE: 'false'
       JWT_AT_SECRET: ci-at-secret-32-chars-padding!!!!
       JWT_RT_SECRET: ci-rt-secret-32-chars-padding!!!!
-      DB_ORACLE_HOST: localhost
-      DB_ORACLE_PORT: '1521'
-      DB_ORACLE_USER: ci
-      DB_ORACLE_PASSWORD: ci
-      DB_ORACLE_DB: ci
+      # DB_ORACLE_* removed — the app no longer connects to Oracle (pg-native foundation).
       DB_REDIS_HOST: localhost
       DB_REDIS_PORT: '6379'
       DB_REDIS_USER: ci
