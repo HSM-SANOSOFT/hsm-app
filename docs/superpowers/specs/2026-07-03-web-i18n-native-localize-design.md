@@ -19,7 +19,9 @@ in-app toggle (accepted trade-off). The structure supports adding **Portuguese (
 later as one more target with no rework.
 
 All UI strings are currently **hardcoded in English**; this effort migrates them to
-Spanish source text with stable `i18n` IDs and produces the `en` target file.
+Spanish source text with stable `i18n` IDs and produces the `en` target file. It also
+**localizes API-surfaced messages**: the backend emits stable error codes and the
+frontend maps them to `$localize` messages (so login/validation errors are translated too).
 
 ## Goals
 
@@ -32,6 +34,9 @@ Spanish source text with stable `i18n` IDs and produces the `en` target file.
   language.
 - G5. **PrimeNG** built-in component text (paginator, calendar, confirm dialogs, etc.)
   is localized to match.
+- G6. **API-originated messages are localized.** Backend emits stable **codes**; the
+  frontend maps each code to a `$localize` message, so errors like "Invalid password" and
+  form-validation feedback render in the active language.
 
 ## Non-Goals (explicitly deferred)
 
@@ -39,11 +44,10 @@ Spanish source text with stable `i18n` IDs and produces the `en` target file.
   switching reloads into the other locale build. (Transloco is the alternative if this
   ever becomes a hard requirement.)
 - **Portuguese (`pt`).** Structure supports it; not built now (es + en only).
-- **Translating API-originated messages.** Backend returns English free-text messages
-  (e.g. "Invalid password"). Translating these needs the backend to emit **stable
-  codes** that the frontend maps to `$localize` strings — a **separate follow-up**
-  (touches the API response/error envelope). Until then, API messages display as sent.
 - **SSR / prerendering per locale.** Out of scope.
+- **Param-accurate validation messages** (e.g. echoing the exact `minLength` value into
+  the text) — v1 maps each constraint key to a generic localized message; interpolating
+  constraint params is a later refinement (see U7).
 
 ## Requirements
 
@@ -62,6 +66,12 @@ Spanish source text with stable `i18n` IDs and produces the `en` target file.
 - R7. PrimeNG translations are applied per locale at bootstrap. (G5)
 - R8. Production serving delivers both locale builds under their base-hrefs with a root
   redirect and per-locale SPA fallback; CI builds all locales. (G1, G2)
+- R9. The backend error envelope carries a **stable `code`** on every error response, and
+  validation failures carry structured `{ field, constraints: [key] }` (constraint keys,
+  not just English text). (G6)
+- R10. The frontend maps every emitted code (business + generic HTTP + validation
+  constraint keys) to a `$localize` message; an unknown code falls back to a generic
+  localized "unexpected error" (never a blank or raw English string). (G6)
 
 ## Key Technical Decisions
 
@@ -86,6 +96,19 @@ Spanish source text with stable `i18n` IDs and produces the `en` target file.
   per-locale SPA fallback (small `serve.json` or equivalent). Dev (`ng serve`) runs one
   locale at a time (source by default; `--configuration=en` to preview English) — a known
   native-i18n dev limitation, documented.
+- **KTD8 — API messages via stable codes + a build-time frontend map.** A shared
+  `ApiErrorCode` enum lives in `@hsm/common` (imported by BE and FE). The backend
+  `ResponseFilter` is the single seam: it attaches `code` to the `issue` envelope — custom
+  domain exceptions carry their own code; uncoded `HttpException`s map by status
+  (`401 → AUTH.UNAUTHORIZED`, `403 → COMMON.FORBIDDEN`, `404 → COMMON.NOT_FOUND`,
+  `5xx → COMMON.INTERNAL`); class-validator failures emit `{ field, constraints: [key] }`
+  (constraint keys) instead of only English strings. The frontend's `apiMessage(code)` /
+  `validationMessage(key)` are **finite `switch`es of `$localize`-marked constants** —
+  which is exactly what native `@angular/localize` can localize (all branches known at
+  build time). Unknown code → generic localized fallback (R10). **Success-envelope
+  messages are not shown verbatim by the UI**, so only error/validation codes are in
+  scope; success `message` stays as-is. Param-accurate validation text is deferred (v1 =
+  generic per-key messages).
 
 ## Implementation Units (for the plan)
 
@@ -119,6 +142,23 @@ Spanish source text with stable `i18n` IDs and produces the `en` target file.
   root redirect + SPA fallback; update CI build to `ng build --localize` (all locales).
   Files: `apps/frontend/web/Dockerfile`, serve config, `.github/workflows/*` (web build,
   once a web job exists — currently web unit tests are excluded from CI).
+- **U7. Backend — stable error codes (@hsm/common + ResponseFilter + ValidationPipe).**
+  Add an `ApiErrorCode` enum + the `issue.code` / validation `{field, constraints[]}`
+  shape to `@hsm/common` (dtos/interfaces). Give domain exceptions a code (a small
+  `AppException(code, status)` base or a `code` on the thrown payload); extend
+  `ResponseFilter` to always set `issue.code` (status-map fallback for uncoded ones) and
+  to surface constraint **keys** for validation errors. Configure the global
+  `ValidationPipe` `exceptionFactory` to preserve constraint keys + field. Files:
+  `packages/common/src/{enums,dtos,interfaces}/*`, `apps/backend/api/src/filters/
+  response.filter.ts` (+ spec), `apps/backend/api/src/main.ts` (ValidationPipe), the
+  auth/validation exception sites touched first. **Ordering:** land U7 before the FE map
+  (U8) so real codes exist to map against.
+- **U8. Frontend — `apiMessage` / `validationMessage` localized map.** A pure module with
+  finite `switch`es over `ApiErrorCode` / constraint keys returning `$localize`-marked
+  strings (+ generic fallback). Wire the HTTP error interceptor / form-error display to
+  use it so surfaced API + validation errors render localized. Files:
+  `src/app/core/i18n/api-messages.ts` (+ spec), the HTTP error interceptor and form-field
+  error components. Depends on U1–U3 (i18n active) and U7 (codes exist).
 
 ## Data Flow — switching language
 
@@ -151,14 +191,17 @@ On next visit (any URL without /es|/en prefix):
 | Native dev serves one locale at a time — switcher can't be exercised in `ng serve` | Document `--configuration=en`; full switch behavior verified against the localized production build |
 | `serve -s dist` doesn't natively do per-locale base-href + fallback | U6 adds a root redirect + per-locale SPA fallback config; verify both locales load |
 | CI/build time ~2× (one build per locale) | Acceptable; only `es`+`en` now |
-| API messages remain English (deferred) | Explicit non-goal; backend-codes follow-up tracked separately |
+| Backend code migration is broad (every error path) | Central seam is `ResponseFilter` + a status-map fallback, so uncoded errors still get a code; code the high-traffic domains (auth, validation) first, others inherit the fallback |
+| Adding `issue.code` could break existing FE error handling | `code` is additive to the envelope; existing `message`/`error` fields stay until the FE map replaces their display |
 | Source-text authored in Spanish but reviewers expect English source | Team convention: Spanish is the source language of record |
 
 ## Open Questions — resolved
 
 - **Engine:** native `@angular/localize` (user-chosen), not Transloco. Reload-to-switch accepted.
 - **Languages now:** `es` (source) + `en` (target). `pt` deferred.
-- **API messages:** deferred to a backend-codes follow-up.
+- **API messages:** **in scope** — backend emits stable codes (U7), frontend maps them to
+  `$localize` messages (U8). Success messages and param-accurate validation text are the
+  only pieces deferred.
 - **Default language:** always Spanish first load; explicit choice persisted.
 - **Formatting:** switches with language (`es-EC`/`en`, USD).
 - **Switcher placement:** profile menu + login/auth screens.
