@@ -42,7 +42,6 @@ Already-used prefixes — extend rather than invent new ones unless the domain t
 | `SMTP_*` | Email transport |
 | `JWT_AT_*` / `JWT_RT_*` | Access / refresh JWT secrets |
 | `DB_POSTGRES_*` | Postgres connection |
-| `DB_ORACLE_*` | Oracle connection |
 | `DB_REDIS_*` | Redis (BullMQ) connection |
 | `STRG_S3_*` | S3 / MinIO storage |
 

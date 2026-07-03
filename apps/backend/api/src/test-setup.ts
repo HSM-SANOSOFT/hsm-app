@@ -17,11 +17,7 @@ process.env.DB_POSTGRES_USER = 'test';
 process.env.DB_POSTGRES_PASSWORD = 'test';
 process.env.DB_POSTGRES_DB = 'test';
 process.env.DB_POSTGRES_RUN_MIGRATIONS = 'false';
-process.env.DB_ORACLE_HOST = 'localhost';
-process.env.DB_ORACLE_PORT = '1521';
-process.env.DB_ORACLE_USER = 'test';
-process.env.DB_ORACLE_PASSWORD = 'test';
-process.env.DB_ORACLE_DB = 'test';
+// DB_ORACLE_* removed — app no longer connects to Oracle (pg-native foundation, U2).
 process.env.DB_REDIS_HOST = 'localhost';
 process.env.DB_REDIS_PORT = '6379';
 process.env.DB_REDIS_USER = 'test';

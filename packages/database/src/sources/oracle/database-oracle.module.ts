@@ -25,15 +25,22 @@ try {
   Logger.error('Error initializing Oracle client', err);
 }
 
+// RETAINED-BUT-UNWIRED (feat: standalone pg-native foundation, U1/U2).
+// This module is no longer imported by DatabaseSourcesModule, so it never loads
+// at app boot. It is kept on disk for the future cutoff migration (R2). Because
+// DB_ORACLE_* was removed from @hsm/config (U2), this dead module reads the creds
+// straight from process.env — a deliberate, localized exception to the
+// "always import envs" rule (see @hsm/config CLAUDE.md), valid precisely because
+// this code path is inert until deliberately re-wired for the cutoff.
 const dataSourceOptions: TypeOrmModuleOptions = {
   ...DatabaseSourceOptions,
   type: 'oracle',
   name: DatabasesEnum.HsmDbOracle,
-  host: envs.DB_ORACLE_HOST,
-  port: envs.DB_ORACLE_PORT,
-  username: envs.DB_ORACLE_USER,
-  password: envs.DB_ORACLE_PASSWORD,
-  connectString: `${envs.DB_ORACLE_HOST}:${envs.DB_ORACLE_PORT}/${envs.DB_ORACLE_DB}`,
+  host: process.env.DB_ORACLE_HOST,
+  port: Number(process.env.DB_ORACLE_PORT ?? 1521),
+  username: process.env.DB_ORACLE_USER,
+  password: process.env.DB_ORACLE_PASSWORD,
+  connectString: `${process.env.DB_ORACLE_HOST}:${process.env.DB_ORACLE_PORT}/${process.env.DB_ORACLE_DB}`,
   synchronize: false,
 };
 

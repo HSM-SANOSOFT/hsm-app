@@ -27,12 +27,6 @@ interface EnvVars {
   DB_POSTGRES_DB: string;
   DB_POSTGRES_RUN_MIGRATIONS: boolean;
 
-  DB_ORACLE_HOST: string;
-  DB_ORACLE_PORT: number;
-  DB_ORACLE_USER: string;
-  DB_ORACLE_PASSWORD: string;
-  DB_ORACLE_DB: string;
-
   DB_REDIS_HOST: string;
   DB_REDIS_PORT: number;
   DB_REDIS_USER: string;
@@ -81,11 +75,12 @@ const EnvSchema = joi
     // prod ops obligation.
     DB_POSTGRES_RUN_MIGRATIONS: joi.boolean().default(false),
 
-    DB_ORACLE_HOST: joi.string().required(),
-    DB_ORACLE_PORT: joi.number().default(1521),
-    DB_ORACLE_USER: joi.string().required(),
-    DB_ORACLE_PASSWORD: joi.string().required(),
-    DB_ORACLE_DB: joi.string().required(),
+    // DB_ORACLE_* intentionally removed (feat: standalone pg-native foundation, U2).
+    // The app no longer connects to Oracle at boot; the entity generator reads
+    // Oracle creds via its own CLI args (generator/utils/get_args.util.ts), never
+    // via @hsm/config. Leaving them required() stalled boot; leaving them optional()
+    // would keep live prod Oracle creds loadable into the API/worker env for no
+    // benefit. `.unknown()` below still tolerates a stray DB_ORACLE_* in a .env.
 
     DB_REDIS_HOST: joi.string().required(),
     DB_REDIS_PORT: joi.number().default(6379),
@@ -146,12 +141,6 @@ export const envs = Object.freeze({
   DB_POSTGRES_PASSWORD: envVars.DB_POSTGRES_PASSWORD,
   DB_POSTGRES_DB: envVars.DB_POSTGRES_DB,
   DB_POSTGRES_RUN_MIGRATIONS: envVars.DB_POSTGRES_RUN_MIGRATIONS,
-
-  DB_ORACLE_HOST: envVars.DB_ORACLE_HOST,
-  DB_ORACLE_PORT: envVars.DB_ORACLE_PORT,
-  DB_ORACLE_USER: envVars.DB_ORACLE_USER,
-  DB_ORACLE_PASSWORD: envVars.DB_ORACLE_PASSWORD,
-  DB_ORACLE_DB: envVars.DB_ORACLE_DB,
 
   DB_REDIS_HOST: envVars.DB_REDIS_HOST,
   DB_REDIS_PORT: envVars.DB_REDIS_PORT,
