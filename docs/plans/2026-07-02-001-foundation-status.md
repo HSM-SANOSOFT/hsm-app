@@ -15,29 +15,33 @@ _Last updated: 2026-07-03_
 
 | Unit | What | State |
 |------|------|:-----:|
-| U1 | Unwire Oracle datasource (keep files) | 👀 |
-| U2 | Remove `DB_ORACLE_*` from config | 👀 |
-| U3 | CI: API boots Oracle-free (+ redis/minio) | 👀 |
-| U4 | Land & activate release train | ✅ |
+| U1 | Unwire Oracle datasource (keep files) | ✔️ |
+| U2 | Remove `DB_ORACLE_*` from config | ✔️ |
+| U3 | CI: API boots Oracle-free (+ redis/minio) | ✔️ |
+| U4 | Land & activate release train | ✔️ |
 | U5 | Progress tracking dashboard | ✅ |
 
-**U1–U3 notes:** implemented on `feat/pg-native-foundation` (commits `246c576`,
-`4e44e10`, `e5898b7`); backend unit suites green (api 380/380) and api+worker build
-Oracle-free. In review via PR into `development` — flip each to ✔️ once `pr-gate`
-(incl. the now-gated `integration-tests` Oracle-free boot job) is green on merge.
-Full host-side e2e boot was not reproducible off the dev container (workspace/deps
-resolution), so the CI `integration-tests` job is the authoritative boot gate.
+**U1–U3:** implemented on `feat/pg-native-foundation` (PR #12 into `development`) and
+**CI-verified** — `pr-validation` is fully green for the first time: `branch-policy`,
+`lint`, `build`, `unit-tests`, and `integration-tests` (the gated Oracle-free boot job,
+booting api+worker against postgres+redis+minio with no Oracle) all pass, so `pr-gate`
+is green. Backend unit suites 380/380 (api) + 64/64 (worker).
 
-**U4 notes:** rulesets applied (4 active); `required_approving_review_count` set to **0**
-while solo (re-raise to 1 when a second reviewer exists). Auto-firing `release-tag` /
-`back-merge` workflows were intentionally dropped (`14e92c2`); re-add with a PAT when a
-stable `main` release cadence begins.
+**U4 — release train now proven enforcing.** Getting a green `pr-gate` required fixing
+the release-train CI, which had never run green: `@types/node`+`multer` missing at root
+(every `tsc` build failed `TS2688`) → added as root devDeps; `pnpm/action-setup version:10`
+vs `packageManager pnpm@11.9.0` conflict → dropped the override; pre-existing biome lint
+errors; worker had no jest `test-setup` (unit tests only passed locally via `.env`); the
+e2e configs lacked the `@hsm/*` `moduleNameMapper` and asserted a stale `GET /` route.
+Rulesets applied (4 active); `required_approving_review_count` **0** while solo (raise to 1
+with a second reviewer). Auto-firing `release-tag`/`back-merge` intentionally dropped
+(`14e92c2`) — re-add with a PAT at stable-release cadence.
 
 ## Roadmap — waves
 
 | Wave | Subsystem | State |
 |------|-----------|:-----:|
-| W0 | Foundation (this plan) | 🟡 |
+| W0 | Foundation (this plan) | 👀 |
 | W1 | Platform core (SIS/TIC shared services) | ☐ |
 | W2 | HIS — clinical | ☐ |
 | W3 | HAS — business/ERP | ☐ |

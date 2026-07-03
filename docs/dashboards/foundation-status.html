@@ -213,17 +213,17 @@
     <div class="sec-head"><span class="num">W0</span><h2>The foundation plan — 5 units</h2><span class="sub">Legend: ☐ not-started · 🟡 in-progress · ⛔ blocked · 👀 review · ✅ done · ✔️ verified</span></div>
     <div class="units">
       <div class="unit">
-        <div class="top"><span class="uid">U1</span><h3>Unwire Oracle datasource — keep files</h3><span class="st done">👀 in review</span></div>
+        <div class="top"><span class="uid">U1</span><h3>Unwire Oracle datasource — keep files</h3><span class="st done">✔️ CI-verified</span></div>
         <p>One edit: dropped <code>DatabaseOracleModule</code> from <code>database-sources.module.ts</code> → both apps stop dialing Oracle at boot. Nothing queries it, so no service broke. Files stay on disk for the cutoff-migration generator.</p>
         <div class="dep">deps: none · fixes ORA-12170 · commit 246c576</div>
       </div>
       <div class="unit">
-        <div class="top"><span class="uid">U2</span><h3>Remove <code>DB_ORACLE_*</code> config</h3><span class="st done">👀 in review</span></div>
+        <div class="top"><span class="uid">U2</span><h3>Remove <code>DB_ORACLE_*</code> config</h3><span class="st done">✔️ CI-verified</span></div>
         <p>Removed the Oracle env vars entirely (not just optional) from <code>envs.ts</code> + <code>test-setup.ts</code>; the retained dead Oracle module now reads <code>process.env</code>. Atomic to dodge the dotenv back-fill trap.</p>
         <div class="dep">deps: U1 · commit 4e44e10</div>
       </div>
       <div class="unit">
-        <div class="top"><span class="uid">U3</span><h3>CI: API boots Oracle-free</h3><span class="st done">👀 in review</span></div>
+        <div class="top"><span class="uid">U3</span><h3>CI: API boots Oracle-free</h3><span class="st done">✔️ CI-verified</span></div>
         <p>The <code>integration-tests</code> job now boots api+worker e2e against postgres+redis+minio with no Oracle host, and is <b>gated into <code>pr-gate</code></b> — a regression re-adding an eager Oracle boot fails the required check.</p>
         <div class="dep">deps: U1, U2 · commit e5898b7</div>
       </div>
