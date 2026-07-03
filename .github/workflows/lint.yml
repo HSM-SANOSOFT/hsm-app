@@ -9,9 +9,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install pnpm
+        # No `version:` — let action-setup read `packageManager` from package.json
+        # (pnpm@11.9.0). Passing a conflicting `version` fails action-setup with
+        # "Multiple versions of pnpm specified".
         uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
