@@ -18,6 +18,7 @@ export class LanguageSwitcher {
     { label: 'EN', value: 'en' as AppLocale },
   ];
   value = this.lang.current();
+  readonly ariaLabel = $localize`:@@layout.languageSwitcher.aria:Idioma`;
 
   choose(locale: AppLocale): void {
     this.lang.switch(locale);

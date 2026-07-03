@@ -5,6 +5,5 @@
   optionValue="value"
   [allowEmpty]="false"
   (onChange)="choose($event.value)"
-  i18n-ariaLabel="@@layout.languageSwitcher.aria"
-  ariaLabel="Idioma"
+  [attr.aria-label]="ariaLabel"
 />

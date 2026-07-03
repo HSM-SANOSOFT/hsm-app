@@ -7,6 +7,7 @@ import { PasswordModule } from 'primeng/password';
 
 import { ApiError } from '../../../../core/api/api-error';
 import { passwordsMatch } from '../../../../core/validators/password.validators';
+import { LanguageSwitcher } from '../../../../layout/language-switcher/language-switcher';
 import { RecoveryService } from '../recovery.service';
 
 /** Reads `token=<value>` out of a URL fragment string. */
@@ -42,6 +43,7 @@ function tokenFromFragment(fragment: string | null): string | null {
     PasswordModule,
     ButtonModule,
     MessageModule,
+    LanguageSwitcher,
   ],
   templateUrl: './reset-password.html',
   styleUrl: '../../auth.css',

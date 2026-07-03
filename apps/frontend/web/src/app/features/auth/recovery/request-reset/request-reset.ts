@@ -6,6 +6,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 
 import { ApiError } from '../../../../core/api/api-error';
+import { LanguageSwitcher } from '../../../../layout/language-switcher/language-switcher';
 import { RecoveryService } from '../recovery.service';
 
 /**
@@ -26,6 +27,7 @@ import { RecoveryService } from '../recovery.service';
     InputTextModule,
     ButtonModule,
     MessageModule,
+    LanguageSwitcher,
   ],
   templateUrl: './request-reset.html',
   styleUrl: '../../auth.css',

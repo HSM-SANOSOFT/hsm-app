@@ -8,6 +8,7 @@ import { PasswordModule } from 'primeng/password';
 
 import { toErrorMessage } from '../../../core/api/api-error';
 import { AuthService } from '../../../core/auth/auth.service';
+import { LanguageSwitcher } from '../../../layout/language-switcher/language-switcher';
 
 /**
  * Patient self-registration screen. Posts to `POST /v1/auth/signup` via
@@ -28,6 +29,7 @@ import { AuthService } from '../../../core/auth/auth.service';
     PasswordModule,
     ButtonModule,
     MessageModule,
+    LanguageSwitcher,
   ],
   templateUrl: './register.html',
   styleUrl: '../auth.css',
