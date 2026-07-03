@@ -5,5 +5,12 @@
   "testRegex": ".e2e-spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "^@hsm/common(|/.*)$": "<rootDir>/../../../../packages/common/src/$1",
+    "^@hsm/config(|/.*)$": "<rootDir>/../../../../packages/config/src/$1",
+    "^@hsm/database(|/.*)$": "<rootDir>/../../../../packages/database/src/$1",
+    "^@hsm/queue(|/.*)$": "<rootDir>/../../../../packages/queue/src/$1",
+    "^@hsm/storage(|/.*)$": "<rootDir>/../../../../packages/storage/src/$1"
   }
 }
