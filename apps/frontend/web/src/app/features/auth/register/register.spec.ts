@@ -104,9 +104,10 @@ describe('Register component', () => {
     const text = (
       (fixture.nativeElement as HTMLElement).textContent ?? ''
     ).toLowerCase();
-    expect(text).toContain('patient account');
+    expect(text).toContain('cuenta de paciente');
     expect(text).not.toContain('staff');
     expect(text).not.toContain('auditor');
+    expect(text).not.toContain('personal');
   });
 
   it('surfaces the ApiError and does not navigate when signup fails', () => {

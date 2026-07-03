@@ -6,17 +6,29 @@
     </a>
 
     <div class="auth-pitch">
-      <p class="auth-eyebrow">Account recovery</p>
-      <h2 class="auth-headline">Forgot your username?</h2>
-      <p class="auth-lede">
-        Tell us the email on your account and we'll send your username so you
-        can sign back in.
+      <p class="auth-eyebrow" i18n="@@auth.recoverUsername.eyebrow">Recuperación de cuenta</p>
+      <h2 class="auth-headline" i18n="@@auth.recoverUsername.headline">
+        ¿Olvidó su usuario?
+      </h2>
+      <p class="auth-lede" i18n="@@auth.recoverUsername.lede">
+        Indíquenos el correo electrónico de su cuenta y le enviaremos su
+        usuario para que pueda volver a iniciar sesión.
       </p>
     </div>
 
     <ul class="auth-reassure">
-      <li><span class="auth-tick"></span> You sign in with your username, not your email</li>
-      <li><span class="auth-tick"></span> We never reveal whether an email is registered</li>
+      <li>
+        <span class="auth-tick"></span>
+        <span i18n="@@auth.recoverUsername.reassure.username"
+          >Usted inicia sesión con su usuario, no con su correo electrónico</span
+        >
+      </li>
+      <li>
+        <span class="auth-tick"></span>
+        <span i18n="@@auth.recoverUsername.reassure.privacy"
+          >Nunca revelamos si un correo electrónico está registrado</span
+        >
+      </li>
     </ul>
   </aside>
 
@@ -30,47 +42,57 @@
       </div>
 
       @if (sent()) {
-        <h1 class="auth-title">Check your email</h1>
-        <p class="auth-sub">
-          If an account exists for that email, we've sent your username. It may
-          take a minute to arrive — and remember to check spam.
+        <h1 class="auth-title" i18n="@@auth.recoverUsername.sent.title">Revise su correo electrónico</h1>
+        <p class="auth-sub" i18n="@@auth.recoverUsername.sent.message">
+          Si existe una cuenta con ese correo electrónico, le hemos enviado su
+          usuario. Puede tardar un minuto en llegar — y recuerde revisar la
+          carpeta de spam.
         </p>
 
         <p class="auth-alt">
-          <a routerLink="/login" data-testid="login-link">Back to sign in</a>
+          <a routerLink="/login" data-testid="login-link"
+            ><span i18n="@@auth.recoverUsername.sent.backLink">Volver a iniciar sesión</span></a
+          >
         </p>
       } @else {
-        <h1 class="auth-title">Recover your username</h1>
-        <p class="auth-sub">We'll email it to the address on your account.</p>
+        <h1 class="auth-title" i18n="@@auth.recoverUsername.title">Recupere su usuario</h1>
+        <p class="auth-sub" i18n="@@auth.recoverUsername.subtitle">
+          Se lo enviaremos al correo electrónico de su cuenta.
+        </p>
 
         <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
           @if (rateLimited()) {
             <p-message
               severity="warn"
-              text="Too many requests. Please wait a few minutes and try again."
+              i18n-text="@@auth.recoverUsername.rateLimited"
+              text="Demasiadas solicitudes. Espere unos minutos e intente de nuevo."
               styleClass="auth-msg"
             />
           }
 
           <div class="field">
-            <label for="email">Email</label>
+            <label for="email" i18n="@@auth.recoverUsername.email.label">Correo electrónico</label>
             <input
               pInputText
               id="email"
               type="email"
               formControlName="email"
               autocomplete="email"
-              placeholder="you@example.com"
+              i18n-placeholder="@@auth.recoverUsername.email.placeholder"
+              placeholder="correo@ejemplo.com"
               fluid
             />
             @if (form.controls.email.invalid && form.controls.email.touched) {
-              <small class="field-error">Enter a valid email address.</small>
+              <small class="field-error" i18n="@@auth.recoverUsername.email.error"
+                >Ingrese una dirección de correo electrónico válida.</small
+              >
             }
           </div>
 
           <p-button
             type="submit"
-            label="Email my username"
+            i18n-label="@@auth.recoverUsername.submit"
+            label="Enviarme mi usuario"
             icon="pi pi-arrow-right"
             iconPos="right"
             [loading]="submitting()"
@@ -81,12 +103,16 @@
         </form>
 
         <p class="auth-alt">
-          Remembered it?
-          <a routerLink="/login" data-testid="login-link">Sign in</a>
+          <span i18n="@@auth.recoverUsername.remembered">¿Lo recordó?</span>
+          <a routerLink="/login" data-testid="login-link"
+            ><span i18n="@@auth.recoverUsername.loginLink">Iniciar sesión</span></a
+          >
         </p>
         <p class="auth-alt auth-alt--subtle">
-          Forgot your password too?
-          <a routerLink="/forgot-password">Reset it</a>
+          <span i18n="@@auth.recoverUsername.forgotPasswordToo">¿También olvidó su contraseña?</span>
+          <a routerLink="/forgot-password"
+            ><span i18n="@@auth.recoverUsername.resetLink">Restablecerla</span></a
+          >
         </p>
       }
     </div>

@@ -2,6 +2,430 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="es-EC" target-language="en" datatype="plaintext" original="ng2.template">
     <body>
+      <trans-unit id="auth.login.eyebrow" datatype="html">
+        <source>Su hospital, en línea</source>
+        <target>Your hospital, online</target>
+      </trans-unit>
+      <trans-unit id="auth.login.headline" datatype="html">
+        <source> Su atención, todo en un solo lugar. </source>
+        <target> Your care, all in one place. </target>
+      </trans-unit>
+      <trans-unit id="auth.login.lede" datatype="html">
+        <source> Inicie sesión para acceder a sus registros, su equipo médico y todo lo que el Hospital Santa María guarda para usted — de forma segura, cuando lo necesite. </source>
+        <target> Sign in to reach your records, your team, and everything Hospital Santa María keeps for you — securely, whenever you need it. </target>
+      </trans-unit>
+      <trans-unit id="auth.login.reassure.account" datatype="html">
+        <source>Una sola cuenta para todo lo que necesite aquí</source>
+        <target>One account for everything you do here</target>
+      </trans-unit>
+      <trans-unit id="auth.login.reassure.privacy" datatype="html">
+        <source>Privado y protegido, siempre</source>
+        <target>Private and protected, always</target>
+      </trans-unit>
+      <trans-unit id="auth.login.title" datatype="html">
+        <source>Bienvenido de nuevo</source>
+        <target>Welcome back</target>
+      </trans-unit>
+      <trans-unit id="auth.login.subtitle" datatype="html">
+        <source>Inicie sesión para continuar.</source>
+        <target>Sign in to continue.</target>
+      </trans-unit>
+      <trans-unit id="auth.login.username.label" datatype="html">
+        <source>Usuario</source>
+        <target>Username</target>
+      </trans-unit>
+      <trans-unit id="auth.login.username.placeholder" datatype="html">
+        <source>Su usuario</source>
+        <target>Your username</target>
+      </trans-unit>
+      <trans-unit id="auth.login.username.error" datatype="html">
+        <source>El usuario es obligatorio.</source>
+        <target>Username is required.</target>
+      </trans-unit>
+      <trans-unit id="auth.login.password.label" datatype="html">
+        <source>Contraseña</source>
+        <target>Password</target>
+      </trans-unit>
+      <trans-unit id="auth.login.password.placeholder" datatype="html">
+        <source>Su contraseña</source>
+        <target>Your password</target>
+      </trans-unit>
+      <trans-unit id="auth.login.password.error" datatype="html">
+        <source>La contraseña es obligatoria.</source>
+        <target>Password is required.</target>
+      </trans-unit>
+      <trans-unit id="auth.login.troubleLink" datatype="html">
+        <source>¿Problemas para iniciar sesión?</source>
+        <target>Trouble signing in?</target>
+      </trans-unit>
+      <trans-unit id="auth.login.submit" datatype="html">
+        <source>Iniciar sesión</source>
+        <target>Sign in</target>
+      </trans-unit>
+      <trans-unit id="auth.login.newPatient" datatype="html">
+        <source>¿Paciente nuevo?</source>
+        <target>New patient?</target>
+      </trans-unit>
+      <trans-unit id="auth.login.createAccountLink" datatype="html">
+        <source>Crear una cuenta</source>
+        <target>Create an account</target>
+      </trans-unit>
+      <trans-unit id="auth.login.version" datatype="html">
+        <source> UI v<x id="INTERPOLATION" equiv-text="{{ version.uiVersion }}"/> · API v<x id="INTERPOLATION_1" equiv-text="{{ version.apiVersion() ?? &apos;unknown&apos; }}"/> </source>
+        <target> UI v<x id="INTERPOLATION" equiv-text="{{ version.uiVersion }}"/> &middot; API v<x id="INTERPOLATION_1" equiv-text="{{ version.apiVersion() ?? &apos;unknown&apos; }}"/> </target>
+      </trans-unit>
+      <trans-unit id="auth.login.error" datatype="html">
+        <source>No se pudo iniciar sesión. Intente de nuevo.</source>
+        <target>Login failed. Please try again.</target>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.eyebrow" datatype="html">
+        <source>Recuperación de cuenta</source>
+        <target>Account recovery</target>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.headline" datatype="html">
+        <source> ¿Olvidó su usuario? </source>
+        <target> Forgot your username? </target>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.lede" datatype="html">
+        <source> Indíquenos el correo electrónico de su cuenta y le enviaremos su usuario para que pueda volver a iniciar sesión. </source>
+        <target> Tell us the email on your account and we'll send your username so you can sign back in. </target>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.reassure.username" datatype="html">
+        <source>Usted inicia sesión con su usuario, no con su correo electrónico</source>
+        <target>You sign in with your username, not your email</target>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.reassure.privacy" datatype="html">
+        <source>Nunca revelamos si un correo electrónico está registrado</source>
+        <target>We never reveal whether an email is registered</target>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.sent.title" datatype="html">
+        <source>Revise su correo electrónico</source>
+        <target>Check your email</target>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.sent.message" datatype="html">
+        <source> Si existe una cuenta con ese correo electrónico, le hemos enviado su usuario. Puede tardar un minuto en llegar — y recuerde revisar la carpeta de spam. </source>
+        <target> If an account exists for that email, we've sent your username. It may take a minute to arrive — and remember to check spam. </target>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.sent.backLink" datatype="html">
+        <source>Volver a iniciar sesión</source>
+        <target>Back to sign in</target>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.title" datatype="html">
+        <source>Recupere su usuario</source>
+        <target>Recover your username</target>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.subtitle" datatype="html">
+        <source> Se lo enviaremos al correo electrónico de su cuenta. </source>
+        <target> We'll email it to the address on your account. </target>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.rateLimited" datatype="html">
+        <source>Demasiadas solicitudes. Espere unos minutos e intente de nuevo.</source>
+        <target>Too many requests. Please wait a few minutes and try again.</target>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.email.label" datatype="html">
+        <source>Correo electrónico</source>
+        <target>Email</target>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.email.placeholder" datatype="html">
+        <source>correo@ejemplo.com</source>
+        <target>you@example.com</target>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.email.error" datatype="html">
+        <source>Ingrese una dirección de correo electrónico válida.</source>
+        <target>Enter a valid email address.</target>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.submit" datatype="html">
+        <source>Enviarme mi usuario</source>
+        <target>Email my username</target>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.remembered" datatype="html">
+        <source>¿Lo recordó?</source>
+        <target>Remembered it?</target>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.loginLink" datatype="html">
+        <source>Iniciar sesión</source>
+        <target>Sign in</target>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.forgotPasswordToo" datatype="html">
+        <source>¿También olvidó su contraseña?</source>
+        <target>Forgot your password too?</target>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.resetLink" datatype="html">
+        <source>Restablecerla</source>
+        <target>Reset it</target>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.eyebrow" datatype="html">
+        <source>Recuperación de cuenta</source>
+        <target>Account recovery</target>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.headline" datatype="html">
+        <source> Vamos a ayudarle a volver a ingresar. </source>
+        <target> Let's get you back in. </target>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.lede" datatype="html">
+        <source> Ingrese el correo electrónico de su cuenta y le enviaremos un enlace seguro para establecer una nueva contraseña. El enlace expira pronto, así que utilícelo de inmediato. </source>
+        <target> Enter the email on your account and we'll send a secure link to set a new password. The link expires soon, so use it right away. </target>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.reassure.singleUse" datatype="html">
+        <source>Los enlaces son de un solo uso y tienen tiempo limitado</source>
+        <target>Links are single-use and time-limited</target>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.reassure.privacy" datatype="html">
+        <source>Nunca compartimos si un correo electrónico está registrado</source>
+        <target>We never share whether an email is registered</target>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.sent.title" datatype="html">
+        <source>Revise su correo electrónico</source>
+        <target>Check your email</target>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.sent.message" datatype="html">
+        <source> Si existe una cuenta con ese correo electrónico, le hemos enviado un enlace para restablecer su contraseña. Puede tardar un minuto en llegar — y recuerde revisar la carpeta de spam. </source>
+        <target> If an account exists for that email, we've sent a link to reset your password. It may take a minute to arrive — and remember to check spam. </target>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.sent.backLink" datatype="html">
+        <source>Volver a iniciar sesión</source>
+        <target>Back to sign in</target>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.title" datatype="html">
+        <source>Restablezca su contraseña</source>
+        <target>Reset your password</target>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.subtitle" datatype="html">
+        <source> Le enviaremos un enlace para elegir una nueva. </source>
+        <target> We'll email you a link to choose a new one. </target>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.rateLimited" datatype="html">
+        <source>Demasiadas solicitudes. Espere unos minutos e intente de nuevo.</source>
+        <target>Too many requests. Please wait a few minutes and try again.</target>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.email.label" datatype="html">
+        <source>Correo electrónico</source>
+        <target>Email</target>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.email.placeholder" datatype="html">
+        <source>correo@ejemplo.com</source>
+        <target>you@example.com</target>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.email.error" datatype="html">
+        <source>Ingrese una dirección de correo electrónico válida.</source>
+        <target>Enter a valid email address.</target>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.submit" datatype="html">
+        <source>Enviar enlace de restablecimiento</source>
+        <target>Send reset link</target>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.remembered" datatype="html">
+        <source>¿Lo recordó?</source>
+        <target>Remembered it?</target>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.loginLink" datatype="html">
+        <source>Iniciar sesión</source>
+        <target>Sign in</target>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.forgotUsername" datatype="html">
+        <source>¿Olvidó su usuario?</source>
+        <target>Forgot your username?</target>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.recoverLink" datatype="html">
+        <source>Recupérelo</source>
+        <target>Recover it</target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.eyebrow" datatype="html">
+        <source>Recuperación de cuenta</source>
+        <target>Account recovery</target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.headline" datatype="html">
+        <source> Elija una nueva contraseña. </source>
+        <target> Choose a new password. </target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.lede" datatype="html">
+        <source> Elija algo que solo usted sepa — al menos 8 caracteres. La usará para iniciar sesión de ahora en adelante. </source>
+        <target> Pick something only you would know — at least 8 characters. You'll use it to sign in from now on. </target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.reassure.secure" datatype="html">
+        <source>Su nueva contraseña se almacena de forma segura</source>
+        <target>Your new password is stored securely</target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.reassure.singleUse" datatype="html">
+        <source>Este enlace funciona una vez y luego expira</source>
+        <target>This link works once, then expires</target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.success.title" datatype="html">
+        <source>Contraseña actualizada</source>
+        <target>Password updated</target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.success.message" datatype="html">
+        <source> Listo. Inicie sesión con su nueva contraseña para continuar. </source>
+        <target> You're all set. Sign in with your new password to continue. </target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.success.loginButton" datatype="html">
+        <source>Ir a iniciar sesión</source>
+        <target>Go to sign in</target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.invalidLink.title" datatype="html">
+        <source>Este enlace no es válido</source>
+        <target>This link isn't valid</target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.invalidLink.message" datatype="html">
+        <source> El enlace de restablecimiento falta o está incompleto. Solicite uno nuevo y le enviaremos un enlace actualizado por correo electrónico. </source>
+        <target> The reset link is missing or incomplete. Request a new one and we'll email you a fresh link. </target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.invalidLink.requestButton" datatype="html">
+        <source>Solicitar un nuevo enlace</source>
+        <target>Request a new link</target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.invalidLink.backLink" datatype="html">
+        <source>Volver a iniciar sesión</source>
+        <target>Back to sign in</target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.title" datatype="html">
+        <source>Establezca una nueva contraseña</source>
+        <target>Set a new password</target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.subtitle" datatype="html">
+        <source> Ingrese y confirme su nueva contraseña. </source>
+        <target> Enter and confirm your new password. </target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.invalidToken" datatype="html">
+        <source>Este enlace de restablecimiento no es válido, expiró o ya fue utilizado. Solicite uno nuevo.</source>
+        <target>This reset link is invalid, expired, or already used. Please request a new one.</target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.newPassword.label" datatype="html">
+        <source>Nueva contraseña</source>
+        <target>New password</target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.newPassword.placeholder" datatype="html">
+        <source>Al menos 8 caracteres</source>
+        <target>At least 8 characters</target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.newPassword.error" datatype="html">
+        <source>Use al menos 8 caracteres.</source>
+        <target>Use at least 8 characters.</target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.confirmPassword.label" datatype="html">
+        <source>Confirme la contraseña</source>
+        <target>Confirm password</target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.confirmPassword.placeholder" datatype="html">
+        <source>Vuelva a ingresar su nueva contraseña</source>
+        <target>Re-enter your new password</target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.confirmPassword.mismatch" datatype="html">
+        <source>Las contraseñas no coinciden.</source>
+        <target>Passwords don't match.</target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.confirmPassword.error" datatype="html">
+        <source>Confirme su nueva contraseña.</source>
+        <target>Confirm your new password.</target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.submit" datatype="html">
+        <source>Actualizar contraseña</source>
+        <target>Update password</target>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.requestNewLink" datatype="html">
+        <source>Solicitar un nuevo enlace de restablecimiento</source>
+        <target>Request a new reset link</target>
+      </trans-unit>
+      <trans-unit id="auth.register.eyebrow" datatype="html">
+        <source>Nuevo aquí</source>
+        <target>New here</target>
+      </trans-unit>
+      <trans-unit id="auth.register.headline" datatype="html">
+        <source> Cree su cuenta de paciente. </source>
+        <target> Create your patient account. </target>
+      </trans-unit>
+      <trans-unit id="auth.register.lede" datatype="html">
+        <source> Una sola cuenta segura para mantener su atención con el Hospital Santa María en un solo lugar — configúrela en un minuto. </source>
+        <target> A single, secure account to keep your care with Hospital Santa María in one place — set it up in a minute. </target>
+      </trans-unit>
+      <trans-unit id="auth.register.reassure.free" datatype="html">
+        <source>Gratis de crear, siempre suya</source>
+        <target>Free to set up, yours to keep</target>
+      </trans-unit>
+      <trans-unit id="auth.register.reassure.privacy" datatype="html">
+        <source>Sus datos se mantienen privados y protegidos</source>
+        <target>Your details stay private and protected</target>
+      </trans-unit>
+      <trans-unit id="auth.register.title" datatype="html">
+        <source>Crear cuenta</source>
+        <target>Create account</target>
+      </trans-unit>
+      <trans-unit id="auth.register.subtitle" datatype="html">
+        <source> Configure su cuenta de paciente para comenzar. </source>
+        <target> Set up your patient account to get started. </target>
+      </trans-unit>
+      <trans-unit id="auth.register.firstName.label" datatype="html">
+        <source>Nombre</source>
+        <target>First name</target>
+      </trans-unit>
+      <trans-unit id="auth.register.firstName.error" datatype="html">
+        <source>El nombre es obligatorio.</source>
+        <target>First name is required.</target>
+      </trans-unit>
+      <trans-unit id="auth.register.lastName.label" datatype="html">
+        <source>Apellido</source>
+        <target>Last name</target>
+      </trans-unit>
+      <trans-unit id="auth.register.lastName.error" datatype="html">
+        <source>El apellido es obligatorio.</source>
+        <target>Last name is required.</target>
+      </trans-unit>
+      <trans-unit id="auth.register.username.label" datatype="html">
+        <source>Usuario</source>
+        <target>Username</target>
+      </trans-unit>
+      <trans-unit id="auth.register.username.placeholder" datatype="html">
+        <source>p. ej. jdoe</source>
+        <target>e.g. jdoe</target>
+      </trans-unit>
+      <trans-unit id="auth.register.username.error" datatype="html">
+        <source>El usuario es obligatorio.</source>
+        <target>Username is required.</target>
+      </trans-unit>
+      <trans-unit id="auth.register.email.label" datatype="html">
+        <source>Correo electrónico</source>
+        <target>Email</target>
+      </trans-unit>
+      <trans-unit id="auth.register.email.placeholder" datatype="html">
+        <source>correo@ejemplo.com</source>
+        <target>you@example.com</target>
+      </trans-unit>
+      <trans-unit id="auth.register.email.error" datatype="html">
+        <source>Ingrese una dirección de correo electrónico válida.</source>
+        <target>Enter a valid email address.</target>
+      </trans-unit>
+      <trans-unit id="auth.register.password.label" datatype="html">
+        <source>Contraseña</source>
+        <target>Password</target>
+      </trans-unit>
+      <trans-unit id="auth.register.password.placeholder" datatype="html">
+        <source>Al menos 8 caracteres</source>
+        <target>At least 8 characters</target>
+      </trans-unit>
+      <trans-unit id="auth.register.password.error" datatype="html">
+        <source>Use al menos 8 caracteres.</source>
+        <target>Use at least 8 characters.</target>
+      </trans-unit>
+      <trans-unit id="auth.register.submit" datatype="html">
+        <source>Crear cuenta</source>
+        <target>Create account</target>
+      </trans-unit>
+      <trans-unit id="auth.register.hasAccount" datatype="html">
+        <source>¿Ya tiene una cuenta?</source>
+        <target>Already have an account?</target>
+      </trans-unit>
+      <trans-unit id="auth.register.loginLink" datatype="html">
+        <source>Iniciar sesión</source>
+        <target>Sign in</target>
+      </trans-unit>
+      <trans-unit id="auth.register.error" datatype="html">
+        <source>No se pudo crear su cuenta. Intente de nuevo.</source>
+        <target>Could not create your account. Try again.</target>
+      </trans-unit>
+      <trans-unit id="layout.languageSwitcher.aria" datatype="html">
+        <source>Idioma</source>
+        <target>Language</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

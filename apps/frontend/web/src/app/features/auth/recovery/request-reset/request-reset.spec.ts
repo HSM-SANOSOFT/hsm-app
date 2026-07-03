@@ -72,7 +72,7 @@ describe('RequestReset component', () => {
       (fixture.nativeElement as HTMLElement).textContent ?? ''
     ).toLowerCase();
     // Non-committal: never confirms the account exists.
-    expect(text).toContain('if an account exists');
+    expect(text).toContain('si existe una cuenta');
   });
 
   it('does not submit an invalid email', () => {

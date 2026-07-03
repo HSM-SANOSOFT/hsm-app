@@ -6,17 +6,30 @@
     </a>
 
     <div class="auth-pitch">
-      <p class="auth-eyebrow">Your hospital, online</p>
-      <h2 class="auth-headline">Your care, all in one place.</h2>
-      <p class="auth-lede">
-        Sign in to reach your records, your team, and everything Hospital Santa
-        María keeps for you — securely, whenever you need it.
+      <p class="auth-eyebrow" i18n="@@auth.login.eyebrow">Su hospital, en línea</p>
+      <h2 class="auth-headline" i18n="@@auth.login.headline">
+        Su atención, todo en un solo lugar.
+      </h2>
+      <p class="auth-lede" i18n="@@auth.login.lede">
+        Inicie sesión para acceder a sus registros, su equipo médico y todo lo
+        que el Hospital Santa María guarda para usted — de forma segura,
+        cuando lo necesite.
       </p>
     </div>
 
     <ul class="auth-reassure">
-      <li><span class="auth-tick"></span> One account for everything you do here</li>
-      <li><span class="auth-tick"></span> Private and protected, always</li>
+      <li>
+        <span class="auth-tick"></span>
+        <span i18n="@@auth.login.reassure.account"
+          >Una sola cuenta para todo lo que necesite aquí</span
+        >
+      </li>
+      <li>
+        <span class="auth-tick"></span>
+        <span i18n="@@auth.login.reassure.privacy"
+          >Privado y protegido, siempre</span
+        >
+      </li>
     </ul>
   </aside>
 
@@ -29,8 +42,8 @@
         <app-language-switcher />
       </div>
 
-      <h1 class="auth-title">Welcome back</h1>
-      <p class="auth-sub">Sign in to continue.</p>
+      <h1 class="auth-title" i18n="@@auth.login.title">Bienvenido de nuevo</h1>
+      <p class="auth-sub" i18n="@@auth.login.subtitle">Inicie sesión para continuar.</p>
 
       <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
         @if (errorMessage(); as message) {
@@ -38,44 +51,51 @@
         }
 
         <div class="field">
-          <label for="username">Username</label>
+          <label for="username" i18n="@@auth.login.username.label">Usuario</label>
           <input
             pInputText
             id="username"
             type="text"
             formControlName="username"
             autocomplete="username"
-            placeholder="Your username"
+            i18n-placeholder="@@auth.login.username.placeholder"
+            placeholder="Su usuario"
             fluid
           />
           @if (form.controls.username.invalid && form.controls.username.touched) {
-            <small class="field-error">Username is required.</small>
+            <small class="field-error" i18n="@@auth.login.username.error"
+              >El usuario es obligatorio.</small
+            >
           }
         </div>
 
         <div class="field">
-          <label for="password">Password</label>
+          <label for="password" i18n="@@auth.login.password.label">Contraseña</label>
           <p-password
             inputId="password"
             formControlName="password"
             [feedback]="false"
             [toggleMask]="true"
             autocomplete="current-password"
-            placeholder="Your password"
+            i18n-placeholder="@@auth.login.password.placeholder"
+            placeholder="Su contraseña"
             fluid
           />
           @if (form.controls.password.invalid && form.controls.password.touched) {
-            <small class="field-error">Password is required.</small>
+            <small class="field-error" i18n="@@auth.login.password.error"
+              >La contraseña es obligatoria.</small
+            >
           }
         </div>
 
         <a class="auth-link auth-link--quiet" routerLink="/forgot-password">
-          Trouble signing in?
+          <span i18n="@@auth.login.troubleLink">¿Problemas para iniciar sesión?</span>
         </a>
 
         <p-button
           type="submit"
-          label="Sign in"
+          i18n-label="@@auth.login.submit"
+          label="Iniciar sesión"
           icon="pi pi-arrow-right"
           iconPos="right"
           [loading]="submitting()"
@@ -86,11 +106,13 @@
       </form>
 
       <p class="auth-alt auth-alt--subtle">
-        New patient?
-        <a routerLink="/register" data-testid="register-link">Create an account</a>
+        <span i18n="@@auth.login.newPatient">¿Paciente nuevo?</span>
+        <a routerLink="/register" data-testid="register-link"
+          ><span i18n="@@auth.login.createAccountLink">Crear una cuenta</span></a
+        >
       </p>
 
-      <p class="auth-version mono">
+      <p class="auth-version mono" i18n="@@auth.login.version">
         UI v{{ version.uiVersion }} &middot; API
         v{{ version.apiVersion() ?? 'unknown' }}
       </p>

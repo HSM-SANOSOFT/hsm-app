@@ -80,7 +80,7 @@ describe('ResetPassword component', () => {
     const html = fixture.nativeElement as HTMLElement;
     // No password form is shown.
     expect(html.querySelector('p-password')).toBeNull();
-    expect((html.textContent ?? '').toLowerCase()).toContain("isn't valid");
+    expect((html.textContent ?? '').toLowerCase()).toContain('no es válido');
     expect(
       html.querySelector(
         '[routerLink="/forgot-password"], a[href="/forgot-password"]',

@@ -82,7 +82,7 @@ describe('Login component', () => {
     flushVersion(httpMock);
 
     const html = (fixture.nativeElement as HTMLElement).innerHTML;
-    expect(html).toContain('Trouble signing in?');
+    expect(html).toContain('¿Problemas para iniciar sesión?');
     expect(
       fixture.nativeElement.querySelector('[data-testid="register-link"]'),
     ).toBeTruthy();

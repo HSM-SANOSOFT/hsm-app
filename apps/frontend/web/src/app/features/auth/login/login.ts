@@ -82,7 +82,10 @@ export class Login implements OnInit {
       error: (err: unknown) => {
         this.submitting.set(false);
         this.errorMessage.set(
-          toErrorMessage(err, 'Login failed. Please try again.'),
+          toErrorMessage(
+            err,
+            $localize`:@@auth.login.error:No se pudo iniciar sesión. Intente de nuevo.`,
+          ),
         );
       },
     });

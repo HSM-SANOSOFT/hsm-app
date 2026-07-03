@@ -1,0 +1,749 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="es-EC" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="auth.login.eyebrow" datatype="html">
+        <source>Su hospital, en línea</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/login/login.html</context>
+          <context context-type="linenumber">9,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.login.headline" datatype="html">
+        <source> Su atención, todo en un solo lugar. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/login/login.html</context>
+          <context context-type="linenumber">11,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.login.lede" datatype="html">
+        <source> Inicie sesión para acceder a sus registros, su equipo médico y todo lo que el Hospital Santa María guarda para usted — de forma segura, cuando lo necesite. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/login/login.html</context>
+          <context context-type="linenumber">14,17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.login.reassure.account" datatype="html">
+        <source>Una sola cuenta para todo lo que necesite aquí</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/login/login.html</context>
+          <context context-type="linenumber">24,28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.login.reassure.privacy" datatype="html">
+        <source>Privado y protegido, siempre</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/login/login.html</context>
+          <context context-type="linenumber">30,34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.login.title" datatype="html">
+        <source>Bienvenido de nuevo</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/login/login.html</context>
+          <context context-type="linenumber">45,46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.login.subtitle" datatype="html">
+        <source>Inicie sesión para continuar.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/login/login.html</context>
+          <context context-type="linenumber">46,48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.login.username.label" datatype="html">
+        <source>Usuario</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/login/login.html</context>
+          <context context-type="linenumber">54,56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.login.username.placeholder" datatype="html">
+        <source>Su usuario</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/login/login.html</context>
+          <context context-type="linenumber">62,65</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.login.username.error" datatype="html">
+        <source>El usuario es obligatorio.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/login/login.html</context>
+          <context context-type="linenumber">67,70</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.login.password.label" datatype="html">
+        <source>Contraseña</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/login/login.html</context>
+          <context context-type="linenumber">73,75</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.login.password.placeholder" datatype="html">
+        <source>Su contraseña</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/login/login.html</context>
+          <context context-type="linenumber">81,84</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.login.password.error" datatype="html">
+        <source>La contraseña es obligatoria.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/login/login.html</context>
+          <context context-type="linenumber">86,89</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.login.troubleLink" datatype="html">
+        <source>¿Problemas para iniciar sesión?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/login/login.html</context>
+          <context context-type="linenumber">92,95</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.login.submit" datatype="html">
+        <source>Iniciar sesión</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/login/login.html</context>
+          <context context-type="linenumber">98,99</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.login.newPatient" datatype="html">
+        <source>¿Paciente nuevo?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/login/login.html</context>
+          <context context-type="linenumber">109,110</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.login.createAccountLink" datatype="html">
+        <source>Crear una cuenta</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/login/login.html</context>
+          <context context-type="linenumber">111,115</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.login.version" datatype="html">
+        <source> UI v<x id="INTERPOLATION" equiv-text="{{ version.uiVersion }}"/> · API v<x id="INTERPOLATION_1" equiv-text="{{ version.apiVersion() ?? &apos;unknown&apos; }}"/> </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/login/login.html</context>
+          <context context-type="linenumber">116,119</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.login.error" datatype="html">
+        <source>No se pudo iniciar sesión. Intente de nuevo.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/login/login.ts</context>
+          <context context-type="linenumber">87</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.eyebrow" datatype="html">
+        <source>Recuperación de cuenta</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/recover-username/recover-username.html</context>
+          <context context-type="linenumber">9,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.headline" datatype="html">
+        <source> ¿Olvidó su usuario? </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/recover-username/recover-username.html</context>
+          <context context-type="linenumber">11,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.lede" datatype="html">
+        <source> Indíquenos el correo electrónico de su cuenta y le enviaremos su usuario para que pueda volver a iniciar sesión. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/recover-username/recover-username.html</context>
+          <context context-type="linenumber">14,19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.reassure.username" datatype="html">
+        <source>Usted inicia sesión con su usuario, no con su correo electrónico</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/recover-username/recover-username.html</context>
+          <context context-type="linenumber">23,27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.reassure.privacy" datatype="html">
+        <source>Nunca revelamos si un correo electrónico está registrado</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/recover-username/recover-username.html</context>
+          <context context-type="linenumber">29,35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.sent.title" datatype="html">
+        <source>Revise su correo electrónico</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/recover-username/recover-username.html</context>
+          <context context-type="linenumber">45,46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.sent.message" datatype="html">
+        <source> Si existe una cuenta con ese correo electrónico, le hemos enviado su usuario. Puede tardar un minuto en llegar — y recuerde revisar la carpeta de spam. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/recover-username/recover-username.html</context>
+          <context context-type="linenumber">47,52</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.sent.backLink" datatype="html">
+        <source>Volver a iniciar sesión</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/recover-username/recover-username.html</context>
+          <context context-type="linenumber">54,57</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.title" datatype="html">
+        <source>Recupere su usuario</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/recover-username/recover-username.html</context>
+          <context context-type="linenumber">58,59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.subtitle" datatype="html">
+        <source> Se lo enviaremos al correo electrónico de su cuenta. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/recover-username/recover-username.html</context>
+          <context context-type="linenumber">60,63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.rateLimited" datatype="html">
+        <source>Demasiadas solicitudes. Espere unos minutos e intente de nuevo.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/recover-username/recover-username.html</context>
+          <context context-type="linenumber">68,70</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.email.label" datatype="html">
+        <source>Correo electrónico</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/recover-username/recover-username.html</context>
+          <context context-type="linenumber">74,76</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.email.placeholder" datatype="html">
+        <source>correo@ejemplo.com</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/recover-username/recover-username.html</context>
+          <context context-type="linenumber">82,85</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.email.error" datatype="html">
+        <source>Ingrese una dirección de correo electrónico válida.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/recover-username/recover-username.html</context>
+          <context context-type="linenumber">87,90</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.submit" datatype="html">
+        <source>Enviarme mi usuario</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/recover-username/recover-username.html</context>
+          <context context-type="linenumber">95,97</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.remembered" datatype="html">
+        <source>¿Lo recordó?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/recover-username/recover-username.html</context>
+          <context context-type="linenumber">106,107</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.loginLink" datatype="html">
+        <source>Iniciar sesión</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/recover-username/recover-username.html</context>
+          <context context-type="linenumber">108,111</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.forgotPasswordToo" datatype="html">
+        <source>¿También olvidó su contraseña?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/recover-username/recover-username.html</context>
+          <context context-type="linenumber">112,114</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.recoverUsername.resetLink" datatype="html">
+        <source>Restablecerla</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/recover-username/recover-username.html</context>
+          <context context-type="linenumber">114,118</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.eyebrow" datatype="html">
+        <source>Recuperación de cuenta</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/request-reset/request-reset.html</context>
+          <context context-type="linenumber">9,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.headline" datatype="html">
+        <source> Vamos a ayudarle a volver a ingresar. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/request-reset/request-reset.html</context>
+          <context context-type="linenumber">11,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.lede" datatype="html">
+        <source> Ingrese el correo electrónico de su cuenta y le enviaremos un enlace seguro para establecer una nueva contraseña. El enlace expira pronto, así que utilícelo de inmediato. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/request-reset/request-reset.html</context>
+          <context context-type="linenumber">14,18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.reassure.singleUse" datatype="html">
+        <source>Los enlaces son de un solo uso y tienen tiempo limitado</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/request-reset/request-reset.html</context>
+          <context context-type="linenumber">24,28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.reassure.privacy" datatype="html">
+        <source>Nunca compartimos si un correo electrónico está registrado</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/request-reset/request-reset.html</context>
+          <context context-type="linenumber">30,34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.sent.title" datatype="html">
+        <source>Revise su correo electrónico</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/request-reset/request-reset.html</context>
+          <context context-type="linenumber">46,47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.sent.message" datatype="html">
+        <source> Si existe una cuenta con ese correo electrónico, le hemos enviado un enlace para restablecer su contraseña. Puede tardar un minuto en llegar — y recuerde revisar la carpeta de spam. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/request-reset/request-reset.html</context>
+          <context context-type="linenumber">48,53</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.sent.backLink" datatype="html">
+        <source>Volver a iniciar sesión</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/request-reset/request-reset.html</context>
+          <context context-type="linenumber">55,58</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.title" datatype="html">
+        <source>Restablezca su contraseña</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/request-reset/request-reset.html</context>
+          <context context-type="linenumber">59,60</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.subtitle" datatype="html">
+        <source> Le enviaremos un enlace para elegir una nueva. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/request-reset/request-reset.html</context>
+          <context context-type="linenumber">61,64</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.rateLimited" datatype="html">
+        <source>Demasiadas solicitudes. Espere unos minutos e intente de nuevo.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/request-reset/request-reset.html</context>
+          <context context-type="linenumber">69,71</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.email.label" datatype="html">
+        <source>Correo electrónico</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/request-reset/request-reset.html</context>
+          <context context-type="linenumber">75,77</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.email.placeholder" datatype="html">
+        <source>correo@ejemplo.com</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/request-reset/request-reset.html</context>
+          <context context-type="linenumber">83,86</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.email.error" datatype="html">
+        <source>Ingrese una dirección de correo electrónico válida.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/request-reset/request-reset.html</context>
+          <context context-type="linenumber">88,91</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.submit" datatype="html">
+        <source>Enviar enlace de restablecimiento</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/request-reset/request-reset.html</context>
+          <context context-type="linenumber">96,98</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.remembered" datatype="html">
+        <source>¿Lo recordó?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/request-reset/request-reset.html</context>
+          <context context-type="linenumber">107,108</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.loginLink" datatype="html">
+        <source>Iniciar sesión</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/request-reset/request-reset.html</context>
+          <context context-type="linenumber">109,112</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.forgotUsername" datatype="html">
+        <source>¿Olvidó su usuario?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/request-reset/request-reset.html</context>
+          <context context-type="linenumber">113,114</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.requestReset.recoverLink" datatype="html">
+        <source>Recupérelo</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/request-reset/request-reset.html</context>
+          <context context-type="linenumber">115,119</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.eyebrow" datatype="html">
+        <source>Recuperación de cuenta</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">9,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.headline" datatype="html">
+        <source> Elija una nueva contraseña. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">11,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.lede" datatype="html">
+        <source> Elija algo que solo usted sepa — al menos 8 caracteres. La usará para iniciar sesión de ahora en adelante. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">14,18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.reassure.secure" datatype="html">
+        <source>Su nueva contraseña se almacena de forma segura</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">23,27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.reassure.singleUse" datatype="html">
+        <source>Este enlace funciona una vez y luego expira</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">29,35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.success.title" datatype="html">
+        <source>Contraseña actualizada</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">45,46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.success.message" datatype="html">
+        <source> Listo. Inicie sesión con su nueva contraseña para continuar. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">47,51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.success.loginButton" datatype="html">
+        <source>Ir a iniciar sesión</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">52,54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.invalidLink.title" datatype="html">
+        <source>Este enlace no es válido</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">60,61</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.invalidLink.message" datatype="html">
+        <source> El enlace de restablecimiento falta o está incompleto. Solicite uno nuevo y le enviaremos un enlace actualizado por correo electrónico. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">62,67</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.invalidLink.requestButton" datatype="html">
+        <source>Solicitar un nuevo enlace</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">68,70</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.invalidLink.backLink" datatype="html">
+        <source>Volver a iniciar sesión</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">78,82</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.title" datatype="html">
+        <source>Establezca una nueva contraseña</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">82,83</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.subtitle" datatype="html">
+        <source> Ingrese y confirme su nueva contraseña. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">84,87</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.invalidToken" datatype="html">
+        <source>Este enlace de restablecimiento no es válido, expiró o ya fue utilizado. Solicite uno nuevo.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">92,94</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.newPassword.label" datatype="html">
+        <source>Nueva contraseña</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">98,100</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.newPassword.placeholder" datatype="html">
+        <source>Al menos 8 caracteres</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">106,109</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.newPassword.error" datatype="html">
+        <source>Use al menos 8 caracteres.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">111,114</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.confirmPassword.label" datatype="html">
+        <source>Confirme la contraseña</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">117,119</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.confirmPassword.placeholder" datatype="html">
+        <source>Vuelva a ingresar su nueva contraseña</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">125,129</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.confirmPassword.mismatch" datatype="html">
+        <source>Las contraseñas no coinciden.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">134,137</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.confirmPassword.error" datatype="html">
+        <source>Confirme su nueva contraseña.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">139,143</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.submit" datatype="html">
+        <source>Actualizar contraseña</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">147,149</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.resetPassword.requestNewLink" datatype="html">
+        <source>Solicitar un nuevo enlace de restablecimiento</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/recovery/reset-password/reset-password.html</context>
+          <context context-type="linenumber">160,163</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.eyebrow" datatype="html">
+        <source>Nuevo aquí</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">9,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.headline" datatype="html">
+        <source> Cree su cuenta de paciente. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">11,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.lede" datatype="html">
+        <source> Una sola cuenta segura para mantener su atención con el Hospital Santa María en un solo lugar — configúrela en un minuto. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">14,17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.reassure.free" datatype="html">
+        <source>Gratis de crear, siempre suya</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">23,27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.reassure.privacy" datatype="html">
+        <source>Sus datos se mantienen privados y protegidos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">29,33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.title" datatype="html">
+        <source>Crear cuenta</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">44,45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.subtitle" datatype="html">
+        <source> Configure su cuenta de paciente para comenzar. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">46,49</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.firstName.label" datatype="html">
+        <source>Nombre</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">56,58</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.firstName.error" datatype="html">
+        <source>El nombre es obligatorio.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">67,70</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.lastName.label" datatype="html">
+        <source>Apellido</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">73,75</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.lastName.error" datatype="html">
+        <source>El apellido es obligatorio.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">84,87</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.username.label" datatype="html">
+        <source>Usuario</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">91,93</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.username.placeholder" datatype="html">
+        <source>p. ej. jdoe</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">99,102</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.username.error" datatype="html">
+        <source>El usuario es obligatorio.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">104,107</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.email.label" datatype="html">
+        <source>Correo electrónico</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">110,112</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.email.placeholder" datatype="html">
+        <source>correo@ejemplo.com</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">118,121</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.email.error" datatype="html">
+        <source>Ingrese una dirección de correo electrónico válida.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">123,126</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.password.label" datatype="html">
+        <source>Contraseña</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">129,131</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.password.placeholder" datatype="html">
+        <source>Al menos 8 caracteres</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">137,140</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.password.error" datatype="html">
+        <source>Use al menos 8 caracteres.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">142,145</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.submit" datatype="html">
+        <source>Crear cuenta</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">150,151</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.hasAccount" datatype="html">
+        <source>¿Ya tiene una cuenta?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">161,162</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.loginLink" datatype="html">
+        <source>Iniciar sesión</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.html</context>
+          <context context-type="linenumber">163,166</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.error" datatype="html">
+        <source>No se pudo crear su cuenta. Intente de nuevo.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/register/register.ts</context>
+          <context context-type="linenumber">72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.languageSwitcher.aria" datatype="html">
+        <source>Idioma</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/language-switcher/language-switcher.ts</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

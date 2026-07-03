@@ -6,17 +6,29 @@
     </a>
 
     <div class="auth-pitch">
-      <p class="auth-eyebrow">New here</p>
-      <h2 class="auth-headline">Create your patient account.</h2>
-      <p class="auth-lede">
-        A single, secure account to keep your care with Hospital Santa María in
-        one place — set it up in a minute.
+      <p class="auth-eyebrow" i18n="@@auth.register.eyebrow">Nuevo aquí</p>
+      <h2 class="auth-headline" i18n="@@auth.register.headline">
+        Cree su cuenta de paciente.
+      </h2>
+      <p class="auth-lede" i18n="@@auth.register.lede">
+        Una sola cuenta segura para mantener su atención con el Hospital Santa
+        María en un solo lugar — configúrela en un minuto.
       </p>
     </div>
 
     <ul class="auth-reassure">
-      <li><span class="auth-tick"></span> Free to set up, yours to keep</li>
-      <li><span class="auth-tick"></span> Your details stay private and protected</li>
+      <li>
+        <span class="auth-tick"></span>
+        <span i18n="@@auth.register.reassure.free"
+          >Gratis de crear, siempre suya</span
+        >
+      </li>
+      <li>
+        <span class="auth-tick"></span>
+        <span i18n="@@auth.register.reassure.privacy"
+          >Sus datos se mantienen privados y protegidos</span
+        >
+      </li>
     </ul>
   </aside>
 
@@ -29,8 +41,10 @@
         <app-language-switcher />
       </div>
 
-      <h1 class="auth-title">Create account</h1>
-      <p class="auth-sub">Set up your patient account to get started.</p>
+      <h1 class="auth-title" i18n="@@auth.register.title">Crear cuenta</h1>
+      <p class="auth-sub" i18n="@@auth.register.subtitle">
+        Configure su cuenta de paciente para comenzar.
+      </p>
 
       <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
         @if (errorMessage(); as message) {
@@ -39,7 +53,7 @@
 
         <div class="auth-row">
           <div class="field">
-            <label for="firstName">First name</label>
+            <label for="firstName" i18n="@@auth.register.firstName.label">Nombre</label>
             <input
               pInputText
               id="firstName"
@@ -49,12 +63,14 @@
               fluid
             />
             @if (form.controls.firstName.invalid && form.controls.firstName.touched) {
-              <small class="field-error">First name is required.</small>
+              <small class="field-error" i18n="@@auth.register.firstName.error"
+                >El nombre es obligatorio.</small
+              >
             }
           </div>
 
           <div class="field">
-            <label for="firstLastName">Last name</label>
+            <label for="firstLastName" i18n="@@auth.register.lastName.label">Apellido</label>
             <input
               pInputText
               id="firstLastName"
@@ -64,62 +80,74 @@
               fluid
             />
             @if (form.controls.firstLastName.invalid && form.controls.firstLastName.touched) {
-              <small class="field-error">Last name is required.</small>
+              <small class="field-error" i18n="@@auth.register.lastName.error"
+                >El apellido es obligatorio.</small
+              >
             }
           </div>
         </div>
 
         <div class="field">
-          <label for="username">Username</label>
+          <label for="username" i18n="@@auth.register.username.label">Usuario</label>
           <input
             pInputText
             id="username"
             type="text"
             formControlName="username"
             autocomplete="username"
-            placeholder="e.g. jdoe"
+            i18n-placeholder="@@auth.register.username.placeholder"
+            placeholder="p. ej. jdoe"
             fluid
           />
           @if (form.controls.username.invalid && form.controls.username.touched) {
-            <small class="field-error">Username is required.</small>
+            <small class="field-error" i18n="@@auth.register.username.error"
+              >El usuario es obligatorio.</small
+            >
           }
         </div>
 
         <div class="field">
-          <label for="email">Email</label>
+          <label for="email" i18n="@@auth.register.email.label">Correo electrónico</label>
           <input
             pInputText
             id="email"
             type="email"
             formControlName="email"
             autocomplete="email"
-            placeholder="you@example.com"
+            i18n-placeholder="@@auth.register.email.placeholder"
+            placeholder="correo@ejemplo.com"
             fluid
           />
           @if (form.controls.email.invalid && form.controls.email.touched) {
-            <small class="field-error">Enter a valid email address.</small>
+            <small class="field-error" i18n="@@auth.register.email.error"
+              >Ingrese una dirección de correo electrónico válida.</small
+            >
           }
         </div>
 
         <div class="field">
-          <label for="password">Password</label>
+          <label for="password" i18n="@@auth.register.password.label">Contraseña</label>
           <p-password
             inputId="password"
             formControlName="password"
             [feedback]="true"
             [toggleMask]="true"
             autocomplete="new-password"
-            placeholder="At least 8 characters"
+            i18n-placeholder="@@auth.register.password.placeholder"
+            placeholder="Al menos 8 caracteres"
             fluid
           />
           @if (form.controls.password.invalid && form.controls.password.touched) {
-            <small class="field-error">Use at least 8 characters.</small>
+            <small class="field-error" i18n="@@auth.register.password.error"
+              >Use al menos 8 caracteres.</small
+            >
           }
         </div>
 
         <p-button
           type="submit"
-          label="Create account"
+          i18n-label="@@auth.register.submit"
+          label="Crear cuenta"
           icon="pi pi-arrow-right"
           iconPos="right"
           [loading]="submitting()"
@@ -130,8 +158,10 @@
       </form>
 
       <p class="auth-alt">
-        Already have an account?
-        <a routerLink="/login" data-testid="login-link">Sign in</a>
+        <span i18n="@@auth.register.hasAccount">¿Ya tiene una cuenta?</span>
+        <a routerLink="/login" data-testid="login-link"
+          ><span i18n="@@auth.register.loginLink">Iniciar sesión</span></a
+        >
       </p>
     </div>
   </main>

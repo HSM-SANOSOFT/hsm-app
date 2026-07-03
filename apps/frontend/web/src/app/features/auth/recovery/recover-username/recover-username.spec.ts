@@ -70,7 +70,7 @@ describe('RecoverUsername component', () => {
     const text = (
       (fixture.nativeElement as HTMLElement).textContent ?? ''
     ).toLowerCase();
-    expect(text).toContain('if an account exists');
+    expect(text).toContain('si existe una cuenta');
   });
 
   it('does not submit an invalid email', () => {

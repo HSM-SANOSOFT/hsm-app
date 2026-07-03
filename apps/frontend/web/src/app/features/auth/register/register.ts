@@ -67,7 +67,10 @@ export class Register {
       error: (err: unknown) => {
         this.submitting.set(false);
         this.errorMessage.set(
-          toErrorMessage(err, 'Could not create your account. Try again.'),
+          toErrorMessage(
+            err,
+            $localize`:@@auth.register.error:No se pudo crear su cuenta. Intente de nuevo.`,
+          ),
         );
       },
     });

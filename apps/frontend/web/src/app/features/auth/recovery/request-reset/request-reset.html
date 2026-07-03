@@ -6,17 +6,30 @@
     </a>
 
     <div class="auth-pitch">
-      <p class="auth-eyebrow">Account recovery</p>
-      <h2 class="auth-headline">Let's get you back in.</h2>
-      <p class="auth-lede">
-        Enter the email on your account and we'll send a secure link to set a
-        new password. The link expires soon, so use it right away.
+      <p class="auth-eyebrow" i18n="@@auth.requestReset.eyebrow">Recuperación de cuenta</p>
+      <h2 class="auth-headline" i18n="@@auth.requestReset.headline">
+        Vamos a ayudarle a volver a ingresar.
+      </h2>
+      <p class="auth-lede" i18n="@@auth.requestReset.lede">
+        Ingrese el correo electrónico de su cuenta y le enviaremos un enlace
+        seguro para establecer una nueva contraseña. El enlace expira pronto,
+        así que utilícelo de inmediato.
       </p>
     </div>
 
     <ul class="auth-reassure">
-      <li><span class="auth-tick"></span> Links are single-use and time-limited</li>
-      <li><span class="auth-tick"></span> We never share whether an email is registered</li>
+      <li>
+        <span class="auth-tick"></span>
+        <span i18n="@@auth.requestReset.reassure.singleUse"
+          >Los enlaces son de un solo uso y tienen tiempo limitado</span
+        >
+      </li>
+      <li>
+        <span class="auth-tick"></span>
+        <span i18n="@@auth.requestReset.reassure.privacy"
+          >Nunca compartimos si un correo electrónico está registrado</span
+        >
+      </li>
     </ul>
   </aside>
 
@@ -30,47 +43,57 @@
       </div>
 
       @if (sent()) {
-        <h1 class="auth-title">Check your email</h1>
-        <p class="auth-sub">
-          If an account exists for that email, we've sent a link to reset your
-          password. It may take a minute to arrive — and remember to check spam.
+        <h1 class="auth-title" i18n="@@auth.requestReset.sent.title">Revise su correo electrónico</h1>
+        <p class="auth-sub" i18n="@@auth.requestReset.sent.message">
+          Si existe una cuenta con ese correo electrónico, le hemos enviado un
+          enlace para restablecer su contraseña. Puede tardar un minuto en
+          llegar — y recuerde revisar la carpeta de spam.
         </p>
 
         <p class="auth-alt">
-          <a routerLink="/login" data-testid="login-link">Back to sign in</a>
+          <a routerLink="/login" data-testid="login-link"
+            ><span i18n="@@auth.requestReset.sent.backLink">Volver a iniciar sesión</span></a
+          >
         </p>
       } @else {
-        <h1 class="auth-title">Reset your password</h1>
-        <p class="auth-sub">We'll email you a link to choose a new one.</p>
+        <h1 class="auth-title" i18n="@@auth.requestReset.title">Restablezca su contraseña</h1>
+        <p class="auth-sub" i18n="@@auth.requestReset.subtitle">
+          Le enviaremos un enlace para elegir una nueva.
+        </p>
 
         <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
           @if (rateLimited()) {
             <p-message
               severity="warn"
-              text="Too many requests. Please wait a few minutes and try again."
+              i18n-text="@@auth.requestReset.rateLimited"
+              text="Demasiadas solicitudes. Espere unos minutos e intente de nuevo."
               styleClass="auth-msg"
             />
           }
 
           <div class="field">
-            <label for="email">Email</label>
+            <label for="email" i18n="@@auth.requestReset.email.label">Correo electrónico</label>
             <input
               pInputText
               id="email"
               type="email"
               formControlName="email"
               autocomplete="email"
-              placeholder="you@example.com"
+              i18n-placeholder="@@auth.requestReset.email.placeholder"
+              placeholder="correo@ejemplo.com"
               fluid
             />
             @if (form.controls.email.invalid && form.controls.email.touched) {
-              <small class="field-error">Enter a valid email address.</small>
+              <small class="field-error" i18n="@@auth.requestReset.email.error"
+                >Ingrese una dirección de correo electrónico válida.</small
+              >
             }
           </div>
 
           <p-button
             type="submit"
-            label="Send reset link"
+            i18n-label="@@auth.requestReset.submit"
+            label="Enviar enlace de restablecimiento"
             icon="pi pi-arrow-right"
             iconPos="right"
             [loading]="submitting()"
@@ -81,12 +104,16 @@
         </form>
 
         <p class="auth-alt">
-          Remembered it?
-          <a routerLink="/login" data-testid="login-link">Sign in</a>
+          <span i18n="@@auth.requestReset.remembered">¿Lo recordó?</span>
+          <a routerLink="/login" data-testid="login-link"
+            ><span i18n="@@auth.requestReset.loginLink">Iniciar sesión</span></a
+          >
         </p>
         <p class="auth-alt auth-alt--subtle">
-          Forgot your username?
-          <a routerLink="/recover-username">Recover it</a>
+          <span i18n="@@auth.requestReset.forgotUsername">¿Olvidó su usuario?</span>
+          <a routerLink="/recover-username"
+            ><span i18n="@@auth.requestReset.recoverLink">Recupérelo</span></a
+          >
         </p>
       }
     </div>
