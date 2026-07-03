@@ -18,7 +18,7 @@ interface S3EffectiveConfig {
   secretAccessKey: string;
   region: string;
   forcePathStyle: boolean;
-  /** Endpoint to use when forcePathStyle is on (MinIO/self-hosted). */
+  /** Endpoint to use when forcePathStyle is on (RustFS/self-hosted). */
   endpoint: string | undefined;
 }
 

@@ -9,10 +9,10 @@ import { MainModule } from './../src/main.module';
 //
 // Compiling + initializing MainModule is the assertion: it wires the global
 // DatabaseModule (Postgres only — no Oracle datasource), connects Redis (BullMQ)
-// and MinIO (S3 ensureBuckets) at init, and seeds the default admin. If an eager
+// and RustFS (S3 ensureBuckets) at init, and seeds the default admin. If an eager
 // Oracle boot dependency were re-introduced, `app.init()` would hang / ORA-12170
 // here with no Oracle host reachable. The CI job (pr-validation integration-tests)
-// runs this against postgres+redis+minio with NO DB_ORACLE_* and no Oracle host.
+// runs this against postgres+redis+rustfs with NO DB_ORACLE_* and no Oracle host.
 describe('App bootstrap (e2e) — boots Oracle-free', () => {
   let app: INestApplication;
 

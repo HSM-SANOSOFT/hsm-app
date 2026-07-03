@@ -16,7 +16,7 @@ const buildAccessor = () => {
   const store: Record<string, string | null> = {
     STRG_S3_ACCESS_KEY: 'ak',
     STRG_S3_SECRET_KEY: 'sk',
-    STRG_S3_HOST: 'http://minio:9000',
+    STRG_S3_HOST: 'http://rustfs:9000',
     STRG_S3_HOST_EXTERNAL: 'http://localhost:9000',
     STRG_S3_REGION: 'us-east-1',
     STRG_S3_FORCE_PATH_STYLE: 'true',
@@ -58,7 +58,7 @@ describe('Lazy S3 client provider (live config)', () => {
       expect.objectContaining({
         region: 'us-east-1',
         forcePathStyle: true,
-        endpoint: 'http://minio:9000',
+        endpoint: 'http://rustfs:9000',
         credentials: { accessKeyId: 'ak', secretAccessKey: 'sk' },
       }),
     );

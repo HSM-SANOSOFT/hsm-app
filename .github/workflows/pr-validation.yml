@@ -114,17 +114,17 @@ jobs:
       DB_POSTGRES_PASSWORD: hsm
       DB_POSTGRES_DB: hsm_test
       DB_POSTGRES_RUN_MIGRATIONS: 'false'
-      # Redis (BullMQ) and MinIO (S3) are eager boot dependencies exactly as Oracle
-      # WAS: AppModule connects BullMQ at forRoot and awaits
+      # Redis (BullMQ) and RustFS (S3-compatible) are eager boot dependencies
+      # exactly as Oracle WAS: AppModule connects BullMQ at forRoot and awaits
       # S3Initializer.ensureBuckets() at init. So this job provisions the full
-      # local-run infra set (postgres+redis+minio). Only Oracle is intentionally
+      # local-run infra set (postgres+redis+rustfs). Only Oracle is intentionally
       # absent — no DB_ORACLE_* env, no Oracle host reachable (that is the regression).
       DB_REDIS_HOST: localhost
       DB_REDIS_PORT: '6379'
       DB_REDIS_USER: redis
       DB_REDIS_PASSWORD: redis
-      STRG_S3_ACCESS_KEY: minio_user
-      STRG_S3_SECRET_KEY: minio_password
+      STRG_S3_ACCESS_KEY: rustfs_user
+      STRG_S3_SECRET_KEY: rustfs_password
       STRG_S3_FORCE_PATH_STYLE: 'true'
       STRG_S3_HOST: http://localhost:9000
       STRG_S3_HOST_EXTERNAL: http://localhost:9000
@@ -141,33 +141,36 @@ jobs:
       JWT_RT_SECRET: ci-rt-secret-32-chars-padding!!!!
     steps:
       - uses: actions/checkout@v4
-      # Redis and MinIO run as plain `docker run` containers (not `services:`) so
-      # we can pass MinIO's required `server /data` command and mount Redis's repo
-      # ACL/config — neither is expressible with the `services:` block. Config
-      # mirrors docker/docker-compose.yaml so CI auth matches dev exactly.
+      # Redis and RustFS run as plain `docker run` containers (not `services:`) so
+      # we can mount Redis's repo ACL/config and give RustFS a writable data
+      # volume — neither is expressible with the `services:` block. Config mirrors
+      # docker/docker-compose.yaml so CI auth matches dev exactly.
       - name: Start Redis (repo ACL — user "redis")
         run: |
           docker run -d --name redis -p 6379:6379 \
             -v "$PWD/docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro" \
             -v "$PWD/docker/redis/users.acl:/usr/local/etc/redis/users.acl:ro" \
             redis:8-bookworm redis-server /usr/local/etc/redis/redis.conf
-      - name: Start MinIO
+      - name: Start RustFS (S3-compatible)
         run: |
-          docker run -d --name minio -p 9000:9000 \
-            -e MINIO_ROOT_USER=minio_user \
-            -e MINIO_ROOT_PASSWORD=minio_password \
-            minio/minio:latest server /data
-      - name: Wait for Redis + MinIO to be ready
+          docker run -d --name rustfs -p 9000:9000 \
+            -e RUSTFS_ACCESS_KEY=rustfs_user \
+            -e RUSTFS_SECRET_KEY=rustfs_password \
+            -e RUSTFS_VOLUMES=/data \
+            -e RUSTFS_ADDRESS=0.0.0.0:9000 \
+            -v rustfs-data:/data \
+            rustfs/rustfs:latest
+      - name: Wait for Redis + RustFS to be ready
         run: |
           for i in $(seq 1 30); do
             redis_ok=$(docker exec redis redis-cli -u redis://redis:redis@localhost:6379 ping 2>/dev/null || true)
-            if [ "$redis_ok" = "PONG" ] && curl -sf http://localhost:9000/minio/health/live >/dev/null; then
-              echo "Redis + MinIO ready"; exit 0
+            if [ "$redis_ok" = "PONG" ] && curl -sf http://localhost:9000/health >/dev/null; then
+              echo "Redis + RustFS ready"; exit 0
             fi
             echo "waiting for infra ($i/30)"; sleep 2
           done
-          echo "::error::Redis/MinIO did not become ready in time"
-          docker logs redis || true; docker logs minio || true
+          echo "::error::Redis/RustFS did not become ready in time"
+          docker logs redis || true; docker logs rustfs || true
           exit 1
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -188,7 +191,7 @@ jobs:
   # --- single required status check -> reference this name in the rulesets --------
   # integration-tests is now GATED: the app boots Oracle-free (this plan's U1/U2),
   # so its e2e is a hard requirement — a regression that re-introduces an eager
-  # Oracle boot dependency (or breaks pg/redis/minio boot) fails the gate.
+  # Oracle boot dependency (or breaks pg/redis/rustfs boot) fails the gate.
   pr-gate:
     if: always()
     needs: [branch-policy, lint, build, unit-tests, integration-tests]

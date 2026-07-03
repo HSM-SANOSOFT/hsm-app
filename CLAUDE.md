@@ -20,11 +20,11 @@ Each app and package has its own `CLAUDE.md`. **Always read it before working in
 ## Monorepo commands (run from repo root, inside container)
 
 ```bash
-# Start full stack (api + worker + postgres + redis + minio)
+# Start full stack (api + worker + postgres + redis + rustfs)
 docker compose -f docker/docker-compose.yaml up
 
 # Start only infra (no app containers)
-docker compose -f docker/docker-compose.yaml up postgres redis minio
+docker compose -f docker/docker-compose.yaml up postgres redis rustfs
 
 # Exec into running containers
 docker exec -it hsm-app-be-api sh
@@ -50,8 +50,8 @@ pnpm build
 | Worker | 10002 |
 | Postgres | 10003 |
 | Redis | 10004 |
-| MinIO (S3) | 10005 |
-| MinIO console | 10006 |
+| RustFS (S3) | 10006 |
+| RustFS console | 10007 |
 | RedisInsight | 10007 |
 | pgAdmin | 10008 |
 
@@ -63,7 +63,7 @@ run directly inside the dev container via pnpm:
 
 ```bash
 # Infra only (the dev container's runServices already starts these)
-docker compose -f docker/docker-compose.yaml up -d postgres redis minio
+docker compose -f docker/docker-compose.yaml up -d postgres redis rustfs
 
 # Apps — run locally, each in its own terminal
 pnpm --filter @hsm/api start:dev     # API on :3000  (wait for "Seeded default admin user")

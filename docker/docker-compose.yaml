@@ -10,8 +10,8 @@ volumes:
     name: hsm-app-db_postgres-data
   db_redis_data:
     name: hsm-app-db_redis-data
-  db_minio_data:
-    name: hsm-app-db_minio-data
+  db_rustfs_data:
+    name: hsm-app-db_rustfs-data
 
 services:
   api:
@@ -31,7 +31,7 @@ services:
     depends_on:
       - postgres
       - redis
-      - minio
+      - rustfs
       - worker
 
   worker:
@@ -49,7 +49,7 @@ services:
     depends_on:
       - postgres
       - redis
-      - minio
+      - rustfs
     restart: unless-stopped
 
   web:
@@ -95,17 +95,23 @@ services:
     command: [redis-server, /usr/local/etc/redis/redis.conf]
     restart: unless-stopped
 
-  minio:
-    image: minio/minio:latest
+  # RustFS — S3-compatible object storage (replaces MinIO, which is no longer
+  # free). The app talks to it via the same STRG_S3_* / AWS SDK path; only the
+  # backing service and credentials change.
+  rustfs:
+    image: rustfs/rustfs:latest
     networks:
       - hsm-app-network
     ports:
       - 10006:9000
       - 10007:9001
     environment:
-      MINIO_ROOT_USER: minio_user
-      MINIO_ROOT_PASSWORD: minio_password
+      RUSTFS_ACCESS_KEY: rustfs_user
+      RUSTFS_SECRET_KEY: rustfs_password
+      RUSTFS_VOLUMES: /data
+      RUSTFS_ADDRESS: 0.0.0.0:9000
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_CONSOLE_ADDRESS: 0.0.0.0:9001
     volumes:
-      - db_minio_data:/data
-    command: server /data --console-address ":9001"
+      - db_rustfs_data:/data
     restart: unless-stopped

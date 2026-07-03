@@ -14,7 +14,7 @@
     "workspace",
     "postgres",
     "redis",
-    "minio"
+    "rustfs"
   ],
   "remoteUser": "vscode",
   "mounts": [

@@ -25,7 +25,7 @@ tags:
 
 ## Context
 
-The monorepo can start two ways and the difference is not obvious. `docker compose up` runs the full stack as containers, but the **everyday dev loop runs the external services (Postgres, Redis, MinIO) as compose containers while running `@hsm/api`, `@hsm/worker`, and `@hsm/web` directly inside the dev container via pnpm** — not the app images. A contributor following the compose-only mental model (or trusting the repo's host **Port map**, which lists API `10001`) points the browser at a port nothing is serving, every API call fails before reaching the backend, and it looks like a login bug.
+The monorepo can start two ways and the difference is not obvious. `docker compose up` runs the full stack as containers, but the **everyday dev loop runs the external services (Postgres, Redis, RustFS) as compose containers while running `@hsm/api`, `@hsm/worker`, and `@hsm/web` directly inside the dev container via pnpm** — not the app images. A contributor following the compose-only mental model (or trusting the repo's host **Port map**, which lists API `10001`) points the browser at a port nothing is serving, every API call fails before reaching the backend, and it looks like a login bug.
 
 ## Guidance
 
@@ -33,7 +33,7 @@ The monorepo can start two ways and the difference is not obvious. `docker compo
 
 ```bash
 # Infra only — the dev container's runServices already brings these up
-docker compose -f docker/docker-compose.yaml up -d postgres redis minio
+docker compose -f docker/docker-compose.yaml up -d postgres redis rustfs
 
 # Apps run locally, each in its own terminal:
 pnpm --filter @hsm/api start:dev     # API on :3000

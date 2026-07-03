@@ -1,6 +1,6 @@
 # CLAUDE.md — `@hsm/storage`
 
-S3-compatible object storage. Works against MinIO in dev and AWS S3 in prod.
+S3-compatible object storage. Works against RustFS in dev and AWS S3 in prod.
 
 ## Commands
 
@@ -45,10 +45,10 @@ If you only inject one, you'll either break presigned URLs in dev or leak the in
 | Var | Purpose |
 | --- | ------- |
 | `STRG_S3_ACCESS_KEY` / `STRG_S3_SECRET_KEY` | Credentials |
-| `STRG_S3_HOST` | Internal endpoint (e.g. MinIO container DNS) |
+| `STRG_S3_HOST` | Internal endpoint (e.g. RustFS container DNS) |
 | `STRG_S3_HOST_EXTERNAL` | Externally reachable endpoint (for presigned URLs) |
-| `STRG_S3_REGION` | AWS region (or any value MinIO accepts) |
-| `STRG_S3_FORCE_PATH_STYLE` | `true` for MinIO/self-hosted, `false` for native AWS |
+| `STRG_S3_REGION` | AWS region (or any value RustFS accepts) |
+| `STRG_S3_FORCE_PATH_STYLE` | `true` for RustFS/self-hosted, `false` for native AWS |
 
 ## Buckets
 
