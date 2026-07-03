@@ -156,11 +156,21 @@
   max-width: 380px;
 }
 
+.auth-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
 .auth-brand__word--compact {
   display: none;
+  flex: 1;
   font-size: 1.2rem;
-  margin-bottom: 2rem;
   color: var(--primary-800);
+}
+.auth-card__header .auth-brand__word--compact {
+  margin-bottom: 0;
 }
 .auth-brand__word--compact span {
   color: var(--primary-600);

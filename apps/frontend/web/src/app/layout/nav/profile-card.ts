@@ -12,6 +12,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { Popover } from 'primeng/popover';
 
 import { AuthService } from '../../core/auth/auth.service';
+import { LanguageSwitcher } from '../language-switcher/language-switcher';
 import { NavService } from './nav.service';
 
 /** A popover entry that navigates somewhere. */
@@ -41,7 +42,7 @@ const SYSTEM_ADMIN_ROUTE = '/system-admin';
  */
 @Component({
   selector: 'app-profile-card',
-  imports: [RouterLink, AvatarModule, Popover],
+  imports: [RouterLink, AvatarModule, Popover, LanguageSwitcher],
   template: `
     <div class="pcard" [class.pcard--expanded]="expanded()">
       <button
@@ -96,6 +97,9 @@ const SYSTEM_ADMIN_ROUTE = '/system-admin';
             {{ item.label }}
           </a>
         }
+        <div class="pmenu__lang" data-testid="pmenu-language-switcher">
+          <app-language-switcher />
+        </div>
         <button
           type="button"
           class="pmenu__item pmenu__item--action"
@@ -202,6 +206,9 @@ const SYSTEM_ADMIN_ROUTE = '/system-admin';
       }
       .pmenu__item--action {
         color: var(--accent);
+      }
+      .pmenu__lang {
+        padding: 0.35rem 0.7rem 0.55rem;
       }
       .pmenu__icon {
         width: 1.1rem;

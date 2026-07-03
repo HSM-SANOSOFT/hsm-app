@@ -9,6 +9,7 @@ import { PasswordModule } from 'primeng/password';
 import { toErrorMessage } from '../../../core/api/api-error';
 import { AuthService } from '../../../core/auth/auth.service';
 import { VersionService } from '../../../core/version/version.service';
+import { LanguageSwitcher } from '../../../layout/language-switcher/language-switcher';
 
 /** Key under which the last-used username is remembered (no password). */
 const LAST_USERNAME_KEY = 'hsm.lastUsername';
@@ -32,6 +33,7 @@ const LAST_USERNAME_KEY = 'hsm.lastUsername';
     PasswordModule,
     ButtonModule,
     MessageModule,
+    LanguageSwitcher,
   ],
   templateUrl: './login.html',
   styleUrl: '../auth.css',
