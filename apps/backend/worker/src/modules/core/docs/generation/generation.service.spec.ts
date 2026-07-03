@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import * as puppeteerCore from 'puppeteer-core';
 import { GenerationService } from './generation.service';
 
 const mockBrowserClose = jest.fn();
@@ -39,8 +40,7 @@ jest.mock('puppeteer-core', () => ({
 describe('GenerationService', () => {
   let service: GenerationService;
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const puppeteer = require('puppeteer-core') as { launch: jest.Mock };
+  const puppeteer = puppeteerCore as unknown as { launch: jest.Mock };
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -86,7 +86,7 @@ describe('GenerationService', () => {
 
     it('releases the page to the pool even when pdf() throws', async () => {
       // Override pdf() on next created page to reject — page creation itself succeeds
-      mockNewPage.mockImplementationOnce(async () => {
+      mockNewPage.mockImplementationOnce(() => {
         const page = makeMockPage();
         page.pdf.mockRejectedValueOnce(new Error('render failed'));
         return page;

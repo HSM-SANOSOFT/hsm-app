@@ -52,7 +52,7 @@ export async function oracleSchemaGenerator(args: {
       );
       // logger.debug(columnsResult);
 
-      const columnsMapping = oracleColumnsMapping(columnsResult);
+      const _columnsMapping = oracleColumnsMapping(columnsResult);
 
       const constrainsResult = await oracleConstrainsQuery(
         connection,
@@ -61,7 +61,7 @@ export async function oracleSchemaGenerator(args: {
       );
       // logger.debug(constrainsResult);
 
-      const [pkConstraints, fkConstraints, ukConstraints] =
+      const [_pkConstraints, _fkConstraints, _ukConstraints] =
         oracleConstrainsMapping(constrainsResult);
       // logger.debug(constrainsMapping);
 

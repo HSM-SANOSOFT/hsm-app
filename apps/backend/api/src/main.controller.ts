@@ -1,9 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import {
-  HealthCheck,
-  HealthCheckService,
-  HttpHealthIndicator,
-} from '@nestjs/terminus';
+import { HealthCheck, HealthCheckService } from '@nestjs/terminus';
 import { ApiDocumentation, Public } from './decorator';
 import { MainService } from './main.service';
 
@@ -12,7 +8,6 @@ export class MainController {
   constructor(
     private readonly mainService: MainService,
     private health: HealthCheckService,
-    private http: HttpHealthIndicator,
   ) {}
 
   @ApiDocumentation()

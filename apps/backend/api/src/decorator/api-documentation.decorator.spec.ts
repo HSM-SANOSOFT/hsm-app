@@ -40,14 +40,17 @@ jest.mock('@nestjs/swagger', () => {
 });
 
 describe('ApiDocumentation', () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let target: { constructor: new (...args: any[]) => any };
+  let target: { constructor: new (...args: never[]) => object };
   let descriptor: PropertyDescriptor;
 
   beforeEach(() => {
     jest.clearAllMocks();
     target = { constructor: class StubController {} };
-    descriptor = { value: function stubMethod() {} } as PropertyDescriptor;
+    descriptor = {
+      value: function stubMethod() {
+        /* stub */
+      },
+    } as PropertyDescriptor;
     // Default route metadata: controller='test', method='endpoint'
     Reflect.defineMetadata('path', 'test', target.constructor);
     Reflect.defineMetadata('path', 'endpoint', descriptor.value);
@@ -203,7 +206,9 @@ describe('ApiDocumentation', () => {
     it('does not throw when PATH_METADATA is not set on targets', () => {
       const noMetaTarget = { constructor: class NoMetaController {} };
       const noMetaDescriptor = {
-        value: function noMetaMethod() {},
+        value: function noMetaMethod() {
+          /* stub */
+        },
       } as PropertyDescriptor;
       expect(() =>
         ApiDocumentation()(
