@@ -213,27 +213,27 @@
     <div class="sec-head"><span class="num">W0</span><h2>The foundation plan — 5 units</h2><span class="sub">Legend: ☐ not-started · 🟡 in-progress · ⛔ blocked · 👀 review · ✅ done · ✔️ verified</span></div>
     <div class="units">
       <div class="unit">
-        <div class="top"><span class="uid">U1</span><h3>Unwire Oracle datasource — keep files</h3><span class="st todo">to build</span></div>
-        <p>One edit: drop <code>DatabaseOracleModule</code> from <code>database-sources.module.ts</code> → both apps stop dialing Oracle at boot. Nothing queries it, so no service breaks. Files stay on disk for the cutoff-migration generator.</p>
-        <div class="dep">deps: none · fixes ORA-12170</div>
+        <div class="top"><span class="uid">U1</span><h3>Unwire Oracle datasource — keep files</h3><span class="st done">👀 in review</span></div>
+        <p>One edit: dropped <code>DatabaseOracleModule</code> from <code>database-sources.module.ts</code> → both apps stop dialing Oracle at boot. Nothing queries it, so no service broke. Files stay on disk for the cutoff-migration generator.</p>
+        <div class="dep">deps: none · fixes ORA-12170 · commit 246c576</div>
       </div>
       <div class="unit">
-        <div class="top"><span class="uid">U2</span><h3>Relax <code>DB_ORACLE_*</code> config</h3><span class="st todo">to build</span></div>
-        <p>Make the Oracle env vars optional so the app + Jest validate without creds. Atomic across <code>envs.ts</code> + <code>test-setup.ts</code> + <code>.env.example</code> (dotenv back-fill trap).</p>
-        <div class="dep">deps: U1</div>
+        <div class="top"><span class="uid">U2</span><h3>Remove <code>DB_ORACLE_*</code> config</h3><span class="st done">👀 in review</span></div>
+        <p>Removed the Oracle env vars entirely (not just optional) from <code>envs.ts</code> + <code>test-setup.ts</code>; the retained dead Oracle module now reads <code>process.env</code>. Atomic to dodge the dotenv back-fill trap.</p>
+        <div class="dep">deps: U1 · commit 4e44e10</div>
       </div>
       <div class="unit">
-        <div class="top"><span class="uid">U3</span><h3>CI: API boots Oracle-free</h3><span class="st todo">to build</span></div>
-        <p>Regression e2e: app bootstraps + serves a pg-native endpoint with no Oracle host, Postgres-only. Once green, add <code>integration-tests</code> to the required <code>pr-gate</code>.</p>
-        <div class="dep">deps: U1, U2</div>
+        <div class="top"><span class="uid">U3</span><h3>CI: API boots Oracle-free</h3><span class="st done">👀 in review</span></div>
+        <p>The <code>integration-tests</code> job now boots api+worker e2e against postgres+redis+minio with no Oracle host, and is <b>gated into <code>pr-gate</code></b> — a regression re-adding an eager Oracle boot fails the required check.</p>
+        <div class="dep">deps: U1, U2 · commit e5898b7</div>
       </div>
       <div class="unit">
-        <div class="top"><span class="uid">U4</span><h3>Land &amp; activate the release train</h3><span class="st part">☐ rulesets live</span></div>
-        <p>Commit workflows + rulesets, create <code>development</code>, bootstrap. <b>4 rulesets applied</b>; approval count set to <b>0</b> (solo-workable). Back-merge PR still needs a PAT (only matters after a stable release).</p>
+        <div class="top"><span class="uid">U4</span><h3>Land &amp; activate the release train</h3><span class="st done">✅ landed</span></div>
+        <p>Workflows + <b>4 rulesets</b> committed, <code>development</code> created &amp; default. Approval count <b>0</b> (solo-workable). Auto-firing <code>release-tag</code>/<code>back-merge</code> deliberately dropped — re-add with a PAT when a stable release cadence begins.</p>
         <div class="dep">deps: none · independent of U1–U3</div>
       </div>
       <div class="unit">
-        <div class="top"><span class="uid">U5</span><h3>Progress tracking dashboard</h3><span class="st part">🟡 in-progress</span></div>
+        <div class="top"><span class="uid">U5</span><h3>Progress tracking dashboard</h3><span class="st done">✅ done</span></div>
         <p>This surface. Markdown status doc + this HTML companion (no Angular). Tracks units U1–U5 &amp; waves W0–W4; updated on each merge.</p>
         <div class="dep">deps: none · updated by every unit's done-criteria</div>
       </div>
@@ -480,9 +480,9 @@
     <div class="grid2">
       <div class="panel">
         <h3>CI/CD workflows</h3>
-        <div class="row"><span class="f">pr-validation</span><div><b>Required check.</b> branch-policy → lint → build → unit tests, aggregated as <b>pr-gate</b>. Integration (Oracle-free boot) joins once green.</div></div>
-        <div class="row"><span class="f">release-tag</span><div>alpha on <code style="font-family:var(--mono)">development</code>, beta on <code style="font-family:var(--mono)">release/*</code>, stable on <code style="font-family:var(--mono)">main</code>.</div></div>
-        <div class="row"><span class="f">back-merge</span><div>Cascade PR main → development after a stable release.</div></div>
+        <div class="row"><span class="f">pr-validation</span><div><b>Required check.</b> branch-policy → lint → build → unit tests <b>+ integration-tests (Oracle-free boot)</b>, aggregated as <b>pr-gate</b> — integration is now gated (U3).</div></div>
+        <div class="row"><span class="f">migration-drift</span><div>Fresh-DB <code>migration:run</code> then asserts <code>migration:generate</code> is empty — entities can't drift from migrations.</div></div>
+        <div class="row"><span class="f">deferred</span><div>Auto-firing <code>release-tag</code> / <code>back-merge</code> dropped (<code>14e92c2</code>); re-add with a PAT at stable-release cadence.</div></div>
       </div>
       <div class="panel">
         <h3>GitHub rulesets <span class="live-badge">4 active</span></h3>
