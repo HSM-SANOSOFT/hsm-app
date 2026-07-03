@@ -5,7 +5,9 @@ import {
 } from '@angular/common/http';
 import {
   type ApplicationConfig,
+  DEFAULT_CURRENCY_CODE,
   inject,
+  LOCALE_ID,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
@@ -13,13 +15,17 @@ import {
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
-import { providePrimeNG } from 'primeng/config';
+import { PrimeNG, providePrimeNG } from 'primeng/config';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../environments/environment';
 import { HsmPreset } from '../theme/hsm-preset';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/auth/auth.interceptor';
 import { AuthService } from './core/auth/auth.service';
+import { activeLocale, registerAppLocales } from './core/i18n/locale-init';
+import { primeNgTranslationForActiveLocale } from './core/i18n/primeng-translations';
+
+registerAppLocales();
 
 /**
  * Root application providers.
@@ -39,9 +45,14 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
+    { provide: LOCALE_ID, useValue: activeLocale() === 'en' ? 'en' : 'es-EC' },
+    { provide: DEFAULT_CURRENCY_CODE, useValue: 'USD' },
     provideAppInitializer(() => {
       const auth = inject(AuthService);
       return firstValueFrom(auth.restoreSession());
+    }),
+    provideAppInitializer(() => {
+      inject(PrimeNG).setTranslation(primeNgTranslationForActiveLocale());
     }),
     provideAnimationsAsync(),
     providePrimeNG({
