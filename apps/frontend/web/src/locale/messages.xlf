@@ -2299,11 +2299,522 @@
           <context context-type="linenumber">249</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="layout.navTree.clinical-patient-management" datatype="html">
+        <source>Pacientes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">256</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-pm-registration" datatype="html">
+        <source>Registro</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">261</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-pm-mpi-merge" datatype="html">
+        <source>Fusión</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">267</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-pm-insurance" datatype="html">
+        <source>Seguro</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">273</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-pm-contacts" datatype="html">
+        <source>Contactos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">279</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-pm-summary-timeline" datatype="html">
+        <source>Cronología</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">285</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-pm-linked-documents" datatype="html">
+        <source>Documentos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">291</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-adt" datatype="html">
+        <source>Admisiones</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">299</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-adt-opd" datatype="html">
+        <source>OPD</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">304</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-adt-ipd" datatype="html">
+        <source>IPD</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">310</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-adt-ed-triage" datatype="html">
+        <source>Triaje</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">316</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-adt-beds-wards" datatype="html">
+        <source>Camas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">322</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-adt-transfers" datatype="html">
+        <source>Traslados</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">328</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-adt-discharge" datatype="html">
+        <source>Altas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">334</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-encounters" datatype="html">
+        <source>Encuentros</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">342</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-ehr-soap-notes" datatype="html">
+        <source>Notas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">347</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-ehr-vitals" datatype="html">
+        <source>Signos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">353</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-ehr-diagnoses" datatype="html">
+        <source>Diagnósticos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">359</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-ehr-allergies" datatype="html">
+        <source>Alergias</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">365</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-ehr-care-plans" datatype="html">
+        <source>Planes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">371</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-ehr-procedures" datatype="html">
+        <source>Procedimientos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">377</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-ehr-immunizations" datatype="html">
+        <source>Inmunizaciones</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">383</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-orders" datatype="html">
+        <source>Órdenes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">391</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-orders-lab" datatype="html">
+        <source>Laboratorio</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">396</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-orders-imaging" datatype="html">
+        <source>Imágenes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">402</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-orders-medication" datatype="html">
+        <source>Medicación</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">408</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-orders-procedure" datatype="html">
+        <source>Procedimientos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">414</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-orders-order-sets" datatype="html">
+        <source>Conjuntos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">420</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-orders-results-review" datatype="html">
+        <source>Resultados</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">426</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-nursing" datatype="html">
+        <source>Enfermería</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">434</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-nursing-emar" datatype="html">
+        <source>eMAR</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">439</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-nursing-assessments" datatype="html">
+        <source>Evaluaciones</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">445</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-nursing-handover" datatype="html">
+        <source>Relevo</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">451</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-nursing-care-tasks" datatype="html">
+        <source>Tareas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">457</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-surgery" datatype="html">
+        <source>Cirugía</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">465</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-surgery-theatre-scheduling" datatype="html">
+        <source>Programación</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">470</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-surgery-peri-op" datatype="html">
+        <source>Perioperatorio</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">476</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-surgery-op-notes" datatype="html">
+        <source>Notas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">482</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-maternity" datatype="html">
+        <source>Maternidad</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">490</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-maternity-antenatal" datatype="html">
+        <source>Prenatal</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">495</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-maternity-labor-delivery" datatype="html">
+        <source>Parto</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">501</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-maternity-postnatal" datatype="html">
+        <source>Posparto</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">507</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-maternity-newborn" datatype="html">
+        <source>Neonatos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">513</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-dietary" datatype="html">
+        <source>Nutrición</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">521</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-dietary-diet-orders" datatype="html">
+        <source>Dietas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">526</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-dietary-meal-planning" datatype="html">
+        <source>Menús</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">532</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-dietary-nutrition-assessments" datatype="html">
+        <source>Evaluaciones</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">538</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-physiotherapy" datatype="html">
+        <source>Fisioterapia</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">546</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-physio-referrals" datatype="html">
+        <source>Referencias</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">551</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-physio-therapy-plans" datatype="html">
+        <source>Terapias</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">557</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-physio-session-tracking" datatype="html">
+        <source>Sesiones</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">563</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="layout.navTree.diagnostics" datatype="html">
         <source>Diagnóstico y Terapéutica</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
           <context context-type="linenumber">575</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-laboratory" datatype="html">
+        <source>Laboratorio</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">582</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-lab-test-catalog" datatype="html">
+        <source>Catálogo</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">587</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-lab-order-intake" datatype="html">
+        <source>Recepción</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">593</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-lab-specimen-tracking" datatype="html">
+        <source>Muestras</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">599</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-lab-worklists" datatype="html">
+        <source>Listas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">605</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-lab-results" datatype="html">
+        <source>Resultados</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">611</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-lab-qc" datatype="html">
+        <source>Calidad</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">617</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-imaging" datatype="html">
+        <source>Imágenes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">625</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-imaging-order-intake" datatype="html">
+        <source>Recepción</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">630</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-imaging-scheduling" datatype="html">
+        <source>Programación</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">636</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-imaging-dicom-worklist" datatype="html">
+        <source>DICOM</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">642</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-imaging-acquisition" datatype="html">
+        <source>Adquisición</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">648</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-imaging-dicom-store" datatype="html">
+        <source>DICOM</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">654</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-imaging-viewer" datatype="html">
+        <source>Visor</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">660</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-imaging-reporting" datatype="html">
+        <source>Informes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">666</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-pharmacy" datatype="html">
+        <source>Farmacia</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">674</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-pharmacy-formulary" datatype="html">
+        <source>Formulario</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">679</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-pharmacy-e-prescribing" datatype="html">
+        <source>Recetas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">685</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-pharmacy-dispensing" datatype="html">
+        <source>Dispensación</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">691</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-pharmacy-inpatient-supply" datatype="html">
+        <source>Suministro</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">697</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-pharmacy-interaction-checks" datatype="html">
+        <source>Interacciones</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">703</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-pharmacy-stock" datatype="html">
+        <source>Existencias</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">709</context>
         </context-group>
       </trans-unit>
       <trans-unit id="layout.navTree.business" datatype="html">
@@ -2313,11 +2824,557 @@
           <context context-type="linenumber">721</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="layout.navTree.business-accounting" datatype="html">
+        <source>Contabilidad</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">728</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-accounting-gl" datatype="html">
+        <source>Mayor</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">733</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-accounting-ar" datatype="html">
+        <source>Cobros</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">739</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-accounting-ap" datatype="html">
+        <source>Adeudos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">745</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-accounting-banking" datatype="html">
+        <source>Bancos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">751</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-accounting-cost-centers" datatype="html">
+        <source>Presupuestos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">757</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-accounting-reports" datatype="html">
+        <source>Informes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">763</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-accounting-taxes" datatype="html">
+        <source>Impuestos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">769</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-billing" datatype="html">
+        <source>Facturación</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">777</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-billing-charge-capture" datatype="html">
+        <source>Cargos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">782</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-billing-invoicing" datatype="html">
+        <source>Facturas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">788</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-billing-claims" datatype="html">
+        <source>Reclamaciones</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">794</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-billing-payments" datatype="html">
+        <source>Pagos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">800</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-billing-tariffs" datatype="html">
+        <source>Tarifas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">806</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-inventory" datatype="html">
+        <source>Inventario</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">814</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-inventory-item-master" datatype="html">
+        <source>Artículos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">819</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-inventory-stock" datatype="html">
+        <source>Existencias</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">825</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-inventory-batch-expiry" datatype="html">
+        <source>Lotes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">831</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-inventory-requisitions" datatype="html">
+        <source>Requisiciones</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">837</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-inventory-par-levels" datatype="html">
+        <source>Niveles</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">843</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-inventory-counts" datatype="html">
+        <source>Conteos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">849</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-procurement" datatype="html">
+        <source>Compras</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">857</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-procurement-suppliers" datatype="html">
+        <source>Proveedores</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">862</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-procurement-requisitions" datatype="html">
+        <source>Requisiciones</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">868</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-procurement-purchase-orders" datatype="html">
+        <source>Órdenes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">874</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-procurement-goods-receipt" datatype="html">
+        <source>Recibo</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">880</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-assets" datatype="html">
+        <source>Activos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">888</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-assets-register" datatype="html">
+        <source>Inventario</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">893</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-assets-preventive-maintenance" datatype="html">
+        <source>Mantenimiento</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">899</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-assets-warranties" datatype="html">
+        <source>Garantías</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">905</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-assets-work-orders" datatype="html">
+        <source>Órdenes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">911</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-assets-calibration" datatype="html">
+        <source>Calibración</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">917</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-hr" datatype="html">
+        <source>Personal</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">925</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-hr-employee-records" datatype="html">
+        <source>Empleados</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">930</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-hr-recruitment" datatype="html">
+        <source>Reclutamiento</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">936</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-hr-attendance-leave" datatype="html">
+        <source>Asistencia</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">942</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-hr-rostering" datatype="html">
+        <source>Turnos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">948</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-hr-payroll" datatype="html">
+        <source>Nómina</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">954</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-hr-appraisals" datatype="html">
+        <source>Desempeño</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">960</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-hr-credentialing" datatype="html">
+        <source>Credenciales</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">966</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-crm" datatype="html">
+        <source>Mercadeo</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">974</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-crm-engagement" datatype="html">
+        <source>Fidelización</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">979</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-crm-campaigns" datatype="html">
+        <source>Campañas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">985</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-crm-referrals" datatype="html">
+        <source>Referencias</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">991</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-crm-feedback" datatype="html">
+        <source>Encuestas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">997</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-crm-leads" datatype="html">
+        <source>Prospectos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1003</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-projects" datatype="html">
+        <source>Proyectos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1011</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-projects-tasks" datatype="html">
+        <source>Tareas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1016</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-projects-milestones" datatype="html">
+        <source>Hitos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1022</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-projects-timesheets" datatype="html">
+        <source>Horas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1028</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-projects-costing" datatype="html">
+        <source>Costos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1034</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-projects-billing" datatype="html">
+        <source>Facturación</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1040</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="layout.navTree.governance" datatype="html">
         <source>Gobernanza y Soporte</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
           <context context-type="linenumber">1052</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-quality" datatype="html">
+        <source>Calidad</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1059</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-quality-incidents" datatype="html">
+        <source>Incidentes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1064</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-quality-audits" datatype="html">
+        <source>Auditorías</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1070</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-quality-accreditation" datatype="html">
+        <source>Acreditación</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1076</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-quality-capa" datatype="html">
+        <source>CAPA</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1082</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-quality-sop-control" datatype="html">
+        <source>Procedimientos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1088</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-quality-risk-register" datatype="html">
+        <source>Riesgos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1094</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-legal" datatype="html">
+        <source>Legal</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1102</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-legal-consents" datatype="html">
+        <source>Consentimientos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1107</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-legal-cases" datatype="html">
+        <source>Casos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1113</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-legal-contracts" datatype="html">
+        <source>Contratos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1119</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-legal-regulatory" datatype="html">
+        <source>Normativa</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1125</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-research" datatype="html">
+        <source>Investigación</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1133</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-research-studies" datatype="html">
+        <source>Estudios</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1138</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-research-cohorts" datatype="html">
+        <source>Cohortes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1144</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-research-ethics" datatype="html">
+        <source>Ética</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1150</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-research-data-capture" datatype="html">
+        <source>Datos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1156</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-social-work" datatype="html">
+        <source>Social</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1164</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-social-case-management" datatype="html">
+        <source>Casos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1169</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-social-advocacy" datatype="html">
+        <source>Defensoría</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1175</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-social-financial-assistance" datatype="html">
+        <source>Ayuda</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1181</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-social-discharge-support" datatype="html">
+        <source>Alta</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1187</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-helpdesk" datatype="html">
+        <source>Soporte</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1195</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-helpdesk-patient-queries" datatype="html">
+        <source>Consultas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1200</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-helpdesk-internal-tickets" datatype="html">
+        <source>Tickets</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1206</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-helpdesk-issue-tracking" datatype="html">
+        <source>Incidencias</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1212</context>
         </context-group>
       </trans-unit>
       <trans-unit id="layout.navTree.platform" datatype="html">
@@ -2327,11 +3384,151 @@
           <context context-type="linenumber">1224</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="layout.navTree.platform-scheduling" datatype="html">
+        <source>Citas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1231</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-scheduling-booking" datatype="html">
+        <source>Reservas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1236</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-scheduling-reminders" datatype="html">
+        <source>Recordatorios</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1242</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-scheduling-calendar" datatype="html">
+        <source>Calendario</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1248</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-reporting" datatype="html">
+        <source>Análisis</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1256</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-reporting-operational" datatype="html">
+        <source>Operaciones</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1261</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-reporting-clinical" datatype="html">
+        <source>Clínicos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1267</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-reporting-kpis" datatype="html">
+        <source>KPI</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1273</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-documents" datatype="html">
+        <source>Documentos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1285</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-documents-files" datatype="html">
+        <source>Documentos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1290</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-templates" datatype="html">
+        <source>Plantillas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1300</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-templates-editor" datatype="html">
+        <source>Plantillas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1305</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="layout.navTree.patientPortal" datatype="html">
         <source>Portal del Paciente</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
           <context context-type="linenumber">1323</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.portal-my-health" datatype="html">
+        <source>Salud</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1330</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.portal-home" datatype="html">
+        <source>Inicio</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1336</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.portal-appointments" datatype="html">
+        <source>Citas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1343</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.portal-results" datatype="html">
+        <source>Resultados</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1350</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.portal-documents" datatype="html">
+        <source>Documentos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1357</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.portal-bills" datatype="html">
+        <source>Cuentas</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1364</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.portal-messaging" datatype="html">
+        <source>Mensajes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1371</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.navTree.portal-consents" datatype="html">
+        <source>Consentimientos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
+          <context context-type="linenumber">1378</context>
         </context-group>
       </trans-unit>
       <trans-unit id="layout.navTree.adminExit" datatype="html">

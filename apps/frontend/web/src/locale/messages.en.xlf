@@ -1410,6 +1410,690 @@
         <source>Valor inválido</source>
         <target>Invalid value</target>
       </trans-unit>
+      <trans-unit id="layout.navTree.clinical-patient-management" datatype="html">
+        <source>Pacientes</source>
+        <target>Patients</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-pm-registration" datatype="html">
+        <source>Registro</source>
+        <target>Registration</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-pm-mpi-merge" datatype="html">
+        <source>Fusión</source>
+        <target>Merge</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-pm-insurance" datatype="html">
+        <source>Seguro</source>
+        <target>Insurance</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-pm-contacts" datatype="html">
+        <source>Contactos</source>
+        <target>Contacts</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-pm-summary-timeline" datatype="html">
+        <source>Cronología</source>
+        <target>Timeline</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-pm-linked-documents" datatype="html">
+        <source>Documentos</source>
+        <target>Documents</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-adt" datatype="html">
+        <source>Admisiones</source>
+        <target>Admissions</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-adt-opd" datatype="html">
+        <source>OPD</source>
+        <target>OPD</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-adt-ipd" datatype="html">
+        <source>IPD</source>
+        <target>IPD</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-adt-ed-triage" datatype="html">
+        <source>Triaje</source>
+        <target>Triage</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-adt-beds-wards" datatype="html">
+        <source>Camas</source>
+        <target>Beds</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-adt-transfers" datatype="html">
+        <source>Traslados</source>
+        <target>Transfers</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-adt-discharge" datatype="html">
+        <source>Altas</source>
+        <target>Discharge</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-encounters" datatype="html">
+        <source>Encuentros</source>
+        <target>Encounters</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-ehr-soap-notes" datatype="html">
+        <source>Notas</source>
+        <target>Notes</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-ehr-vitals" datatype="html">
+        <source>Signos</source>
+        <target>Vitals</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-ehr-diagnoses" datatype="html">
+        <source>Diagnósticos</source>
+        <target>Diagnoses</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-ehr-allergies" datatype="html">
+        <source>Alergias</source>
+        <target>Allergies</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-ehr-care-plans" datatype="html">
+        <source>Planes</source>
+        <target>Plans</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-ehr-procedures" datatype="html">
+        <source>Procedimientos</source>
+        <target>Procedures</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-ehr-immunizations" datatype="html">
+        <source>Inmunizaciones</source>
+        <target>Immunizations</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-orders" datatype="html">
+        <source>Órdenes</source>
+        <target>Orders</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-orders-lab" datatype="html">
+        <source>Laboratorio</source>
+        <target>Laboratory</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-orders-imaging" datatype="html">
+        <source>Imágenes</source>
+        <target>Imaging</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-orders-medication" datatype="html">
+        <source>Medicación</source>
+        <target>Medication</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-orders-procedure" datatype="html">
+        <source>Procedimientos</source>
+        <target>Procedures</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-orders-order-sets" datatype="html">
+        <source>Conjuntos</source>
+        <target>Sets</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-orders-results-review" datatype="html">
+        <source>Resultados</source>
+        <target>Results</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-nursing" datatype="html">
+        <source>Enfermería</source>
+        <target>Nursing</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-nursing-emar" datatype="html">
+        <source>eMAR</source>
+        <target>eMAR</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-nursing-assessments" datatype="html">
+        <source>Evaluaciones</source>
+        <target>Assessments</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-nursing-handover" datatype="html">
+        <source>Relevo</source>
+        <target>Handover</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-nursing-care-tasks" datatype="html">
+        <source>Tareas</source>
+        <target>Tasks</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-surgery" datatype="html">
+        <source>Cirugía</source>
+        <target>Surgery</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-surgery-theatre-scheduling" datatype="html">
+        <source>Programación</source>
+        <target>Scheduling</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-surgery-peri-op" datatype="html">
+        <source>Perioperatorio</source>
+        <target>Perioperative</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-surgery-op-notes" datatype="html">
+        <source>Notas</source>
+        <target>Notes</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-maternity" datatype="html">
+        <source>Maternidad</source>
+        <target>Maternity</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-maternity-antenatal" datatype="html">
+        <source>Prenatal</source>
+        <target>Antenatal</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-maternity-labor-delivery" datatype="html">
+        <source>Parto</source>
+        <target>Delivery</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-maternity-postnatal" datatype="html">
+        <source>Posparto</source>
+        <target>Postnatal</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-maternity-newborn" datatype="html">
+        <source>Neonatos</source>
+        <target>Newborn</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-dietary" datatype="html">
+        <source>Nutrición</source>
+        <target>Nutrition</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-dietary-diet-orders" datatype="html">
+        <source>Dietas</source>
+        <target>Diets</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-dietary-meal-planning" datatype="html">
+        <source>Menús</source>
+        <target>Meals</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-dietary-nutrition-assessments" datatype="html">
+        <source>Evaluaciones</source>
+        <target>Assessments</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-physiotherapy" datatype="html">
+        <source>Fisioterapia</source>
+        <target>Physiotherapy</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-physio-referrals" datatype="html">
+        <source>Referencias</source>
+        <target>Referrals</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-physio-therapy-plans" datatype="html">
+        <source>Terapias</source>
+        <target>Therapies</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.clinical-physio-session-tracking" datatype="html">
+        <source>Sesiones</source>
+        <target>Sessions</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-laboratory" datatype="html">
+        <source>Laboratorio</source>
+        <target>Laboratory</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-lab-test-catalog" datatype="html">
+        <source>Catálogo</source>
+        <target>Catalog</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-lab-order-intake" datatype="html">
+        <source>Recepción</source>
+        <target>Intake</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-lab-specimen-tracking" datatype="html">
+        <source>Muestras</source>
+        <target>Specimens</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-lab-worklists" datatype="html">
+        <source>Listas</source>
+        <target>Worklists</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-lab-results" datatype="html">
+        <source>Resultados</source>
+        <target>Results</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-lab-qc" datatype="html">
+        <source>Calidad</source>
+        <target>Quality</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-imaging" datatype="html">
+        <source>Imágenes</source>
+        <target>Imaging</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-imaging-order-intake" datatype="html">
+        <source>Recepción</source>
+        <target>Intake</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-imaging-scheduling" datatype="html">
+        <source>Programación</source>
+        <target>Scheduling</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-imaging-dicom-worklist" datatype="html">
+        <source>DICOM</source>
+        <target>DICOM</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-imaging-acquisition" datatype="html">
+        <source>Adquisición</source>
+        <target>Acquisition</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-imaging-dicom-store" datatype="html">
+        <source>DICOM</source>
+        <target>DICOM</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-imaging-viewer" datatype="html">
+        <source>Visor</source>
+        <target>Viewer</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-imaging-reporting" datatype="html">
+        <source>Informes</source>
+        <target>Reports</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-pharmacy" datatype="html">
+        <source>Farmacia</source>
+        <target>Pharmacy</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-pharmacy-formulary" datatype="html">
+        <source>Formulario</source>
+        <target>Formulary</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-pharmacy-e-prescribing" datatype="html">
+        <source>Recetas</source>
+        <target>Prescriptions</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-pharmacy-dispensing" datatype="html">
+        <source>Dispensación</source>
+        <target>Dispensing</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-pharmacy-inpatient-supply" datatype="html">
+        <source>Suministro</source>
+        <target>Supply</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-pharmacy-interaction-checks" datatype="html">
+        <source>Interacciones</source>
+        <target>Interactions</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.diagnostics-pharmacy-stock" datatype="html">
+        <source>Existencias</source>
+        <target>Stock</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-accounting" datatype="html">
+        <source>Contabilidad</source>
+        <target>Accounting</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-accounting-gl" datatype="html">
+        <source>Mayor</source>
+        <target>Ledger</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-accounting-ar" datatype="html">
+        <source>Cobros</source>
+        <target>Receivables</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-accounting-ap" datatype="html">
+        <source>Adeudos</source>
+        <target>Payables</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-accounting-banking" datatype="html">
+        <source>Bancos</source>
+        <target>Banking</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-accounting-cost-centers" datatype="html">
+        <source>Presupuestos</source>
+        <target>Budgets</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-accounting-reports" datatype="html">
+        <source>Informes</source>
+        <target>Reports</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-accounting-taxes" datatype="html">
+        <source>Impuestos</source>
+        <target>Taxes</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-billing" datatype="html">
+        <source>Facturación</source>
+        <target>Billing</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-billing-charge-capture" datatype="html">
+        <source>Cargos</source>
+        <target>Charges</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-billing-invoicing" datatype="html">
+        <source>Facturas</source>
+        <target>Invoices</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-billing-claims" datatype="html">
+        <source>Reclamaciones</source>
+        <target>Claims</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-billing-payments" datatype="html">
+        <source>Pagos</source>
+        <target>Payments</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-billing-tariffs" datatype="html">
+        <source>Tarifas</source>
+        <target>Tariffs</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-inventory" datatype="html">
+        <source>Inventario</source>
+        <target>Inventory</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-inventory-item-master" datatype="html">
+        <source>Artículos</source>
+        <target>Items</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-inventory-stock" datatype="html">
+        <source>Existencias</source>
+        <target>Stock</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-inventory-batch-expiry" datatype="html">
+        <source>Lotes</source>
+        <target>Batches</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-inventory-requisitions" datatype="html">
+        <source>Requisiciones</source>
+        <target>Requisitions</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-inventory-par-levels" datatype="html">
+        <source>Niveles</source>
+        <target>Levels</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-inventory-counts" datatype="html">
+        <source>Conteos</source>
+        <target>Counts</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-procurement" datatype="html">
+        <source>Compras</source>
+        <target>Procurement</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-procurement-suppliers" datatype="html">
+        <source>Proveedores</source>
+        <target>Suppliers</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-procurement-requisitions" datatype="html">
+        <source>Requisiciones</source>
+        <target>Requisitions</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-procurement-purchase-orders" datatype="html">
+        <source>Órdenes</source>
+        <target>Orders</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-procurement-goods-receipt" datatype="html">
+        <source>Recibo</source>
+        <target>Receipt</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-assets" datatype="html">
+        <source>Activos</source>
+        <target>Assets</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-assets-register" datatype="html">
+        <source>Inventario</source>
+        <target>Inventory</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-assets-preventive-maintenance" datatype="html">
+        <source>Mantenimiento</source>
+        <target>Maintenance</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-assets-warranties" datatype="html">
+        <source>Garantías</source>
+        <target>Warranties</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-assets-work-orders" datatype="html">
+        <source>Órdenes</source>
+        <target>Orders</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-assets-calibration" datatype="html">
+        <source>Calibración</source>
+        <target>Calibration</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-hr" datatype="html">
+        <source>Personal</source>
+        <target>Staff</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-hr-employee-records" datatype="html">
+        <source>Empleados</source>
+        <target>Employees</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-hr-recruitment" datatype="html">
+        <source>Reclutamiento</source>
+        <target>Recruitment</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-hr-attendance-leave" datatype="html">
+        <source>Asistencia</source>
+        <target>Attendance</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-hr-rostering" datatype="html">
+        <source>Turnos</source>
+        <target>Shifts</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-hr-payroll" datatype="html">
+        <source>Nómina</source>
+        <target>Payroll</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-hr-appraisals" datatype="html">
+        <source>Desempeño</source>
+        <target>Performance</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-hr-credentialing" datatype="html">
+        <source>Credenciales</source>
+        <target>Credentials</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-crm" datatype="html">
+        <source>Mercadeo</source>
+        <target>Marketing</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-crm-engagement" datatype="html">
+        <source>Fidelización</source>
+        <target>Engagement</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-crm-campaigns" datatype="html">
+        <source>Campañas</source>
+        <target>Campaigns</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-crm-referrals" datatype="html">
+        <source>Referencias</source>
+        <target>Referrals</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-crm-feedback" datatype="html">
+        <source>Encuestas</source>
+        <target>Surveys</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-crm-leads" datatype="html">
+        <source>Prospectos</source>
+        <target>Leads</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-projects" datatype="html">
+        <source>Proyectos</source>
+        <target>Projects</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-projects-tasks" datatype="html">
+        <source>Tareas</source>
+        <target>Tasks</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-projects-milestones" datatype="html">
+        <source>Hitos</source>
+        <target>Milestones</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-projects-timesheets" datatype="html">
+        <source>Horas</source>
+        <target>Hours</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-projects-costing" datatype="html">
+        <source>Costos</source>
+        <target>Costs</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.business-projects-billing" datatype="html">
+        <source>Facturación</source>
+        <target>Billing</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-quality" datatype="html">
+        <source>Calidad</source>
+        <target>Quality</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-quality-incidents" datatype="html">
+        <source>Incidentes</source>
+        <target>Incidents</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-quality-audits" datatype="html">
+        <source>Auditorías</source>
+        <target>Audits</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-quality-accreditation" datatype="html">
+        <source>Acreditación</source>
+        <target>Accreditation</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-quality-capa" datatype="html">
+        <source>CAPA</source>
+        <target>CAPA</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-quality-sop-control" datatype="html">
+        <source>Procedimientos</source>
+        <target>Procedures</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-quality-risk-register" datatype="html">
+        <source>Riesgos</source>
+        <target>Risks</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-legal" datatype="html">
+        <source>Legal</source>
+        <target>Legal</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-legal-consents" datatype="html">
+        <source>Consentimientos</source>
+        <target>Consents</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-legal-cases" datatype="html">
+        <source>Casos</source>
+        <target>Cases</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-legal-contracts" datatype="html">
+        <source>Contratos</source>
+        <target>Contracts</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-legal-regulatory" datatype="html">
+        <source>Normativa</source>
+        <target>Regulatory</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-research" datatype="html">
+        <source>Investigación</source>
+        <target>Research</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-research-studies" datatype="html">
+        <source>Estudios</source>
+        <target>Studies</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-research-cohorts" datatype="html">
+        <source>Cohortes</source>
+        <target>Cohorts</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-research-ethics" datatype="html">
+        <source>Ética</source>
+        <target>Ethics</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-research-data-capture" datatype="html">
+        <source>Datos</source>
+        <target>Data</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-social-work" datatype="html">
+        <source>Social</source>
+        <target>Social</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-social-case-management" datatype="html">
+        <source>Casos</source>
+        <target>Cases</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-social-advocacy" datatype="html">
+        <source>Defensoría</source>
+        <target>Advocacy</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-social-financial-assistance" datatype="html">
+        <source>Ayuda</source>
+        <target>Assistance</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-social-discharge-support" datatype="html">
+        <source>Alta</source>
+        <target>Discharge</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-helpdesk" datatype="html">
+        <source>Soporte</source>
+        <target>Support</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-helpdesk-patient-queries" datatype="html">
+        <source>Consultas</source>
+        <target>Queries</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-helpdesk-internal-tickets" datatype="html">
+        <source>Tickets</source>
+        <target>Tickets</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.governance-helpdesk-issue-tracking" datatype="html">
+        <source>Incidencias</source>
+        <target>Issues</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-scheduling" datatype="html">
+        <source>Citas</source>
+        <target>Appointments</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-scheduling-booking" datatype="html">
+        <source>Reservas</source>
+        <target>Bookings</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-scheduling-reminders" datatype="html">
+        <source>Recordatorios</source>
+        <target>Reminders</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-scheduling-calendar" datatype="html">
+        <source>Calendario</source>
+        <target>Calendar</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-reporting" datatype="html">
+        <source>Análisis</source>
+        <target>Analytics</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-reporting-operational" datatype="html">
+        <source>Operaciones</source>
+        <target>Operations</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-reporting-clinical" datatype="html">
+        <source>Clínicos</source>
+        <target>Clinical</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-reporting-kpis" datatype="html">
+        <source>KPI</source>
+        <target>KPI</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-documents" datatype="html">
+        <source>Documentos</source>
+        <target>Documents</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-documents-files" datatype="html">
+        <source>Documentos</source>
+        <target>Documents</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-templates" datatype="html">
+        <source>Plantillas</source>
+        <target>Templates</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.platform-templates-editor" datatype="html">
+        <source>Plantillas</source>
+        <target>Templates</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.portal-my-health" datatype="html">
+        <source>Salud</source>
+        <target>Health</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.portal-home" datatype="html">
+        <source>Inicio</source>
+        <target>Home</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.portal-appointments" datatype="html">
+        <source>Citas</source>
+        <target>Appointments</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.portal-results" datatype="html">
+        <source>Resultados</source>
+        <target>Results</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.portal-documents" datatype="html">
+        <source>Documentos</source>
+        <target>Documents</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.portal-bills" datatype="html">
+        <source>Cuentas</source>
+        <target>Bills</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.portal-messaging" datatype="html">
+        <source>Mensajes</source>
+        <target>Messages</target>
+      </trans-unit>
+      <trans-unit id="layout.navTree.portal-consents" datatype="html">
+        <source>Consentimientos</source>
+        <target>Consents</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
