@@ -52,6 +52,22 @@ and prod. `ng serve` can only serve **one** locale per process, so:
 - Prod serving: `serve dist/browser` + `serve.json` (root chooser reads
   `localStorage['hsm.lang']` → `/es/` or `/en/`; per-locale SPA rewrites).
 
+**Deployment is ONE instance, not one per language.** `ng build --localize`
+emits every locale into a single `dist/browser` (`es/` + `en/` subdirs); one
+static server serves them all under `/es/` and `/en/`, and the language switch
+is a full reload into the other subpath — same server, same deployment. No
+per-language backend/instance. The API is locale-agnostic (returns
+`ApiErrorCode`s; the frontend localizes them), so it's one instance too.
+
+**Translation catalogs** follow `messages.<locale>.xlf`:
+- `src/locale/messages.es.xlf` — source catalog (Spanish `<source>`), the
+  extract-i18n output; **not consumed by the build** (the `es` source locale
+  renders template text directly). Regenerate with:
+  `ng extract-i18n --output-path src/locale --out-file messages.es.xlf`.
+- `src/locale/messages.en.xlf` — the `en` **target** catalog (referenced by
+  `angular.json` → `i18n.locales.en.translation`); every `@@id` needs a
+  `<target>` here or the `en` build fails.
+
 The dev server runs on **4200**. With the API run locally (`pnpm --filter
 @hsm/api start:dev`) it talks to the API on host port **3000**, default `/v1`
 URI version (Swagger UI at `http://localhost:3000/api`). Port **10001** is the
