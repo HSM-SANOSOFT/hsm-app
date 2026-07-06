@@ -22,9 +22,13 @@ FROM node:24-bookworm-slim AS runtime
 
 RUN npm install -g serve
 WORKDIR /app
-# Angular application builder emits the client bundle under dist/browser.
+# The localized build (`ng build --localize`) emits one client bundle per locale
+# under dist/browser/{es,en}. Copy them plus serve.json, which owns the root
+# redirect (/ -> /es/) and the per-locale SPA fallback — so we DON'T pass `-s`
+# (that would force a single top-level index.html and defeat the per-locale
+# rewrites).
 COPY --from=builder /app/apps/frontend/web/dist/browser ./dist
+COPY --from=builder /app/apps/frontend/web/serve.json ./dist/serve.json
 
 EXPOSE 4200
-# -s serves the SPA: unknown routes fall back to index.html for the Angular router.
-CMD ["serve", "-s", "dist", "-l", "4200"]
+CMD ["serve", "dist", "-l", "4200"]

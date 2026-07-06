@@ -6,7 +6,7 @@
     "ng": "ng",
     "dev": "ng serve",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --localize",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
