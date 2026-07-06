@@ -7,6 +7,7 @@ import {
   type ApplicationConfig,
   DEFAULT_CURRENCY_CODE,
   inject,
+  isDevMode,
   LOCALE_ID,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
@@ -15,6 +16,7 @@ import {
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
+import { provideTransloco } from '@jsverse/transloco';
 import { PrimeNG, providePrimeNG } from 'primeng/config';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../environments/environment';
@@ -24,6 +26,7 @@ import { authInterceptor } from './core/auth/auth.interceptor';
 import { AuthService } from './core/auth/auth.service';
 import { activeLocale, registerAppLocales } from './core/i18n/locale-init';
 import { primeNgTranslationForActiveLocale } from './core/i18n/primeng-translations';
+import { TranslocoHttpLoader } from './core/i18n/transloco-loader';
 
 registerAppLocales();
 
@@ -45,6 +48,17 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
+    provideTransloco({
+      config: {
+        availableLangs: ['es', 'en'],
+        defaultLang: 'es',
+        fallbackLang: 'es',
+        reRenderOnLangChange: true,
+        prodMode: !isDevMode(),
+        missingHandler: { logMissingKey: true, useFallbackTranslation: true },
+      },
+      loader: TranslocoHttpLoader,
+    }),
     { provide: LOCALE_ID, useValue: activeLocale() === 'en' ? 'en' : 'es-EC' },
     { provide: DEFAULT_CURRENCY_CODE, useValue: 'USD' },
     provideAppInitializer(() => {

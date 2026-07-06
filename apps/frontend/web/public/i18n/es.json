@@ -1,0 +1,805 @@
+{
+  "api": {
+    "error": {
+      "invalidCredentials": "Usuario o contraseña incorrectos",
+      "unauthorized": "Sesión no autorizada",
+      "forbidden": "No tiene permiso para esta acción",
+      "notFound": "Recurso no encontrado",
+      "conflict": "El registro ya existe o está en conflicto",
+      "tooManyRequests": "Demasiados intentos. Espere un momento e intente de nuevo",
+      "validation": "Revise los datos ingresados",
+      "unexpected": "Ocurrió un error inesperado"
+    },
+    "validation": {
+      "required": "Campo obligatorio",
+      "email": "Correo inválido",
+      "minLength": "Demasiado corto",
+      "maxLength": "Demasiado largo",
+      "invalid": "Valor inválido"
+    }
+  },
+  "admin": {
+    "settings": {
+      "page": {
+        "eyebrow": "ADMIN · CONFIGURACIÓN",
+        "title": "Configuración en tiempo de ejecución",
+        "subtitle": " Configuración operativa en vivo aplicada sin necesidad de un nuevo despliegue. Los valores secretos se enmascaran y nunca se muestran — deje un secreto en blanco para conservarlo. "
+      },
+      "field": {
+        "secretPill": "secreto"
+      },
+      "secret": {
+        "hint": " Ya hay un valor guardado. Déjelo en blanco para no modificarlo. ",
+        "placeholderSet": "Hay un valor establecido — déjelo en blanco para conservarlo",
+        "placeholderUnset": "No establecido"
+      },
+      "empty": "No hay configuraciones en esta categoría.",
+      "submit": "Guardar",
+      "tab": {
+        "email": "Correo electrónico",
+        "webhook": "Webhook",
+        "storage": "Almacenamiento",
+        "appBehavior": "Comportamiento de la aplicación"
+      },
+      "error": {
+        "generic": "Algo salió mal. Intente de nuevo."
+      },
+      "toast": {
+        "nothingToSave": {
+          "summary": "Nada que guardar",
+          "detail": "No hay cambios que aplicar para esta categoría."
+        },
+        "saved": {
+          "summary": "Configuración guardada",
+          "detail": "Configuración actualizada correctamente."
+        },
+        "saveFailed": {
+          "summary": "Error al guardar"
+        }
+      }
+    },
+    "users": {
+      "page": {
+        "eyebrow": "ADMIN · USUARIOS",
+        "title": "Usuarios",
+        "subtitle": " Revise las cuentas de la consola y administre los roles asignados. "
+      },
+      "createStaff": "Crear personal",
+      "table": {
+        "username": "Usuario",
+        "email": "Correo electrónico",
+        "name": "Nombre",
+        "roles": "Rol(es)",
+        "status": "Estado",
+        "actions": "Acciones",
+        "empty": "No se encontraron usuarios."
+      },
+      "status": {
+        "pending": " Pendiente ",
+        "active": " Activo "
+      },
+      "row": {
+        "view": "Ver",
+        "changeRole": "Cambiar rol"
+      },
+      "detail": {
+        "header": "Detalle del usuario",
+        "username": {
+          "label": "Usuario"
+        },
+        "email": {
+          "label": "Correo electrónico"
+        },
+        "name": {
+          "label": "Nombre"
+        },
+        "roles": {
+          "label": "Rol(es)"
+        },
+        "error": "No se pudo cargar el detalle del usuario."
+      },
+      "create": {
+        "header": "Crear cuenta de personal",
+        "lede": " Provea una cuenta de consola. Se envía una contraseña temporal por correo electrónico al nuevo miembro del personal, quien establece la suya propia en el primer inicio de sesión. ",
+        "firstName": {
+          "label": "Nombre",
+          "error": "El nombre es obligatorio."
+        },
+        "lastName": {
+          "label": "Apellido",
+          "error": "El apellido es obligatorio."
+        },
+        "username": {
+          "label": "Usuario",
+          "placeholder": "p. ej. jdoe",
+          "error": "El usuario es obligatorio."
+        },
+        "email": {
+          "label": "Correo electrónico",
+          "placeholder": "nombre@hospital.org",
+          "error": "Ingrese una dirección de correo electrónico válida."
+        },
+        "role": {
+          "label": "Rol",
+          "placeholder": "Seleccione un rol de personal",
+          "error": "Seleccione un rol de personal."
+        },
+        "tempPassword": {
+          "label": "Contraseña temporal",
+          "placeholder": "Al menos 8 caracteres",
+          "error": "Use al menos 8 caracteres."
+        },
+        "cancel": "Cancelar",
+        "success": "Se creó la cuenta de personal \"{{value}}\". Se envió una contraseña temporal por correo electrónico.",
+        "error": "No se pudo crear la cuenta de personal."
+      },
+      "role": {
+        "error": "No se pudo cambiar el rol."
+      }
+    }
+  },
+  "auth": {
+    "login": {
+      "eyebrow": "Su hospital, en línea",
+      "headline": " Su atención, todo en un solo lugar. ",
+      "lede": " Inicie sesión para acceder a sus registros, su equipo médico y todo lo que el Hospital Santa María guarda para usted — de forma segura, cuando lo necesite. ",
+      "reassure": {
+        "account": "Una sola cuenta para todo lo que necesite aquí",
+        "privacy": "Privado y protegido, siempre"
+      },
+      "title": "Bienvenido de nuevo",
+      "subtitle": "Inicie sesión para continuar.",
+      "username": {
+        "label": "Usuario",
+        "placeholder": "Su usuario",
+        "error": "El usuario es obligatorio."
+      },
+      "password": {
+        "label": "Contraseña",
+        "placeholder": "Su contraseña",
+        "error": "La contraseña es obligatoria."
+      },
+      "troubleLink": "¿Problemas para iniciar sesión?",
+      "submit": "Iniciar sesión",
+      "newPatient": "¿Paciente nuevo?",
+      "createAccountLink": "Crear una cuenta",
+      "version": " UI v{{ui}} · API v{{api}} ",
+      "error": "No se pudo iniciar sesión. Intente de nuevo."
+    },
+    "recoverUsername": {
+      "eyebrow": "Recuperación de cuenta",
+      "headline": " ¿Olvidó su usuario? ",
+      "lede": " Indíquenos el correo electrónico de su cuenta y le enviaremos su usuario para que pueda volver a iniciar sesión. ",
+      "reassure": {
+        "username": "Usted inicia sesión con su usuario, no con su correo electrónico",
+        "privacy": "Nunca revelamos si un correo electrónico está registrado"
+      },
+      "sent": {
+        "title": "Revise su correo electrónico",
+        "message": " Si existe una cuenta con ese correo electrónico, le hemos enviado su usuario. Puede tardar un minuto en llegar — y recuerde revisar la carpeta de spam. ",
+        "backLink": "Volver a iniciar sesión"
+      },
+      "title": "Recupere su usuario",
+      "subtitle": " Se lo enviaremos al correo electrónico de su cuenta. ",
+      "rateLimited": "Demasiadas solicitudes. Espere unos minutos e intente de nuevo.",
+      "email": {
+        "label": "Correo electrónico",
+        "placeholder": "correo@ejemplo.com",
+        "error": "Ingrese una dirección de correo electrónico válida."
+      },
+      "submit": "Enviarme mi usuario",
+      "remembered": "¿Lo recordó?",
+      "loginLink": "Iniciar sesión",
+      "forgotPasswordToo": "¿También olvidó su contraseña?",
+      "resetLink": "Restablecerla"
+    },
+    "requestReset": {
+      "eyebrow": "Recuperación de cuenta",
+      "headline": " Vamos a ayudarle a volver a ingresar. ",
+      "lede": " Ingrese el correo electrónico de su cuenta y le enviaremos un enlace seguro para establecer una nueva contraseña. El enlace expira pronto, así que utilícelo de inmediato. ",
+      "reassure": {
+        "singleUse": "Los enlaces son de un solo uso y tienen tiempo limitado",
+        "privacy": "Nunca compartimos si un correo electrónico está registrado"
+      },
+      "sent": {
+        "title": "Revise su correo electrónico",
+        "message": " Si existe una cuenta con ese correo electrónico, le hemos enviado un enlace para restablecer su contraseña. Puede tardar un minuto en llegar — y recuerde revisar la carpeta de spam. ",
+        "backLink": "Volver a iniciar sesión"
+      },
+      "title": "Restablezca su contraseña",
+      "subtitle": " Le enviaremos un enlace para elegir una nueva. ",
+      "rateLimited": "Demasiadas solicitudes. Espere unos minutos e intente de nuevo.",
+      "email": {
+        "label": "Correo electrónico",
+        "placeholder": "correo@ejemplo.com",
+        "error": "Ingrese una dirección de correo electrónico válida."
+      },
+      "submit": "Enviar enlace de restablecimiento",
+      "remembered": "¿Lo recordó?",
+      "loginLink": "Iniciar sesión",
+      "forgotUsername": "¿Olvidó su usuario?",
+      "recoverLink": "Recupérelo"
+    },
+    "resetPassword": {
+      "eyebrow": "Recuperación de cuenta",
+      "headline": " Elija una nueva contraseña. ",
+      "lede": " Elija algo que solo usted sepa — al menos 8 caracteres. La usará para iniciar sesión de ahora en adelante. ",
+      "reassure": {
+        "secure": "Su nueva contraseña se almacena de forma segura",
+        "singleUse": "Este enlace funciona una vez y luego expira"
+      },
+      "success": {
+        "title": "Contraseña actualizada",
+        "message": " Listo. Inicie sesión con su nueva contraseña para continuar. ",
+        "loginButton": "Ir a iniciar sesión"
+      },
+      "invalidLink": {
+        "title": "Este enlace no es válido",
+        "message": " El enlace de restablecimiento falta o está incompleto. Solicite uno nuevo y le enviaremos un enlace actualizado por correo electrónico. ",
+        "requestButton": "Solicitar un nuevo enlace",
+        "backLink": "Volver a iniciar sesión"
+      },
+      "title": "Establezca una nueva contraseña",
+      "subtitle": " Ingrese y confirme su nueva contraseña. ",
+      "invalidToken": "Este enlace de restablecimiento no es válido, expiró o ya fue utilizado. Solicite uno nuevo.",
+      "newPassword": {
+        "label": "Nueva contraseña",
+        "placeholder": "Al menos 8 caracteres",
+        "error": "Use al menos 8 caracteres."
+      },
+      "confirmPassword": {
+        "label": "Confirme la contraseña",
+        "placeholder": "Vuelva a ingresar su nueva contraseña",
+        "mismatch": "Las contraseñas no coinciden.",
+        "error": "Confirme su nueva contraseña."
+      },
+      "submit": "Actualizar contraseña",
+      "requestNewLink": "Solicitar un nuevo enlace de restablecimiento"
+    },
+    "register": {
+      "eyebrow": "Nuevo aquí",
+      "headline": " Cree su cuenta de paciente. ",
+      "lede": " Una sola cuenta segura para mantener su atención con el Hospital Santa María en un solo lugar — configúrela en un minuto. ",
+      "reassure": {
+        "free": "Gratis de crear, siempre suya",
+        "privacy": "Sus datos se mantienen privados y protegidos"
+      },
+      "title": "Crear cuenta",
+      "subtitle": " Configure su cuenta de paciente para comenzar. ",
+      "firstName": {
+        "label": "Nombre",
+        "error": "El nombre es obligatorio."
+      },
+      "lastName": {
+        "label": "Apellido",
+        "error": "El apellido es obligatorio."
+      },
+      "username": {
+        "label": "Usuario",
+        "placeholder": "p. ej. jdoe",
+        "error": "El usuario es obligatorio."
+      },
+      "email": {
+        "label": "Correo electrónico",
+        "placeholder": "correo@ejemplo.com",
+        "error": "Ingrese una dirección de correo electrónico válida."
+      },
+      "password": {
+        "label": "Contraseña",
+        "placeholder": "Al menos 8 caracteres",
+        "error": "Use al menos 8 caracteres."
+      },
+      "submit": "Crear cuenta",
+      "hasAccount": "¿Ya tiene una cuenta?",
+      "loginLink": "Iniciar sesión",
+      "error": "No se pudo crear su cuenta. Intente de nuevo."
+    }
+  },
+  "documents": {
+    "page": {
+      "eyebrow": "DOCUMENTOS",
+      "title": "Documentos",
+      "subtitle": " Genere documentos a partir de una plantilla, explore su biblioteca y suba archivos. "
+    },
+    "generate": {
+      "title": "Generar desde plantilla",
+      "hint": " Elija una plantilla DOCS, complete sus campos y genere un documento. ",
+      "template": {
+        "label": "Plantilla",
+        "placeholder": "Seleccione una plantilla DOCS"
+      },
+      "titleField": {
+        "label": "Título"
+      },
+      "submit": "Generar",
+      "status": {
+        "generating": "generando"
+      },
+      "error": {
+        "start": "No se pudo iniciar la generación.",
+        "failed": "La generación del documento falló.",
+        "pollingFailed": "Error al verificar el estado.",
+        "timeout": "La generación está tardando demasiado. Revise la biblioteca más tarde."
+      }
+    },
+    "upload": {
+      "title": "Subir",
+      "hint": " Suba un archivo existente directamente a su biblioteca. ",
+      "chooseLabel": "Elegir archivo",
+      "error": "Error al subir el archivo."
+    },
+    "library": {
+      "title": "Biblioteca",
+      "hint": "Sus documentos generados y subidos.",
+      "column": {
+        "title": "Título",
+        "type": "Tipo",
+        "status": "Estado",
+        "id": "ID del documento",
+        "actions": "Acciones"
+      },
+      "download": "Descargar",
+      "empty": "Aún no hay documentos."
+    },
+    "download": {
+      "error": "No se pudo obtener el enlace de descarga."
+    }
+  },
+  "onboarding": {
+    "setup": {
+      "eyebrow": "Primer inicio de sesión",
+      "headline": "Configuremos su cuenta.",
+      "lede": " Su cuenta fue creada por un administrador. Elija su propia contraseña y confirme cómo podemos comunicarnos con usted — luego podrá empezar a trabajar. ",
+      "reassure": {
+        "password": "Reemplace su contraseña temporal",
+        "contact": "Confirme sus datos de contacto",
+        "onceOnly": "Esto lo hace una sola vez"
+      },
+      "title": " Termine de configurar su cuenta ",
+      "subtitle": " Establezca una nueva contraseña y confirme sus datos de contacto para continuar. ",
+      "newPassword": {
+        "label": "Nueva contraseña",
+        "placeholder": "Al menos 8 caracteres",
+        "error": "Use al menos 8 caracteres."
+      },
+      "confirmPassword": {
+        "label": "Confirme la contraseña",
+        "placeholder": "Vuelva a ingresar su nueva contraseña",
+        "mismatch": "Las contraseñas no coinciden.",
+        "error": "Confirme su nueva contraseña."
+      },
+      "phoneNumber": {
+        "label": "Número de teléfono",
+        "placeholder": "Dónde podemos comunicarnos con usted",
+        "error": "Ingrese un número de teléfono."
+      },
+      "confirmEmail": {
+        "label": "Confirme el correo electrónico",
+        "placeholder": "El correo electrónico de su cuenta",
+        "error": "Ingrese el correo electrónico de su cuenta."
+      },
+      "submit": "Completar configuración",
+      "error": "No pudimos completar la configuración. Verifique sus datos e intente de nuevo."
+    }
+  },
+  "patient": {
+    "home": {
+      "eyebrow": "Hospital Santa María",
+      "greetingText": " Bienvenido/a, {{value}}. ",
+      "lede": " Su cuenta está lista. Estamos dando los últimos toques a sus registros personales — por ahora, así puede comunicarse con nosotros cuando necesite atención. ",
+      "contact": {
+        "title": "Comuníquese con el hospital",
+        "mainLine": "Línea principal",
+        "address": {
+          "label": "Dirección",
+          "value": "123 Care Avenue, Suite 100, Your City"
+        },
+        "hours": {
+          "label": "Horario",
+          "value": "Recepción abierta todos los días, de 7:00 a. m. a 8:00 p. m."
+        },
+        "emergency": {
+          "label": "Emergencia",
+          "value": "En caso de una emergencia médica, llame a su número de emergencias local."
+        }
+      },
+      "coming": {
+        "pill": "Próximamente",
+        "title": " Sus registros están en camino ",
+        "body": " Pronto verá aquí sus citas, documentos y equipo médico, todo en un solo lugar. Le avisaremos en cuanto esté listo — no tiene que hacer nada mientras tanto. "
+      },
+      "greeting": {
+        "fallbackName": "allí"
+      }
+    }
+  },
+  "placeholder": {
+    "module": {
+      "eyebrow": "Módulo",
+      "subtitle": " La navegación y el enrutamiento de esta sección ya están listos; la pantalla en sí es un marcador de posición hasta que se construya el módulo. ",
+      "comingSoon": "“{{value}}” estará disponible próximamente.",
+      "fallbackTitle": "Módulo"
+    }
+  },
+  "profile": {
+    "header": {
+      "eyebrow": "CUENTA",
+      "title": "Su perfil",
+      "subtitle": "Actualice su nombre, correo electrónico y contraseña."
+    },
+    "info": {
+      "title": "Perfil",
+      "hint": "Actualice su nombre y correo electrónico.",
+      "success": "Perfil actualizado.",
+      "firstName": {
+        "label": "Nombre",
+        "error": "El nombre es obligatorio."
+      },
+      "email": {
+        "label": "Correo electrónico",
+        "error": "Se requiere un correo electrónico válido."
+      },
+      "submit": "Guardar perfil",
+      "error": "No se pudo actualizar su perfil. Intente de nuevo."
+    },
+    "password": {
+      "title": "Contraseña",
+      "hint": "Ingrese su contraseña actual para establecer una nueva.",
+      "success": "Contraseña actualizada.",
+      "current": {
+        "label": "Contraseña actual",
+        "error": "La contraseña actual es obligatoria."
+      },
+      "new": {
+        "label": "Nueva contraseña",
+        "error": " La nueva contraseña debe tener al menos 8 caracteres. "
+      },
+      "confirm": {
+        "label": "Confirme la nueva contraseña",
+        "error": "Las contraseñas no coinciden."
+      },
+      "submit": "Cambiar contraseña",
+      "error": "No se pudo cambiar su contraseña. Intente de nuevo."
+    }
+  },
+  "settings": {
+    "page": {
+      "eyebrow": "Cuenta",
+      "title": "Configuración",
+      "subtitle": " Preferencias que controlan cómo se comporta la aplicación para usted. Estas se aplican solo a su cuenta. "
+    },
+    "group": {
+      "comingSoon": " Próximamente ",
+      "appearance": {
+        "title": "Apariencia",
+        "hint": "Densidad y preferencias de visualización para sus sesiones."
+      },
+      "notifications": {
+        "title": "Notificaciones",
+        "hint": "Elija qué notificaciones dentro de la aplicación y por correo electrónico desea recibir."
+      },
+      "language": {
+        "title": "Idioma y región",
+        "hint": "Idioma de la interfaz, formatos de fecha y número."
+      }
+    }
+  },
+  "templates": {
+    "editor": {
+      "page": {
+        "eyebrow": "AUTORÍA · PLANTILLAS",
+        "title": "Editor de plantillas",
+        "subtitle": " Cree plantillas Handlebars con una vista previa en vivo y aislada. Guardar renderiza la salida real compuesta por el servidor para su confirmación antes de guardar. "
+      },
+      "save": "Guardar",
+      "metadata": {
+        "panelHeader": "Metadatos de la plantilla",
+        "name": {
+          "label": "Nombre"
+        },
+        "category": {
+          "label": "Categoría"
+        },
+        "description": {
+          "label": "Descripción"
+        },
+        "baseTemplate": {
+          "label": "Plantilla base",
+          "placeholder": "Ninguna (contenido completo)"
+        }
+      },
+      "frame": {
+        "content": {
+          "label": "PLANTILLA · HANDLEBARS"
+        },
+        "sampleData": {
+          "label": "DATOS DE MUESTRA · JSON"
+        },
+        "preview": {
+          "label": "VISTA PREVIA"
+        }
+      },
+      "preview": {
+        "iframeTitle": "Vista previa de la plantilla"
+      },
+      "error": {
+        "load": "No se pudo cargar la plantilla."
+      }
+    },
+    "preview": {
+      "error": {
+        "invalidJson": "JSON de datos de muestra inválido: {{value}}",
+        "templateError": "Error de plantilla: {{value}}"
+      }
+    },
+    "confirm": {
+      "header": "Confirmar guardado",
+      "hint": " Esta es la salida real compuesta por el servidor (incluida la composición con la plantilla base). Puede diferir de la vista previa en vivo. Confirme para guardar, o cancele para seguir editando. ",
+      "frameLabel": "VISTA PREVIA DEL SERVIDOR",
+      "iframeTitle": "Vista previa compuesta por el servidor",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar"
+    },
+    "save": {
+      "error": {
+        "preview": "No se pudo renderizar la vista previa.",
+        "save": "No se pudo guardar la plantilla."
+      },
+      "success": "Plantilla guardada."
+    }
+  },
+  "workspace": {
+    "home": {
+      "eyebrow": "Espacio de trabajo",
+      "greetingText": " Bienvenido de nuevo, {{value}}. ",
+      "subtitle": "Retome su trabajo.",
+      "greeting": {
+        "fallbackName": "allí"
+      },
+      "link": {
+        "templates": {
+          "label": "Plantillas",
+          "description": "Cree y edite plantillas de documentos."
+        },
+        "documents": {
+          "label": "Documentos",
+          "description": "Explore y genere documentos."
+        },
+        "profile": {
+          "label": "Su perfil",
+          "description": "Actualice sus datos y contraseña."
+        },
+        "users": {
+          "label": "Usuarios",
+          "description": "Administre las cuentas y el acceso del personal."
+        },
+        "settings": {
+          "label": "Configuración",
+          "description": "Configure los ajustes del sistema."
+        }
+      }
+    }
+  },
+  "layout": {
+    "languageSwitcher": {
+      "aria": "Idioma"
+    },
+    "breadcrumb": {
+      "ariaLabel": "Ruta de navegación"
+    },
+    "navTree": {
+      "workspace": "Trabajo",
+      "clinical": "Clínico",
+      "clinical-patient-management": "Pacientes",
+      "clinical-pm-registration": "Registro",
+      "clinical-pm-mpi-merge": "Fusión",
+      "clinical-pm-insurance": "Seguro",
+      "clinical-pm-contacts": "Contactos",
+      "clinical-pm-summary-timeline": "Cronología",
+      "clinical-pm-linked-documents": "Documentos",
+      "clinical-adt": "Admisiones",
+      "clinical-adt-opd": "OPD",
+      "clinical-adt-ipd": "IPD",
+      "clinical-adt-ed-triage": "Triaje",
+      "clinical-adt-beds-wards": "Camas",
+      "clinical-adt-transfers": "Traslados",
+      "clinical-adt-discharge": "Altas",
+      "clinical-encounters": "Encuentros",
+      "clinical-ehr-soap-notes": "Notas",
+      "clinical-ehr-vitals": "Signos",
+      "clinical-ehr-diagnoses": "Diagnósticos",
+      "clinical-ehr-allergies": "Alergias",
+      "clinical-ehr-care-plans": "Planes",
+      "clinical-ehr-procedures": "Procedimientos",
+      "clinical-ehr-immunizations": "Inmunizaciones",
+      "clinical-orders": "Órdenes",
+      "clinical-orders-lab": "Laboratorio",
+      "clinical-orders-imaging": "Imágenes",
+      "clinical-orders-medication": "Medicación",
+      "clinical-orders-procedure": "Procedimientos",
+      "clinical-orders-order-sets": "Conjuntos",
+      "clinical-orders-results-review": "Resultados",
+      "clinical-nursing": "Enfermería",
+      "clinical-nursing-emar": "eMAR",
+      "clinical-nursing-assessments": "Evaluaciones",
+      "clinical-nursing-handover": "Relevo",
+      "clinical-nursing-care-tasks": "Tareas",
+      "clinical-surgery": "Cirugía",
+      "clinical-surgery-theatre-scheduling": "Programación",
+      "clinical-surgery-peri-op": "Perioperatorio",
+      "clinical-surgery-op-notes": "Notas",
+      "clinical-maternity": "Maternidad",
+      "clinical-maternity-antenatal": "Prenatal",
+      "clinical-maternity-labor-delivery": "Parto",
+      "clinical-maternity-postnatal": "Posparto",
+      "clinical-maternity-newborn": "Neonatos",
+      "clinical-dietary": "Nutrición",
+      "clinical-dietary-diet-orders": "Dietas",
+      "clinical-dietary-meal-planning": "Menús",
+      "clinical-dietary-nutrition-assessments": "Evaluaciones",
+      "clinical-physiotherapy": "Fisioterapia",
+      "clinical-physio-referrals": "Referencias",
+      "clinical-physio-therapy-plans": "Terapias",
+      "clinical-physio-session-tracking": "Sesiones",
+      "diagnostics": "Diagnósticos",
+      "diagnostics-laboratory": "Laboratorio",
+      "diagnostics-lab-test-catalog": "Catálogo",
+      "diagnostics-lab-order-intake": "Recepción",
+      "diagnostics-lab-specimen-tracking": "Muestras",
+      "diagnostics-lab-worklists": "Listas",
+      "diagnostics-lab-results": "Resultados",
+      "diagnostics-lab-qc": "Calidad",
+      "diagnostics-imaging": "Imágenes",
+      "diagnostics-imaging-order-intake": "Recepción",
+      "diagnostics-imaging-scheduling": "Programación",
+      "diagnostics-imaging-dicom-worklist": "DICOM",
+      "diagnostics-imaging-acquisition": "Adquisición",
+      "diagnostics-imaging-dicom-store": "DICOM",
+      "diagnostics-imaging-viewer": "Visor",
+      "diagnostics-imaging-reporting": "Informes",
+      "diagnostics-pharmacy": "Farmacia",
+      "diagnostics-pharmacy-formulary": "Formulario",
+      "diagnostics-pharmacy-e-prescribing": "Recetas",
+      "diagnostics-pharmacy-dispensing": "Dispensación",
+      "diagnostics-pharmacy-inpatient-supply": "Suministro",
+      "diagnostics-pharmacy-interaction-checks": "Interacciones",
+      "diagnostics-pharmacy-stock": "Existencias",
+      "business": "Negocio",
+      "business-accounting": "Contabilidad",
+      "business-accounting-gl": "Mayor",
+      "business-accounting-ar": "Cobros",
+      "business-accounting-ap": "Adeudos",
+      "business-accounting-banking": "Bancos",
+      "business-accounting-cost-centers": "Presupuestos",
+      "business-accounting-reports": "Informes",
+      "business-accounting-taxes": "Impuestos",
+      "business-billing": "Facturación",
+      "business-billing-charge-capture": "Cargos",
+      "business-billing-invoicing": "Facturas",
+      "business-billing-claims": "Reclamaciones",
+      "business-billing-payments": "Pagos",
+      "business-billing-tariffs": "Tarifas",
+      "business-inventory": "Inventario",
+      "business-inventory-item-master": "Artículos",
+      "business-inventory-stock": "Existencias",
+      "business-inventory-batch-expiry": "Lotes",
+      "business-inventory-requisitions": "Requisiciones",
+      "business-inventory-par-levels": "Niveles",
+      "business-inventory-counts": "Conteos",
+      "business-procurement": "Compras",
+      "business-procurement-suppliers": "Proveedores",
+      "business-procurement-requisitions": "Requisiciones",
+      "business-procurement-purchase-orders": "Órdenes",
+      "business-procurement-goods-receipt": "Recibo",
+      "business-assets": "Activos",
+      "business-assets-register": "Inventario",
+      "business-assets-preventive-maintenance": "Mantenimiento",
+      "business-assets-warranties": "Garantías",
+      "business-assets-work-orders": "Órdenes",
+      "business-assets-calibration": "Calibración",
+      "business-hr": "Personal",
+      "business-hr-employee-records": "Empleados",
+      "business-hr-recruitment": "Reclutamiento",
+      "business-hr-attendance-leave": "Asistencia",
+      "business-hr-rostering": "Turnos",
+      "business-hr-payroll": "Nómina",
+      "business-hr-appraisals": "Desempeño",
+      "business-hr-credentialing": "Credenciales",
+      "business-crm": "Mercadeo",
+      "business-crm-engagement": "Fidelización",
+      "business-crm-campaigns": "Campañas",
+      "business-crm-referrals": "Referencias",
+      "business-crm-feedback": "Encuestas",
+      "business-crm-leads": "Prospectos",
+      "business-projects": "Proyectos",
+      "business-projects-tasks": "Tareas",
+      "business-projects-milestones": "Hitos",
+      "business-projects-timesheets": "Horas",
+      "business-projects-costing": "Costos",
+      "business-projects-billing": "Facturación",
+      "governance": "Gobernanza",
+      "governance-quality": "Calidad",
+      "governance-quality-incidents": "Incidentes",
+      "governance-quality-audits": "Auditorías",
+      "governance-quality-accreditation": "Acreditación",
+      "governance-quality-capa": "CAPA",
+      "governance-quality-sop-control": "Procedimientos",
+      "governance-quality-risk-register": "Riesgos",
+      "governance-legal": "Legal",
+      "governance-legal-consents": "Consentimientos",
+      "governance-legal-cases": "Casos",
+      "governance-legal-contracts": "Contratos",
+      "governance-legal-regulatory": "Normativa",
+      "governance-research": "Investigación",
+      "governance-research-studies": "Estudios",
+      "governance-research-cohorts": "Cohortes",
+      "governance-research-ethics": "Ética",
+      "governance-research-data-capture": "Datos",
+      "governance-social-work": "Social",
+      "governance-social-case-management": "Casos",
+      "governance-social-advocacy": "Defensoría",
+      "governance-social-financial-assistance": "Ayuda",
+      "governance-social-discharge-support": "Alta",
+      "governance-helpdesk": "Soporte",
+      "governance-helpdesk-patient-queries": "Consultas",
+      "governance-helpdesk-internal-tickets": "Tickets",
+      "governance-helpdesk-issue-tracking": "Incidencias",
+      "platform": "Plataforma",
+      "platform-scheduling": "Citas",
+      "platform-scheduling-booking": "Reservas",
+      "platform-scheduling-reminders": "Recordatorios",
+      "platform-scheduling-calendar": "Calendario",
+      "platform-reporting": "Análisis",
+      "platform-reporting-operational": "Operaciones",
+      "platform-reporting-clinical": "Clínicos",
+      "platform-reporting-kpis": "KPI",
+      "platform-documents": "Documentos",
+      "platform-documents-files": "Documentos",
+      "platform-templates": "Plantillas",
+      "platform-templates-editor": "Plantillas",
+      "patientPortal": "Portal",
+      "portal-my-health": "Salud",
+      "portal-home": "Inicio",
+      "portal-appointments": "Citas",
+      "portal-results": "Resultados",
+      "portal-documents": "Documentos",
+      "portal-bills": "Cuentas",
+      "portal-messaging": "Mensajes",
+      "portal-consents": "Consentimientos",
+      "adminExit": "Volver",
+      "adminUsers": "Usuarios",
+      "adminEnv": "Entorno"
+    },
+    "profileCard": {
+      "menuAriaLabel": "Menú de la cuenta",
+      "settingsLabel": "Configuración",
+      "signOut": "Cerrar sesión",
+      "role": {
+        "member": "Miembro",
+        "admin": "Administrador"
+      },
+      "menu": {
+        "profile": "Perfil",
+        "systemAdmin": "Administración del sistema"
+      }
+    },
+    "rail": {
+      "ariaLabel": "Principal",
+      "homeAriaLabel": "Inicio",
+      "toggleAriaLabel": "Alternar navegación",
+      "empty": "Sin módulos",
+      "versionText": " UI v{{ui}} · API v{{api}} ",
+      "closeAriaLabel": "Cerrar navegación",
+      "version": {
+        "unknown": "desconocido"
+      }
+    },
+    "viewTabs": {
+      "ariaLabel": "Vistas",
+      "label": "Vistas"
+    },
+    "shell": {
+      "installApp": "Instalar aplicación"
+    }
+  }
+}

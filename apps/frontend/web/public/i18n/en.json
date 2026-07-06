@@ -1,0 +1,805 @@
+{
+  "auth": {
+    "login": {
+      "eyebrow": "Your hospital, online",
+      "headline": " Your care, all in one place. ",
+      "lede": " Sign in to reach your records, your team, and everything Hospital Santa María keeps for you — securely, whenever you need it. ",
+      "reassure": {
+        "account": "One account for everything you do here",
+        "privacy": "Private and protected, always"
+      },
+      "title": "Welcome back",
+      "subtitle": "Sign in to continue.",
+      "username": {
+        "label": "Username",
+        "placeholder": "Your username",
+        "error": "Username is required."
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Your password",
+        "error": "Password is required."
+      },
+      "troubleLink": "Trouble signing in?",
+      "submit": "Sign in",
+      "newPatient": "New patient?",
+      "createAccountLink": "Create an account",
+      "version": " UI v{{ui}} · API v{{api}} ",
+      "error": "Login failed. Please try again."
+    },
+    "recoverUsername": {
+      "eyebrow": "Account recovery",
+      "headline": " Forgot your username? ",
+      "lede": " Tell us the email on your account and we'll send your username so you can sign back in. ",
+      "reassure": {
+        "username": "You sign in with your username, not your email",
+        "privacy": "We never reveal whether an email is registered"
+      },
+      "sent": {
+        "title": "Check your email",
+        "message": " If an account exists for that email, we've sent your username. It may take a minute to arrive — and remember to check spam. ",
+        "backLink": "Back to sign in"
+      },
+      "title": "Recover your username",
+      "subtitle": " We'll email it to the address on your account. ",
+      "rateLimited": "Too many requests. Please wait a few minutes and try again.",
+      "email": {
+        "label": "Email",
+        "placeholder": "you@example.com",
+        "error": "Enter a valid email address."
+      },
+      "submit": "Email my username",
+      "remembered": "Remembered it?",
+      "loginLink": "Sign in",
+      "forgotPasswordToo": "Forgot your password too?",
+      "resetLink": "Reset it"
+    },
+    "requestReset": {
+      "eyebrow": "Account recovery",
+      "headline": " Let's get you back in. ",
+      "lede": " Enter the email on your account and we'll send a secure link to set a new password. The link expires soon, so use it right away. ",
+      "reassure": {
+        "singleUse": "Links are single-use and time-limited",
+        "privacy": "We never share whether an email is registered"
+      },
+      "sent": {
+        "title": "Check your email",
+        "message": " If an account exists for that email, we've sent a link to reset your password. It may take a minute to arrive — and remember to check spam. ",
+        "backLink": "Back to sign in"
+      },
+      "title": "Reset your password",
+      "subtitle": " We'll email you a link to choose a new one. ",
+      "rateLimited": "Too many requests. Please wait a few minutes and try again.",
+      "email": {
+        "label": "Email",
+        "placeholder": "you@example.com",
+        "error": "Enter a valid email address."
+      },
+      "submit": "Send reset link",
+      "remembered": "Remembered it?",
+      "loginLink": "Sign in",
+      "forgotUsername": "Forgot your username?",
+      "recoverLink": "Recover it"
+    },
+    "resetPassword": {
+      "eyebrow": "Account recovery",
+      "headline": " Choose a new password. ",
+      "lede": " Pick something only you would know — at least 8 characters. You'll use it to sign in from now on. ",
+      "reassure": {
+        "secure": "Your new password is stored securely",
+        "singleUse": "This link works once, then expires"
+      },
+      "success": {
+        "title": "Password updated",
+        "message": " You're all set. Sign in with your new password to continue. ",
+        "loginButton": "Go to sign in"
+      },
+      "invalidLink": {
+        "title": "This link isn't valid",
+        "message": " The reset link is missing or incomplete. Request a new one and we'll email you a fresh link. ",
+        "requestButton": "Request a new link",
+        "backLink": "Back to sign in"
+      },
+      "title": "Set a new password",
+      "subtitle": " Enter and confirm your new password. ",
+      "invalidToken": "This reset link is invalid, expired, or already used. Please request a new one.",
+      "newPassword": {
+        "label": "New password",
+        "placeholder": "At least 8 characters",
+        "error": "Use at least 8 characters."
+      },
+      "confirmPassword": {
+        "label": "Confirm password",
+        "placeholder": "Re-enter your new password",
+        "mismatch": "Passwords don't match.",
+        "error": "Confirm your new password."
+      },
+      "submit": "Update password",
+      "requestNewLink": "Request a new reset link"
+    },
+    "register": {
+      "eyebrow": "New here",
+      "headline": " Create your patient account. ",
+      "lede": " A single, secure account to keep your care with Hospital Santa María in one place — set it up in a minute. ",
+      "reassure": {
+        "free": "Free to set up, yours to keep",
+        "privacy": "Your details stay private and protected"
+      },
+      "title": "Create account",
+      "subtitle": " Set up your patient account to get started. ",
+      "firstName": {
+        "label": "First name",
+        "error": "First name is required."
+      },
+      "lastName": {
+        "label": "Last name",
+        "error": "Last name is required."
+      },
+      "username": {
+        "label": "Username",
+        "placeholder": "e.g. jdoe",
+        "error": "Username is required."
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "you@example.com",
+        "error": "Enter a valid email address."
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "At least 8 characters",
+        "error": "Use at least 8 characters."
+      },
+      "submit": "Create account",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Sign in",
+      "error": "Could not create your account. Try again."
+    }
+  },
+  "layout": {
+    "languageSwitcher": {
+      "aria": "Language"
+    },
+    "breadcrumb": {
+      "ariaLabel": "Breadcrumb"
+    },
+    "rail": {
+      "ariaLabel": "Primary",
+      "homeAriaLabel": "Home",
+      "toggleAriaLabel": "Toggle navigation",
+      "empty": "No modules",
+      "versionText": " UI v{{ui}} · API v{{api}} ",
+      "version": {
+        "unknown": "unknown"
+      },
+      "closeAriaLabel": "Close navigation"
+    },
+    "viewTabs": {
+      "ariaLabel": "Views",
+      "label": "Views"
+    },
+    "profileCard": {
+      "menuAriaLabel": "Account menu",
+      "settingsLabel": "Settings",
+      "signOut": "Sign out",
+      "role": {
+        "member": "Member",
+        "admin": "Administrator"
+      },
+      "menu": {
+        "profile": "Profile",
+        "systemAdmin": "System Admin"
+      }
+    },
+    "shell": {
+      "installApp": "Install app"
+    },
+    "navTree": {
+      "workspace": "Workspace",
+      "clinical": "Clinical",
+      "diagnostics": "Diagnostics",
+      "business": "Business",
+      "governance": "Governance",
+      "platform": "Platform",
+      "patientPortal": "Portal",
+      "adminExit": "Back",
+      "adminUsers": "Users",
+      "adminEnv": "Environment",
+      "clinical-patient-management": "Patients",
+      "clinical-pm-registration": "Registration",
+      "clinical-pm-mpi-merge": "Merge",
+      "clinical-pm-insurance": "Insurance",
+      "clinical-pm-contacts": "Contacts",
+      "clinical-pm-summary-timeline": "Timeline",
+      "clinical-pm-linked-documents": "Documents",
+      "clinical-adt": "Admissions",
+      "clinical-adt-opd": "OPD",
+      "clinical-adt-ipd": "IPD",
+      "clinical-adt-ed-triage": "Triage",
+      "clinical-adt-beds-wards": "Beds",
+      "clinical-adt-transfers": "Transfers",
+      "clinical-adt-discharge": "Discharge",
+      "clinical-encounters": "Encounters",
+      "clinical-ehr-soap-notes": "Notes",
+      "clinical-ehr-vitals": "Vitals",
+      "clinical-ehr-diagnoses": "Diagnoses",
+      "clinical-ehr-allergies": "Allergies",
+      "clinical-ehr-care-plans": "Plans",
+      "clinical-ehr-procedures": "Procedures",
+      "clinical-ehr-immunizations": "Immunizations",
+      "clinical-orders": "Orders",
+      "clinical-orders-lab": "Laboratory",
+      "clinical-orders-imaging": "Imaging",
+      "clinical-orders-medication": "Medication",
+      "clinical-orders-procedure": "Procedures",
+      "clinical-orders-order-sets": "Sets",
+      "clinical-orders-results-review": "Results",
+      "clinical-nursing": "Nursing",
+      "clinical-nursing-emar": "eMAR",
+      "clinical-nursing-assessments": "Assessments",
+      "clinical-nursing-handover": "Handover",
+      "clinical-nursing-care-tasks": "Tasks",
+      "clinical-surgery": "Surgery",
+      "clinical-surgery-theatre-scheduling": "Scheduling",
+      "clinical-surgery-peri-op": "Perioperative",
+      "clinical-surgery-op-notes": "Notes",
+      "clinical-maternity": "Maternity",
+      "clinical-maternity-antenatal": "Antenatal",
+      "clinical-maternity-labor-delivery": "Delivery",
+      "clinical-maternity-postnatal": "Postnatal",
+      "clinical-maternity-newborn": "Newborn",
+      "clinical-dietary": "Nutrition",
+      "clinical-dietary-diet-orders": "Diets",
+      "clinical-dietary-meal-planning": "Meals",
+      "clinical-dietary-nutrition-assessments": "Assessments",
+      "clinical-physiotherapy": "Physiotherapy",
+      "clinical-physio-referrals": "Referrals",
+      "clinical-physio-therapy-plans": "Therapies",
+      "clinical-physio-session-tracking": "Sessions",
+      "diagnostics-laboratory": "Laboratory",
+      "diagnostics-lab-test-catalog": "Catalog",
+      "diagnostics-lab-order-intake": "Intake",
+      "diagnostics-lab-specimen-tracking": "Specimens",
+      "diagnostics-lab-worklists": "Worklists",
+      "diagnostics-lab-results": "Results",
+      "diagnostics-lab-qc": "Quality",
+      "diagnostics-imaging": "Imaging",
+      "diagnostics-imaging-order-intake": "Intake",
+      "diagnostics-imaging-scheduling": "Scheduling",
+      "diagnostics-imaging-dicom-worklist": "DICOM",
+      "diagnostics-imaging-acquisition": "Acquisition",
+      "diagnostics-imaging-dicom-store": "DICOM",
+      "diagnostics-imaging-viewer": "Viewer",
+      "diagnostics-imaging-reporting": "Reports",
+      "diagnostics-pharmacy": "Pharmacy",
+      "diagnostics-pharmacy-formulary": "Formulary",
+      "diagnostics-pharmacy-e-prescribing": "Prescriptions",
+      "diagnostics-pharmacy-dispensing": "Dispensing",
+      "diagnostics-pharmacy-inpatient-supply": "Supply",
+      "diagnostics-pharmacy-interaction-checks": "Interactions",
+      "diagnostics-pharmacy-stock": "Stock",
+      "business-accounting": "Accounting",
+      "business-accounting-gl": "Ledger",
+      "business-accounting-ar": "Receivables",
+      "business-accounting-ap": "Payables",
+      "business-accounting-banking": "Banking",
+      "business-accounting-cost-centers": "Budgets",
+      "business-accounting-reports": "Reports",
+      "business-accounting-taxes": "Taxes",
+      "business-billing": "Billing",
+      "business-billing-charge-capture": "Charges",
+      "business-billing-invoicing": "Invoices",
+      "business-billing-claims": "Claims",
+      "business-billing-payments": "Payments",
+      "business-billing-tariffs": "Tariffs",
+      "business-inventory": "Inventory",
+      "business-inventory-item-master": "Items",
+      "business-inventory-stock": "Stock",
+      "business-inventory-batch-expiry": "Batches",
+      "business-inventory-requisitions": "Requisitions",
+      "business-inventory-par-levels": "Levels",
+      "business-inventory-counts": "Counts",
+      "business-procurement": "Procurement",
+      "business-procurement-suppliers": "Suppliers",
+      "business-procurement-requisitions": "Requisitions",
+      "business-procurement-purchase-orders": "Orders",
+      "business-procurement-goods-receipt": "Receipt",
+      "business-assets": "Assets",
+      "business-assets-register": "Inventory",
+      "business-assets-preventive-maintenance": "Maintenance",
+      "business-assets-warranties": "Warranties",
+      "business-assets-work-orders": "Orders",
+      "business-assets-calibration": "Calibration",
+      "business-hr": "Staff",
+      "business-hr-employee-records": "Employees",
+      "business-hr-recruitment": "Recruitment",
+      "business-hr-attendance-leave": "Attendance",
+      "business-hr-rostering": "Shifts",
+      "business-hr-payroll": "Payroll",
+      "business-hr-appraisals": "Performance",
+      "business-hr-credentialing": "Credentials",
+      "business-crm": "Marketing",
+      "business-crm-engagement": "Engagement",
+      "business-crm-campaigns": "Campaigns",
+      "business-crm-referrals": "Referrals",
+      "business-crm-feedback": "Surveys",
+      "business-crm-leads": "Leads",
+      "business-projects": "Projects",
+      "business-projects-tasks": "Tasks",
+      "business-projects-milestones": "Milestones",
+      "business-projects-timesheets": "Hours",
+      "business-projects-costing": "Costs",
+      "business-projects-billing": "Billing",
+      "governance-quality": "Quality",
+      "governance-quality-incidents": "Incidents",
+      "governance-quality-audits": "Audits",
+      "governance-quality-accreditation": "Accreditation",
+      "governance-quality-capa": "CAPA",
+      "governance-quality-sop-control": "Procedures",
+      "governance-quality-risk-register": "Risks",
+      "governance-legal": "Legal",
+      "governance-legal-consents": "Consents",
+      "governance-legal-cases": "Cases",
+      "governance-legal-contracts": "Contracts",
+      "governance-legal-regulatory": "Regulatory",
+      "governance-research": "Research",
+      "governance-research-studies": "Studies",
+      "governance-research-cohorts": "Cohorts",
+      "governance-research-ethics": "Ethics",
+      "governance-research-data-capture": "Data",
+      "governance-social-work": "Social",
+      "governance-social-case-management": "Cases",
+      "governance-social-advocacy": "Advocacy",
+      "governance-social-financial-assistance": "Assistance",
+      "governance-social-discharge-support": "Discharge",
+      "governance-helpdesk": "Support",
+      "governance-helpdesk-patient-queries": "Queries",
+      "governance-helpdesk-internal-tickets": "Tickets",
+      "governance-helpdesk-issue-tracking": "Issues",
+      "platform-scheduling": "Appointments",
+      "platform-scheduling-booking": "Bookings",
+      "platform-scheduling-reminders": "Reminders",
+      "platform-scheduling-calendar": "Calendar",
+      "platform-reporting": "Analytics",
+      "platform-reporting-operational": "Operations",
+      "platform-reporting-clinical": "Clinical",
+      "platform-reporting-kpis": "KPI",
+      "platform-documents": "Documents",
+      "platform-documents-files": "Documents",
+      "platform-templates": "Templates",
+      "platform-templates-editor": "Templates",
+      "portal-my-health": "Health",
+      "portal-home": "Home",
+      "portal-appointments": "Appointments",
+      "portal-results": "Results",
+      "portal-documents": "Documents",
+      "portal-bills": "Bills",
+      "portal-messaging": "Messages",
+      "portal-consents": "Consents"
+    }
+  },
+  "workspace": {
+    "home": {
+      "eyebrow": "Workspace",
+      "greetingText": " Welcome back, {{value}}. ",
+      "subtitle": "Jump back into your work.",
+      "link": {
+        "templates": {
+          "label": "Templates",
+          "description": "Author and edit document templates."
+        },
+        "documents": {
+          "label": "Documents",
+          "description": "Browse and generate documents."
+        },
+        "profile": {
+          "label": "Your profile",
+          "description": "Update your details and password."
+        },
+        "users": {
+          "label": "Users",
+          "description": "Manage staff accounts and access."
+        },
+        "settings": {
+          "label": "Settings",
+          "description": "Configure system settings."
+        }
+      },
+      "greeting": {
+        "fallbackName": "there"
+      }
+    }
+  },
+  "patient": {
+    "home": {
+      "eyebrow": "Hospital Santa María",
+      "greetingText": " Welcome, {{value}}. ",
+      "greeting": {
+        "fallbackName": "there"
+      },
+      "lede": " Your account is ready. We're putting the finishing touches on your personal records — for now, here's how to reach us whenever you need care. ",
+      "contact": {
+        "title": "Reach the hospital",
+        "mainLine": "Main line",
+        "address": {
+          "label": "Address",
+          "value": "123 Care Avenue, Suite 100, Your City"
+        },
+        "hours": {
+          "label": "Hours",
+          "value": "Front desk open daily, 7:00 AM – 8:00 PM"
+        },
+        "emergency": {
+          "label": "Emergency",
+          "value": "For a medical emergency, call your local emergency number."
+        }
+      },
+      "coming": {
+        "pill": "Coming soon",
+        "title": " Your records are on the way ",
+        "body": " Soon you'll see your appointments, documents, and care team here, all in one place. We'll let you know the moment it's ready — nothing for you to do until then. "
+      }
+    }
+  },
+  "onboarding": {
+    "setup": {
+      "eyebrow": "First sign-in",
+      "headline": "Let's set up your account.",
+      "lede": " Your account was created by an administrator. Choose your own password and confirm how we can reach you — then you're ready to work. ",
+      "reassure": {
+        "password": "Replace your temporary password",
+        "contact": "Confirm your contact details",
+        "onceOnly": "You only do this once"
+      },
+      "title": " Finish setting up ",
+      "subtitle": " Set a new password and confirm your contact details to continue. ",
+      "newPassword": {
+        "label": "New password",
+        "placeholder": "At least 8 characters",
+        "error": "Use at least 8 characters."
+      },
+      "confirmPassword": {
+        "label": "Confirm password",
+        "placeholder": "Re-enter your new password",
+        "mismatch": "Passwords don't match.",
+        "error": "Confirm your new password."
+      },
+      "phoneNumber": {
+        "label": "Phone number",
+        "placeholder": "Where we can reach you",
+        "error": "Enter a phone number."
+      },
+      "confirmEmail": {
+        "label": "Confirm email",
+        "placeholder": "The email on your account",
+        "error": "Enter the email on your account."
+      },
+      "submit": "Complete setup",
+      "error": "We couldn't complete setup. Check your details and try again."
+    }
+  },
+  "profile": {
+    "header": {
+      "eyebrow": "ACCOUNT",
+      "title": "Your profile",
+      "subtitle": "Update your name, email, and password."
+    },
+    "info": {
+      "title": "Profile",
+      "hint": "Update your name and email.",
+      "success": "Profile updated.",
+      "firstName": {
+        "label": "First name",
+        "error": "First name is required."
+      },
+      "email": {
+        "label": "Email",
+        "error": "A valid email is required."
+      },
+      "submit": "Save profile",
+      "error": "Could not update your profile. Please try again."
+    },
+    "password": {
+      "title": "Password",
+      "hint": "Enter your current password to set a new one.",
+      "success": "Password changed.",
+      "current": {
+        "label": "Current password",
+        "error": "Current password is required."
+      },
+      "new": {
+        "label": "New password",
+        "error": " New password must be at least 8 characters. "
+      },
+      "confirm": {
+        "label": "Confirm new password",
+        "error": "Passwords do not match."
+      },
+      "submit": "Change password",
+      "error": "Could not change your password. Please try again."
+    }
+  },
+  "placeholder": {
+    "module": {
+      "eyebrow": "Module",
+      "subtitle": " Navigation and routing for this area are wired; the screen itself is a placeholder until the module is built. ",
+      "comingSoon": "“{{value}}” is coming soon.",
+      "fallbackTitle": "Module"
+    }
+  },
+  "documents": {
+    "page": {
+      "eyebrow": "DOCUMENTS",
+      "title": "Documents",
+      "subtitle": " Generate documents from a template, browse your library, and upload files. "
+    },
+    "generate": {
+      "title": "Generate from template",
+      "hint": " Pick a DOCS template, fill in its fields, and generate a document. ",
+      "template": {
+        "label": "Template",
+        "placeholder": "Select a DOCS template"
+      },
+      "titleField": {
+        "label": "Title"
+      },
+      "submit": "Generate",
+      "status": {
+        "generating": "generating"
+      },
+      "error": {
+        "start": "Failed to start generation.",
+        "failed": "Document generation failed.",
+        "pollingFailed": "Polling failed.",
+        "timeout": "Generation is taking too long. Please check the library later."
+      }
+    },
+    "upload": {
+      "title": "Upload",
+      "hint": " Upload an existing file straight into your library. ",
+      "chooseLabel": "Choose file",
+      "error": "Upload failed."
+    },
+    "library": {
+      "title": "Library",
+      "hint": "Your generated and uploaded documents.",
+      "column": {
+        "title": "Title",
+        "type": "Type",
+        "status": "Status",
+        "id": "Document ID",
+        "actions": "Actions"
+      },
+      "download": "Download",
+      "empty": "No documents yet."
+    },
+    "download": {
+      "error": "Failed to fetch download URL."
+    }
+  },
+  "settings": {
+    "page": {
+      "eyebrow": "Account",
+      "title": "Settings",
+      "subtitle": " Preferences that control how the app behaves for you. These apply to your account only. "
+    },
+    "group": {
+      "comingSoon": " Coming soon ",
+      "appearance": {
+        "title": "Appearance",
+        "hint": "Density and display preferences for your sessions."
+      },
+      "notifications": {
+        "title": "Notifications",
+        "hint": "Choose which in-app and email notifications you receive."
+      },
+      "language": {
+        "title": "Language & region",
+        "hint": "Interface language, date, and number formats."
+      }
+    }
+  },
+  "admin": {
+    "settings": {
+      "page": {
+        "eyebrow": "ADMIN · SETTINGS",
+        "title": "Runtime settings",
+        "subtitle": " Live operational configuration applied without a redeploy. Secret values are masked and never displayed — leave a secret blank to keep it. "
+      },
+      "tab": {
+        "email": "Email",
+        "webhook": "Webhook",
+        "storage": "Storage",
+        "appBehavior": "App behavior"
+      },
+      "field": {
+        "secretPill": "secret"
+      },
+      "secret": {
+        "placeholderSet": "A value is set — leave blank to keep it",
+        "placeholderUnset": "Not set",
+        "hint": " A value is stored. Leave blank to keep it unchanged. "
+      },
+      "empty": "No settings in this category.",
+      "submit": "Save",
+      "error": {
+        "generic": "Something went wrong. Please try again."
+      },
+      "toast": {
+        "nothingToSave": {
+          "summary": "Nothing to save",
+          "detail": "No changes to apply for this category."
+        },
+        "saved": {
+          "summary": "Settings saved",
+          "detail": "Configuration updated successfully."
+        },
+        "saveFailed": {
+          "summary": "Save failed"
+        }
+      }
+    },
+    "users": {
+      "page": {
+        "eyebrow": "ADMIN · USERS",
+        "title": "Users",
+        "subtitle": " Review console accounts and manage their assigned roles. "
+      },
+      "createStaff": "Create staff",
+      "table": {
+        "username": "Username",
+        "email": "Email",
+        "name": "Name",
+        "roles": "Role(s)",
+        "status": "Status",
+        "actions": "Actions",
+        "empty": "No users found."
+      },
+      "status": {
+        "pending": " Pending ",
+        "active": " Active "
+      },
+      "row": {
+        "view": "View",
+        "changeRole": "Change role"
+      },
+      "detail": {
+        "header": "User detail",
+        "username": {
+          "label": "Username"
+        },
+        "email": {
+          "label": "Email"
+        },
+        "name": {
+          "label": "Name"
+        },
+        "roles": {
+          "label": "Role(s)"
+        },
+        "error": "Failed to load user detail."
+      },
+      "create": {
+        "header": "Create staff account",
+        "lede": " Provision a console account. A temporary password is emailed to the new staff member, who sets their own on first sign-in. ",
+        "firstName": {
+          "label": "First name",
+          "error": "First name is required."
+        },
+        "lastName": {
+          "label": "Last name",
+          "error": "Last name is required."
+        },
+        "username": {
+          "label": "Username",
+          "placeholder": "e.g. jdoe",
+          "error": "Username is required."
+        },
+        "email": {
+          "label": "Email",
+          "placeholder": "name@hospital.org",
+          "error": "Enter a valid email address."
+        },
+        "role": {
+          "label": "Role",
+          "placeholder": "Select a staff role",
+          "error": "Select a staff role."
+        },
+        "tempPassword": {
+          "label": "Temporary password",
+          "placeholder": "At least 8 characters",
+          "error": "Use at least 8 characters."
+        },
+        "cancel": "Cancel",
+        "success": "Staff account \"{{value}}\" created. A temporary password was emailed.",
+        "error": "Could not create the staff account."
+      },
+      "role": {
+        "error": "Failed to change role."
+      }
+    }
+  },
+  "templates": {
+    "editor": {
+      "page": {
+        "eyebrow": "AUTHORING · TEMPLATES",
+        "title": "Template editor",
+        "subtitle": " Author Handlebars templates with a live, sandboxed preview. Save renders the true server-composed output for confirmation before persisting. "
+      },
+      "save": "Save",
+      "metadata": {
+        "panelHeader": "Template metadata",
+        "name": {
+          "label": "Name"
+        },
+        "category": {
+          "label": "Category"
+        },
+        "description": {
+          "label": "Description"
+        },
+        "baseTemplate": {
+          "label": "Base template",
+          "placeholder": "None (full content)"
+        }
+      },
+      "frame": {
+        "content": {
+          "label": "TEMPLATE · HANDLEBARS"
+        },
+        "sampleData": {
+          "label": "SAMPLE DATA · JSON"
+        },
+        "preview": {
+          "label": "PREVIEW"
+        }
+      },
+      "preview": {
+        "iframeTitle": "Template preview"
+      },
+      "error": {
+        "load": "Failed to load template."
+      }
+    },
+    "confirm": {
+      "header": "Confirm save",
+      "hint": " This is the true output composed by the server (including base-template composition). It may differ from the live preview. Confirm to save, or cancel to keep editing. ",
+      "frameLabel": "SERVER PREVIEW",
+      "iframeTitle": "Server-composed preview",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    },
+    "save": {
+      "error": {
+        "preview": "Failed to render preview.",
+        "save": "Failed to save template."
+      },
+      "success": "Template saved."
+    },
+    "preview": {
+      "error": {
+        "invalidJson": "Invalid sample-data JSON: {{value}}",
+        "templateError": "Template error: {{value}}"
+      }
+    }
+  },
+  "api": {
+    "error": {
+      "invalidCredentials": "Incorrect username or password",
+      "unauthorized": "Session not authorized",
+      "forbidden": "You do not have permission for this action",
+      "notFound": "Resource not found",
+      "conflict": "The record already exists or is in conflict",
+      "tooManyRequests": "Too many attempts. Wait a moment and try again",
+      "validation": "Please review the entered data",
+      "unexpected": "An unexpected error occurred"
+    },
+    "validation": {
+      "required": "Required field",
+      "email": "Invalid email",
+      "minLength": "Too short",
+      "maxLength": "Too long",
+      "invalid": "Invalid value"
+    }
+  }
+}
