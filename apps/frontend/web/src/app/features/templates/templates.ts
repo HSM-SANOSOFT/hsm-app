@@ -48,7 +48,8 @@ import { TemplateSaveFlow } from './template-save-flow';
     <!-- AE1/AE2: the gate — TRUE server HTML in a sandboxed iframe; persist only
          fires on confirm. -->
     <p-dialog
-      header="Confirm save"
+      i18n-header="@@templates.confirm.header"
+      header="Confirmar guardado"
       [(visible)]="confirmVisible"
       [modal]="true"
       [closable]="true"
@@ -56,18 +57,19 @@ import { TemplateSaveFlow } from './template-save-flow';
       (onHide)="onDialogHide()"
       data-testid="confirm-dialog"
     >
-      <p class="confirm-hint">
-        This is the true output composed by the server (including base-template
-        composition). It may differ from the live preview. Confirm to save, or
-        cancel to keep editing.
+      <p class="confirm-hint" i18n="@@templates.confirm.hint">
+        Esta es la salida real compuesta por el servidor (incluida la
+        composición con la plantilla base). Puede diferir de la vista previa en
+        vivo. Confirme para guardar, o cancele para seguir editando.
       </p>
       <div class="confirm-frame-wrap">
         <div class="confirm-frame-header">
-          <span class="confirm-frame-label">SERVER PREVIEW</span>
+          <span class="confirm-frame-label" i18n="@@templates.confirm.frameLabel">VISTA PREVIA DEL SERVIDOR</span>
         </div>
         <iframe
           class="confirm-frame"
-          title="Server-composed preview"
+          i18n-title="@@templates.confirm.iframeTitle"
+          title="Vista previa compuesta por el servidor"
           sandbox="allow-scripts"
           [srcdoc]="confirmHtml()"
           data-testid="confirm-iframe"
@@ -76,14 +78,16 @@ import { TemplateSaveFlow } from './template-save-flow';
 
       <ng-template pTemplate="footer">
         <p-button
-          label="Cancel"
+          i18n-label="@@templates.confirm.cancel"
+          label="Cancelar"
           severity="secondary"
           [text]="true"
           (onClick)="cancelSave()"
           data-testid="confirm-cancel"
         />
         <p-button
-          label="Confirm"
+          i18n-label="@@templates.confirm.confirm"
+          label="Confirmar"
           icon="pi pi-check"
           [loading]="persisting()"
           (onClick)="confirmSave()"
@@ -171,7 +175,12 @@ export class Templates {
         // Draft-render failed — do NOT open the dialog, do NOT persist.
         this.pending.set(null);
         this.confirmVisible = false;
-        this.saveError.set(toErrorMessage(err, 'Failed to render preview.'));
+        this.saveError.set(
+          toErrorMessage(
+            err,
+            $localize`:@@templates.save.error.preview:No se pudo renderizar la vista previa.`,
+          ),
+        );
       },
     });
   }
@@ -191,11 +200,18 @@ export class Templates {
         this.persisting.set(false);
         this.confirmVisible = false;
         this.pending.set(null);
-        this.savedMessage.set('Template saved.');
+        this.savedMessage.set(
+          $localize`:@@templates.save.success:Plantilla guardada.`,
+        );
       },
       error: (err: unknown) => {
         this.persisting.set(false);
-        this.saveError.set(toErrorMessage(err, 'Failed to save template.'));
+        this.saveError.set(
+          toErrorMessage(
+            err,
+            $localize`:@@templates.save.error.save:No se pudo guardar la plantilla.`,
+          ),
+        );
       },
     });
   }

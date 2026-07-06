@@ -1,27 +1,27 @@
 <div class="page" data-testid="profile-screen">
   <header class="page-header">
     <div>
-      <span class="page-eyebrow">ACCOUNT</span>
-      <h1 class="page-title">Your profile</h1>
-      <p class="page-subtitle">Update your name, email, and password.</p>
+      <span class="page-eyebrow" i18n="@@profile.header.eyebrow">CUENTA</span>
+      <h1 class="page-title" i18n="@@profile.header.title">Su perfil</h1>
+      <p class="page-subtitle" i18n="@@profile.header.subtitle">Actualice su nombre, correo electrónico y contraseña.</p>
     </div>
   </header>
 
   <section class="surface-card">
-    <h2 class="card-title">Profile</h2>
-    <p class="card-hint">Update your name and email.</p>
+    <h2 class="card-title" i18n="@@profile.info.title">Perfil</h2>
+    <p class="card-hint" i18n="@@profile.info.hint">Actualice su nombre y correo electrónico.</p>
 
     <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
       @if (profileError(); as message) {
         <p-message severity="error" [text]="message" />
       }
       @if (profileSuccess()) {
-        <p-message severity="success" text="Profile updated." />
+        <p-message severity="success" i18n-text="@@profile.info.success" text="Perfil actualizado." />
       }
 
       <div class="field-grid">
         <div class="field">
-          <label for="firstName">First name</label>
+          <label for="firstName" i18n="@@profile.info.firstName.label">Nombre</label>
           <input
             pInputText
             fluid
@@ -34,12 +34,12 @@
             profileForm.controls.firstName.invalid &&
             profileForm.controls.firstName.touched
           ) {
-            <small class="field-error">First name is required.</small>
+            <small class="field-error" i18n="@@profile.info.firstName.error">El nombre es obligatorio.</small>
           }
         </div>
 
         <div class="field">
-          <label for="email">Email</label>
+          <label for="email" i18n="@@profile.info.email.label">Correo electrónico</label>
           <input
             pInputText
             fluid
@@ -52,14 +52,15 @@
             profileForm.controls.email.invalid &&
             profileForm.controls.email.touched
           ) {
-            <small class="field-error">A valid email is required.</small>
+            <small class="field-error" i18n="@@profile.info.email.error">Se requiere un correo electrónico válido.</small>
           }
         </div>
       </div>
 
       <p-button
         type="submit"
-        label="Save profile"
+        i18n-label="@@profile.info.submit"
+        label="Guardar perfil"
         [loading]="profileSubmitting()"
         [disabled]="profileSubmitting()"
       />
@@ -67,19 +68,19 @@
   </section>
 
   <section class="surface-card">
-    <h2 class="card-title">Password</h2>
-    <p class="card-hint">Enter your current password to set a new one.</p>
+    <h2 class="card-title" i18n="@@profile.password.title">Contraseña</h2>
+    <p class="card-hint" i18n="@@profile.password.hint">Ingrese su contraseña actual para establecer una nueva.</p>
 
     <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
       @if (passwordError(); as message) {
         <p-message severity="error" [text]="message" />
       }
       @if (passwordSuccess()) {
-        <p-message severity="success" text="Password changed." />
+        <p-message severity="success" i18n-text="@@profile.password.success" text="Contraseña actualizada." />
       }
 
       <div class="field">
-        <label for="currentPassword">Current password</label>
+        <label for="currentPassword" i18n="@@profile.password.current.label">Contraseña actual</label>
         <p-password
           inputId="currentPassword"
           fluid
@@ -92,13 +93,13 @@
           passwordForm.controls.currentPassword.invalid &&
           passwordForm.controls.currentPassword.touched
         ) {
-          <small class="field-error">Current password is required.</small>
+          <small class="field-error" i18n="@@profile.password.current.error">La contraseña actual es obligatoria.</small>
         }
       </div>
 
       <div class="field-grid">
         <div class="field">
-          <label for="newPassword">New password</label>
+          <label for="newPassword" i18n="@@profile.password.new.label">Nueva contraseña</label>
           <p-password
             inputId="newPassword"
             fluid
@@ -110,14 +111,14 @@
             passwordForm.controls.newPassword.invalid &&
             passwordForm.controls.newPassword.touched
           ) {
-            <small class="field-error">
-              New password must be at least 8 characters.
+            <small class="field-error" i18n="@@profile.password.new.error">
+              La nueva contraseña debe tener al menos 8 caracteres.
             </small>
           }
         </div>
 
         <div class="field">
-          <label for="confirmPassword">Confirm new password</label>
+          <label for="confirmPassword" i18n="@@profile.password.confirm.label">Confirme la nueva contraseña</label>
           <p-password
             inputId="confirmPassword"
             fluid
@@ -129,14 +130,15 @@
           @if (
             passwordMismatch() && passwordForm.controls.confirmPassword.touched
           ) {
-            <small class="field-error">Passwords do not match.</small>
+            <small class="field-error" i18n="@@profile.password.confirm.error">Las contraseñas no coinciden.</small>
           }
         </div>
       </div>
 
       <p-button
         type="submit"
-        label="Change password"
+        i18n-label="@@profile.password.submit"
+        label="Cambiar contraseña"
         [loading]="passwordSubmitting()"
         [disabled]="passwordSubmitting()"
       />

@@ -1,17 +1,19 @@
 <div class="page page--editor">
   <header class="page-header">
     <div>
-      <span class="page-eyebrow">AUTHORING · TEMPLATES</span>
-      <h1 class="page-title">Template editor</h1>
-      <p class="page-subtitle">
-        Author Handlebars templates with a live, sandboxed preview. Save renders
-        the true server-composed output for confirmation before persisting.
+      <span class="page-eyebrow" i18n="@@templates.editor.page.eyebrow">AUTORÍA · PLANTILLAS</span>
+      <h1 class="page-title" i18n="@@templates.editor.page.title">Editor de plantillas</h1>
+      <p class="page-subtitle" i18n="@@templates.editor.page.subtitle">
+        Cree plantillas Handlebars con una vista previa en vivo y aislada.
+        Guardar renderiza la salida real compuesta por el servidor para su
+        confirmación antes de guardar.
       </p>
     </div>
     <div class="page-actions">
       <!-- R17: stubbed Save seam — U14 wires draft-render + confirm + persist -->
       <p-button
-        label="Save"
+        i18n-label="@@templates.editor.save"
+        label="Guardar"
         icon="pi pi-save"
         (onClick)="onSave()"
         data-testid="save-button"
@@ -22,14 +24,15 @@
   <section class="template-editor" data-testid="template-editor">
     <!-- R12: foldable metadata bar -->
     <p-panel
-      header="Template metadata"
+      i18n-header="@@templates.editor.metadata.panelHeader"
+      header="Metadatos de la plantilla"
       [toggleable]="true"
       styleClass="meta-panel"
       data-testid="metadata-panel"
     >
       <div class="field-grid">
         <label class="field">
-          <span>Name</span>
+          <span i18n="@@templates.editor.metadata.name.label">Nombre</span>
           <input
             pInputText
             type="text"
@@ -40,7 +43,7 @@
         </label>
 
         <label class="field">
-          <span>Category</span>
+          <span i18n="@@templates.editor.metadata.category.label">Categoría</span>
           <p-select
             [options]="categoryOptions"
             optionLabel="label"
@@ -52,7 +55,7 @@
         </label>
 
         <label class="field field--wide">
-          <span>Description</span>
+          <span i18n="@@templates.editor.metadata.description.label">Descripción</span>
           <input
             pInputText
             type="text"
@@ -64,13 +67,14 @@
 
         <!-- R12: base-template selector (BASE-category templates only) -->
         <label class="field">
-          <span>Base template</span>
+          <span i18n="@@templates.editor.metadata.baseTemplate.label">Plantilla base</span>
           <p-select
             [options]="baseTemplates()"
             optionLabel="label"
             optionValue="value"
             [showClear]="true"
-            placeholder="None (full content)"
+            i18n-placeholder="@@templates.editor.metadata.baseTemplate.placeholder"
+            placeholder="Ninguna (contenido completo)"
             [ngModel]="baseTemplateId()"
             (ngModelChange)="baseTemplateId.set($event)"
             data-testid="meta-base-template"
@@ -88,7 +92,7 @@
       <div class="split__pane split__pane--edit">
         <div class="frame">
           <div class="frame__header">
-            <span class="frame__label mono">TEMPLATE · HANDLEBARS</span>
+            <span class="frame__label mono" i18n="@@templates.editor.frame.content.label">PLANTILLA · HANDLEBARS</span>
           </div>
           <div class="frame__body">
             <app-monaco-editor
@@ -104,7 +108,7 @@
         <!-- R15 / AE5: editable sample-data panel, seeded from schema -->
         <div class="frame">
           <div class="frame__header">
-            <span class="frame__label mono">SAMPLE DATA · JSON</span>
+            <span class="frame__label mono" i18n="@@templates.editor.frame.sampleData.label">DATOS DE MUESTRA · JSON</span>
           </div>
           <div class="frame__body">
             <app-monaco-editor
@@ -121,13 +125,14 @@
       <div class="split__pane split__pane--preview">
         <div class="frame frame--fill">
           <div class="frame__header">
-            <span class="frame__label mono">PREVIEW</span>
+            <span class="frame__label mono" i18n="@@templates.editor.frame.preview.label">VISTA PREVIA</span>
           </div>
           <div class="frame__body frame__body--preview">
             <!-- R16 / KTD7: sandboxed iframe, allow-scripts ONLY -->
             <iframe
               class="preview-frame"
-              title="Template preview"
+              i18n-title="@@templates.editor.preview.iframeTitle"
+              title="Vista previa de la plantilla"
               sandbox="allow-scripts"
               [srcdoc]="previewSrcdoc()"
               data-testid="preview-iframe"

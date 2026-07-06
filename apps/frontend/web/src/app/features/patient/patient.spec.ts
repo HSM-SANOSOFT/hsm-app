@@ -47,7 +47,7 @@ describe('Patient', () => {
     ).toContain('Jane');
     // A real way to reach the hospital (trust-preserving, not a blank screen).
     expect(host.querySelector('a[href^="tel:"]')).not.toBeNull();
-    expect(host.textContent).toContain('Coming soon');
+    expect(host.textContent).toContain('Próximamente');
   });
 
   it('falls back to a warm generic greeting when no name is present', () => {
@@ -56,6 +56,6 @@ describe('Patient', () => {
 
     expect(
       host.querySelector('[data-testid="patient-greeting"]')?.textContent,
-    ).toContain('there');
+    ).toContain('allí');
   });
 });

@@ -127,7 +127,7 @@ export class Profile {
         this.profileError.set(
           toErrorMessage(
             err,
-            'Could not update your profile. Please try again.',
+            $localize`:@@profile.info.error:No se pudo actualizar su perfil. Intente de nuevo.`,
           ),
         );
       },
@@ -162,7 +162,7 @@ export class Profile {
         this.passwordError.set(
           toErrorMessage(
             err,
-            'Could not change your password. Please try again.',
+            $localize`:@@profile.password.error:No se pudo cambiar su contraseña. Intente de nuevo.`,
           ),
         );
       },

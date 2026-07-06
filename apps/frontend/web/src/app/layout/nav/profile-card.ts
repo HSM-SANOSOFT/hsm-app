@@ -51,7 +51,8 @@ const SYSTEM_ADMIN_ROUTE = '/system-admin';
         data-testid="profile-card"
         [attr.aria-expanded]="nav.isOpen('profile')"
         aria-haspopup="dialog"
-        aria-label="Account menu"
+        i18n-aria-label="@@layout.profileCard.menuAriaLabel"
+        aria-label="Menú de la cuenta"
         (click)="pop.toggle($event)"
       >
         <p-avatar
@@ -76,8 +77,10 @@ const SYSTEM_ADMIN_ROUTE = '/system-admin';
           class="pcard__gear"
           data-testid="settings-gear"
           [routerLink]="settingsRoute"
-          aria-label="Settings"
-          title="Settings"
+          i18n-aria-label="@@layout.profileCard.settingsLabel"
+          aria-label="Configuración"
+          i18n-title="@@layout.profileCard.settingsLabel"
+          title="Configuración"
         >
           <i class="pi pi-cog" aria-hidden="true"></i>
         </a>
@@ -107,7 +110,7 @@ const SYSTEM_ADMIN_ROUTE = '/system-admin';
           (click)="signOut(); pop.hide()"
         >
           <i class="pmenu__icon pi pi-sign-out" aria-hidden="true"></i>
-          Sign out
+          <span i18n="@@layout.profileCard.signOut">Cerrar sesión</span>
         </button>
       </div>
     </p-popover>
@@ -280,10 +283,10 @@ export class ProfileCard {
   protected readonly roleLabel = computed(() => {
     const roles = this.user()?.roles ?? [];
     if (roles.length === 0) {
-      return 'Member';
+      return $localize`:@@layout.profileCard.role.member:Miembro`;
     }
     if (roles.includes(RolesEnum.System.Admin)) {
-      return 'Administrator';
+      return $localize`:@@layout.profileCard.role.admin:Administrador`;
     }
     return humanizeRole(roles[0]);
   });
@@ -291,11 +294,15 @@ export class ProfileCard {
   /** Popover navigation entries — System Admin only for admins (origin R12). */
   protected readonly menuItems = computed<readonly ProfileMenuItem[]>(() => {
     const items: ProfileMenuItem[] = [
-      { label: 'Profile', icon: 'pi pi-user', route: PROFILE_ROUTE },
+      {
+        label: $localize`:@@layout.profileCard.menu.profile:Perfil`,
+        icon: 'pi pi-user',
+        route: PROFILE_ROUTE,
+      },
     ];
     if (this.auth.isAdmin()) {
       items.push({
-        label: 'System Admin',
+        label: $localize`:@@layout.profileCard.menu.systemAdmin:Administración del sistema`,
         icon: 'pi pi-shield',
         route: SYSTEM_ADMIN_ROUTE,
       });

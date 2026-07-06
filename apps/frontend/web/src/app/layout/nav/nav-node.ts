@@ -236,7 +236,7 @@ export function normalizeUrl(url: string): string {
 export const NAV_TREE: readonly NavNode[] = [
   {
     id: 'workspace',
-    label: 'Workspace',
+    label: $localize`:@@layout.navTree.workspace:Espacio de trabajo`,
     icon: 'pi pi-th-large',
     route: '/workspace',
     kind: 'module',
@@ -246,7 +246,7 @@ export const NAV_TREE: readonly NavNode[] = [
   // ── Domain 1 — Clinical ────────────────────────────────────────────────
   {
     id: 'clinical',
-    label: 'Clinical',
+    label: $localize`:@@layout.navTree.clinical:Clínico`,
     icon: 'pi pi-heart',
     kind: 'module',
     audience: 'staff',
@@ -572,7 +572,7 @@ export const NAV_TREE: readonly NavNode[] = [
   // ── Domain 2 — Diagnostics & Therapeutics ──────────────────────────────
   {
     id: 'diagnostics',
-    label: 'Diagnostics & Therapeutics',
+    label: $localize`:@@layout.navTree.diagnostics:Diagnóstico y Terapéutica`,
     icon: 'pi pi-image',
     kind: 'module',
     audience: 'staff',
@@ -718,7 +718,7 @@ export const NAV_TREE: readonly NavNode[] = [
   // ── Domain 3 — Business / ERP ──────────────────────────────────────────
   {
     id: 'business',
-    label: 'Business / ERP',
+    label: $localize`:@@layout.navTree.business:Negocio / ERP`,
     icon: 'pi pi-briefcase',
     kind: 'module',
     audience: 'staff',
@@ -1049,7 +1049,7 @@ export const NAV_TREE: readonly NavNode[] = [
   // ── Domain 4 — Governance & Support ────────────────────────────────────
   {
     id: 'governance',
-    label: 'Governance & Support',
+    label: $localize`:@@layout.navTree.governance:Gobernanza y Soporte`,
     icon: 'pi pi-shield',
     kind: 'module',
     audience: 'staff',
@@ -1221,7 +1221,7 @@ export const NAV_TREE: readonly NavNode[] = [
   // ── Domain 6 — Platform (shared services + absorbed built modules) ──────
   {
     id: 'platform',
-    label: 'Platform',
+    label: $localize`:@@layout.navTree.platform:Plataforma`,
     icon: 'pi pi-cog',
     kind: 'module',
     audience: 'staff',
@@ -1320,7 +1320,7 @@ export const NAV_TREE: readonly NavNode[] = [
   // never shows it and `filterTree` keeps the whole branch for a patient.
   {
     id: 'patient-portal',
-    label: 'Patient Portal',
+    label: $localize`:@@layout.navTree.patientPortal:Portal del Paciente`,
     icon: 'pi pi-user',
     kind: 'module',
     audience: 'patient',
@@ -1397,21 +1397,21 @@ export const NAV_TREE: readonly NavNode[] = [
 export const ADMIN_NAV_TREE: readonly NavNode[] = [
   {
     id: 'admin-exit',
-    label: 'Back to console',
+    label: $localize`:@@layout.navTree.adminExit:Volver a la consola`,
     icon: 'pi pi-arrow-left',
     route: '/',
     kind: 'module',
   },
   {
     id: 'admin-users',
-    label: 'Users',
+    label: $localize`:@@layout.navTree.adminUsers:Usuarios`,
     icon: 'pi pi-users',
     route: '/system-admin/users',
     kind: 'module',
   },
   {
     id: 'admin-env',
-    label: 'Environment',
+    label: $localize`:@@layout.navTree.adminEnv:Entorno`,
     icon: 'pi pi-server',
     route: '/system-admin/settings',
     kind: 'module',

@@ -15,11 +15,11 @@ import { Component } from '@angular/core';
     <div class="page">
       <header class="page-header">
         <div>
-          <span class="page-eyebrow">Account</span>
-          <h1 class="page-title">Settings</h1>
-          <p class="page-subtitle">
-            Preferences that control how the app behaves for you. These apply to
-            your account only.
+          <span class="page-eyebrow" i18n="@@settings.page.eyebrow">Cuenta</span>
+          <h1 class="page-title" i18n="@@settings.page.title">Configuración</h1>
+          <p class="page-subtitle" i18n="@@settings.page.subtitle">
+            Preferencias que controlan cómo se comporta la aplicación para usted.
+            Estas se aplican solo a su cuenta.
           </p>
         </div>
       </header>
@@ -28,8 +28,8 @@ import { Component } from '@angular/core';
         <section class="surface-card">
           <h2 class="card-title">{{ group.title }}</h2>
           <p class="card-hint">{{ group.hint }}</p>
-          <span class="pill pill--neutral" data-testid="settings-placeholder">
-            Coming soon
+          <span class="pill pill--neutral" data-testid="settings-placeholder" i18n="@@settings.group.comingSoon">
+            Próximamente
           </span>
         </section>
       }
@@ -39,16 +39,16 @@ import { Component } from '@angular/core';
 export class Settings {
   protected readonly groups = [
     {
-      title: 'Appearance',
-      hint: 'Density and display preferences for your sessions.',
+      title: $localize`:@@settings.group.appearance.title:Apariencia`,
+      hint: $localize`:@@settings.group.appearance.hint:Densidad y preferencias de visualización para sus sesiones.`,
     },
     {
-      title: 'Notifications',
-      hint: 'Choose which in-app and email notifications you receive.',
+      title: $localize`:@@settings.group.notifications.title:Notificaciones`,
+      hint: $localize`:@@settings.group.notifications.hint:Elija qué notificaciones dentro de la aplicación y por correo electrónico desea recibir.`,
     },
     {
-      title: 'Language & region',
-      hint: 'Interface language, date, and number formats.',
+      title: $localize`:@@settings.group.language.title:Idioma y región`,
+      hint: $localize`:@@settings.group.language.hint:Idioma de la interfaz, formatos de fecha y número.`,
     },
   ];
 }

@@ -364,7 +364,7 @@ describe('Documents component', () => {
       vi.advanceTimersByTime(5000);
       httpMock.expectNone(`${base}/docs/doc-2`);
 
-      expect(cmp.generateError()).toBe('Document generation failed.');
+      expect(cmp.generateError()).toBe('La generación del documento falló.');
       expect(cmp.generating()).toBe(false);
     } finally {
       vi.useRealTimers();

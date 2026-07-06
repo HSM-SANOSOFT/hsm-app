@@ -42,7 +42,8 @@ interface RailItem {
     <nav
       class="rail"
       [class.rail--expanded]="expanded()"
-      aria-label="Primary"
+      i18n-aria-label="@@layout.rail.ariaLabel"
+      aria-label="Principal"
       (mouseenter)="intent.enter()"
       (mouseleave)="onLeave()"
       (focusin)="intent.openNow()"
@@ -50,7 +51,7 @@ interface RailItem {
       (keydown.escape)="collapse()"
     >
       <div class="rail-head">
-        <a class="rail-brand" routerLink="/" aria-label="Home">
+        <a class="rail-brand" routerLink="/" i18n-aria-label="@@layout.rail.homeAriaLabel" aria-label="Inicio">
           <span class="brand-mark" aria-hidden="true"></span>
           <span class="brand-word">
             Hospital <span class="brand-word__sub">Santa María</span>
@@ -63,7 +64,8 @@ interface RailItem {
           class="rail-toggle"
           data-testid="rail-toggle"
           [attr.aria-expanded]="expanded()"
-          aria-label="Toggle navigation"
+          i18n-aria-label="@@layout.rail.toggleAriaLabel"
+          aria-label="Alternar navegación"
           (click)="toggle()"
         >
           <i class="pi" [class.pi-bars]="!expanded()" [class.pi-times]="expanded()"></i>
@@ -104,13 +106,13 @@ interface RailItem {
             </a>
           }
         } @empty {
-          <p class="rail-empty" data-testid="rail-empty">No modules</p>
+          <p class="rail-empty" data-testid="rail-empty" i18n="@@layout.rail.empty">Sin módulos</p>
         }
       </div>
 
       <div class="rail-footer" data-testid="version-footer">
         <span class="rail-footer__dot" aria-hidden="true"></span>
-        <span class="rail-footer__text mono">
+        <span class="rail-footer__text mono" i18n="@@layout.rail.version">
           UI v{{ version.uiVersion }} &middot; API
           v{{ version.apiVersion() ?? 'unknown' }}
         </span>
@@ -131,7 +133,8 @@ interface RailItem {
         type="button"
         class="rail-scrim"
         data-testid="rail-scrim"
-        aria-label="Close navigation"
+        i18n-aria-label="@@layout.rail.closeAriaLabel"
+        aria-label="Cerrar navegación"
         (click)="collapse()"
       ></button>
     }

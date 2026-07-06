@@ -16,7 +16,7 @@ import { type NavNode } from './nav-node';
   selector: 'app-breadcrumb',
   template: `
     @if (chain().length) {
-      <nav class="bc" aria-label="Breadcrumb" data-testid="breadcrumb">
+      <nav class="bc" i18n-aria-label="@@layout.breadcrumb.ariaLabel" aria-label="Ruta de navegación" data-testid="breadcrumb">
         @for (crumb of crumbs(); track crumb.node.id; let last = $last) {
           @if (!$first) {
             <span class="bc__sep" aria-hidden="true">›</span>

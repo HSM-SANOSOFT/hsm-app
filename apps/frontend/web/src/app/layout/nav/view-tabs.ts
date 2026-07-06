@@ -20,8 +20,8 @@ import { isLeaf } from './nav-node';
   imports: [RouterLink],
   template: `
     @if (tabs().length) {
-      <nav class="tabs" aria-label="Views" data-testid="view-tabs">
-        <span class="tabs__label">Views</span>
+      <nav class="tabs" i18n-aria-label="@@layout.viewTabs.ariaLabel" aria-label="Vistas" data-testid="view-tabs">
+        <span class="tabs__label" i18n="@@layout.viewTabs.label">Vistas</span>
         @for (view of tabs(); track view.id) {
           <a
             class="tab"

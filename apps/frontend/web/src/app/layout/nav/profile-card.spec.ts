@@ -73,14 +73,14 @@ describe('ProfileCard', () => {
   it('shows System Admin in the menu only for admins (AE4)', () => {
     const admin = setup(ADMIN, true);
     expect(admin.component['menuItems']().map(i => i.label)).toEqual([
-      'Profile',
-      'System Admin',
+      'Perfil',
+      'Administración del sistema',
     ]);
 
     TestBed.resetTestingModule();
     const staff = setup(STAFF, false);
     expect(staff.component['menuItems']().map(i => i.label)).toEqual([
-      'Profile',
+      'Perfil',
     ]);
   });
 
@@ -99,7 +99,7 @@ describe('ProfileCard', () => {
       { ...ADMIN, roles: ['billing', 'admin'] },
       true,
     );
-    expect(component['roleLabel']()).toBe('Administrator');
+    expect(component['roleLabel']()).toBe('Administrador');
   });
 
   it('points the Settings gear at the personal settings route', () => {

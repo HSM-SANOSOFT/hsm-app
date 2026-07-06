@@ -113,7 +113,7 @@ export class Onboarding {
           this.errorMessage.set(
             toErrorMessage(
               err,
-              "We couldn't complete setup. Check your details and try again.",
+              $localize`:@@onboarding.setup.error:No pudimos completar la configuración. Verifique sus datos e intente de nuevo.`,
             ),
           );
         },

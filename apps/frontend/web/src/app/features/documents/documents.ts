@@ -62,29 +62,30 @@ const UPLOAD_FOLDER = 'uploads';
     <div class="page documents" data-testid="documents">
       <header class="page-header">
         <div>
-          <span class="page-eyebrow">DOCUMENTS</span>
-          <h1 class="page-title">Documents</h1>
-          <p class="page-subtitle">
-            Generate documents from a template, browse your library, and upload
-            files.
+          <span class="page-eyebrow" i18n="@@documents.page.eyebrow">DOCUMENTOS</span>
+          <h1 class="page-title" i18n="@@documents.page.title">Documentos</h1>
+          <p class="page-subtitle" i18n="@@documents.page.subtitle">
+            Genere documentos a partir de una plantilla, explore su biblioteca y
+            suba archivos.
           </p>
         </div>
       </header>
 
       <!-- ── Generate (R18) ───────────────────────────────────────────── -->
       <section class="surface-card" data-testid="generate-panel">
-        <h2 class="card-title">Generate from template</h2>
-        <p class="card-hint">
-          Pick a DOCS template, fill in its fields, and generate a document.
+        <h2 class="card-title" i18n="@@documents.generate.title">Generar desde plantilla</h2>
+        <p class="card-hint" i18n="@@documents.generate.hint">
+          Elija una plantilla DOCS, complete sus campos y genere un documento.
         </p>
 
         <div class="field">
-          <label for="template-select">Template</label>
+          <label for="template-select" i18n="@@documents.generate.template.label">Plantilla</label>
           <p-select
             inputId="template-select"
             [options]="templates()"
             optionLabel="name"
-            placeholder="Select a DOCS template"
+            i18n-placeholder="@@documents.generate.template.placeholder"
+            placeholder="Seleccione una plantilla DOCS"
             [ngModel]="selectedTemplate()"
             (onChange)="onTemplateChange($event.value)"
             data-testid="template-select"
@@ -95,7 +96,7 @@ const UPLOAD_FOLDER = 'uploads';
           <form class="generate-form" data-testid="generate-form">
             <div class="field-grid">
               <label class="field" data-testid="generate-title">
-                <span>Title</span>
+                <span i18n="@@documents.generate.titleField.label">Título</span>
                 <input
                   type="text"
                   pInputText
@@ -156,7 +157,8 @@ const UPLOAD_FOLDER = 'uploads';
 
             <div class="generate-actions">
               <p-button
-                label="Generate"
+                i18n-label="@@documents.generate.submit"
+                label="Generar"
                 [loading]="generating()"
                 [disabled]="generating() || !title()"
                 (onClick)="generate()"
@@ -169,7 +171,7 @@ const UPLOAD_FOLDER = 'uploads';
                   [class]="statusPill(status)"
                   data-testid="generate-status"
                 >
-                  {{ generating() ? 'generating' : status }}
+                  {{ generating() ? generatingLabel : status }}
                 </span>
               }
             </div>
@@ -187,9 +189,9 @@ const UPLOAD_FOLDER = 'uploads';
 
       <!-- ── Upload (R20) ─────────────────────────────────────────────── -->
       <section class="surface-card" data-testid="upload-panel">
-        <h2 class="card-title">Upload</h2>
-        <p class="card-hint">
-          Upload an existing file straight into your library.
+        <h2 class="card-title" i18n="@@documents.upload.title">Subir</h2>
+        <p class="card-hint" i18n="@@documents.upload.hint">
+          Suba un archivo existente directamente a su biblioteca.
         </p>
         <p-fileupload
           mode="basic"
@@ -197,7 +199,8 @@ const UPLOAD_FOLDER = 'uploads';
           [customUpload]="true"
           [auto]="true"
           [multiple]="true"
-          chooseLabel="Choose file"
+          i18n-chooseLabel="@@documents.upload.chooseLabel"
+          chooseLabel="Elegir archivo"
           (uploadHandler)="upload($event)"
           data-testid="file-upload"
         />
@@ -212,8 +215,8 @@ const UPLOAD_FOLDER = 'uploads';
 
       <!-- ── Library (R19) ────────────────────────────────────────────── -->
       <section class="surface-card" data-testid="library-panel">
-        <h2 class="card-title">Library</h2>
-        <p class="card-hint">Your generated and uploaded documents.</p>
+        <h2 class="card-title" i18n="@@documents.library.title">Biblioteca</h2>
+        <p class="card-hint" i18n="@@documents.library.hint">Sus documentos generados y subidos.</p>
         <p-table
           [value]="documents()"
           [lazy]="true"
@@ -228,11 +231,11 @@ const UPLOAD_FOLDER = 'uploads';
         >
           <ng-template pTemplate="header">
             <tr>
-              <th>Title</th>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Document ID</th>
-              <th>Actions</th>
+              <th i18n="@@documents.library.column.title">Título</th>
+              <th i18n="@@documents.library.column.type">Tipo</th>
+              <th i18n="@@documents.library.column.status">Estado</th>
+              <th i18n="@@documents.library.column.id">ID del documento</th>
+              <th i18n="@@documents.library.column.actions">Acciones</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-doc>
@@ -248,7 +251,8 @@ const UPLOAD_FOLDER = 'uploads';
               <td>
                 <p-button
                   icon="pi pi-download"
-                  label="Download"
+                  i18n-label="@@documents.library.download"
+                  label="Descargar"
                   size="small"
                   [text]="true"
                   [disabled]="!isCompleted(doc)"
@@ -263,7 +267,7 @@ const UPLOAD_FOLDER = 'uploads';
               <td colspan="5">
                 <div class="empty-state">
                   <i class="pi pi-folder-open"></i>
-                  No documents yet.
+                  <span i18n="@@documents.library.empty">Aún no hay documentos.</span>
                 </div>
               </td>
             </tr>
@@ -295,6 +299,9 @@ export class Documents {
   readonly generating = signal(false);
   readonly generateStatus = signal<string | null>(null);
   readonly generateError = signal<string | null>(null);
+  /** Label shown in the status pill while generation is in flight. */
+  protected readonly generatingLabel =
+    $localize`:@@documents.generate.status.generating:generando`;
 
   /** Form fields derived from the selected template's `schema`. */
   readonly schemaFields = computed<SchemaField[]>(() => {
@@ -374,7 +381,10 @@ export class Documents {
         next: res => this.pollGeneration(res.documentId),
         error: (err: { message?: string }) => {
           this.generating.set(false);
-          this.generateError.set(err?.message ?? 'Failed to start generation.');
+          this.generateError.set(
+            err?.message ??
+              $localize`:@@documents.generate.error.start:No se pudo iniciar la generación.`,
+          );
         },
       });
   }
@@ -395,11 +405,16 @@ export class Documents {
           last = doc;
           this.generateStatus.set(doc.status);
           if (doc.status === DocumentStatusEnum.FAILED) {
-            this.generateError.set('Document generation failed.');
+            this.generateError.set(
+              $localize`:@@documents.generate.error.failed:La generación del documento falló.`,
+            );
           }
         },
         error: (err: { message?: string }) => {
-          this.generateError.set(err?.message ?? 'Polling failed.');
+          this.generateError.set(
+            err?.message ??
+              $localize`:@@documents.generate.error.pollingFailed:Error al verificar el estado.`,
+          );
         },
         complete: () => {
           if (last?.status === DocumentStatusEnum.COMPLETED) {
@@ -407,7 +422,7 @@ export class Documents {
           } else if (last && !isTerminalStatus(last.status)) {
             // Attempt cap reached without a terminal status.
             this.generateError.set(
-              'Generation is taking too long. Please check the library later.',
+              $localize`:@@documents.generate.error.timeout:La generación está tardando demasiado. Revise la biblioteca más tarde.`,
             );
           }
           this.loadDocuments();
@@ -454,7 +469,10 @@ export class Documents {
         next: res => this.triggerBrowserDownload(res.url),
         error: err =>
           this.generateError.set(
-            toErrorMessage(err, 'Failed to fetch download URL.'),
+            toErrorMessage(
+              err,
+              $localize`:@@documents.download.error:No se pudo obtener el enlace de descarga.`,
+            ),
           ),
       });
   }
@@ -495,7 +513,10 @@ export class Documents {
       .subscribe({
         next: () => this.loadDocuments(),
         error: (err: { message?: string }) =>
-          this.uploadError.set(err?.message ?? 'Upload failed.'),
+          this.uploadError.set(
+            err?.message ??
+              $localize`:@@documents.upload.error:Error al subir el archivo.`,
+          ),
       });
   }
 

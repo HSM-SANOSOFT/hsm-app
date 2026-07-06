@@ -94,14 +94,15 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
     <div class="page admin-users" data-testid="admin-users">
       <header class="page-header">
         <div>
-          <span class="page-eyebrow">ADMIN · USERS</span>
-          <h1 class="page-title">Users</h1>
-          <p class="page-subtitle">
-            Review console accounts and manage their assigned roles.
+          <span class="page-eyebrow" i18n="@@admin.users.page.eyebrow">ADMIN · USUARIOS</span>
+          <h1 class="page-title" i18n="@@admin.users.page.title">Usuarios</h1>
+          <p class="page-subtitle" i18n="@@admin.users.page.subtitle">
+            Revise las cuentas de la consola y administre los roles asignados.
           </p>
         </div>
         <p-button
-          label="Create staff"
+          i18n-label="@@admin.users.createStaff.open"
+          label="Crear personal"
           icon="pi pi-user-plus"
           (onClick)="openCreate()"
           data-testid="create-staff-open"
@@ -127,12 +128,12 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
         >
           <ng-template pTemplate="header">
             <tr>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Name</th>
-              <th>Role(s)</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th i18n="@@admin.users.table.username">Usuario</th>
+              <th i18n="@@admin.users.table.email">Correo electrónico</th>
+              <th i18n="@@admin.users.table.name">Nombre</th>
+              <th i18n="@@admin.users.table.roles">Rol(es)</th>
+              <th i18n="@@admin.users.table.status">Estado</th>
+              <th i18n="@@admin.users.table.actions">Acciones</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-user>
@@ -152,22 +153,25 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
                   <span
                     class="pill pill--pending"
                     [attr.data-testid]="'status-' + user.id"
+                    i18n="@@admin.users.status.pending"
                   >
-                    Pending
+                    Pendiente
                   </span>
                 } @else {
                   <span
                     class="pill pill--ok"
                     [attr.data-testid]="'status-' + user.id"
+                    i18n="@@admin.users.status.active"
                   >
-                    Active
+                    Activo
                   </span>
                 }
               </td>
               <td>
                 <div class="row-actions">
                   <p-button
-                    label="View"
+                    i18n-label="@@admin.users.row.view"
+                    label="Ver"
                     size="small"
                     [text]="true"
                     (onClick)="view(user)"
@@ -177,7 +181,8 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
                     [options]="roleOptions"
                     optionLabel="label"
                     optionValue="value"
-                    placeholder="Change role"
+                    i18n-placeholder="@@admin.users.row.changeRole"
+                    placeholder="Cambiar rol"
                     [ngModel]="currentRoleValue(user)"
                     (onChange)="changeRole(user, $event.value)"
                     [attr.data-testid]="'role-select-' + user.id"
@@ -191,7 +196,7 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
               <td colspan="6">
                 <div class="empty-state">
                   <i class="pi pi-users"></i>
-                  No users found.
+                  <span i18n="@@admin.users.table.empty">No se encontraron usuarios.</span>
                 </div>
               </td>
             </tr>
@@ -200,7 +205,8 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
       </section>
 
       <p-dialog
-        header="User detail"
+        i18n-header="@@admin.users.detail.header"
+        header="Detalle del usuario"
         [(visible)]="detailVisible"
         [modal]="true"
         [style]="{ width: '28rem' }"
@@ -209,19 +215,19 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
         @if (selectedUser(); as u) {
           <div class="field-grid" data-testid="user-detail">
             <div class="field">
-              <label>Username</label>
+              <label i18n="@@admin.users.detail.username.label">Usuario</label>
               <span>{{ u.username }}</span>
             </div>
             <div class="field">
-              <label>Email</label>
+              <label i18n="@@admin.users.detail.email.label">Correo electrónico</label>
               <span class="muted">{{ u.email }}</span>
             </div>
             <div class="field">
-              <label>Name</label>
+              <label i18n="@@admin.users.detail.name.label">Nombre</label>
               <span>{{ u.firstName }}</span>
             </div>
             <div class="field">
-              <label>Role(s)</label>
+              <label i18n="@@admin.users.detail.roles.label">Rol(es)</label>
               <span>
                 @for (role of u.roles; track role.id) {
                   <span class="pill pill--neutral">{{ role.role }}</span>
@@ -235,7 +241,8 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
       </p-dialog>
 
       <p-dialog
-        header="Create staff account"
+        i18n-header="@@admin.users.create.header"
+        header="Crear cuenta de personal"
         [(visible)]="createVisible"
         [modal]="true"
         [style]="{ width: '32rem' }"
@@ -243,9 +250,10 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
         (onHide)="onCreateHide()"
         data-testid="create-staff-dialog"
       >
-        <p class="dialog-lede">
-          Provision a console account. A temporary password is emailed to the
-          new staff member, who sets their own on first sign-in.
+        <p class="dialog-lede" i18n="@@admin.users.create.lede">
+          Provea una cuenta de consola. Se envía una contraseña temporal por
+          correo electrónico al nuevo miembro del personal, quien establece la
+          suya propia en el primer inicio de sesión.
         </p>
 
         <form
@@ -272,7 +280,7 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
 
           <div class="auth-row">
             <div class="field">
-              <label for="cs-firstName">First name</label>
+              <label for="cs-firstName" i18n="@@admin.users.create.firstName.label">Nombre</label>
               <input
                 pInputText
                 id="cs-firstName"
@@ -285,12 +293,12 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
                 createForm.controls.firstName.invalid &&
                 createForm.controls.firstName.touched
               ) {
-                <small class="field-error">First name is required.</small>
+                <small class="field-error" i18n="@@admin.users.create.firstName.error">El nombre es obligatorio.</small>
               }
             </div>
 
             <div class="field">
-              <label for="cs-firstLastName">Last name</label>
+              <label for="cs-firstLastName" i18n="@@admin.users.create.lastName.label">Apellido</label>
               <input
                 pInputText
                 id="cs-firstLastName"
@@ -303,58 +311,61 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
                 createForm.controls.firstLastName.invalid &&
                 createForm.controls.firstLastName.touched
               ) {
-                <small class="field-error">Last name is required.</small>
+                <small class="field-error" i18n="@@admin.users.create.lastName.error">El apellido es obligatorio.</small>
               }
             </div>
           </div>
 
           <div class="field">
-            <label for="cs-username">Username</label>
+            <label for="cs-username" i18n="@@admin.users.create.username.label">Usuario</label>
             <input
               pInputText
               id="cs-username"
               type="text"
               formControlName="username"
               autocomplete="off"
-              placeholder="e.g. jdoe"
+              i18n-placeholder="@@admin.users.create.username.placeholder"
+              placeholder="p. ej. jdoe"
               fluid
             />
             @if (
               createForm.controls.username.invalid &&
               createForm.controls.username.touched
             ) {
-              <small class="field-error">Username is required.</small>
+              <small class="field-error" i18n="@@admin.users.create.username.error">El usuario es obligatorio.</small>
             }
           </div>
 
           <div class="field">
-            <label for="cs-email">Email</label>
+            <label for="cs-email" i18n="@@admin.users.create.email.label">Correo electrónico</label>
             <input
               pInputText
               id="cs-email"
               type="email"
               formControlName="email"
               autocomplete="off"
-              placeholder="name@hospital.org"
+              i18n-placeholder="@@admin.users.create.email.placeholder"
+              placeholder="nombre@hospital.org"
               fluid
             />
             @if (
               createForm.controls.email.invalid &&
               createForm.controls.email.touched
             ) {
-              <small class="field-error">Enter a valid email address.</small>
+              <small class="field-error" i18n="@@admin.users.create.email.error">Ingrese una dirección de correo electrónico válida.</small>
             }
           </div>
 
           <div class="field">
-            <label for="cs-role">Role</label>
+            <label for="cs-role" i18n="@@admin.users.create.role.label">Rol</label>
             <p-select
               inputId="cs-role"
               formControlName="role"
               [options]="staffRoleOptions"
               optionLabel="label"
               optionValue="value"
-              placeholder="Select a staff role"
+              i18n-placeholder="@@admin.users.create.role.placeholder"
+              placeholder="Seleccione un rol de personal"
               [filter]="true"
               filterBy="label"
               appendTo="body"
@@ -365,32 +376,34 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
               createForm.controls.role.invalid &&
               createForm.controls.role.touched
             ) {
-              <small class="field-error">Select a staff role.</small>
+              <small class="field-error" i18n="@@admin.users.create.role.error">Seleccione un rol de personal.</small>
             }
           </div>
 
           <div class="field">
-            <label for="cs-tempPassword">Temporary password</label>
+            <label for="cs-tempPassword" i18n="@@admin.users.create.tempPassword.label">Contraseña temporal</label>
             <p-password
               inputId="cs-tempPassword"
               formControlName="tempPassword"
               [feedback]="false"
               [toggleMask]="true"
               autocomplete="off"
-              placeholder="At least 8 characters"
+              i18n-placeholder="@@admin.users.create.tempPassword.placeholder"
+              placeholder="Al menos 8 caracteres"
               fluid
             />
             @if (
               createForm.controls.tempPassword.invalid &&
               createForm.controls.tempPassword.touched
             ) {
-              <small class="field-error">Use at least 8 characters.</small>
+              <small class="field-error" i18n="@@admin.users.create.tempPassword.error">Use al menos 8 caracteres.</small>
             }
           </div>
 
           <div class="dialog-actions">
             <p-button
-              label="Cancel"
+              i18n-label="@@admin.users.create.cancel"
+              label="Cancelar"
               [text]="true"
               type="button"
               (onClick)="createVisible = false"
@@ -398,7 +411,8 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
             />
             <p-button
               type="submit"
-              label="Create staff"
+              i18n-label="@@admin.users.createStaff.submit"
+              label="Crear personal"
               icon="pi pi-user-plus"
               [loading]="creating()"
               [disabled]="creating()"
@@ -570,14 +584,17 @@ export class AdminUsers {
         this.createForm.reset();
         this.error.set(null);
         this.createSuccess.set(
-          `Staff account "${created.username}" created. A temporary password was emailed.`,
+          $localize`:@@admin.users.create.success:Se creó la cuenta de personal "${created.username}:USERNAME:". Se envió una contraseña temporal por correo electrónico.`,
         );
         this.refreshCurrentPage();
       },
       error: (err: unknown) => {
         this.creating.set(false);
         this.createError.set(
-          toErrorMessage(err, 'Could not create the staff account.'),
+          toErrorMessage(
+            err,
+            $localize`:@@admin.users.create.error:No se pudo crear la cuenta de personal.`,
+          ),
         );
       },
     });
@@ -591,7 +608,12 @@ export class AdminUsers {
     this.api.get<AdminUser>(`${USERS_PATH}/${user.id}`).subscribe({
       next: full => this.selectedUser.set(full),
       error: err =>
-        this.error.set(toErrorMessage(err, 'Failed to load user detail.')),
+        this.error.set(
+          toErrorMessage(
+            err,
+            $localize`:@@admin.users.detail.error:No se pudo cargar el detalle del usuario.`,
+          ),
+        ),
     });
   }
 
@@ -615,7 +637,12 @@ export class AdminUsers {
         }
       },
       error: err => {
-        this.error.set(toErrorMessage(err, 'Failed to change role.'));
+        this.error.set(
+          toErrorMessage(
+            err,
+            $localize`:@@admin.users.role.error:No se pudo cambiar el rol.`,
+          ),
+        );
         // Revert the dropdown to the user's current role: re-set the list to a
         // fresh array reference so the `[ngModel]` binding re-reads the
         // unchanged role and discards the optimistic selection.

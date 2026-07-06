@@ -32,38 +32,40 @@ export class Workspace {
 
   /** First name for the greeting; falls back to a neutral generic. */
   protected readonly firstName = computed(
-    () => this.auth.currentUser()?.firstName?.trim() || 'there',
+    () =>
+      this.auth.currentUser()?.firstName?.trim() ||
+      $localize`:@@workspace.home.greeting.fallbackName:allí`,
   );
 
   private readonly allLinks: readonly QuickLink[] = [
     {
-      label: 'Templates',
-      description: 'Author and edit document templates.',
+      label: $localize`:@@workspace.home.link.templates.label:Plantillas`,
+      description: $localize`:@@workspace.home.link.templates.description:Cree y edite plantillas de documentos.`,
       icon: 'pi pi-file-edit',
       route: '/templates',
     },
     {
-      label: 'Documents',
-      description: 'Browse and generate documents.',
+      label: $localize`:@@workspace.home.link.documents.label:Documentos`,
+      description: $localize`:@@workspace.home.link.documents.description:Explore y genere documentos.`,
       icon: 'pi pi-folder',
       route: '/documents',
     },
     {
-      label: 'Your profile',
-      description: 'Update your details and password.',
+      label: $localize`:@@workspace.home.link.profile.label:Su perfil`,
+      description: $localize`:@@workspace.home.link.profile.description:Actualice sus datos y contraseña.`,
       icon: 'pi pi-user',
       route: '/profile',
     },
     {
-      label: 'Users',
-      description: 'Manage staff accounts and access.',
+      label: $localize`:@@workspace.home.link.users.label:Usuarios`,
+      description: $localize`:@@workspace.home.link.users.description:Administre las cuentas y el acceso del personal.`,
       icon: 'pi pi-users',
       route: '/system-admin/users',
       adminOnly: true,
     },
     {
-      label: 'Settings',
-      description: 'Configure system settings.',
+      label: $localize`:@@workspace.home.link.settings.label:Configuración`,
+      description: $localize`:@@workspace.home.link.settings.description:Configure los ajustes del sistema.`,
       icon: 'pi pi-cog',
       route: '/system-admin/settings',
       adminOnly: true,

@@ -198,7 +198,7 @@ export function renderPreview(input: {
   } catch (err) {
     return {
       ok: false,
-      error: `Invalid sample-data JSON: ${(err as Error).message}`,
+      error: $localize`:@@templates.preview.error.invalidJson:JSON de datos de muestra inválido: ${(err as Error).message}:MESSAGE:`,
     };
   }
 
@@ -210,7 +210,10 @@ export function renderPreview(input: {
     });
     return { ok: true, html };
   } catch (err) {
-    return { ok: false, error: `Template error: ${(err as Error).message}` };
+    return {
+      ok: false,
+      error: $localize`:@@templates.preview.error.templateError:Error de plantilla: ${(err as Error).message}:MESSAGE:`,
+    };
   }
 }
 

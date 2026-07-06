@@ -1,11 +1,12 @@
 <div class="page" data-testid="admin-settings">
   <header class="page-header">
     <div>
-      <span class="page-eyebrow">ADMIN · SETTINGS</span>
-      <h1 class="page-title">Runtime settings</h1>
-      <p class="page-subtitle">
-        Live operational configuration applied without a redeploy. Secret values
-        are masked and never displayed — leave a secret blank to keep it.
+      <span class="page-eyebrow" i18n="@@admin.settings.page.eyebrow">ADMIN · CONFIGURACIÓN</span>
+      <h1 class="page-title" i18n="@@admin.settings.page.title">Configuración en tiempo de ejecución</h1>
+      <p class="page-subtitle" i18n="@@admin.settings.page.subtitle">
+        Configuración operativa en vivo aplicada sin necesidad de un nuevo
+        despliegue. Los valores secretos se enmascaran y nunca se muestran —
+        deje un secreto en blanco para conservarlo.
       </p>
     </div>
   </header>
@@ -42,7 +43,7 @@
                       <label [for]="field.item.key">
                         <span class="mono">{{ field.item.key }}</span>
                         @if (field.item.isSecret) {
-                          <span class="pill pill--neutral">secret</span>
+                          <span class="pill pill--neutral" i18n="@@admin.settings.field.secretPill">secreto</span>
                         }
                       </label>
 
@@ -55,16 +56,12 @@
                           [ngModel]="field.draft"
                           [ngModelOptions]="{ standalone: true }"
                           (ngModelChange)="onFieldInput(field, $event)"
-                          [placeholder]="
-                            field.item.isSet
-                              ? 'A value is set — leave blank to keep it'
-                              : 'Not set'
-                          "
+                          [placeholder]="secretPlaceholder(field.item)"
                           [attr.data-testid]="'secret-' + field.item.key"
                         />
                         @if (field.item.isSet) {
-                          <small class="muted">
-                            A value is stored. Leave blank to keep it unchanged.
+                          <small class="muted" i18n="@@admin.settings.secret.hint">
+                            Ya hay un valor guardado. Déjelo en blanco para no modificarlo.
                           </small>
                         }
                       } @else {
@@ -82,7 +79,7 @@
                   } @empty {
                     <div class="empty-state">
                       <i class="pi pi-sliders-h"></i>
-                      No settings in this category.
+                      <span i18n="@@admin.settings.empty">No hay configuraciones en esta categoría.</span>
                     </div>
                   }
                 </div>
@@ -90,7 +87,8 @@
                 <div class="page-actions">
                   <p-button
                     type="submit"
-                    label="Save"
+                    i18n-label="@@admin.settings.submit"
+                    label="Guardar"
                     icon="pi pi-check"
                     [loading]="saving()"
                     data-testid="settings-save"

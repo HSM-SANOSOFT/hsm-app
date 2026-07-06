@@ -1,4 +1,4 @@
-import { resolveBootLocale, LANG_STORAGE_KEY } from './language.service';
+import { LANG_STORAGE_KEY, resolveBootLocale } from './language.service';
 
 describe('resolveBootLocale', () => {
   it('defaults to es when nothing is set', () => {

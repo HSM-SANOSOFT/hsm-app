@@ -32,7 +32,8 @@ import { ViewTabs } from './nav/view-tabs';
           <div class="topbar-spacer"></div>
           @if (pwa.installAvailable()) {
             <p-button
-              label="Install app"
+              i18n-label="@@layout.shell.installApp"
+              label="Instalar aplicación"
               icon="pi pi-download"
               severity="secondary"
               [text]="true"

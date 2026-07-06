@@ -140,7 +140,7 @@ describe('composeTemplatePreview / renderPreview (R16)', () => {
     });
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.error).toContain('Invalid sample-data JSON');
+      expect(result.error).toContain('JSON de datos de muestra inválido');
     }
   });
 

@@ -25,6 +25,8 @@ export class Patient {
 
   /** First name for the greeting; falls back to a warm generic if absent. */
   protected readonly firstName = computed(
-    () => this.auth.currentUser()?.firstName?.trim() || 'there',
+    () =>
+      this.auth.currentUser()?.firstName?.trim() ||
+      $localize`:@@patient.home.greeting.fallbackName:allí`,
   );
 }

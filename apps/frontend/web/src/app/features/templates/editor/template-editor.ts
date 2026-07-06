@@ -198,7 +198,9 @@ export class TemplateEditor {
         },
         error: (err: unknown) => {
           this.loadError.set(
-            err instanceof Error ? err.message : 'Failed to load template.',
+            err instanceof Error
+              ? err.message
+              : $localize`:@@templates.editor.error.load:No se pudo cargar la plantilla.`,
           );
         },
       });

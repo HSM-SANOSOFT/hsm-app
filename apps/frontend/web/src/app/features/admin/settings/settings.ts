@@ -33,10 +33,22 @@ const CATEGORY_TABS: ReadonlyArray<{
   value: SettingsCategoryEnum;
   label: string;
 }> = [
-  { value: SettingsCategoryEnum.EMAIL, label: 'Email' },
-  { value: SettingsCategoryEnum.WEBHOOK, label: 'Webhook' },
-  { value: SettingsCategoryEnum.STORAGE, label: 'Storage' },
-  { value: SettingsCategoryEnum.APP_BEHAVIOR, label: 'App behavior' },
+  {
+    value: SettingsCategoryEnum.EMAIL,
+    label: $localize`:@@admin.settings.tab.email:Correo electrónico`,
+  },
+  {
+    value: SettingsCategoryEnum.WEBHOOK,
+    label: $localize`:@@admin.settings.tab.webhook:Webhook`,
+  },
+  {
+    value: SettingsCategoryEnum.STORAGE,
+    label: $localize`:@@admin.settings.tab.storage:Almacenamiento`,
+  },
+  {
+    value: SettingsCategoryEnum.APP_BEHAVIOR,
+    label: $localize`:@@admin.settings.tab.appBehavior:Comportamiento de la aplicación`,
+  },
 ];
 
 /**
@@ -112,6 +124,13 @@ export class AdminSettings {
     this.loadCategory(category);
   }
 
+  /** Placeholder for a secret input, based on whether a value is stored. */
+  protected secretPlaceholder(item: SettingItem): string {
+    return item.isSet
+      ? $localize`:@@admin.settings.secret.placeholderSet:Hay un valor establecido — déjelo en blanco para conservarlo`
+      : $localize`:@@admin.settings.secret.placeholderUnset:No establecido`;
+  }
+
   /** Tracks per-field edits, marking the field dirty. */
   protected onFieldInput(field: SettingField, value: string): void {
     this.fields.update(list =>
@@ -136,7 +155,10 @@ export class AdminSettings {
         error: (err: unknown) => {
           this.loading.set(false);
           this.errorMessage.set(
-            toErrorMessage(err, 'Something went wrong. Please try again.'),
+            toErrorMessage(
+              err,
+              $localize`:@@admin.settings.error.generic:Algo salió mal. Intente de nuevo.`,
+            ),
           );
         },
       });
@@ -170,8 +192,8 @@ export class AdminSettings {
     if (settings.length === 0) {
       this.messages.add({
         severity: 'info',
-        summary: 'Nothing to save',
-        detail: 'No changes to apply for this category.',
+        summary: $localize`:@@admin.settings.toast.nothingToSave.summary:Nada que guardar`,
+        detail: $localize`:@@admin.settings.toast.nothingToSave.detail:No hay cambios que aplicar para esta categoría.`,
       });
       return;
     }
@@ -188,20 +210,20 @@ export class AdminSettings {
         this.saving.set(false);
         this.messages.add({
           severity: 'success',
-          summary: 'Settings saved',
-          detail: 'Configuration updated successfully.',
+          summary: $localize`:@@admin.settings.toast.saved.summary:Configuración guardada`,
+          detail: $localize`:@@admin.settings.toast.saved.detail:Configuración actualizada correctamente.`,
         });
       },
       error: (err: unknown) => {
         this.saving.set(false);
         const detail = toErrorMessage(
           err,
-          'Something went wrong. Please try again.',
+          $localize`:@@admin.settings.error.generic:Algo salió mal. Intente de nuevo.`,
         );
         this.errorMessage.set(detail);
         this.messages.add({
           severity: 'error',
-          summary: 'Save failed',
+          summary: $localize`:@@admin.settings.toast.saveFailed.summary:Error al guardar`,
           detail,
         });
       },
