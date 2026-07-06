@@ -1,3 +1,4 @@
+import { ApiErrorCode } from '@hsm/common/enums';
 import { GUARDS_METADATA } from '@nestjs/common/constants';
 import {
   ApiBadRequestResponse,
@@ -91,37 +92,37 @@ describe('ApiDocumentation', () => {
   // ── U1: status-code-specific issue examples ───────────────────────────────
 
   describe('error response issue examples', () => {
-    it('400 issue code is VALIDATION_ERROR', () => {
+    it('400 issue code is the stable validation code', () => {
       applyDecorator();
       const { schema } = (ApiBadRequestResponse as jest.Mock).mock.calls[0][0];
       expect(schema.allOf[1].properties.issue.properties.code.example).toBe(
-        'VALIDATION_ERROR',
+        ApiErrorCode.Validation,
       );
     });
 
-    it('401 issue code is UNAUTHORIZED', () => {
+    it('401 issue code is the stable unauthorized code', () => {
       applyDecorator();
       const { schema } = (ApiUnauthorizedResponse as jest.Mock).mock
         .calls[0][0];
       expect(schema.allOf[1].properties.issue.properties.code.example).toBe(
-        'UNAUTHORIZED',
+        ApiErrorCode.Unauthorized,
       );
     });
 
-    it('403 issue code is FORBIDDEN', () => {
+    it('403 issue code is the stable forbidden code', () => {
       applyDecorator();
       const { schema } = (ApiForbiddenResponse as jest.Mock).mock.calls[0][0];
       expect(schema.allOf[1].properties.issue.properties.code.example).toBe(
-        'FORBIDDEN',
+        ApiErrorCode.Forbidden,
       );
     });
 
-    it('500 issue code is INTERNAL_SERVER_ERROR', () => {
+    it('500 issue code is the stable internal code', () => {
       applyDecorator();
       const { schema } = (ApiInternalServerErrorResponse as jest.Mock).mock
         .calls[0][0];
       expect(schema.allOf[1].properties.issue.properties.code.example).toBe(
-        'INTERNAL_SERVER_ERROR',
+        ApiErrorCode.Internal,
       );
     });
   });

@@ -16,6 +16,10 @@ export function apiMessage(code: string): string {
       return $localize`:@@api.error.forbidden:No tiene permiso para esta acción`;
     case ApiErrorCode.NotFound:
       return $localize`:@@api.error.notFound:Recurso no encontrado`;
+    case ApiErrorCode.Conflict:
+      return $localize`:@@api.error.conflict:El registro ya existe o está en conflicto`;
+    case ApiErrorCode.TooManyRequests:
+      return $localize`:@@api.error.tooManyRequests:Demasiados intentos. Espere un momento e intente de nuevo`;
     case ApiErrorCode.Validation:
       return $localize`:@@api.error.validation:Revise los datos ingresados`;
     default:

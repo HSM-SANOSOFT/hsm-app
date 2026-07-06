@@ -30,53 +30,67 @@
           <context context-type="linenumber">18</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="api.error.conflict" datatype="html">
+        <source>El registro ya existe o está en conflicto</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/i18n/api-messages.ts</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="api.error.tooManyRequests" datatype="html">
+        <source>Demasiados intentos. Espere un momento e intente de nuevo</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/i18n/api-messages.ts</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="api.error.validation" datatype="html">
         <source>Revise los datos ingresados</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/i18n/api-messages.ts</context>
-          <context context-type="linenumber">20</context>
+          <context context-type="linenumber">24</context>
         </context-group>
       </trans-unit>
       <trans-unit id="api.error.unexpected" datatype="html">
         <source>Ocurrió un error inesperado</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/i18n/api-messages.ts</context>
-          <context context-type="linenumber">22</context>
+          <context context-type="linenumber">26</context>
         </context-group>
       </trans-unit>
       <trans-unit id="api.validation.required" datatype="html">
         <source>Campo obligatorio</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/i18n/api-messages.ts</context>
-          <context context-type="linenumber">33</context>
+          <context context-type="linenumber">37</context>
         </context-group>
       </trans-unit>
       <trans-unit id="api.validation.email" datatype="html">
         <source>Correo inválido</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/i18n/api-messages.ts</context>
-          <context context-type="linenumber">35</context>
+          <context context-type="linenumber">39</context>
         </context-group>
       </trans-unit>
       <trans-unit id="api.validation.minLength" datatype="html">
         <source>Demasiado corto</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/i18n/api-messages.ts</context>
-          <context context-type="linenumber">37</context>
+          <context context-type="linenumber">41</context>
         </context-group>
       </trans-unit>
       <trans-unit id="api.validation.maxLength" datatype="html">
         <source>Demasiado largo</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/i18n/api-messages.ts</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">43</context>
         </context-group>
       </trans-unit>
       <trans-unit id="api.validation.invalid" datatype="html">
         <source>Valor inválido</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/i18n/api-messages.ts</context>
-          <context context-type="linenumber">41</context>
+          <context context-type="linenumber">45</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.settings.page.eyebrow" datatype="html">

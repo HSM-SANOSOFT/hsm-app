@@ -3,8 +3,10 @@ import { ApiErrorCode } from '@hsm/common/enums';
 import {
   ArgumentsHost,
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   HttpException,
+  HttpStatus,
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -47,6 +49,18 @@ describe('ResponseFilter — issue.code', () => {
     expect(payload.issue.code).toBe(ApiErrorCode.Internal);
   });
 
+  it('maps a bare 409 to COMMON.CONFLICT', () => {
+    const payload = runFilter(new ConflictException());
+    expect(payload.issue.code).toBe(ApiErrorCode.Conflict);
+  });
+
+  it('maps a raw 429 to COMMON.TOO_MANY_REQUESTS', () => {
+    const payload = runFilter(
+      new HttpException('rate limited', HttpStatus.TOO_MANY_REQUESTS),
+    );
+    expect(payload.issue.code).toBe(ApiErrorCode.TooManyRequests);
+  });
+
   it('preserves an explicit code from the thrown payload', () => {
     const payload = runFilter(
       new UnauthorizedException({
@@ -54,6 +68,25 @@ describe('ResponseFilter — issue.code', () => {
       }),
     );
     expect(payload.issue.code).toBe(ApiErrorCode.InvalidCredentials);
+  });
+
+  it('fills Internal for a TypeOrmExceptionFilter-shaped 500 (issue without code)', () => {
+    // Mirrors the { statusCode, issue: { detail, message, field } } payload the
+    // TypeOrmExceptionFilter throws — no explicit code, so the status map fills it.
+    const payload = runFilter(
+      new HttpException(
+        {
+          issue: {
+            detail: '[23505] duplicate key',
+            message: 'Query failed',
+            field: 'Schema: public, Table: users',
+          },
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      ),
+    );
+    expect(payload.issue.code).toBe(ApiErrorCode.Internal);
+    expect(payload.issue.detail).toBe('[23505] duplicate key');
   });
 });
 

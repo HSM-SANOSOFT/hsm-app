@@ -10,6 +10,10 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import {
+  collectValidationDetails,
+  flattenValidationMessages,
+} from './validation-details.util';
 
 /**
  * Type guards
@@ -20,59 +24,6 @@ function isRecord(v: unknown): v is Record<string, unknown> {
 
 function isStringArray(v: unknown): v is string[] {
   return Array.isArray(v) && v.every(x => typeof x === 'string');
-}
-
-/**
- * Flatten class-validator ValidationError[]
- */
-function flattenValidationErrors(errors: unknown[]): string[] {
-  const messages: string[] = [];
-
-  for (const err of errors) {
-    if (isRecord(err) && isRecord(err['constraints'])) {
-      messages.push(
-        ...Object.values(err['constraints']).filter(v => typeof v === 'string'),
-      );
-    }
-
-    // support nested children (just in case)
-    if (isRecord(err) && Array.isArray(err['children'])) {
-      messages.push(...flattenValidationErrors(err['children']));
-    }
-  }
-
-  return messages;
-}
-
-/**
- * Collect structured, per-field validation failures from a class-validator
- * ValidationError[] — `{ field, constraints: [<constraint keys>] }`. The
- * constraint keys (e.g. `isEmail`, `isNotEmpty`) are stable and locale-free;
- * the frontend maps them to localized messages.
- */
-function collectValidationDetails(
-  errors: unknown[],
-): { field: string; constraints: string[] }[] {
-  const details: { field: string; constraints: string[] }[] = [];
-
-  for (const err of errors) {
-    if (
-      isRecord(err) &&
-      typeof err['property'] === 'string' &&
-      isRecord(err['constraints'])
-    ) {
-      details.push({
-        field: err['property'],
-        constraints: Object.keys(err['constraints']),
-      });
-    }
-
-    if (isRecord(err) && Array.isArray(err['children'])) {
-      details.push(...collectValidationDetails(err['children']));
-    }
-  }
-
-  return details;
 }
 
 /**
@@ -87,6 +38,10 @@ function codeForStatus(status: number): ApiErrorCode {
       return ApiErrorCode.Forbidden;
     case 404:
       return ApiErrorCode.NotFound;
+    case 409:
+      return ApiErrorCode.Conflict;
+    case 429:
+      return ApiErrorCode.TooManyRequests;
     case 400:
     case 422:
       return ApiErrorCode.Validation;
@@ -134,7 +89,7 @@ export class ResponseFilter implements ExceptionFilter {
        * - string
        */
       if (Array.isArray(msg) && msg.length && isRecord(msg[0])) {
-        const flattened = flattenValidationErrors(msg);
+        const flattened = flattenValidationMessages(msg);
         if (flattened.length) {
           issue.issue.message = flattened;
         }

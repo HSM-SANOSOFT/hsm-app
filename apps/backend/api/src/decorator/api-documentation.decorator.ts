@@ -1,4 +1,5 @@
 import { SuccessResponseDto, UnsuccessResponseDto } from '@hsm/common/dtos';
+import { ApiErrorCode } from '@hsm/common/enums';
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 import { GUARDS_METADATA, PATH_METADATA } from '@nestjs/common/constants';
 import { Reflector } from '@nestjs/core';
@@ -36,37 +37,49 @@ const getIssueExample = (
   switch (httpCode) {
     case HttpStatus.BAD_REQUEST:
       return {
-        code: 'VALIDATION_ERROR',
+        code: ApiErrorCode.Validation,
         message: 'Validation failed.',
         error: 'Bad Request',
       };
     case HttpStatus.UNAUTHORIZED:
       return {
-        code: 'UNAUTHORIZED',
+        code: ApiErrorCode.Unauthorized,
         message: 'Authentication required.',
         error: 'Unauthorized',
       };
     case HttpStatus.FORBIDDEN:
       return {
-        code: 'FORBIDDEN',
+        code: ApiErrorCode.Forbidden,
         message: 'Insufficient permissions.',
         error: 'Forbidden',
       };
     case HttpStatus.NOT_FOUND:
       return {
-        code: 'NOT_FOUND',
+        code: ApiErrorCode.NotFound,
         message: 'Resource not found.',
         error: 'Not Found',
       };
+    case HttpStatus.CONFLICT:
+      return {
+        code: ApiErrorCode.Conflict,
+        message: 'The record already exists or is in conflict.',
+        error: 'Conflict',
+      };
+    case HttpStatus.TOO_MANY_REQUESTS:
+      return {
+        code: ApiErrorCode.TooManyRequests,
+        message: 'Too many requests. Try again shortly.',
+        error: 'Too Many Requests',
+      };
     case HttpStatus.BAD_GATEWAY:
       return {
-        code: 'BAD_GATEWAY',
+        code: ApiErrorCode.Internal,
         message: 'Upstream service unavailable.',
         error: 'Bad Gateway',
       };
     default:
       return {
-        code: 'INTERNAL_SERVER_ERROR',
+        code: ApiErrorCode.Internal,
         message: 'An unexpected error occurred.',
         error: 'Internal Server Error',
       };

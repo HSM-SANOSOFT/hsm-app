@@ -9,6 +9,8 @@ export enum ApiErrorCode {
   Unauthorized = 'COMMON.UNAUTHORIZED',
   Forbidden = 'COMMON.FORBIDDEN',
   NotFound = 'COMMON.NOT_FOUND',
+  Conflict = 'COMMON.CONFLICT',
+  TooManyRequests = 'COMMON.TOO_MANY_REQUESTS',
   Validation = 'COMMON.VALIDATION',
   Internal = 'COMMON.INTERNAL',
   // auth domain

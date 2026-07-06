@@ -10,6 +10,10 @@ import {
 } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import {
+  collectValidationDetails,
+  flattenValidationMessages,
+} from './filters/validation-details.util';
 import { HttpLoggingInterceptor } from './interceptors';
 import { MainModule } from './main.module';
 
@@ -60,11 +64,10 @@ async function bootstrap() {
       // `code` and structured, per-field constraint keys the frontend maps to
       // localized copy (spec U7). The `ResponseFilter` trusts this `issue`.
       exceptionFactory: (errors: ValidationError[]) => {
-        const details = errors.map(e => ({
-          field: e.property,
-          constraints: Object.keys(e.constraints ?? {}),
-        }));
-        const message = errors.flatMap(e => Object.values(e.constraints ?? {}));
+        // Recurse into `children` so failures inside @ValidateNested() bodies
+        // surface their real constraint keys instead of an empty list.
+        const details = collectValidationDetails(errors);
+        const message = flattenValidationMessages(errors);
         return new BadRequestException({
           issue: {
             code: ApiErrorCode.Validation,

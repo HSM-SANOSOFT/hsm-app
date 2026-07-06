@@ -1374,6 +1374,14 @@
         <source>Recurso no encontrado</source>
         <target>Resource not found</target>
       </trans-unit>
+      <trans-unit id="api.error.conflict" datatype="html">
+        <source>El registro ya existe o está en conflicto</source>
+        <target>The record already exists or is in conflict</target>
+      </trans-unit>
+      <trans-unit id="api.error.tooManyRequests" datatype="html">
+        <source>Demasiados intentos. Espere un momento e intente de nuevo</source>
+        <target>Too many attempts. Wait a moment and try again</target>
+      </trans-unit>
       <trans-unit id="api.error.validation" datatype="html">
         <source>Revise los datos ingresados</source>
         <target>Please review the entered data</target>
