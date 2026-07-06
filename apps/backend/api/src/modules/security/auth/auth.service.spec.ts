@@ -1,4 +1,4 @@
-import { RolesEnum } from '@hsm/common/enums';
+import { ApiErrorCode, RolesEnum } from '@hsm/common/enums';
 import type { IUnsignedUser } from '@hsm/common/interfaces';
 import { envs } from '@hsm/config';
 import {
@@ -9,6 +9,7 @@ import { DatabasesEnum } from '@hsm/database/sources';
 import {
   BadRequestException,
   Logger,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -220,6 +221,28 @@ describe('AuthService', () => {
       await expect(
         service.validateUser('jdoe', 'wrong'),
       ).rejects.toBeInstanceOf(UnauthorizedException);
+    });
+
+    it('remaps an unknown username to the same coded invalid-credentials error (no user enumeration)', async () => {
+      mockUsersService.findOneByUsername.mockRejectedValue(
+        new NotFoundException('User with username ghost not found'),
+      );
+
+      // Same exception type + code as a wrong password → indistinguishable.
+      const err = await service
+        .validateUser('ghost', 'whatever')
+        .catch((e: unknown) => e);
+      expect(err).toBeInstanceOf(UnauthorizedException);
+      expect((err as UnauthorizedException).getResponse()).toMatchObject({
+        issue: { code: ApiErrorCode.InvalidCredentials },
+      });
+    });
+
+    it('propagates a non-not-found lookup failure unchanged', async () => {
+      const boom = new Error('db down');
+      mockUsersService.findOneByUsername.mockRejectedValue(boom);
+
+      await expect(service.validateUser('jdoe', 'pw')).rejects.toBe(boom);
     });
   });
 

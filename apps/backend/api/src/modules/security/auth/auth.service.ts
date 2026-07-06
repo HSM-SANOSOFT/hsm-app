@@ -27,6 +27,7 @@ import {
   ForbiddenException,
   Injectable,
   Logger,
+  NotFoundException,
   OnModuleInit,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -173,7 +174,25 @@ export class AuthService implements OnModuleInit {
    * @returns A promise that resolves to an unsigned user object if valid; otherwise throws an exception
    */
   async validateUser(username: string, pass: string): Promise<IUnsignedUser> {
-    const user = await this.usersService.findOneByUsername(username);
+    let user: Awaited<ReturnType<UsersService['findOneByUsername']>>;
+    try {
+      user = await this.usersService.findOneByUsername(username);
+    } catch (err) {
+      // Do NOT distinguish an unknown username from a wrong password: both
+      // must surface the same coded invalid-credentials error, or the login
+      // form leaks which accounts exist (user enumeration) and shows the wrong
+      // message ("Recurso no encontrado") for a mistyped username. Only the
+      // not-found case is remapped; real failures (DB, etc.) propagate.
+      if (err instanceof NotFoundException) {
+        throw new UnauthorizedException({
+          issue: {
+            code: ApiErrorCode.InvalidCredentials,
+            message: 'Invalid credentials',
+          },
+        });
+      }
+      throw err;
+    }
     const passwordValid = await bcrypt.compare(pass, user.password);
     if (!passwordValid) {
       throw new UnauthorizedException({

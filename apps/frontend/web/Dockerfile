@@ -29,6 +29,10 @@ WORKDIR /app
 # rewrites).
 COPY --from=builder /app/apps/frontend/web/dist/browser ./dist
 COPY --from=builder /app/apps/frontend/web/serve.json ./dist/serve.json
+# The localized build emits no bundle at the site root; ship the client-side
+# locale chooser (honours persisted hsm.lang) as ./dist/index.html — serve.json
+# routes / and any non-locale-prefixed path to it.
+COPY --from=builder /app/apps/frontend/web/serve-root/index.html ./dist/index.html
 
 EXPOSE 4200
 CMD ["serve", "dist", "-l", "4200"]

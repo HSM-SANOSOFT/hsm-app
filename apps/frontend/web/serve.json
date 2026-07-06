@@ -1,7 +1,7 @@
 {
-  "redirects": [{ "source": "/", "destination": "/es/", "type": 302 }],
   "rewrites": [
     { "source": "/es/**", "destination": "/es/index.html" },
-    { "source": "/en/**", "destination": "/en/index.html" }
+    { "source": "/en/**", "destination": "/en/index.html" },
+    { "source": "**", "destination": "/index.html" }
   ]
 }
