@@ -2286,7 +2286,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="layout.navTree.workspace" datatype="html">
-        <source>Espacio de trabajo</source>
+        <source>Trabajo</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
           <context context-type="linenumber">239</context>
@@ -2657,7 +2657,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="layout.navTree.diagnostics" datatype="html">
-        <source>Diagnóstico y Terapéutica</source>
+        <source>Diagnósticos</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
           <context context-type="linenumber">575</context>
@@ -2818,7 +2818,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="layout.navTree.business" datatype="html">
-        <source>Negocio / ERP</source>
+        <source>Negocio</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
           <context context-type="linenumber">721</context>
@@ -3189,7 +3189,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="layout.navTree.governance" datatype="html">
-        <source>Gobernanza y Soporte</source>
+        <source>Gobernanza</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
           <context context-type="linenumber">1052</context>
@@ -3469,7 +3469,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="layout.navTree.patientPortal" datatype="html">
-        <source>Portal del Paciente</source>
+        <source>Portal</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
           <context context-type="linenumber">1323</context>
@@ -3532,7 +3532,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="layout.navTree.adminExit" datatype="html">
-        <source>Volver a la consola</source>
+        <source>Volver</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/layout/nav/nav-node.ts</context>
           <context context-type="linenumber">1400</context>

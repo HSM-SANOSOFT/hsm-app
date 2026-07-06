@@ -236,7 +236,7 @@ export function normalizeUrl(url: string): string {
 export const NAV_TREE: readonly NavNode[] = [
   {
     id: 'workspace',
-    label: $localize`:@@layout.navTree.workspace:Espacio de trabajo`,
+    label: $localize`:@@layout.navTree.workspace:Trabajo`,
     icon: 'pi pi-th-large',
     route: '/workspace',
     kind: 'module',
@@ -572,7 +572,7 @@ export const NAV_TREE: readonly NavNode[] = [
   // ── Domain 2 — Diagnostics & Therapeutics ──────────────────────────────
   {
     id: 'diagnostics',
-    label: $localize`:@@layout.navTree.diagnostics:Diagnóstico y Terapéutica`,
+    label: $localize`:@@layout.navTree.diagnostics:Diagnósticos`,
     icon: 'pi pi-image',
     kind: 'module',
     audience: 'staff',
@@ -718,7 +718,7 @@ export const NAV_TREE: readonly NavNode[] = [
   // ── Domain 3 — Business / ERP ──────────────────────────────────────────
   {
     id: 'business',
-    label: $localize`:@@layout.navTree.business:Negocio / ERP`,
+    label: $localize`:@@layout.navTree.business:Negocio`,
     icon: 'pi pi-briefcase',
     kind: 'module',
     audience: 'staff',
@@ -1049,7 +1049,7 @@ export const NAV_TREE: readonly NavNode[] = [
   // ── Domain 4 — Governance & Support ────────────────────────────────────
   {
     id: 'governance',
-    label: $localize`:@@layout.navTree.governance:Gobernanza y Soporte`,
+    label: $localize`:@@layout.navTree.governance:Gobernanza`,
     icon: 'pi pi-shield',
     kind: 'module',
     audience: 'staff',
@@ -1320,7 +1320,7 @@ export const NAV_TREE: readonly NavNode[] = [
   // never shows it and `filterTree` keeps the whole branch for a patient.
   {
     id: 'patient-portal',
-    label: $localize`:@@layout.navTree.patientPortal:Portal del Paciente`,
+    label: $localize`:@@layout.navTree.patientPortal:Portal`,
     icon: 'pi pi-user',
     kind: 'module',
     audience: 'patient',
@@ -1397,7 +1397,7 @@ export const NAV_TREE: readonly NavNode[] = [
 export const ADMIN_NAV_TREE: readonly NavNode[] = [
   {
     id: 'admin-exit',
-    label: $localize`:@@layout.navTree.adminExit:Volver a la consola`,
+    label: $localize`:@@layout.navTree.adminExit:Volver`,
     icon: 'pi pi-arrow-left',
     route: '/',
     kind: 'module',
