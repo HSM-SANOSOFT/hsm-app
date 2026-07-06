@@ -8,7 +8,11 @@
   "projects": {
     "web": {
       "projectType": "application",
-      "schematics": {},
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
@@ -47,7 +51,8 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              "node_modules/primeicons/primeicons.css",
+              "src/styles.scss"
             ],
             "loader": {
               ".ttf": "file",
@@ -55,7 +60,8 @@
             },
             "allowedCommonJsDependencies": [
               "handlebars"
-            ]
+            ],
+            "inlineStyleLanguage": "scss"
           },
           "configurations": {
             "production": {

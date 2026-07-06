@@ -8,7 +8,9 @@
    with. PrimeNG is registered under a CSS layer (app.config.ts), so these
    unlayered rules win without `!important`.
    ============================================================================ */
-@import "primeicons/primeicons.css";
+/* primeicons is loaded via angular.json `styles` (a plain-CSS package import —
+   keeping it out of Sass avoids a passthrough `@import url(...)` that wouldn't
+   resolve at runtime). */
 
 :root {
   /* ---- Brand palette (source of truth — brand-color-style-guide.md) ------ */

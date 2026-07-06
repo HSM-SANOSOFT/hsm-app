@@ -46,7 +46,7 @@ function tokenFromFragment(fragment: string | null): string | null {
     LanguageSwitcher,
   ],
   templateUrl: './reset-password.html',
-  styleUrl: '../../auth.css',
+  styleUrl: '../../auth.scss',
 })
 export class ResetPassword {
   private readonly fb = inject(FormBuilder);

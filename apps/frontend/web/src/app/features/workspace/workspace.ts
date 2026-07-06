@@ -25,7 +25,7 @@ interface QuickLink {
   selector: 'app-workspace',
   imports: [RouterLink],
   templateUrl: './workspace.html',
-  styleUrl: './workspace.css',
+  styleUrl: './workspace.scss',
 })
 export class Workspace {
   private readonly auth = inject(AuthService);

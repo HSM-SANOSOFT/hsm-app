@@ -30,7 +30,7 @@ import { RecoveryService } from '../recovery.service';
     LanguageSwitcher,
   ],
   templateUrl: './request-reset.html',
-  styleUrl: '../../auth.css',
+  styleUrl: '../../auth.scss',
 })
 export class RequestReset {
   private readonly fb = inject(FormBuilder);

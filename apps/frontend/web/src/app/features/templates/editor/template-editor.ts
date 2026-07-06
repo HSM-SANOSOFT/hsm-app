@@ -65,7 +65,7 @@ const PREVIEW_DEBOUNCE_MS = 300;
     MonacoEditor,
   ],
   templateUrl: './template-editor.html',
-  styleUrl: './template-editor.css',
+  styleUrl: './template-editor.scss',
 })
 export class TemplateEditor {
   private readonly api = inject(ApiClient);

@@ -31,7 +31,7 @@ import { OfflineStatusService } from './core/pwa/offline-status.service';
   selector: 'app-root',
   imports: [RouterOutlet],
   templateUrl: './app.html',
-  styleUrl: './app.css',
+  styleUrl: './app.scss',
 })
 export class App implements OnInit {
   private readonly swUpdate = inject(SwUpdate);

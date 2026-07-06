@@ -18,7 +18,7 @@ import { AuthService } from '../../core/auth/auth.service';
   selector: 'app-patient',
   imports: [],
   templateUrl: './patient.html',
-  styleUrl: './patient.css',
+  styleUrl: './patient.scss',
 })
 export class Patient {
   private readonly auth = inject(AuthService);

@@ -42,7 +42,7 @@ import { passwordsMatch } from '../../core/validators/password.validators';
     MessageModule,
   ],
   templateUrl: './onboarding.html',
-  styleUrls: ['../auth/auth.css', './onboarding.css'],
+  styleUrls: ['../auth/auth.scss', './onboarding.scss'],
 })
 export class Onboarding {
   private readonly fb = inject(FormBuilder);

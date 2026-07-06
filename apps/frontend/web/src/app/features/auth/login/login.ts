@@ -36,7 +36,7 @@ const LAST_USERNAME_KEY = 'hsm.lastUsername';
     LanguageSwitcher,
   ],
   templateUrl: './login.html',
-  styleUrl: '../auth.css',
+  styleUrl: '../auth.scss',
 })
 export class Login implements OnInit {
   private readonly fb = inject(FormBuilder);

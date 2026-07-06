@@ -43,7 +43,7 @@ export const USER_ME_PASSWORD_PATH = '/user/me/password';
     MessageModule,
   ],
   templateUrl: './profile.html',
-  styleUrl: './profile.css',
+  styleUrl: './profile.scss',
 })
 export class Profile {
   private readonly fb = inject(FormBuilder);

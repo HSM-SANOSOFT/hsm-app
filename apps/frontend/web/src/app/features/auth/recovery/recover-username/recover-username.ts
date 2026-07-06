@@ -30,7 +30,7 @@ import { RecoveryService } from '../recovery.service';
     LanguageSwitcher,
   ],
   templateUrl: './recover-username.html',
-  styleUrl: '../../auth.css',
+  styleUrl: '../../auth.scss',
 })
 export class RecoverUsername {
   private readonly fb = inject(FormBuilder);

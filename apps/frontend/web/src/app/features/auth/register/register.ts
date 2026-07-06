@@ -32,7 +32,7 @@ import { LanguageSwitcher } from '../../../layout/language-switcher/language-swi
     LanguageSwitcher,
   ],
   templateUrl: './register.html',
-  styleUrl: '../auth.css',
+  styleUrl: '../auth.scss',
 })
 export class Register {
   private readonly fb = inject(FormBuilder);
