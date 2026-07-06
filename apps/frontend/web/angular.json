@@ -13,7 +13,10 @@
       "sourceRoot": "src",
       "prefix": "app",
       "i18n": {
-        "sourceLocale": { "code": "es-EC", "subPath": "es" },
+        "sourceLocale": {
+          "code": "es-EC",
+          "subPath": "es"
+        },
         "locales": {
           "en": {
             "translation": "src/locale/messages.en.xlf",
@@ -81,6 +84,18 @@
                   "with": "src/environments/environment.development.ts"
                 }
               ]
+            },
+            "es": {
+              "localize": [
+                "es-EC"
+              ],
+              "baseHref": "/es/"
+            },
+            "en": {
+              "localize": [
+                "en"
+              ],
+              "baseHref": "/en/"
             }
           },
           "defaultConfiguration": "production"
@@ -92,7 +107,12 @@
               "buildTarget": "web:build:production"
             },
             "development": {
-              "buildTarget": "web:build:development"
+              "buildTarget": "web:build:development,es",
+              "servePath": "/es"
+            },
+            "en": {
+              "buildTarget": "web:build:development,en",
+              "servePath": "/en"
             }
           },
           "defaultConfiguration": "development"

@@ -5,6 +5,7 @@
   "scripts": {
     "ng": "ng",
     "dev": "ng serve",
+    "dev:en": "ng serve --configuration en",
     "start": "ng serve",
     "build": "ng build --localize",
     "watch": "ng build --watch --configuration development",

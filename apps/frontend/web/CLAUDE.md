@@ -25,10 +25,32 @@ scaffolded in unit U6 of the internal-web-console plan
 All commands run from the repo root (inside the dev container).
 
 ```bash
-pnpm --filter @hsm/web dev      # ng serve -> http://localhost:4200
-pnpm --filter @hsm/web build    # ng build -> apps/frontend/web/dist
+pnpm --filter @hsm/web dev      # ng serve (es locale) -> http://localhost:4200/es/
+pnpm --filter @hsm/web dev:en   # ng serve (en locale) -> http://localhost:4200/en/
+pnpm --filter @hsm/web build    # ng build --localize -> dist/browser/{es,en}
 pnpm --filter @hsm/web test     # Vitest smoke + future unit specs
 ```
+
+### i18n dev serving (locale in the URL — matches prod)
+
+The app is a compile-time-localized `@angular/localize` build: each locale is a
+separate bundle served under its own subpath (`/es/`, `/en/`), the same in dev
+and prod. `ng serve` can only serve **one** locale per process, so:
+
+- `dev` serves the **es** locale under `/es/` (baseHref `/es/`, `--serve-path
+  /es`); hitting `/` 302-redirects to `/es`. HMR/watch is intact.
+- `dev:en` serves the **en** locale under `/en/` the same way.
+- Wiring lives in `angular.json`: composable `es`/`en` build configs (`localize`
+  + per-locale `baseHref`) combined into the `development` serve config as
+  `web:build:development,es`. The plain `development` build config stays
+  locale-free so unit tests (`web:build:development`) are unaffected.
+- The in-app language switcher reloads into the other locale's subpath
+  (`LanguageService.switch` → `/en/...`). In dev only the running locale is
+  served, so switching to the *other* locale 404s until you run its `dev:*`
+  script — an inherent single-locale-per-`ng serve` limit, not a bug. In prod
+  the static server serves both subpaths, so switching works end to end.
+- Prod serving: `serve dist/browser` + `serve.json` (root chooser reads
+  `localStorage['hsm.lang']` → `/es/` or `/en/`; per-locale SPA rewrites).
 
 The dev server runs on **4200**. With the API run locally (`pnpm --filter
 @hsm/api start:dev`) it talks to the API on host port **3000**, default `/v1`
