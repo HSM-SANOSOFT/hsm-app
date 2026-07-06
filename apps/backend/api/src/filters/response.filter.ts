@@ -1,4 +1,5 @@
 import { MetadataDto, UnsuccessResponseDto } from '@hsm/common/dtos';
+import { ApiErrorCode } from '@hsm/common/enums';
 import { IUnsuccessResponse } from '@hsm/common/interfaces';
 import { extractApiVersion } from '@hsm/common/utils';
 import {
@@ -43,6 +44,57 @@ function flattenValidationErrors(errors: unknown[]): string[] {
   return messages;
 }
 
+/**
+ * Collect structured, per-field validation failures from a class-validator
+ * ValidationError[] — `{ field, constraints: [<constraint keys>] }`. The
+ * constraint keys (e.g. `isEmail`, `isNotEmpty`) are stable and locale-free;
+ * the frontend maps them to localized messages.
+ */
+function collectValidationDetails(
+  errors: unknown[],
+): { field: string; constraints: string[] }[] {
+  const details: { field: string; constraints: string[] }[] = [];
+
+  for (const err of errors) {
+    if (
+      isRecord(err) &&
+      typeof err['property'] === 'string' &&
+      isRecord(err['constraints'])
+    ) {
+      details.push({
+        field: err['property'],
+        constraints: Object.keys(err['constraints']),
+      });
+    }
+
+    if (isRecord(err) && Array.isArray(err['children'])) {
+      details.push(...collectValidationDetails(err['children']));
+    }
+  }
+
+  return details;
+}
+
+/**
+ * Map an HTTP status to a stable, generic {@link ApiErrorCode}. Used only as a
+ * fallback when the thrown payload did not carry an explicit `issue.code`.
+ */
+function codeForStatus(status: number): ApiErrorCode {
+  switch (status) {
+    case 401:
+      return ApiErrorCode.Unauthorized;
+    case 403:
+      return ApiErrorCode.Forbidden;
+    case 404:
+      return ApiErrorCode.NotFound;
+    case 400:
+    case 422:
+      return ApiErrorCode.Validation;
+    default:
+      return ApiErrorCode.Internal;
+  }
+}
+
 @Catch(HttpException)
 export class ResponseFilter implements ExceptionFilter {
   private readonly logger = new Logger(ResponseFilter.name);
@@ -60,13 +112,13 @@ export class ResponseFilter implements ExceptionFilter {
     );
 
     // Always start empty – never default to framework text
-    let issue: IUnsuccessResponse = { issue: {} };
+    const issue: IUnsuccessResponse = { issue: {} };
 
     /**
      * 1) Payload already follows our API contract → trust it
      */
     if (isRecord(payload) && isRecord(payload['issue'])) {
-      issue = payload['issue'] as IUnsuccessResponse;
+      issue.issue = payload['issue'] as UnsuccessResponseDto['issue'];
     } else if (isRecord(payload)) {
       /**
        * 2) Normalize default Nest / ValidationPipe errors
@@ -85,6 +137,11 @@ export class ResponseFilter implements ExceptionFilter {
         const flattened = flattenValidationErrors(msg);
         if (flattened.length) {
           issue.issue.message = flattened;
+        }
+        const details = collectValidationDetails(msg);
+        if (details.length) {
+          issue.issue.errors = details;
+          issue.issue.code = ApiErrorCode.Validation;
         }
       } else if (isStringArray(msg)) {
         issue.issue.message = msg;
@@ -132,6 +189,12 @@ export class ResponseFilter implements ExceptionFilter {
         }
       }
     }
+
+    /**
+     * Guarantee a stable `code` on every error envelope: trust an explicit
+     * code from the thrown payload, otherwise fall back to the status map.
+     */
+    issue.issue.code = issue.issue.code ?? codeForStatus(status);
 
     /**
      * 3) Final response envelope

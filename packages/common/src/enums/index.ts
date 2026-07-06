@@ -1,3 +1,4 @@
+export * from './api-error-code.enum';
 export * from './auth.enum';
 export * from './clinical.enum';
 export * from './common-response.enum';

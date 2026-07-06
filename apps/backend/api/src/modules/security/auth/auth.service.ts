@@ -5,7 +5,7 @@ import {
   PublicSignupPayloadDto,
   SignupIntegrationTokenPayloadDto,
 } from '@hsm/common/dtos';
-import { RolesEnum } from '@hsm/common/enums';
+import { ApiErrorCode, RolesEnum } from '@hsm/common/enums';
 import {
   IJwtPayloadUser,
   IJwtPayloadUserIntegration,
@@ -176,7 +176,12 @@ export class AuthService implements OnModuleInit {
     const user = await this.usersService.findOneByUsername(username);
     const passwordValid = await bcrypt.compare(pass, user.password);
     if (!passwordValid) {
-      throw new UnauthorizedException('Invalid password');
+      throw new UnauthorizedException({
+        issue: {
+          code: ApiErrorCode.InvalidCredentials,
+          message: 'Invalid password',
+        },
+      });
     }
     const userRoles = user.roles.map(role => role.role);
     return {

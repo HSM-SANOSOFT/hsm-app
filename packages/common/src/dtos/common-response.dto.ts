@@ -18,7 +18,26 @@ import {
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
+import { ApiErrorCode } from '../enums';
 import { FilterDto, SortDto } from './common-request.dto';
+
+@ApiSchema({ name: 'Unsuccess Response.Issue.Error' })
+export class IssueErrorDto {
+  @ApiProperty({
+    description: 'The field that failed validation',
+    example: 'email',
+  })
+  @IsString()
+  field!: string;
+
+  @ApiProperty({
+    description: 'Machine-readable constraint keys that failed for the field',
+    example: ['isEmail', 'isNotEmpty'],
+    type: [String],
+  })
+  @IsArray()
+  constraints!: string[];
+}
 
 @ApiSchema({ name: 'Metadata.Extra.Pagination' })
 export class PaginationDto {
@@ -84,12 +103,26 @@ export class IssueDto {
   error?: string;
 
   @ApiPropertyOptional({
-    description: 'Optional machine-readable error code or identifier',
-    example: 'AUTH_INVALID_CREDENTIALS',
+    description:
+      'Stable, machine-readable error code the frontend maps to localized copy',
+    enum: ApiErrorCode,
+    example: ApiErrorCode.InvalidCredentials,
   })
   @IsOptional()
   @IsString()
-  code?: string;
+  code?: ApiErrorCode;
+
+  @ApiPropertyOptional({
+    description:
+      'Structured, per-field validation failures (constraint keys the ' +
+      'frontend maps to localized messages)',
+    type: () => [IssueErrorDto],
+  })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => IssueErrorDto)
+  errors?: IssueErrorDto[];
 
   @ApiPropertyOptional({
     description:

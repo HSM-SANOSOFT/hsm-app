@@ -1,6 +1,13 @@
+import { ApiErrorCode } from '@hsm/common/enums';
 import { freePort } from '@hsm/common/utils';
 import { envs } from '@hsm/config';
-import { ConsoleLogger, ValidationPipe, VersioningType } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConsoleLogger,
+  type ValidationError,
+  ValidationPipe,
+  VersioningType,
+} from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpLoggingInterceptor } from './interceptors';
@@ -49,6 +56,23 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
       disableErrorMessages: false,
       validationError: { target: false, value: false },
+      // Throw our API-contract payload so the error envelope carries a stable
+      // `code` and structured, per-field constraint keys the frontend maps to
+      // localized copy (spec U7). The `ResponseFilter` trusts this `issue`.
+      exceptionFactory: (errors: ValidationError[]) => {
+        const details = errors.map(e => ({
+          field: e.property,
+          constraints: Object.keys(e.constraints ?? {}),
+        }));
+        const message = errors.flatMap(e => Object.values(e.constraints ?? {}));
+        return new BadRequestException({
+          issue: {
+            code: ApiErrorCode.Validation,
+            message,
+            errors: details,
+          },
+        });
+      },
     }),
   );
 

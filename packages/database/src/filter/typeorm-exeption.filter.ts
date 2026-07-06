@@ -65,10 +65,13 @@ export class TypeOrmExceptionFilter implements ExceptionFilter {
     };
     this.logger.error(`${message}: ${JSON.stringify(errorInfo)}`);
 
+    // The raw driver code (Postgres SQLSTATE, Oracle errorNum, …) is a DB-level
+    // identifier, not a stable API error code — keep it in `detail` for
+    // debugging and let `ResponseFilter` assign the status-mapped `ApiErrorCode`.
+    const detail = errorInfo.detail || errorInfo.err;
     const issue: IUnsuccessResponse = {
       issue: {
-        detail: errorInfo.detail || errorInfo.err,
-        code: errorInfo.code,
+        detail: errorInfo.code ? `[${errorInfo.code}] ${detail}` : detail,
         message,
         field: `Schema: ${errorInfo.schema}, Table: ${errorInfo.table}`,
       },
