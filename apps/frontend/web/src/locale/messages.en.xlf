@@ -72,7 +72,7 @@
       </trans-unit>
       <trans-unit id="auth.login.version" datatype="html">
         <source> UI v<x id="INTERPOLATION" equiv-text="{{ version.uiVersion }}"/> · API v<x id="INTERPOLATION_1" equiv-text="{{ version.apiVersion() ?? &apos;unknown&apos; }}"/> </source>
-        <target> UI v<x id="INTERPOLATION" equiv-text="{{ version.uiVersion }}"/> &middot; API v<x id="INTERPOLATION_1" equiv-text="{{ version.apiVersion() ?? &apos;unknown&apos; }}"/> </target>
+        <target> UI v<x id="INTERPOLATION" equiv-text="{{ version.uiVersion }}"/> · API v<x id="INTERPOLATION_1" equiv-text="{{ version.apiVersion() ?? &apos;unknown&apos; }}"/> </target>
       </trans-unit>
       <trans-unit id="auth.login.error" datatype="html">
         <source>No se pudo iniciar sesión. Intente de nuevo.</source>
