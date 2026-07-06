@@ -1,4 +1,15 @@
+import { ApiErrorCode } from '@hsm/common/enums';
+import { apiMessage, validationMessage } from '../i18n/api-messages';
 import type { Issue } from './response';
+
+/**
+ * The stable codes the frontend has localized copy for. An `issue.code` outside
+ * this set (a legacy/uncoded response, or a future server code not yet mapped)
+ * falls back to the server's own message rather than a generic placeholder —
+ * the standard "fall back to source when no translation exists" pattern. In
+ * production the backend only ever emits values from this enum.
+ */
+const KNOWN_API_ERROR_CODES = new Set<string>(Object.values(ApiErrorCode));
 
 /**
  * Normalized client-side error surfaced by {@link ApiClient}.
@@ -61,4 +72,34 @@ export function issueMessageToString(
     return message.length > 0 ? message.join('; ') : fallback;
   }
   return message ?? fallback;
+}
+
+/**
+ * Resolves the localized, user-facing message for an error {@link Issue},
+ * preferring the stable machine codes the backend now emits (spec U7) over the
+ * server's raw (English) `message` text:
+ *
+ * 1. Structured `errors` → localized per-field constraint messages (most
+ *    specific).
+ * 2. `code` → the localized {@link apiMessage} for that code.
+ * 3. Otherwise fall back to the server `message` (older/uncoded responses).
+ */
+export function issueToMessage(
+  issue: Issue | undefined,
+  fallback: string,
+): string {
+  if (!issue) return fallback;
+
+  if (issue.errors?.length) {
+    const messages = issue.errors.flatMap(e =>
+      e.constraints.map(validationMessage),
+    );
+    if (messages.length > 0) return messages.join('; ');
+  }
+
+  if (issue.code && KNOWN_API_ERROR_CODES.has(issue.code)) {
+    return apiMessage(issue.code);
+  }
+
+  return issueMessageToString(issue.message, fallback);
 }

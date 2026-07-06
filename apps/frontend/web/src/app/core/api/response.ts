@@ -50,6 +50,12 @@ export interface SuccessResponse<T> {
   data: T;
 }
 
+/** Mirror of `@hsm/common` `IssueErrorDto` — a per-field validation failure. */
+export interface IssueError {
+  field: string;
+  constraints: string[];
+}
+
 /** Mirror of `@hsm/common` `IssueDto`. */
 export interface Issue {
   message?: string | string[];
@@ -57,6 +63,7 @@ export interface Issue {
   code?: string;
   detail?: string;
   field?: string | string[];
+  errors?: IssueError[];
 }
 
 /** Mirror of `@hsm/common` `UnsuccessResponseDto`. */

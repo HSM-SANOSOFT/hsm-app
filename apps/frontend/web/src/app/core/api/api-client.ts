@@ -7,7 +7,7 @@ import { Injectable, inject } from '@angular/core';
 import { catchError, map, type Observable, throwError } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { ApiError, issueMessageToString } from './api-error';
+import { ApiError, issueToMessage } from './api-error';
 import type {
   Pagination,
   SuccessResponse,
@@ -136,10 +136,7 @@ export class ApiClient {
     if (error instanceof HttpErrorResponse) {
       const body = error.error as Partial<UnsuccessResponse> | null;
       const issue = body?.issue;
-      const message = issueMessageToString(
-        issue?.message,
-        error.message || 'Request failed.',
-      );
+      const message = issueToMessage(issue, error.message || 'Request failed.');
       return throwError(
         () =>
           new ApiError({

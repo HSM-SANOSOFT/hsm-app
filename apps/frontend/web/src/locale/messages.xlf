@@ -2,6 +2,83 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="es-EC" datatype="plaintext" original="ng2.template">
     <body>
+      <trans-unit id="api.error.invalidCredentials" datatype="html">
+        <source>Usuario o contraseña incorrectos</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/i18n/api-messages.ts</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="api.error.unauthorized" datatype="html">
+        <source>Sesión no autorizada</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/i18n/api-messages.ts</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="api.error.forbidden" datatype="html">
+        <source>No tiene permiso para esta acción</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/i18n/api-messages.ts</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="api.error.notFound" datatype="html">
+        <source>Recurso no encontrado</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/i18n/api-messages.ts</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="api.error.validation" datatype="html">
+        <source>Revise los datos ingresados</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/i18n/api-messages.ts</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="api.error.unexpected" datatype="html">
+        <source>Ocurrió un error inesperado</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/i18n/api-messages.ts</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="api.validation.required" datatype="html">
+        <source>Campo obligatorio</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/i18n/api-messages.ts</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="api.validation.email" datatype="html">
+        <source>Correo inválido</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/i18n/api-messages.ts</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="api.validation.minLength" datatype="html">
+        <source>Demasiado corto</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/i18n/api-messages.ts</context>
+          <context context-type="linenumber">37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="api.validation.maxLength" datatype="html">
+        <source>Demasiado largo</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/i18n/api-messages.ts</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="api.validation.invalid" datatype="html">
+        <source>Valor inválido</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/i18n/api-messages.ts</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="admin.settings.page.eyebrow" datatype="html">
         <source>ADMIN · CONFIGURACIÓN</source>
         <context-group purpose="location">
@@ -2363,7 +2440,7 @@
         <source>desconocido</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/layout/nav/rail.ts</context>
-          <context context-type="linenumber">383</context>
+          <context context-type="linenumber">384</context>
         </context-group>
       </trans-unit>
       <trans-unit id="layout.viewTabs.ariaLabel" datatype="html">

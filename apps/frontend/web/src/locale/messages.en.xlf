@@ -1358,6 +1358,50 @@
         <source>Entorno</source>
         <target>Environment</target>
       </trans-unit>
+      <trans-unit id="api.error.invalidCredentials" datatype="html">
+        <source>Usuario o contraseña incorrectos</source>
+        <target>Incorrect username or password</target>
+      </trans-unit>
+      <trans-unit id="api.error.unauthorized" datatype="html">
+        <source>Sesión no autorizada</source>
+        <target>Session not authorized</target>
+      </trans-unit>
+      <trans-unit id="api.error.forbidden" datatype="html">
+        <source>No tiene permiso para esta acción</source>
+        <target>You do not have permission for this action</target>
+      </trans-unit>
+      <trans-unit id="api.error.notFound" datatype="html">
+        <source>Recurso no encontrado</source>
+        <target>Resource not found</target>
+      </trans-unit>
+      <trans-unit id="api.error.validation" datatype="html">
+        <source>Revise los datos ingresados</source>
+        <target>Please review the entered data</target>
+      </trans-unit>
+      <trans-unit id="api.error.unexpected" datatype="html">
+        <source>Ocurrió un error inesperado</source>
+        <target>An unexpected error occurred</target>
+      </trans-unit>
+      <trans-unit id="api.validation.required" datatype="html">
+        <source>Campo obligatorio</source>
+        <target>Required field</target>
+      </trans-unit>
+      <trans-unit id="api.validation.email" datatype="html">
+        <source>Correo inválido</source>
+        <target>Invalid email</target>
+      </trans-unit>
+      <trans-unit id="api.validation.minLength" datatype="html">
+        <source>Demasiado corto</source>
+        <target>Too short</target>
+      </trans-unit>
+      <trans-unit id="api.validation.maxLength" datatype="html">
+        <source>Demasiado largo</source>
+        <target>Too long</target>
+      </trans-unit>
+      <trans-unit id="api.validation.invalid" datatype="html">
+        <source>Valor inválido</source>
+        <target>Invalid value</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
