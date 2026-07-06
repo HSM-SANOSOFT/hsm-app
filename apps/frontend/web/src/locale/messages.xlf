@@ -160,11 +160,15 @@
           <context context-type="linenumber">100,102</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="admin.users.createStaff.open" datatype="html">
+      <trans-unit id="admin.users.createStaff" datatype="html">
         <source>Crear personal</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/users/users.ts</context>
           <context context-type="linenumber">105,107</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin/users/users.ts</context>
+          <context context-type="linenumber">415,416</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.users.table.username" datatype="html">
@@ -410,13 +414,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/admin/users/users.ts</context>
           <context context-type="linenumber">406,408</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="admin.users.createStaff.submit" datatype="html">
-        <source>Crear personal</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/admin/users/users.ts</context>
-          <context context-type="linenumber">415,417</context>
         </context-group>
       </trans-unit>
       <trans-unit id="admin.users.create.success" datatype="html">
@@ -1333,49 +1330,49 @@
         <source>generando</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/documents/documents.ts</context>
-          <context context-type="linenumber">303</context>
+          <context context-type="linenumber">304</context>
         </context-group>
       </trans-unit>
       <trans-unit id="documents.generate.error.start" datatype="html">
         <source>No se pudo iniciar la generación.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/documents/documents.ts</context>
-          <context context-type="linenumber">385</context>
+          <context context-type="linenumber">386</context>
         </context-group>
       </trans-unit>
       <trans-unit id="documents.generate.error.failed" datatype="html">
         <source>La generación del documento falló.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/documents/documents.ts</context>
-          <context context-type="linenumber">408</context>
+          <context context-type="linenumber">409</context>
         </context-group>
       </trans-unit>
       <trans-unit id="documents.generate.error.pollingFailed" datatype="html">
         <source>Error al verificar el estado.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/documents/documents.ts</context>
-          <context context-type="linenumber">415</context>
+          <context context-type="linenumber">416</context>
         </context-group>
       </trans-unit>
       <trans-unit id="documents.generate.error.timeout" datatype="html">
         <source>La generación está tardando demasiado. Revise la biblioteca más tarde.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/documents/documents.ts</context>
-          <context context-type="linenumber">424</context>
+          <context context-type="linenumber">425</context>
         </context-group>
       </trans-unit>
       <trans-unit id="documents.download.error" datatype="html">
         <source>No se pudo obtener el enlace de descarga.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/documents/documents.ts</context>
-          <context context-type="linenumber">473</context>
+          <context context-type="linenumber">474</context>
         </context-group>
       </trans-unit>
       <trans-unit id="documents.upload.error" datatype="html">
         <source>Error al subir el archivo.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/documents/documents.ts</context>
-          <context context-type="linenumber">517</context>
+          <context context-type="linenumber">518</context>
         </context-group>
       </trans-unit>
       <trans-unit id="onboarding.setup.eyebrow" datatype="html">
@@ -1393,7 +1390,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="onboarding.setup.lede" datatype="html">
-        <source> Su cuenta fue creada por un administrador. Elija su propia contraseña y confirme cómo podemos comunicarnos con usted — luego estará lista para trabajar. </source>
+        <source> Su cuenta fue creada por un administrador. Elija su propia contraseña y confirme cómo podemos comunicarnos con usted — luego podrá empezar a trabajar. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/onboarding/onboarding.html</context>
           <context context-type="linenumber">12,15</context>
@@ -2349,7 +2346,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="layout.rail.version" datatype="html">
-        <source> UI v<x id="INTERPOLATION" equiv-text="{{ version.uiVersion }}"/> · API v<x id="INTERPOLATION_1" equiv-text="{{ version.apiVersion() ?? &apos;unknown&apos; }}"/> </source>
+        <source> UI v<x id="INTERPOLATION" equiv-text="{{ version.uiVersion }}"/> · API v<x id="INTERPOLATION_1" equiv-text="{{ version.apiVersion() ?? unknownVersion }}"/> </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/layout/nav/rail.ts</context>
           <context context-type="linenumber">116,119</context>
@@ -2360,6 +2357,13 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/layout/nav/rail.ts</context>
           <context context-type="linenumber">137,139</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="layout.rail.version.unknown" datatype="html">
+        <source>desconocido</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/nav/rail.ts</context>
+          <context context-type="linenumber">383</context>
         </context-group>
       </trans-unit>
       <trans-unit id="layout.viewTabs.ariaLabel" datatype="html">

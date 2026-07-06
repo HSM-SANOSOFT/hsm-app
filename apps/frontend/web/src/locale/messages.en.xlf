@@ -551,7 +551,7 @@
         <target>Let's set up your account.</target>
       </trans-unit>
       <trans-unit id="onboarding.setup.lede" datatype="html">
-        <source> Su cuenta fue creada por un administrador. Elija su propia contraseña y confirme cómo podemos comunicarnos con usted — luego estará lista para trabajar. </source>
+        <source> Su cuenta fue creada por un administrador. Elija su propia contraseña y confirme cómo podemos comunicarnos con usted — luego podrá empezar a trabajar. </source>
         <target> Your account was created by an administrator. Choose your own password and confirm how we can reach you — then you're ready to work. </target>
       </trans-unit>
       <trans-unit id="onboarding.setup.reassure.password" datatype="html">
@@ -982,7 +982,7 @@
         <source> Revise las cuentas de la consola y administre los roles asignados. </source>
         <target> Review console accounts and manage their assigned roles. </target>
       </trans-unit>
-      <trans-unit id="admin.users.createStaff.open" datatype="html">
+      <trans-unit id="admin.users.createStaff" datatype="html">
         <source>Crear personal</source>
         <target>Create staff</target>
       </trans-unit>
@@ -1126,10 +1126,6 @@
         <source>Cancelar</source>
         <target>Cancel</target>
       </trans-unit>
-      <trans-unit id="admin.users.createStaff.submit" datatype="html">
-        <source>Crear personal</source>
-        <target>Create staff</target>
-      </trans-unit>
       <trans-unit id="admin.users.create.success" datatype="html">
         <source>Se creó la cuenta de personal "<x id="USERNAME" equiv-text="created.username"/>". Se envió una contraseña temporal por correo electrónico.</source>
         <target>Staff account "<x id="USERNAME" equiv-text="created.username"/>" created. A temporary password was emailed.</target>
@@ -1271,8 +1267,12 @@
         <target>No modules</target>
       </trans-unit>
       <trans-unit id="layout.rail.version" datatype="html">
-        <source> UI v<x id="INTERPOLATION" equiv-text="{{ version.uiVersion }}"/> · API v<x id="INTERPOLATION_1" equiv-text="{{ version.apiVersion() ?? &apos;unknown&apos; }}"/> </source>
-        <target> UI v<x id="INTERPOLATION" equiv-text="{{ version.uiVersion }}"/> · API v<x id="INTERPOLATION_1" equiv-text="{{ version.apiVersion() ?? &apos;unknown&apos; }}"/> </target>
+        <source> UI v<x id="INTERPOLATION" equiv-text="{{ version.uiVersion }}"/> · API v<x id="INTERPOLATION_1" equiv-text="{{ version.apiVersion() ?? unknownVersion }}"/> </source>
+        <target> UI v<x id="INTERPOLATION" equiv-text="{{ version.uiVersion }}"/> · API v<x id="INTERPOLATION_1" equiv-text="{{ version.apiVersion() ?? unknownVersion }}"/> </target>
+      </trans-unit>
+      <trans-unit id="layout.rail.version.unknown" datatype="html">
+        <source>desconocido</source>
+        <target>unknown</target>
       </trans-unit>
       <trans-unit id="layout.rail.closeAriaLabel" datatype="html">
         <source>Cerrar navegación</source>

@@ -114,7 +114,7 @@ interface RailItem {
         <span class="rail-footer__dot" aria-hidden="true"></span>
         <span class="rail-footer__text mono" i18n="@@layout.rail.version">
           UI v{{ version.uiVersion }} &middot; API
-          v{{ version.apiVersion() ?? 'unknown' }}
+          v{{ version.apiVersion() ?? unknownVersion }}
         </span>
       </div>
 
@@ -379,6 +379,9 @@ interface RailItem {
 export class Rail implements OnDestroy {
   protected readonly nav = inject(NavService);
   protected readonly version = inject(VersionService);
+  /** Localized fallback when the API version is not yet known. */
+  protected readonly unknownVersion =
+    $localize`:@@layout.rail.version.unknown:desconocido`;
   private readonly host = inject(ElementRef<HTMLElement>);
   private readonly pointer = inject(PointerCapability);
 

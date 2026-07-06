@@ -101,7 +101,7 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
           </p>
         </div>
         <p-button
-          i18n-label="@@admin.users.createStaff.open"
+          i18n-label="@@admin.users.createStaff"
           label="Crear personal"
           icon="pi pi-user-plus"
           (onClick)="openCreate()"
@@ -411,7 +411,7 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
             />
             <p-button
               type="submit"
-              i18n-label="@@admin.users.createStaff.submit"
+              i18n-label="@@admin.users.createStaff"
               label="Crear personal"
               icon="pi pi-user-plus"
               [loading]="creating()"
