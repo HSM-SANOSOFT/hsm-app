@@ -59,14 +59,23 @@ is a full reload into the other subpath — same server, same deployment. No
 per-language backend/instance. The API is locale-agnostic (returns
 `ApiErrorCode`s; the frontend localizes them), so it's one instance too.
 
-**Translation catalogs** follow `messages.<locale>.xlf`:
-- `src/locale/messages.es.xlf` — source catalog (Spanish `<source>`), the
-  extract-i18n output; **not consumed by the build** (the `es` source locale
-  renders template text directly). Regenerate with:
-  `ng extract-i18n --output-path src/locale --out-file messages.es.xlf`.
-- `src/locale/messages.en.xlf` — the `en` **target** catalog (referenced by
-  `angular.json` → `i18n.locales.en.translation`); every `@@id` needs a
-  `<target>` here or the `en` build fails.
+**Translation catalogs** are Angular's native **JSON** format (per
+angular.dev/guide/i18n), one file per locale in `src/i18n/`
+(`{ "locale", "translations": { "<id>": "text {$INTERPOLATION}" } }`):
+- `src/i18n/es.json` — source catalog (Spanish), the extract-i18n output;
+  **not consumed by the build** (the `es` source locale renders template text
+  directly). Regenerate with:
+  `ng extract-i18n --format json --output-path src/i18n --out-file es.json`.
+- `src/i18n/en.json` — the `en` **translation** file (referenced by
+  `angular.json` → `i18n.locales.en.translation`); every id needs an entry or
+  the `en` build fails.
+
+**Adding a language** (e.g. `pt`): add `"pt": { "translation":
+"src/i18n/pt.json", "subPath": "pt" }` to `angular.json` → `i18n.locales`,
+create `src/i18n/pt.json` (copy `es.json`'s keys, translate the values), add a
+`pt` build/serve config pair mirroring `en`, and add `pt` to the frontend's
+`AppLocale`/`SUPPORTED`/switcher. Then `ng build --localize` emits
+`dist/browser/pt`. Still ONE deployment.
 
 The dev server runs on **4200**. With the API run locally (`pnpm --filter
 @hsm/api start:dev`) it talks to the API on host port **3000**, default `/v1`

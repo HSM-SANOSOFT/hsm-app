@@ -23,7 +23,7 @@
         },
         "locales": {
           "en": {
-            "translation": "src/locale/messages.en.xlf",
+            "translation": "src/i18n/en.json",
             "subPath": "en"
           }
         }
