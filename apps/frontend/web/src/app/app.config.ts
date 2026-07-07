@@ -16,7 +16,7 @@ import {
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
-import { provideTransloco } from '@jsverse/transloco';
+import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { PrimeNG, providePrimeNG } from 'primeng/config';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../environments/environment';
@@ -25,7 +25,7 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/auth/auth.interceptor';
 import { AuthService } from './core/auth/auth.service';
 import { activeLocale, registerAppLocales } from './core/i18n/locale-init';
-import { primeNgTranslationForActiveLocale } from './core/i18n/primeng-translations';
+import { primeNgTranslationFor } from './core/i18n/primeng-translations';
 import { TranslocoHttpLoader } from './core/i18n/transloco-loader';
 
 registerAppLocales();
@@ -66,7 +66,14 @@ export const appConfig: ApplicationConfig = {
       return firstValueFrom(auth.restoreSession());
     }),
     provideAppInitializer(() => {
-      inject(PrimeNG).setTranslation(primeNgTranslationForActiveLocale());
+      // Re-apply PrimeNG chrome copy on every Transloco language change.
+      const primeng = inject(PrimeNG);
+      const transloco = inject(TranslocoService);
+      transloco.langChanges$.subscribe(lang => {
+        primeng.setTranslation(
+          primeNgTranslationFor(lang === 'en' ? 'en' : 'es'),
+        );
+      });
     }),
     provideAnimationsAsync(),
     providePrimeNG({

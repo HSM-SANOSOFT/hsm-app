@@ -1,5 +1,4 @@
 import type { Translation } from 'primeng/api';
-import { activeLocale } from './locale-init';
 
 /**
  * PrimeNG chrome translations (paginator/table ARIA, calendar, filter menu,
@@ -321,6 +320,6 @@ const EN: Translation = {
   },
 };
 
-export function primeNgTranslationForActiveLocale(): Translation {
-  return activeLocale() === 'en' ? EN : ES;
+export function primeNgTranslationFor(lang: 'es' | 'en'): Translation {
+  return lang === 'en' ? EN : ES;
 }
