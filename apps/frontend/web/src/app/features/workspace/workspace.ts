@@ -1,5 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import { AuthService } from '../../core/auth/auth.service';
 
@@ -23,49 +24,63 @@ interface QuickLink {
  */
 @Component({
   selector: 'app-workspace',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslocoPipe],
   templateUrl: './workspace.html',
   styleUrl: './workspace.scss',
 })
 export class Workspace {
   private readonly auth = inject(AuthService);
+  private readonly transloco = inject(TranslocoService);
 
-  /** First name for the greeting; falls back to a neutral generic. */
-  protected readonly firstName = computed(
-    () =>
+  /**
+   * First name for the greeting; falls back to a neutral generic.
+   *
+   * A plain method (not a `computed()`) so the fallback re-translates on
+   * every template check instead of being cached at first evaluation — it
+   * must track the active language like the rest of the template.
+   */
+  protected firstName(): string {
+    return (
       this.auth.currentUser()?.firstName?.trim() ||
-      $localize`:@@workspace.home.greeting.fallbackName:allí`,
-  );
+      this.transloco.translate('workspace.home.greeting.fallbackName')
+    );
+  }
 
+  /**
+   * Quick-link cards. `label`/`description` store translation KEYS, not
+   * translated strings — they are translated in the template via
+   * `| transloco` so they stay reactive to a language switch, rather than
+   * being eagerly translated once here at construction time.
+   */
   private readonly allLinks: readonly QuickLink[] = [
     {
-      label: $localize`:@@workspace.home.link.templates.label:Plantillas`,
-      description: $localize`:@@workspace.home.link.templates.description:Cree y edite plantillas de documentos.`,
+      label: 'workspace.home.link.templates.label',
+      description: 'workspace.home.link.templates.description',
       icon: 'pi pi-file-edit',
       route: '/templates',
     },
     {
-      label: $localize`:@@workspace.home.link.documents.label:Documentos`,
-      description: $localize`:@@workspace.home.link.documents.description:Explore y genere documentos.`,
+      label: 'workspace.home.link.documents.label',
+      description: 'workspace.home.link.documents.description',
       icon: 'pi pi-folder',
       route: '/documents',
     },
     {
-      label: $localize`:@@workspace.home.link.profile.label:Su perfil`,
-      description: $localize`:@@workspace.home.link.profile.description:Actualice sus datos y contraseña.`,
+      label: 'workspace.home.link.profile.label',
+      description: 'workspace.home.link.profile.description',
       icon: 'pi pi-user',
       route: '/profile',
     },
     {
-      label: $localize`:@@workspace.home.link.users.label:Usuarios`,
-      description: $localize`:@@workspace.home.link.users.description:Administre las cuentas y el acceso del personal.`,
+      label: 'workspace.home.link.users.label',
+      description: 'workspace.home.link.users.description',
       icon: 'pi pi-users',
       route: '/system-admin/users',
       adminOnly: true,
     },
     {
-      label: $localize`:@@workspace.home.link.settings.label:Configuración`,
-      description: $localize`:@@workspace.home.link.settings.description:Configure los ajustes del sistema.`,
+      label: 'workspace.home.link.settings.label',
+      description: 'workspace.home.link.settings.description',
       icon: 'pi pi-cog',
       route: '/system-admin/settings',
       adminOnly: true,

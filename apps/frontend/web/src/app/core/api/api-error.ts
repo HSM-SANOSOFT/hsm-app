@@ -1,4 +1,5 @@
 import { ApiErrorCode } from '@hsm/common/enums';
+import type { TranslocoService } from '@jsverse/transloco';
 import { apiMessage, validationMessage } from '../i18n/api-messages';
 import type { Issue } from './response';
 
@@ -83,8 +84,13 @@ export function issueMessageToString(
  *    specific).
  * 2. `code` → the localized {@link apiMessage} for that code.
  * 3. Otherwise fall back to the server `message` (older/uncoded responses).
+ *
+ * Takes the {@link TranslocoService} as a param (this is a plain module, not
+ * an injectable/component, so it has no injection context of its own) — the
+ * caller (`ApiClient`) injects it and passes it through.
  */
 export function issueToMessage(
+  transloco: TranslocoService,
   issue: Issue | undefined,
   fallback: string,
 ): string {
@@ -92,13 +98,13 @@ export function issueToMessage(
 
   if (issue.errors?.length) {
     const messages = issue.errors.flatMap(e =>
-      e.constraints.map(validationMessage),
+      e.constraints.map(c => validationMessage(transloco, c)),
     );
     if (messages.length > 0) return messages.join('; ');
   }
 
   if (issue.code && KNOWN_API_ERROR_CODES.has(issue.code)) {
-    return apiMessage(issue.code);
+    return apiMessage(transloco, issue.code);
   }
 
   return issueMessageToString(issue.message, fallback);

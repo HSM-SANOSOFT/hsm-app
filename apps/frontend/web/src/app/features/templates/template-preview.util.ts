@@ -15,6 +15,7 @@
  * `apps/frontend/web/CLAUDE.md` (KTD1).
  */
 
+import type { TranslocoService } from '@jsverse/transloco';
 import Handlebars from 'handlebars';
 
 import type { TemplateSchemaNode } from './template.types';
@@ -183,12 +184,19 @@ export type PreviewResult =
  * Parse `rawSampleData` (the editable JSON panel) and compose the preview.
  * Captures both JSON-parse and Handlebars errors as a friendly message rather
  * than throwing, so a transient invalid edit never breaks the editor.
+ *
+ * Takes the {@link TranslocoService} as a param (this is a plain util module,
+ * not a component/service, so it has no injection context of its own) — the
+ * caller ({@link TemplateEditor}) injects it and passes it through.
  */
-export function renderPreview(input: {
-  content: string;
-  baseContent?: string | null;
-  rawSampleData: string;
-}): PreviewResult {
+export function renderPreview(
+  transloco: TranslocoService,
+  input: {
+    content: string;
+    baseContent?: string | null;
+    rawSampleData: string;
+  },
+): PreviewResult {
   let data: Record<string, unknown>;
   try {
     const parsed = input.rawSampleData.trim()
@@ -198,7 +206,9 @@ export function renderPreview(input: {
   } catch (err) {
     return {
       ok: false,
-      error: $localize`:@@templates.preview.error.invalidJson:JSON de datos de muestra inválido: ${(err as Error).message}:MESSAGE:`,
+      error: transloco.translate('templates.preview.error.invalidJson', {
+        value: (err as Error).message,
+      }),
     };
   }
 
@@ -212,7 +222,9 @@ export function renderPreview(input: {
   } catch (err) {
     return {
       ok: false,
-      error: $localize`:@@templates.preview.error.templateError:Error de plantilla: ${(err as Error).message}:MESSAGE:`,
+      error: transloco.translate('templates.preview.error.templateError', {
+        value: (err as Error).message,
+      }),
     };
   }
 }

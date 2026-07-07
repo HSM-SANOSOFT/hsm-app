@@ -8,6 +8,7 @@ import { provideRouter } from '@angular/router';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { AuthService } from '../../core/auth/auth.service';
+import { provideTranslocoTestingModule } from '../../core/i18n/transloco-testing';
 import { Flyout } from './flyout';
 import { NavService } from './nav.service';
 import type { NavNode } from './nav-node';
@@ -65,6 +66,7 @@ function configure(): {
 
   TestBed.configureTestingModule({
     providers: [
+      ...provideTranslocoTestingModule(),
       provideZonelessChangeDetection(),
       provideRouter([{ path: '**', component: Blank }]),
       { provide: AuthService, useValue: authStub },

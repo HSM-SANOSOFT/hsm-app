@@ -6,9 +6,11 @@ import {
 import { TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { TemplateCategoriesEnum } from '@hsm/common/enums';
+import { TranslocoService } from '@jsverse/transloco';
 
 import { environment } from '../../../environments/environment';
 import type { SuccessResponse } from '../../core/api/response';
+import { provideTranslocoTestingModule } from '../../core/i18n/transloco-testing';
 import { TemplateEditor } from './editor/template-editor';
 import { MONACO_LOADER, type MonacoLike } from './monaco-editor';
 import type { TemplateDetail, TemplateWithBase } from './template.types';
@@ -95,6 +97,15 @@ describe('seedSampleDataFromSchema (R15 / AE5)', () => {
 });
 
 describe('composeTemplatePreview / renderPreview (R16)', () => {
+  let transloco: TranslocoService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [...provideTranslocoTestingModule()],
+    });
+    transloco = TestBed.inject(TranslocoService);
+  });
+
   it('compiles standalone content against sample data', () => {
     const html = composeTemplatePreview({
       content: '<p>Hola {{patientName}}</p>',
@@ -126,7 +137,7 @@ describe('composeTemplatePreview / renderPreview (R16)', () => {
   });
 
   it('renderPreview parses JSON sample data and composes ok', () => {
-    const result = renderPreview({
+    const result = renderPreview(transloco, {
       content: '<p>{{name}}</p>',
       rawSampleData: '{"name":"Ada"}',
     });
@@ -134,7 +145,7 @@ describe('composeTemplatePreview / renderPreview (R16)', () => {
   });
 
   it('renderPreview reports invalid JSON without throwing', () => {
-    const result = renderPreview({
+    const result = renderPreview(transloco, {
       content: '<p>{{name}}</p>',
       rawSampleData: '{ not json',
     });
@@ -162,6 +173,7 @@ describe('TemplateEditor component', () => {
         provideHttpClientTesting(),
         provideAnimationsAsync(),
         provideStubMonaco,
+        ...provideTranslocoTestingModule(),
       ],
     });
     httpMock = TestBed.inject(HttpTestingController);
@@ -232,6 +244,7 @@ describe('TemplateEditor component', () => {
         provideHttpClientTesting(),
         provideAnimationsAsync(),
         provideStubMonaco,
+        ...provideTranslocoTestingModule(),
       ],
     });
     httpMock = TestBed.inject(HttpTestingController);

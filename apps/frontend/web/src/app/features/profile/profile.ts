@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
@@ -41,6 +42,7 @@ export const USER_ME_PASSWORD_PATH = '/user/me/password';
     PasswordModule,
     ButtonModule,
     MessageModule,
+    TranslocoPipe,
   ],
   templateUrl: './profile.html',
   styleUrl: './profile.scss',
@@ -49,6 +51,7 @@ export class Profile {
   private readonly fb = inject(FormBuilder);
   private readonly api = inject(ApiClient);
   private readonly auth = inject(AuthService);
+  private readonly transloco = inject(TranslocoService);
 
   /** The signed-in user, exposed for prefill/labels in the template. */
   protected readonly currentUser = this.auth.currentUser;
@@ -125,10 +128,7 @@ export class Profile {
       error: (err: unknown) => {
         this.profileSubmitting.set(false);
         this.profileError.set(
-          toErrorMessage(
-            err,
-            $localize`:@@profile.info.error:No se pudo actualizar su perfil. Intente de nuevo.`,
-          ),
+          toErrorMessage(err, this.transloco.translate('profile.info.error')),
         );
       },
     });
@@ -162,7 +162,7 @@ export class Profile {
         this.passwordError.set(
           toErrorMessage(
             err,
-            $localize`:@@profile.password.error:No se pudo cambiar su contraseña. Intente de nuevo.`,
+            this.transloco.translate('profile.password.error'),
           ),
         );
       },

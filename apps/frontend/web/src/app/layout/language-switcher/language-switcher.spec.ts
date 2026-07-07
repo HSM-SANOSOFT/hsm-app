@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 
 import { LanguageService } from '../../core/i18n/language.service';
+import { provideTranslocoTestingModule } from '../../core/i18n/transloco-testing';
 import { LanguageSwitcher } from './language-switcher';
 
 describe('LanguageSwitcher', () => {
@@ -13,7 +14,10 @@ describe('LanguageSwitcher', () => {
     };
     TestBed.configureTestingModule({
       imports: [LanguageSwitcher],
-      providers: [{ provide: LanguageService, useValue: spy }],
+      providers: [
+        ...provideTranslocoTestingModule(),
+        { provide: LanguageService, useValue: spy },
+      ],
     });
     const fixture = TestBed.createComponent(LanguageSwitcher);
     fixture.componentInstance.choose('en');

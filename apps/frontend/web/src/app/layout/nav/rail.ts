@@ -8,6 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { VersionService } from '../../core/version/version.service';
 import { Flyout } from './flyout';
 import { HoverIntent } from './hover-intent';
@@ -37,13 +38,12 @@ interface RailItem {
  */
 @Component({
   selector: 'app-rail',
-  imports: [RouterLink, RouterLinkActive, ProfileCard, Flyout],
+  imports: [RouterLink, RouterLinkActive, ProfileCard, Flyout, TranslocoPipe],
   template: `
     <nav
       class="rail"
       [class.rail--expanded]="expanded()"
-      i18n-aria-label="@@layout.rail.ariaLabel"
-      aria-label="Principal"
+      [attr.aria-label]="'layout.rail.ariaLabel' | transloco"
       (mouseenter)="intent.enter()"
       (mouseleave)="onLeave()"
       (focusin)="intent.openNow()"
@@ -51,7 +51,7 @@ interface RailItem {
       (keydown.escape)="collapse()"
     >
       <div class="rail-head">
-        <a class="rail-brand" routerLink="/" i18n-aria-label="@@layout.rail.homeAriaLabel" aria-label="Inicio">
+        <a class="rail-brand" routerLink="/" [attr.aria-label]="'layout.rail.homeAriaLabel' | transloco">
           <span class="brand-mark" aria-hidden="true"></span>
           <span class="brand-word">
             Hospital <span class="brand-word__sub">Santa María</span>
@@ -64,8 +64,7 @@ interface RailItem {
           class="rail-toggle"
           data-testid="rail-toggle"
           [attr.aria-expanded]="expanded()"
-          i18n-aria-label="@@layout.rail.toggleAriaLabel"
-          aria-label="Alternar navegación"
+          [attr.aria-label]="'layout.rail.toggleAriaLabel' | transloco"
           (click)="toggle()"
         >
           <i class="pi" [class.pi-bars]="!expanded()" [class.pi-times]="expanded()"></i>
@@ -83,13 +82,13 @@ interface RailItem {
               [class.is-open]="flyoutModule()?.id === item.node.id"
               [attr.aria-expanded]="flyoutModule()?.id === item.node.id"
               aria-haspopup="true"
-              [attr.aria-label]="item.node.label"
+              [attr.aria-label]="item.node.label | transloco"
               (mouseenter)="openModule(item.node)"
               (focus)="openModule(item.node)"
               (click)="toggleModule(item.node)"
             >
               <i class="rail-item__icon" [class]="item.node.icon"></i>
-              <span class="rail-item__label">{{ item.node.label }}</span>
+              <span class="rail-item__label">{{ item.node.label | transloco }}</span>
             </button>
           } @else {
             <a
@@ -97,24 +96,26 @@ interface RailItem {
               data-testid="rail-item"
               [routerLink]="item.route"
               routerLinkActive="is-active"
-              [attr.aria-label]="item.node.label"
+              [attr.aria-label]="item.node.label | transloco"
               (mouseenter)="closeFlyout()"
               (focus)="closeFlyout()"
             >
               <i class="rail-item__icon" [class]="item.node.icon"></i>
-              <span class="rail-item__label">{{ item.node.label }}</span>
+              <span class="rail-item__label">{{ item.node.label | transloco }}</span>
             </a>
           }
         } @empty {
-          <p class="rail-empty" data-testid="rail-empty" i18n="@@layout.rail.empty">Sin módulos</p>
+          <p class="rail-empty" data-testid="rail-empty">{{ 'layout.rail.empty' | transloco }}</p>
         }
       </div>
 
       <div class="rail-footer" data-testid="version-footer">
         <span class="rail-footer__dot" aria-hidden="true"></span>
-        <span class="rail-footer__text mono" i18n="@@layout.rail.version">
-          UI v{{ version.uiVersion }} &middot; API
-          v{{ version.apiVersion() ?? unknownVersion }}
+        <span class="rail-footer__text mono">
+          {{
+            'layout.rail.versionText'
+              | transloco: { ui: version.uiVersion, api: version.apiVersion() ?? unknownVersion }
+          }}
         </span>
       </div>
 
@@ -133,8 +134,7 @@ interface RailItem {
         type="button"
         class="rail-scrim"
         data-testid="rail-scrim"
-        i18n-aria-label="@@layout.rail.closeAriaLabel"
-        aria-label="Cerrar navegación"
+        [attr.aria-label]="'layout.rail.closeAriaLabel' | transloco"
         (click)="collapse()"
       ></button>
     }
@@ -379,9 +379,7 @@ interface RailItem {
 export class Rail implements OnDestroy {
   protected readonly nav = inject(NavService);
   protected readonly version = inject(VersionService);
-  /** Localized fallback when the API version is not yet known. */
-  protected readonly unknownVersion =
-    $localize`:@@layout.rail.version.unknown:desconocido`;
+  private readonly transloco = inject(TranslocoService);
   private readonly host = inject(ElementRef<HTMLElement>);
   private readonly pointer = inject(PointerCapability);
 
@@ -395,6 +393,14 @@ export class Rail implements OnDestroy {
 
   /** The module whose flyout is open, or `null`. Consumed by the flyout (U6). */
   readonly flyoutModule = signal<NavNode | null>(null);
+
+  /** Localized fallback when the API version is not yet known. A getter (not a
+   * field) so it re-translates on every read instead of caching the value at
+   * construction time — it must track the active language like the rest of
+   * the template. */
+  protected get unknownVersion(): string {
+    return this.transloco.translate('layout.rail.version.unknown');
+  }
 
   constructor() {
     // When the rail fully collapses (pointer left both rail and flyout, after

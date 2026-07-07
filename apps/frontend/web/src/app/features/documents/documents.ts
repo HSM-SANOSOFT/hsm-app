@@ -2,6 +2,7 @@ import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { DocumentStatusEnum, TemplateCategoriesEnum } from '@hsm/common/enums';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { ButtonModule } from 'primeng/button';
 import { FileUpload, type FileUploadHandlerEvent } from 'primeng/fileupload';
 import { InputTextModule } from 'primeng/inputtext';
@@ -57,35 +58,34 @@ const UPLOAD_FOLDER = 'uploads';
     FileUpload,
     InputTextModule,
     Message,
+    TranslocoPipe,
   ],
   template: `
     <div class="page documents" data-testid="documents">
       <header class="page-header">
         <div>
-          <span class="page-eyebrow" i18n="@@documents.page.eyebrow">DOCUMENTOS</span>
-          <h1 class="page-title" i18n="@@documents.page.title">Documentos</h1>
-          <p class="page-subtitle" i18n="@@documents.page.subtitle">
-            Genere documentos a partir de una plantilla, explore su biblioteca y
-            suba archivos.
+          <span class="page-eyebrow">{{ 'documents.page.eyebrow' | transloco }}</span>
+          <h1 class="page-title">{{ 'documents.page.title' | transloco }}</h1>
+          <p class="page-subtitle">
+            {{ 'documents.page.subtitle' | transloco }}
           </p>
         </div>
       </header>
 
       <!-- ── Generate (R18) ───────────────────────────────────────────── -->
       <section class="surface-card" data-testid="generate-panel">
-        <h2 class="card-title" i18n="@@documents.generate.title">Generar desde plantilla</h2>
-        <p class="card-hint" i18n="@@documents.generate.hint">
-          Elija una plantilla DOCS, complete sus campos y genere un documento.
+        <h2 class="card-title">{{ 'documents.generate.title' | transloco }}</h2>
+        <p class="card-hint">
+          {{ 'documents.generate.hint' | transloco }}
         </p>
 
         <div class="field">
-          <label for="template-select" i18n="@@documents.generate.template.label">Plantilla</label>
+          <label for="template-select">{{ 'documents.generate.template.label' | transloco }}</label>
           <p-select
             inputId="template-select"
             [options]="templates()"
             optionLabel="name"
-            i18n-placeholder="@@documents.generate.template.placeholder"
-            placeholder="Seleccione una plantilla DOCS"
+            [placeholder]="'documents.generate.template.placeholder' | transloco"
             [ngModel]="selectedTemplate()"
             (onChange)="onTemplateChange($event.value)"
             data-testid="template-select"
@@ -96,7 +96,7 @@ const UPLOAD_FOLDER = 'uploads';
           <form class="generate-form" data-testid="generate-form">
             <div class="field-grid">
               <label class="field" data-testid="generate-title">
-                <span i18n="@@documents.generate.titleField.label">Título</span>
+                <span>{{ 'documents.generate.titleField.label' | transloco }}</span>
                 <input
                   type="text"
                   pInputText
@@ -157,8 +157,7 @@ const UPLOAD_FOLDER = 'uploads';
 
             <div class="generate-actions">
               <p-button
-                i18n-label="@@documents.generate.submit"
-                label="Generar"
+                [label]="'documents.generate.submit' | transloco"
                 [loading]="generating()"
                 [disabled]="generating() || !title()"
                 (onClick)="generate()"
@@ -189,9 +188,9 @@ const UPLOAD_FOLDER = 'uploads';
 
       <!-- ── Upload (R20) ─────────────────────────────────────────────── -->
       <section class="surface-card" data-testid="upload-panel">
-        <h2 class="card-title" i18n="@@documents.upload.title">Subir</h2>
-        <p class="card-hint" i18n="@@documents.upload.hint">
-          Suba un archivo existente directamente a su biblioteca.
+        <h2 class="card-title">{{ 'documents.upload.title' | transloco }}</h2>
+        <p class="card-hint">
+          {{ 'documents.upload.hint' | transloco }}
         </p>
         <p-fileupload
           mode="basic"
@@ -199,8 +198,7 @@ const UPLOAD_FOLDER = 'uploads';
           [customUpload]="true"
           [auto]="true"
           [multiple]="true"
-          i18n-chooseLabel="@@documents.upload.chooseLabel"
-          chooseLabel="Elegir archivo"
+          [chooseLabel]="'documents.upload.chooseLabel' | transloco"
           (uploadHandler)="upload($event)"
           data-testid="file-upload"
         />
@@ -215,8 +213,8 @@ const UPLOAD_FOLDER = 'uploads';
 
       <!-- ── Library (R19) ────────────────────────────────────────────── -->
       <section class="surface-card" data-testid="library-panel">
-        <h2 class="card-title" i18n="@@documents.library.title">Biblioteca</h2>
-        <p class="card-hint" i18n="@@documents.library.hint">Sus documentos generados y subidos.</p>
+        <h2 class="card-title">{{ 'documents.library.title' | transloco }}</h2>
+        <p class="card-hint">{{ 'documents.library.hint' | transloco }}</p>
         <p-table
           [value]="documents()"
           [lazy]="true"
@@ -231,11 +229,11 @@ const UPLOAD_FOLDER = 'uploads';
         >
           <ng-template pTemplate="header">
             <tr>
-              <th i18n="@@documents.library.column.title">Título</th>
-              <th i18n="@@documents.library.column.type">Tipo</th>
-              <th i18n="@@documents.library.column.status">Estado</th>
-              <th i18n="@@documents.library.column.id">ID del documento</th>
-              <th i18n="@@documents.library.column.actions">Acciones</th>
+              <th>{{ 'documents.library.column.title' | transloco }}</th>
+              <th>{{ 'documents.library.column.type' | transloco }}</th>
+              <th>{{ 'documents.library.column.status' | transloco }}</th>
+              <th>{{ 'documents.library.column.id' | transloco }}</th>
+              <th>{{ 'documents.library.column.actions' | transloco }}</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-doc>
@@ -251,8 +249,7 @@ const UPLOAD_FOLDER = 'uploads';
               <td>
                 <p-button
                   icon="pi pi-download"
-                  i18n-label="@@documents.library.download"
-                  label="Descargar"
+                  [label]="'documents.library.download' | transloco"
                   size="small"
                   [text]="true"
                   [disabled]="!isCompleted(doc)"
@@ -267,7 +264,7 @@ const UPLOAD_FOLDER = 'uploads';
               <td colspan="5">
                 <div class="empty-state">
                   <i class="pi pi-folder-open"></i>
-                  <span i18n="@@documents.library.empty">Aún no hay documentos.</span>
+                  <span>{{ 'documents.library.empty' | transloco }}</span>
                 </div>
               </td>
             </tr>
@@ -290,6 +287,7 @@ const UPLOAD_FOLDER = 'uploads';
 export class Documents {
   private readonly api = inject(ApiClient);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly transloco = inject(TranslocoService);
 
   // ── Generate state ──────────────────────────────────────────────────
   readonly templates = signal<DocsTemplate[]>([]);
@@ -299,9 +297,12 @@ export class Documents {
   readonly generating = signal(false);
   readonly generateStatus = signal<string | null>(null);
   readonly generateError = signal<string | null>(null);
-  /** Label shown in the status pill while generation is in flight. */
-  protected readonly generatingLabel =
-    $localize`:@@documents.generate.status.generating:generando`;
+  /** Label shown in the status pill while generation is in flight. A getter
+   * (not a field) so it re-translates on every read instead of caching the
+   * value at construction time — it must track the active language. */
+  protected get generatingLabel(): string {
+    return this.transloco.translate('documents.generate.status.generating');
+  }
 
   /** Form fields derived from the selected template's `schema`. */
   readonly schemaFields = computed<SchemaField[]>(() => {
@@ -383,7 +384,7 @@ export class Documents {
           this.generating.set(false);
           this.generateError.set(
             err?.message ??
-              $localize`:@@documents.generate.error.start:No se pudo iniciar la generación.`,
+              this.transloco.translate('documents.generate.error.start'),
           );
         },
       });
@@ -406,14 +407,16 @@ export class Documents {
           this.generateStatus.set(doc.status);
           if (doc.status === DocumentStatusEnum.FAILED) {
             this.generateError.set(
-              $localize`:@@documents.generate.error.failed:La generación del documento falló.`,
+              this.transloco.translate('documents.generate.error.failed'),
             );
           }
         },
         error: (err: { message?: string }) => {
           this.generateError.set(
             err?.message ??
-              $localize`:@@documents.generate.error.pollingFailed:Error al verificar el estado.`,
+              this.transloco.translate(
+                'documents.generate.error.pollingFailed',
+              ),
           );
         },
         complete: () => {
@@ -422,7 +425,7 @@ export class Documents {
           } else if (last && !isTerminalStatus(last.status)) {
             // Attempt cap reached without a terminal status.
             this.generateError.set(
-              $localize`:@@documents.generate.error.timeout:La generación está tardando demasiado. Revise la biblioteca más tarde.`,
+              this.transloco.translate('documents.generate.error.timeout'),
             );
           }
           this.loadDocuments();
@@ -471,7 +474,7 @@ export class Documents {
           this.generateError.set(
             toErrorMessage(
               err,
-              $localize`:@@documents.download.error:No se pudo obtener el enlace de descarga.`,
+              this.transloco.translate('documents.download.error'),
             ),
           ),
       });
@@ -514,8 +517,7 @@ export class Documents {
         next: () => this.loadDocuments(),
         error: (err: { message?: string }) =>
           this.uploadError.set(
-            err?.message ??
-              $localize`:@@documents.upload.error:Error al subir el archivo.`,
+            err?.message ?? this.transloco.translate('documents.upload.error'),
           ),
       });
   }

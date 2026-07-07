@@ -4,6 +4,7 @@ import {
   type HttpParams,
 } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { catchError, map, type Observable, throwError } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
@@ -42,6 +43,7 @@ export interface PaginatedResult<T> {
 @Injectable({ providedIn: 'root' })
 export class ApiClient {
   private readonly http = inject(HttpClient);
+  private readonly transloco = inject(TranslocoService);
   private readonly baseUrl = environment.apiBaseUrl;
 
   get<T>(path: string, options?: ApiRequestOptions): Observable<T> {
@@ -136,7 +138,11 @@ export class ApiClient {
     if (error instanceof HttpErrorResponse) {
       const body = error.error as Partial<UnsuccessResponse> | null;
       const issue = body?.issue;
-      const message = issueToMessage(issue, error.message || 'Request failed.');
+      const message = issueToMessage(
+        this.transloco,
+        issue,
+        error.message || 'Request failed.',
+      );
       return throwError(
         () =>
           new ApiError({

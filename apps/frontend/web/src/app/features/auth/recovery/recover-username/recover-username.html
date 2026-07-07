@@ -6,28 +6,23 @@
     </a>
 
     <div class="auth-pitch">
-      <p class="auth-eyebrow" i18n="@@auth.recoverUsername.eyebrow">Recuperación de cuenta</p>
-      <h2 class="auth-headline" i18n="@@auth.recoverUsername.headline">
-        ¿Olvidó su usuario?
+      <p class="auth-eyebrow">{{ 'auth.recoverUsername.eyebrow' | transloco }}</p>
+      <h2 class="auth-headline">
+        {{ 'auth.recoverUsername.headline' | transloco }}
       </h2>
-      <p class="auth-lede" i18n="@@auth.recoverUsername.lede">
-        Indíquenos el correo electrónico de su cuenta y le enviaremos su
-        usuario para que pueda volver a iniciar sesión.
+      <p class="auth-lede">
+        {{ 'auth.recoverUsername.lede' | transloco }}
       </p>
     </div>
 
     <ul class="auth-reassure">
       <li>
         <span class="auth-tick"></span>
-        <span i18n="@@auth.recoverUsername.reassure.username"
-          >Usted inicia sesión con su usuario, no con su correo electrónico</span
-        >
+        <span>{{ 'auth.recoverUsername.reassure.username' | transloco }}</span>
       </li>
       <li>
         <span class="auth-tick"></span>
-        <span i18n="@@auth.recoverUsername.reassure.privacy"
-          >Nunca revelamos si un correo electrónico está registrado</span
-        >
+        <span>{{ 'auth.recoverUsername.reassure.privacy' | transloco }}</span>
       </li>
     </ul>
   </aside>
@@ -42,57 +37,50 @@
       </div>
 
       @if (sent()) {
-        <h1 class="auth-title" i18n="@@auth.recoverUsername.sent.title">Revise su correo electrónico</h1>
-        <p class="auth-sub" i18n="@@auth.recoverUsername.sent.message">
-          Si existe una cuenta con ese correo electrónico, le hemos enviado su
-          usuario. Puede tardar un minuto en llegar — y recuerde revisar la
-          carpeta de spam.
+        <h1 class="auth-title">{{ 'auth.recoverUsername.sent.title' | transloco }}</h1>
+        <p class="auth-sub">
+          {{ 'auth.recoverUsername.sent.message' | transloco }}
         </p>
 
         <p class="auth-alt">
           <a routerLink="/login" data-testid="login-link"
-            ><span i18n="@@auth.recoverUsername.sent.backLink">Volver a iniciar sesión</span></a
+            ><span>{{ 'auth.recoverUsername.sent.backLink' | transloco }}</span></a
           >
         </p>
       } @else {
-        <h1 class="auth-title" i18n="@@auth.recoverUsername.title">Recupere su usuario</h1>
-        <p class="auth-sub" i18n="@@auth.recoverUsername.subtitle">
-          Se lo enviaremos al correo electrónico de su cuenta.
+        <h1 class="auth-title">{{ 'auth.recoverUsername.title' | transloco }}</h1>
+        <p class="auth-sub">
+          {{ 'auth.recoverUsername.subtitle' | transloco }}
         </p>
 
         <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
           @if (rateLimited()) {
             <p-message
               severity="warn"
-              i18n-text="@@auth.recoverUsername.rateLimited"
-              text="Demasiadas solicitudes. Espere unos minutos e intente de nuevo."
+              [text]="'auth.recoverUsername.rateLimited' | transloco"
               styleClass="auth-msg"
             />
           }
 
           <div class="field">
-            <label for="email" i18n="@@auth.recoverUsername.email.label">Correo electrónico</label>
+            <label for="email">{{ 'auth.recoverUsername.email.label' | transloco }}</label>
             <input
               pInputText
               id="email"
               type="email"
               formControlName="email"
               autocomplete="email"
-              i18n-placeholder="@@auth.recoverUsername.email.placeholder"
-              placeholder="correo@ejemplo.com"
+              [placeholder]="'auth.recoverUsername.email.placeholder' | transloco"
               fluid
             />
             @if (form.controls.email.invalid && form.controls.email.touched) {
-              <small class="field-error" i18n="@@auth.recoverUsername.email.error"
-                >Ingrese una dirección de correo electrónico válida.</small
-              >
+              <small class="field-error">{{ 'auth.recoverUsername.email.error' | transloco }}</small>
             }
           </div>
 
           <p-button
             type="submit"
-            i18n-label="@@auth.recoverUsername.submit"
-            label="Enviarme mi usuario"
+            [label]="'auth.recoverUsername.submit' | transloco"
             icon="pi pi-arrow-right"
             iconPos="right"
             [loading]="submitting()"
@@ -103,15 +91,15 @@
         </form>
 
         <p class="auth-alt">
-          <span i18n="@@auth.recoverUsername.remembered">¿Lo recordó?</span>
+          <span>{{ 'auth.recoverUsername.remembered' | transloco }}</span>
           <a routerLink="/login" data-testid="login-link"
-            ><span i18n="@@auth.recoverUsername.loginLink">Iniciar sesión</span></a
+            ><span>{{ 'auth.recoverUsername.loginLink' | transloco }}</span></a
           >
         </p>
         <p class="auth-alt auth-alt--subtle">
-          <span i18n="@@auth.recoverUsername.forgotPasswordToo">¿También olvidó su contraseña?</span>
+          <span>{{ 'auth.recoverUsername.forgotPasswordToo' | transloco }}</span>
           <a routerLink="/forgot-password"
-            ><span i18n="@@auth.recoverUsername.resetLink">Restablecerla</span></a
+            ><span>{{ 'auth.recoverUsername.resetLink' | transloco }}</span></a
           >
         </p>
       }

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 /**
  * Personal app Settings — user-controllable application preferences, identical
@@ -11,25 +12,25 @@ import { Component } from '@angular/core';
  */
 @Component({
   selector: 'app-settings',
+  imports: [TranslocoPipe],
   template: `
     <div class="page">
       <header class="page-header">
         <div>
-          <span class="page-eyebrow" i18n="@@settings.page.eyebrow">Cuenta</span>
-          <h1 class="page-title" i18n="@@settings.page.title">Configuración</h1>
-          <p class="page-subtitle" i18n="@@settings.page.subtitle">
-            Preferencias que controlan cómo se comporta la aplicación para usted.
-            Estas se aplican solo a su cuenta.
+          <span class="page-eyebrow">{{ 'settings.page.eyebrow' | transloco }}</span>
+          <h1 class="page-title">{{ 'settings.page.title' | transloco }}</h1>
+          <p class="page-subtitle">
+            {{ 'settings.page.subtitle' | transloco }}
           </p>
         </div>
       </header>
 
       @for (group of groups; track group.title) {
         <section class="surface-card">
-          <h2 class="card-title">{{ group.title }}</h2>
-          <p class="card-hint">{{ group.hint }}</p>
-          <span class="pill pill--neutral" data-testid="settings-placeholder" i18n="@@settings.group.comingSoon">
-            Próximamente
+          <h2 class="card-title">{{ group.title | transloco }}</h2>
+          <p class="card-hint">{{ group.hint | transloco }}</p>
+          <span class="pill pill--neutral" data-testid="settings-placeholder">
+            {{ 'settings.group.comingSoon' | transloco }}
           </span>
         </section>
       }
@@ -39,16 +40,16 @@ import { Component } from '@angular/core';
 export class Settings {
   protected readonly groups = [
     {
-      title: $localize`:@@settings.group.appearance.title:Apariencia`,
-      hint: $localize`:@@settings.group.appearance.hint:Densidad y preferencias de visualización para sus sesiones.`,
+      title: 'settings.group.appearance.title',
+      hint: 'settings.group.appearance.hint',
     },
     {
-      title: $localize`:@@settings.group.notifications.title:Notificaciones`,
-      hint: $localize`:@@settings.group.notifications.hint:Elija qué notificaciones dentro de la aplicación y por correo electrónico desea recibir.`,
+      title: 'settings.group.notifications.title',
+      hint: 'settings.group.notifications.hint',
     },
     {
-      title: $localize`:@@settings.group.language.title:Idioma y región`,
-      hint: $localize`:@@settings.group.language.hint:Idioma de la interfaz, formatos de fecha y número.`,
+      title: 'settings.group.language.title',
+      hint: 'settings.group.language.hint',
     },
   ];
 }

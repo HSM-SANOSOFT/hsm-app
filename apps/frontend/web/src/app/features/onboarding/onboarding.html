@@ -6,18 +6,17 @@
     </a>
 
     <div class="auth-pitch">
-      <p class="auth-eyebrow" i18n="@@onboarding.setup.eyebrow">Primer inicio de sesión</p>
-      <h2 class="auth-headline" i18n="@@onboarding.setup.headline">Configuremos su cuenta.</h2>
-      <p class="auth-lede" i18n="@@onboarding.setup.lede">
-        Su cuenta fue creada por un administrador. Elija su propia contraseña
-        y confirme cómo podemos comunicarnos con usted — luego podrá empezar a trabajar.
+      <p class="auth-eyebrow">{{ 'onboarding.setup.eyebrow' | transloco }}</p>
+      <h2 class="auth-headline">{{ 'onboarding.setup.headline' | transloco }}</h2>
+      <p class="auth-lede">
+        {{ 'onboarding.setup.lede' | transloco }}
       </p>
     </div>
 
     <ul class="auth-reassure">
-      <li><span class="auth-tick"></span> <span i18n="@@onboarding.setup.reassure.password">Reemplace su contraseña temporal</span></li>
-      <li><span class="auth-tick"></span> <span i18n="@@onboarding.setup.reassure.contact">Confirme sus datos de contacto</span></li>
-      <li><span class="auth-tick"></span> <span i18n="@@onboarding.setup.reassure.onceOnly">Esto lo hace una sola vez</span></li>
+      <li><span class="auth-tick"></span> <span>{{ 'onboarding.setup.reassure.password' | transloco }}</span></li>
+      <li><span class="auth-tick"></span> <span>{{ 'onboarding.setup.reassure.contact' | transloco }}</span></li>
+      <li><span class="auth-tick"></span> <span>{{ 'onboarding.setup.reassure.onceOnly' | transloco }}</span></li>
     </ul>
   </aside>
 
@@ -27,11 +26,11 @@
         Hospital <span>Santa María</span>
       </span>
 
-      <h1 #heading tabindex="-1" class="auth-title onboarding-title" i18n="@@onboarding.setup.title">
-        Termine de configurar su cuenta
+      <h1 #heading tabindex="-1" class="auth-title onboarding-title">
+        {{ 'onboarding.setup.title' | transloco }}
       </h1>
-      <p class="auth-sub" i18n="@@onboarding.setup.subtitle">
-        Establezca una nueva contraseña y confirme sus datos de contacto para continuar.
+      <p class="auth-sub">
+        {{ 'onboarding.setup.subtitle' | transloco }}
       </p>
 
       <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
@@ -45,32 +44,30 @@
         }
 
         <div class="field">
-          <label for="newPassword" i18n="@@onboarding.setup.newPassword.label">Nueva contraseña</label>
+          <label for="newPassword">{{ 'onboarding.setup.newPassword.label' | transloco }}</label>
           <p-password
             inputId="newPassword"
             formControlName="newPassword"
             [feedback]="true"
             [toggleMask]="true"
             autocomplete="new-password"
-            i18n-placeholder="@@onboarding.setup.newPassword.placeholder"
-            placeholder="Al menos 8 caracteres"
+            [placeholder]="'onboarding.setup.newPassword.placeholder' | transloco"
             fluid
           />
           @if (form.controls.newPassword.invalid && form.controls.newPassword.touched) {
-            <small class="field-error" i18n="@@onboarding.setup.newPassword.error">Use al menos 8 caracteres.</small>
+            <small class="field-error">{{ 'onboarding.setup.newPassword.error' | transloco }}</small>
           }
         </div>
 
         <div class="field">
-          <label for="confirmPassword" i18n="@@onboarding.setup.confirmPassword.label">Confirme la contraseña</label>
+          <label for="confirmPassword">{{ 'onboarding.setup.confirmPassword.label' | transloco }}</label>
           <p-password
             inputId="confirmPassword"
             formControlName="confirmPassword"
             [feedback]="false"
             [toggleMask]="true"
             autocomplete="new-password"
-            i18n-placeholder="@@onboarding.setup.confirmPassword.placeholder"
-            placeholder="Vuelva a ingresar su nueva contraseña"
+            [placeholder]="'onboarding.setup.confirmPassword.placeholder' | transloco"
             fluid
           />
           @if (
@@ -78,51 +75,48 @@
             form.hasError('mismatch') &&
             form.controls.confirmPassword.valid
           ) {
-            <small class="field-error" i18n="@@onboarding.setup.confirmPassword.mismatch">Las contraseñas no coinciden.</small>
+            <small class="field-error">{{ 'onboarding.setup.confirmPassword.mismatch' | transloco }}</small>
           }
           @if (form.controls.confirmPassword.invalid && form.controls.confirmPassword.touched) {
-            <small class="field-error" i18n="@@onboarding.setup.confirmPassword.error">Confirme su nueva contraseña.</small>
+            <small class="field-error">{{ 'onboarding.setup.confirmPassword.error' | transloco }}</small>
           }
         </div>
 
         <div class="field">
-          <label for="phoneNumber" i18n="@@onboarding.setup.phoneNumber.label">Número de teléfono</label>
+          <label for="phoneNumber">{{ 'onboarding.setup.phoneNumber.label' | transloco }}</label>
           <input
             pInputText
             id="phoneNumber"
             formControlName="phoneNumber"
             type="tel"
             autocomplete="tel"
-            i18n-placeholder="@@onboarding.setup.phoneNumber.placeholder"
-            placeholder="Dónde podemos comunicarnos con usted"
+            [placeholder]="'onboarding.setup.phoneNumber.placeholder' | transloco"
             fluid
           />
           @if (form.controls.phoneNumber.invalid && form.controls.phoneNumber.touched) {
-            <small class="field-error" i18n="@@onboarding.setup.phoneNumber.error">Ingrese un número de teléfono.</small>
+            <small class="field-error">{{ 'onboarding.setup.phoneNumber.error' | transloco }}</small>
           }
         </div>
 
         <div class="field">
-          <label for="confirmEmail" i18n="@@onboarding.setup.confirmEmail.label">Confirme el correo electrónico</label>
+          <label for="confirmEmail">{{ 'onboarding.setup.confirmEmail.label' | transloco }}</label>
           <input
             pInputText
             id="confirmEmail"
             formControlName="confirmEmail"
             type="email"
             autocomplete="email"
-            i18n-placeholder="@@onboarding.setup.confirmEmail.placeholder"
-            placeholder="El correo electrónico de su cuenta"
+            [placeholder]="'onboarding.setup.confirmEmail.placeholder' | transloco"
             fluid
           />
           @if (form.controls.confirmEmail.invalid && form.controls.confirmEmail.touched) {
-            <small class="field-error" i18n="@@onboarding.setup.confirmEmail.error">Ingrese el correo electrónico de su cuenta.</small>
+            <small class="field-error">{{ 'onboarding.setup.confirmEmail.error' | transloco }}</small>
           }
         </div>
 
         <p-button
           type="submit"
-          i18n-label="@@onboarding.setup.submit"
-          label="Completar configuración"
+          [label]="'onboarding.setup.submit' | transloco"
           icon="pi pi-arrow-right"
           iconPos="right"
           [loading]="submitting()"

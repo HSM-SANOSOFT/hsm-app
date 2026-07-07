@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
@@ -44,6 +45,7 @@ function tokenFromFragment(fragment: string | null): string | null {
     ButtonModule,
     MessageModule,
     LanguageSwitcher,
+    TranslocoPipe,
   ],
   templateUrl: './reset-password.html',
   styleUrl: '../../auth.scss',

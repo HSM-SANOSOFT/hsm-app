@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { RolesEnum } from '@hsm/common/enums';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { AvatarModule } from 'primeng/avatar';
 import { Popover } from 'primeng/popover';
 
@@ -42,7 +43,7 @@ const SYSTEM_ADMIN_ROUTE = '/system-admin';
  */
 @Component({
   selector: 'app-profile-card',
-  imports: [RouterLink, AvatarModule, Popover, LanguageSwitcher],
+  imports: [RouterLink, AvatarModule, Popover, LanguageSwitcher, TranslocoPipe],
   template: `
     <div class="pcard" [class.pcard--expanded]="expanded()">
       <button
@@ -51,8 +52,7 @@ const SYSTEM_ADMIN_ROUTE = '/system-admin';
         data-testid="profile-card"
         [attr.aria-expanded]="nav.isOpen('profile')"
         aria-haspopup="dialog"
-        i18n-aria-label="@@layout.profileCard.menuAriaLabel"
-        aria-label="Menú de la cuenta"
+        [attr.aria-label]="'layout.profileCard.menuAriaLabel' | transloco"
         (click)="pop.toggle($event)"
       >
         <p-avatar
@@ -66,7 +66,7 @@ const SYSTEM_ADMIN_ROUTE = '/system-admin';
               {{ displayName() }}
             </span>
             <span class="pcard__role" data-testid="profile-role">
-              {{ roleLabel() }}
+              {{ roleLabel() | transloco }}
             </span>
           </span>
         }
@@ -77,10 +77,8 @@ const SYSTEM_ADMIN_ROUTE = '/system-admin';
           class="pcard__gear"
           data-testid="settings-gear"
           [routerLink]="settingsRoute"
-          i18n-aria-label="@@layout.profileCard.settingsLabel"
-          aria-label="Configuración"
-          i18n-title="@@layout.profileCard.settingsLabel"
-          title="Configuración"
+          [attr.aria-label]="'layout.profileCard.settingsLabel' | transloco"
+          [attr.title]="'layout.profileCard.settingsLabel' | transloco"
         >
           <i class="pi pi-cog" aria-hidden="true"></i>
         </a>
@@ -97,7 +95,7 @@ const SYSTEM_ADMIN_ROUTE = '/system-admin';
             (click)="pop.hide()"
           >
             <i class="pmenu__icon" [class]="item.icon" aria-hidden="true"></i>
-            {{ item.label }}
+            {{ item.label | transloco }}
           </a>
         }
         <div class="pmenu__lang" data-testid="pmenu-language-switcher">
@@ -110,7 +108,7 @@ const SYSTEM_ADMIN_ROUTE = '/system-admin';
           (click)="signOut(); pop.hide()"
         >
           <i class="pmenu__icon pi pi-sign-out" aria-hidden="true"></i>
-          <span i18n="@@layout.profileCard.signOut">Cerrar sesión</span>
+          <span>{{ 'layout.profileCard.signOut' | transloco }}</span>
         </button>
       </div>
     </p-popover>
@@ -279,30 +277,37 @@ export class ProfileCard {
    * A display label for the user's role. Admins always read "Administrator";
    * otherwise the first role is humanized. The full role→label/priority map for
    * the 40+ roles is a data deliverable; this is the mechanism that consumes it.
+   *
+   * Returns a translation KEY for the member/admin branches (translated in the
+   * template via `| transloco`, so it stays reactive to a language switch);
+   * `humanizeRole` returns plain, non-catalog text derived from the raw role
+   * value, which the `transloco` pipe passes through unchanged when it finds
+   * no matching key.
    */
   protected readonly roleLabel = computed(() => {
     const roles = this.user()?.roles ?? [];
     if (roles.length === 0) {
-      return $localize`:@@layout.profileCard.role.member:Miembro`;
+      return 'layout.profileCard.role.member';
     }
     if (roles.includes(RolesEnum.System.Admin)) {
-      return $localize`:@@layout.profileCard.role.admin:Administrador`;
+      return 'layout.profileCard.role.admin';
     }
     return humanizeRole(roles[0]);
   });
 
-  /** Popover navigation entries — System Admin only for admins (origin R12). */
+  /** Popover navigation entries — System Admin only for admins (origin R12).
+   * Labels are translation keys, translated in the template via `| transloco`. */
   protected readonly menuItems = computed<readonly ProfileMenuItem[]>(() => {
     const items: ProfileMenuItem[] = [
       {
-        label: $localize`:@@layout.profileCard.menu.profile:Perfil`,
+        label: 'layout.profileCard.menu.profile',
         icon: 'pi pi-user',
         route: PROFILE_ROUTE,
       },
     ];
     if (this.auth.isAdmin()) {
       items.push({
-        label: $localize`:@@layout.profileCard.menu.systemAdmin:Administración del sistema`,
+        label: 'layout.profileCard.menu.systemAdmin',
         icon: 'pi pi-shield',
         route: SYSTEM_ADMIN_ROUTE,
       });

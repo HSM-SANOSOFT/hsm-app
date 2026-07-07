@@ -6,29 +6,23 @@
     </a>
 
     <div class="auth-pitch">
-      <p class="auth-eyebrow" i18n="@@auth.requestReset.eyebrow">Recuperación de cuenta</p>
-      <h2 class="auth-headline" i18n="@@auth.requestReset.headline">
-        Vamos a ayudarle a volver a ingresar.
+      <p class="auth-eyebrow">{{ 'auth.requestReset.eyebrow' | transloco }}</p>
+      <h2 class="auth-headline">
+        {{ 'auth.requestReset.headline' | transloco }}
       </h2>
-      <p class="auth-lede" i18n="@@auth.requestReset.lede">
-        Ingrese el correo electrónico de su cuenta y le enviaremos un enlace
-        seguro para establecer una nueva contraseña. El enlace expira pronto,
-        así que utilícelo de inmediato.
+      <p class="auth-lede">
+        {{ 'auth.requestReset.lede' | transloco }}
       </p>
     </div>
 
     <ul class="auth-reassure">
       <li>
         <span class="auth-tick"></span>
-        <span i18n="@@auth.requestReset.reassure.singleUse"
-          >Los enlaces son de un solo uso y tienen tiempo limitado</span
-        >
+        <span>{{ 'auth.requestReset.reassure.singleUse' | transloco }}</span>
       </li>
       <li>
         <span class="auth-tick"></span>
-        <span i18n="@@auth.requestReset.reassure.privacy"
-          >Nunca compartimos si un correo electrónico está registrado</span
-        >
+        <span>{{ 'auth.requestReset.reassure.privacy' | transloco }}</span>
       </li>
     </ul>
   </aside>
@@ -43,57 +37,50 @@
       </div>
 
       @if (sent()) {
-        <h1 class="auth-title" i18n="@@auth.requestReset.sent.title">Revise su correo electrónico</h1>
-        <p class="auth-sub" i18n="@@auth.requestReset.sent.message">
-          Si existe una cuenta con ese correo electrónico, le hemos enviado un
-          enlace para restablecer su contraseña. Puede tardar un minuto en
-          llegar — y recuerde revisar la carpeta de spam.
+        <h1 class="auth-title">{{ 'auth.requestReset.sent.title' | transloco }}</h1>
+        <p class="auth-sub">
+          {{ 'auth.requestReset.sent.message' | transloco }}
         </p>
 
         <p class="auth-alt">
           <a routerLink="/login" data-testid="login-link"
-            ><span i18n="@@auth.requestReset.sent.backLink">Volver a iniciar sesión</span></a
+            ><span>{{ 'auth.requestReset.sent.backLink' | transloco }}</span></a
           >
         </p>
       } @else {
-        <h1 class="auth-title" i18n="@@auth.requestReset.title">Restablezca su contraseña</h1>
-        <p class="auth-sub" i18n="@@auth.requestReset.subtitle">
-          Le enviaremos un enlace para elegir una nueva.
+        <h1 class="auth-title">{{ 'auth.requestReset.title' | transloco }}</h1>
+        <p class="auth-sub">
+          {{ 'auth.requestReset.subtitle' | transloco }}
         </p>
 
         <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
           @if (rateLimited()) {
             <p-message
               severity="warn"
-              i18n-text="@@auth.requestReset.rateLimited"
-              text="Demasiadas solicitudes. Espere unos minutos e intente de nuevo."
+              [text]="'auth.requestReset.rateLimited' | transloco"
               styleClass="auth-msg"
             />
           }
 
           <div class="field">
-            <label for="email" i18n="@@auth.requestReset.email.label">Correo electrónico</label>
+            <label for="email">{{ 'auth.requestReset.email.label' | transloco }}</label>
             <input
               pInputText
               id="email"
               type="email"
               formControlName="email"
               autocomplete="email"
-              i18n-placeholder="@@auth.requestReset.email.placeholder"
-              placeholder="correo@ejemplo.com"
+              [placeholder]="'auth.requestReset.email.placeholder' | transloco"
               fluid
             />
             @if (form.controls.email.invalid && form.controls.email.touched) {
-              <small class="field-error" i18n="@@auth.requestReset.email.error"
-                >Ingrese una dirección de correo electrónico válida.</small
-              >
+              <small class="field-error">{{ 'auth.requestReset.email.error' | transloco }}</small>
             }
           </div>
 
           <p-button
             type="submit"
-            i18n-label="@@auth.requestReset.submit"
-            label="Enviar enlace de restablecimiento"
+            [label]="'auth.requestReset.submit' | transloco"
             icon="pi pi-arrow-right"
             iconPos="right"
             [loading]="submitting()"
@@ -104,15 +91,15 @@
         </form>
 
         <p class="auth-alt">
-          <span i18n="@@auth.requestReset.remembered">¿Lo recordó?</span>
+          <span>{{ 'auth.requestReset.remembered' | transloco }}</span>
           <a routerLink="/login" data-testid="login-link"
-            ><span i18n="@@auth.requestReset.loginLink">Iniciar sesión</span></a
+            ><span>{{ 'auth.requestReset.loginLink' | transloco }}</span></a
           >
         </p>
         <p class="auth-alt auth-alt--subtle">
-          <span i18n="@@auth.requestReset.forgotUsername">¿Olvidó su usuario?</span>
+          <span>{{ 'auth.requestReset.forgotUsername' | transloco }}</span>
           <a routerLink="/recover-username"
-            ><span i18n="@@auth.requestReset.recoverLink">Recupérelo</span></a
+            ><span>{{ 'auth.requestReset.recoverLink' | transloco }}</span></a
           >
         </p>
       }

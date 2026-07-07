@@ -1,5 +1,6 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { NavService } from './nav.service';
 import { type NavNode } from './nav-node';
 
@@ -14,9 +15,10 @@ import { type NavNode } from './nav-node';
  */
 @Component({
   selector: 'app-breadcrumb',
+  imports: [TranslocoPipe],
   template: `
     @if (chain().length) {
-      <nav class="bc" i18n-aria-label="@@layout.breadcrumb.ariaLabel" aria-label="Ruta de navegación" data-testid="breadcrumb">
+      <nav class="bc" [attr.aria-label]="'layout.breadcrumb.ariaLabel' | transloco" data-testid="breadcrumb">
         @for (crumb of crumbs(); track crumb.node.id; let last = $last) {
           @if (!$first) {
             <span class="bc__sep" aria-hidden="true">›</span>
@@ -33,7 +35,7 @@ import { type NavNode } from './nav-node';
                 [attr.aria-current]="last ? 'page' : null"
                 (click)="toggle(crumb.node)"
               >
-                {{ crumb.node.label }}
+                {{ crumb.node.label | transloco }}
                 <i class="bc__chev pi pi-angle-down" aria-hidden="true"></i>
               </button>
               @if (openId() === crumb.node.id) {
@@ -46,7 +48,7 @@ import { type NavNode } from './nav-node';
                         [class.is-current]="sibling.id === crumb.node.id"
                         (click)="go(sibling)"
                       >
-                        {{ sibling.label }}
+                        {{ sibling.label | transloco }}
                       </button>
                     </li>
                   }
@@ -59,7 +61,7 @@ import { type NavNode } from './nav-node';
               [class.bc__crumb--current]="last"
               [attr.aria-current]="last ? 'page' : null"
             >
-              {{ crumb.node.label }}
+              {{ crumb.node.label | transloco }}
             </span>
           }
         }

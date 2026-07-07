@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
@@ -30,6 +31,7 @@ import { LanguageSwitcher } from '../../../layout/language-switcher/language-swi
     ButtonModule,
     MessageModule,
     LanguageSwitcher,
+    TranslocoPipe,
   ],
   templateUrl: './register.html',
   styleUrl: '../auth.scss',
@@ -38,6 +40,7 @@ export class Register {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly transloco = inject(TranslocoService);
 
   protected readonly form = this.fb.nonNullable.group({
     firstName: ['', [Validators.required]],
@@ -67,10 +70,7 @@ export class Register {
       error: (err: unknown) => {
         this.submitting.set(false);
         this.errorMessage.set(
-          toErrorMessage(
-            err,
-            $localize`:@@auth.register.error:No se pudo crear su cuenta. Intente de nuevo.`,
-          ),
+          toErrorMessage(err, this.transloco.translate('auth.register.error')),
         );
       },
     });

@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 
 import { environment } from '../../../environments/environment';
 import type { SuccessResponse, Tokens } from '../api/response';
+import { provideTranslocoTestingModule } from '../i18n/transloco-testing';
 import { authInterceptor } from './auth.interceptor';
 import { AuthService } from './auth.service';
 import { TokenStorage } from './token-storage';
@@ -44,6 +45,7 @@ describe('authInterceptor (single in-flight refresh)', () => {
 
     TestBed.configureTestingModule({
       providers: [
+        ...provideTranslocoTestingModule(),
         provideHttpClient(withInterceptors([authInterceptor])),
         provideHttpClientTesting(),
         { provide: Router, useValue: { navigate: navigateSpy } },

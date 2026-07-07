@@ -1,10 +1,10 @@
 <div class="page workspace">
   <header class="workspace-header">
-    <span class="page-eyebrow" i18n="@@workspace.home.eyebrow">Espacio de trabajo</span>
-    <h1 class="workspace-greeting" data-testid="workspace-greeting" i18n="@@workspace.home.greeting">
-      Bienvenido de nuevo, {{ firstName() }}.
+    <span class="page-eyebrow">{{ 'workspace.home.eyebrow' | transloco }}</span>
+    <h1 class="workspace-greeting" data-testid="workspace-greeting">
+      {{ 'workspace.home.greetingText' | transloco: { value: firstName() } }}
     </h1>
-    <p class="workspace-sub" i18n="@@workspace.home.subtitle">Retome su trabajo.</p>
+    <p class="workspace-sub">{{ 'workspace.home.subtitle' | transloco }}</p>
   </header>
 
   <div class="quicklinks" data-testid="quicklinks">
@@ -18,8 +18,8 @@
           <i [class]="link.icon"></i>
         </span>
         <span class="quicklink__body">
-          <span class="quicklink__label">{{ link.label }}</span>
-          <span class="quicklink__desc">{{ link.description }}</span>
+          <span class="quicklink__label">{{ link.label | transloco }}</span>
+          <span class="quicklink__desc">{{ link.description | transloco }}</span>
         </span>
         <i class="pi pi-arrow-right quicklink__arrow" aria-hidden="true"></i>
       </a>

@@ -5,7 +5,7 @@ import {
   type RouterStateSnapshot,
   type UrlTree,
 } from '@angular/router';
-
+import { provideTranslocoTestingModule } from '../i18n/transloco-testing';
 import { AuthService } from './auth.service';
 import { pendingOnboardingGuard } from './pending-onboarding.guard';
 
@@ -26,6 +26,7 @@ describe('pendingOnboardingGuard', () => {
   function configure(stub: AuthStub): void {
     TestBed.configureTestingModule({
       providers: [
+        ...provideTranslocoTestingModule(),
         { provide: AuthService, useValue: stub as unknown as AuthService },
       ],
     });

@@ -1,27 +1,27 @@
 <div class="page" data-testid="profile-screen">
   <header class="page-header">
     <div>
-      <span class="page-eyebrow" i18n="@@profile.header.eyebrow">CUENTA</span>
-      <h1 class="page-title" i18n="@@profile.header.title">Su perfil</h1>
-      <p class="page-subtitle" i18n="@@profile.header.subtitle">Actualice su nombre, correo electrónico y contraseña.</p>
+      <span class="page-eyebrow">{{ 'profile.header.eyebrow' | transloco }}</span>
+      <h1 class="page-title">{{ 'profile.header.title' | transloco }}</h1>
+      <p class="page-subtitle">{{ 'profile.header.subtitle' | transloco }}</p>
     </div>
   </header>
 
   <section class="surface-card">
-    <h2 class="card-title" i18n="@@profile.info.title">Perfil</h2>
-    <p class="card-hint" i18n="@@profile.info.hint">Actualice su nombre y correo electrónico.</p>
+    <h2 class="card-title">{{ 'profile.info.title' | transloco }}</h2>
+    <p class="card-hint">{{ 'profile.info.hint' | transloco }}</p>
 
     <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
       @if (profileError(); as message) {
         <p-message severity="error" [text]="message" />
       }
       @if (profileSuccess()) {
-        <p-message severity="success" i18n-text="@@profile.info.success" text="Perfil actualizado." />
+        <p-message severity="success" [text]="'profile.info.success' | transloco" />
       }
 
       <div class="field-grid">
         <div class="field">
-          <label for="firstName" i18n="@@profile.info.firstName.label">Nombre</label>
+          <label for="firstName">{{ 'profile.info.firstName.label' | transloco }}</label>
           <input
             pInputText
             fluid
@@ -34,12 +34,12 @@
             profileForm.controls.firstName.invalid &&
             profileForm.controls.firstName.touched
           ) {
-            <small class="field-error" i18n="@@profile.info.firstName.error">El nombre es obligatorio.</small>
+            <small class="field-error">{{ 'profile.info.firstName.error' | transloco }}</small>
           }
         </div>
 
         <div class="field">
-          <label for="email" i18n="@@profile.info.email.label">Correo electrónico</label>
+          <label for="email">{{ 'profile.info.email.label' | transloco }}</label>
           <input
             pInputText
             fluid
@@ -52,15 +52,14 @@
             profileForm.controls.email.invalid &&
             profileForm.controls.email.touched
           ) {
-            <small class="field-error" i18n="@@profile.info.email.error">Se requiere un correo electrónico válido.</small>
+            <small class="field-error">{{ 'profile.info.email.error' | transloco }}</small>
           }
         </div>
       </div>
 
       <p-button
         type="submit"
-        i18n-label="@@profile.info.submit"
-        label="Guardar perfil"
+        [label]="'profile.info.submit' | transloco"
         [loading]="profileSubmitting()"
         [disabled]="profileSubmitting()"
       />
@@ -68,19 +67,19 @@
   </section>
 
   <section class="surface-card">
-    <h2 class="card-title" i18n="@@profile.password.title">Contraseña</h2>
-    <p class="card-hint" i18n="@@profile.password.hint">Ingrese su contraseña actual para establecer una nueva.</p>
+    <h2 class="card-title">{{ 'profile.password.title' | transloco }}</h2>
+    <p class="card-hint">{{ 'profile.password.hint' | transloco }}</p>
 
     <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
       @if (passwordError(); as message) {
         <p-message severity="error" [text]="message" />
       }
       @if (passwordSuccess()) {
-        <p-message severity="success" i18n-text="@@profile.password.success" text="Contraseña actualizada." />
+        <p-message severity="success" [text]="'profile.password.success' | transloco" />
       }
 
       <div class="field">
-        <label for="currentPassword" i18n="@@profile.password.current.label">Contraseña actual</label>
+        <label for="currentPassword">{{ 'profile.password.current.label' | transloco }}</label>
         <p-password
           inputId="currentPassword"
           fluid
@@ -93,13 +92,13 @@
           passwordForm.controls.currentPassword.invalid &&
           passwordForm.controls.currentPassword.touched
         ) {
-          <small class="field-error" i18n="@@profile.password.current.error">La contraseña actual es obligatoria.</small>
+          <small class="field-error">{{ 'profile.password.current.error' | transloco }}</small>
         }
       </div>
 
       <div class="field-grid">
         <div class="field">
-          <label for="newPassword" i18n="@@profile.password.new.label">Nueva contraseña</label>
+          <label for="newPassword">{{ 'profile.password.new.label' | transloco }}</label>
           <p-password
             inputId="newPassword"
             fluid
@@ -111,14 +110,14 @@
             passwordForm.controls.newPassword.invalid &&
             passwordForm.controls.newPassword.touched
           ) {
-            <small class="field-error" i18n="@@profile.password.new.error">
-              La nueva contraseña debe tener al menos 8 caracteres.
+            <small class="field-error">
+              {{ 'profile.password.new.error' | transloco }}
             </small>
           }
         </div>
 
         <div class="field">
-          <label for="confirmPassword" i18n="@@profile.password.confirm.label">Confirme la nueva contraseña</label>
+          <label for="confirmPassword">{{ 'profile.password.confirm.label' | transloco }}</label>
           <p-password
             inputId="confirmPassword"
             fluid
@@ -130,15 +129,14 @@
           @if (
             passwordMismatch() && passwordForm.controls.confirmPassword.touched
           ) {
-            <small class="field-error" i18n="@@profile.password.confirm.error">Las contraseñas no coinciden.</small>
+            <small class="field-error">{{ 'profile.password.confirm.error' | transloco }}</small>
           }
         </div>
       </div>
 
       <p-button
         type="submit"
-        i18n-label="@@profile.password.submit"
-        label="Cambiar contraseña"
+        [label]="'profile.password.submit' | transloco"
         [loading]="passwordSubmitting()"
         [disabled]="passwordSubmitting()"
       />

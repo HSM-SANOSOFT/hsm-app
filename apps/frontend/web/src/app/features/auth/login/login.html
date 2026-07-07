@@ -6,29 +6,23 @@
     </a>
 
     <div class="auth-pitch">
-      <p class="auth-eyebrow" i18n="@@auth.login.eyebrow">Su hospital, en línea</p>
-      <h2 class="auth-headline" i18n="@@auth.login.headline">
-        Su atención, todo en un solo lugar.
+      <p class="auth-eyebrow">{{ 'auth.login.eyebrow' | transloco }}</p>
+      <h2 class="auth-headline">
+        {{ 'auth.login.headline' | transloco }}
       </h2>
-      <p class="auth-lede" i18n="@@auth.login.lede">
-        Inicie sesión para acceder a sus registros, su equipo médico y todo lo
-        que el Hospital Santa María guarda para usted — de forma segura,
-        cuando lo necesite.
+      <p class="auth-lede">
+        {{ 'auth.login.lede' | transloco }}
       </p>
     </div>
 
     <ul class="auth-reassure">
       <li>
         <span class="auth-tick"></span>
-        <span i18n="@@auth.login.reassure.account"
-          >Una sola cuenta para todo lo que necesite aquí</span
-        >
+        <span>{{ 'auth.login.reassure.account' | transloco }}</span>
       </li>
       <li>
         <span class="auth-tick"></span>
-        <span i18n="@@auth.login.reassure.privacy"
-          >Privado y protegido, siempre</span
-        >
+        <span>{{ 'auth.login.reassure.privacy' | transloco }}</span>
       </li>
     </ul>
   </aside>
@@ -42,8 +36,8 @@
         <app-language-switcher />
       </div>
 
-      <h1 class="auth-title" i18n="@@auth.login.title">Bienvenido de nuevo</h1>
-      <p class="auth-sub" i18n="@@auth.login.subtitle">Inicie sesión para continuar.</p>
+      <h1 class="auth-title">{{ 'auth.login.title' | transloco }}</h1>
+      <p class="auth-sub">{{ 'auth.login.subtitle' | transloco }}</p>
 
       <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
         @if (errorMessage(); as message) {
@@ -51,51 +45,44 @@
         }
 
         <div class="field">
-          <label for="username" i18n="@@auth.login.username.label">Usuario</label>
+          <label for="username">{{ 'auth.login.username.label' | transloco }}</label>
           <input
             pInputText
             id="username"
             type="text"
             formControlName="username"
             autocomplete="username"
-            i18n-placeholder="@@auth.login.username.placeholder"
-            placeholder="Su usuario"
+            [placeholder]="'auth.login.username.placeholder' | transloco"
             fluid
           />
           @if (form.controls.username.invalid && form.controls.username.touched) {
-            <small class="field-error" i18n="@@auth.login.username.error"
-              >El usuario es obligatorio.</small
-            >
+            <small class="field-error">{{ 'auth.login.username.error' | transloco }}</small>
           }
         </div>
 
         <div class="field">
-          <label for="password" i18n="@@auth.login.password.label">Contraseña</label>
+          <label for="password">{{ 'auth.login.password.label' | transloco }}</label>
           <p-password
             inputId="password"
             formControlName="password"
             [feedback]="false"
             [toggleMask]="true"
             autocomplete="current-password"
-            i18n-placeholder="@@auth.login.password.placeholder"
-            placeholder="Su contraseña"
+            [placeholder]="'auth.login.password.placeholder' | transloco"
             fluid
           />
           @if (form.controls.password.invalid && form.controls.password.touched) {
-            <small class="field-error" i18n="@@auth.login.password.error"
-              >La contraseña es obligatoria.</small
-            >
+            <small class="field-error">{{ 'auth.login.password.error' | transloco }}</small>
           }
         </div>
 
         <a class="auth-link auth-link--quiet" routerLink="/forgot-password">
-          <span i18n="@@auth.login.troubleLink">¿Problemas para iniciar sesión?</span>
+          <span>{{ 'auth.login.troubleLink' | transloco }}</span>
         </a>
 
         <p-button
           type="submit"
-          i18n-label="@@auth.login.submit"
-          label="Iniciar sesión"
+          [label]="'auth.login.submit' | transloco"
           icon="pi pi-arrow-right"
           iconPos="right"
           [loading]="submitting()"
@@ -106,15 +93,17 @@
       </form>
 
       <p class="auth-alt auth-alt--subtle">
-        <span i18n="@@auth.login.newPatient">¿Paciente nuevo?</span>
+        <span>{{ 'auth.login.newPatient' | transloco }}</span>
         <a routerLink="/register" data-testid="register-link"
-          ><span i18n="@@auth.login.createAccountLink">Crear una cuenta</span></a
+          ><span>{{ 'auth.login.createAccountLink' | transloco }}</span></a
         >
       </p>
 
-      <p class="auth-version mono" i18n="@@auth.login.version">
-        UI v{{ version.uiVersion }} &middot; API
-        v{{ version.apiVersion() ?? 'unknown' }}
+      <p class="auth-version mono">
+        {{
+          'auth.login.version'
+            | transloco: { ui: version.uiVersion, api: version.apiVersion() ?? 'unknown' }
+        }}
       </p>
     </div>
   </main>

@@ -6,28 +6,23 @@
     </a>
 
     <div class="auth-pitch">
-      <p class="auth-eyebrow" i18n="@@auth.register.eyebrow">Nuevo aquí</p>
-      <h2 class="auth-headline" i18n="@@auth.register.headline">
-        Cree su cuenta de paciente.
+      <p class="auth-eyebrow">{{ 'auth.register.eyebrow' | transloco }}</p>
+      <h2 class="auth-headline">
+        {{ 'auth.register.headline' | transloco }}
       </h2>
-      <p class="auth-lede" i18n="@@auth.register.lede">
-        Una sola cuenta segura para mantener su atención con el Hospital Santa
-        María en un solo lugar — configúrela en un minuto.
+      <p class="auth-lede">
+        {{ 'auth.register.lede' | transloco }}
       </p>
     </div>
 
     <ul class="auth-reassure">
       <li>
         <span class="auth-tick"></span>
-        <span i18n="@@auth.register.reassure.free"
-          >Gratis de crear, siempre suya</span
-        >
+        <span>{{ 'auth.register.reassure.free' | transloco }}</span>
       </li>
       <li>
         <span class="auth-tick"></span>
-        <span i18n="@@auth.register.reassure.privacy"
-          >Sus datos se mantienen privados y protegidos</span
-        >
+        <span>{{ 'auth.register.reassure.privacy' | transloco }}</span>
       </li>
     </ul>
   </aside>
@@ -41,9 +36,9 @@
         <app-language-switcher />
       </div>
 
-      <h1 class="auth-title" i18n="@@auth.register.title">Crear cuenta</h1>
-      <p class="auth-sub" i18n="@@auth.register.subtitle">
-        Configure su cuenta de paciente para comenzar.
+      <h1 class="auth-title">{{ 'auth.register.title' | transloco }}</h1>
+      <p class="auth-sub">
+        {{ 'auth.register.subtitle' | transloco }}
       </p>
 
       <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
@@ -53,7 +48,7 @@
 
         <div class="auth-row">
           <div class="field">
-            <label for="firstName" i18n="@@auth.register.firstName.label">Nombre</label>
+            <label for="firstName">{{ 'auth.register.firstName.label' | transloco }}</label>
             <input
               pInputText
               id="firstName"
@@ -63,14 +58,12 @@
               fluid
             />
             @if (form.controls.firstName.invalid && form.controls.firstName.touched) {
-              <small class="field-error" i18n="@@auth.register.firstName.error"
-                >El nombre es obligatorio.</small
-              >
+              <small class="field-error">{{ 'auth.register.firstName.error' | transloco }}</small>
             }
           </div>
 
           <div class="field">
-            <label for="firstLastName" i18n="@@auth.register.lastName.label">Apellido</label>
+            <label for="firstLastName">{{ 'auth.register.lastName.label' | transloco }}</label>
             <input
               pInputText
               id="firstLastName"
@@ -80,74 +73,62 @@
               fluid
             />
             @if (form.controls.firstLastName.invalid && form.controls.firstLastName.touched) {
-              <small class="field-error" i18n="@@auth.register.lastName.error"
-                >El apellido es obligatorio.</small
-              >
+              <small class="field-error">{{ 'auth.register.lastName.error' | transloco }}</small>
             }
           </div>
         </div>
 
         <div class="field">
-          <label for="username" i18n="@@auth.register.username.label">Usuario</label>
+          <label for="username">{{ 'auth.register.username.label' | transloco }}</label>
           <input
             pInputText
             id="username"
             type="text"
             formControlName="username"
             autocomplete="username"
-            i18n-placeholder="@@auth.register.username.placeholder"
-            placeholder="p. ej. jdoe"
+            [placeholder]="'auth.register.username.placeholder' | transloco"
             fluid
           />
           @if (form.controls.username.invalid && form.controls.username.touched) {
-            <small class="field-error" i18n="@@auth.register.username.error"
-              >El usuario es obligatorio.</small
-            >
+            <small class="field-error">{{ 'auth.register.username.error' | transloco }}</small>
           }
         </div>
 
         <div class="field">
-          <label for="email" i18n="@@auth.register.email.label">Correo electrónico</label>
+          <label for="email">{{ 'auth.register.email.label' | transloco }}</label>
           <input
             pInputText
             id="email"
             type="email"
             formControlName="email"
             autocomplete="email"
-            i18n-placeholder="@@auth.register.email.placeholder"
-            placeholder="correo@ejemplo.com"
+            [placeholder]="'auth.register.email.placeholder' | transloco"
             fluid
           />
           @if (form.controls.email.invalid && form.controls.email.touched) {
-            <small class="field-error" i18n="@@auth.register.email.error"
-              >Ingrese una dirección de correo electrónico válida.</small
-            >
+            <small class="field-error">{{ 'auth.register.email.error' | transloco }}</small>
           }
         </div>
 
         <div class="field">
-          <label for="password" i18n="@@auth.register.password.label">Contraseña</label>
+          <label for="password">{{ 'auth.register.password.label' | transloco }}</label>
           <p-password
             inputId="password"
             formControlName="password"
             [feedback]="true"
             [toggleMask]="true"
             autocomplete="new-password"
-            i18n-placeholder="@@auth.register.password.placeholder"
-            placeholder="Al menos 8 caracteres"
+            [placeholder]="'auth.register.password.placeholder' | transloco"
             fluid
           />
           @if (form.controls.password.invalid && form.controls.password.touched) {
-            <small class="field-error" i18n="@@auth.register.password.error"
-              >Use al menos 8 caracteres.</small
-            >
+            <small class="field-error">{{ 'auth.register.password.error' | transloco }}</small>
           }
         </div>
 
         <p-button
           type="submit"
-          i18n-label="@@auth.register.submit"
-          label="Crear cuenta"
+          [label]="'auth.register.submit' | transloco"
           icon="pi pi-arrow-right"
           iconPos="right"
           [loading]="submitting()"
@@ -158,9 +139,9 @@
       </form>
 
       <p class="auth-alt">
-        <span i18n="@@auth.register.hasAccount">¿Ya tiene una cuenta?</span>
+        <span>{{ 'auth.register.hasAccount' | transloco }}</span>
         <a routerLink="/login" data-testid="login-link"
-          ><span i18n="@@auth.register.loginLink">Iniciar sesión</span></a
+          ><span>{{ 'auth.register.loginLink' | transloco }}</span></a
         >
       </p>
     </div>

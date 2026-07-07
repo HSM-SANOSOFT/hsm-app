@@ -6,6 +6,7 @@ import {
 import { TestBed } from '@angular/core/testing';
 
 import { environment } from '../../../environments/environment';
+import { provideTranslocoTestingModule } from '../i18n/transloco-testing';
 import type { PaginatedResult } from './api-client';
 import { ApiClient } from './api-client';
 import { ApiError } from './api-error';
@@ -19,7 +20,11 @@ describe('ApiClient', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(withFetch()), provideHttpClientTesting()],
+      providers: [
+        ...provideTranslocoTestingModule(),
+        provideHttpClient(withFetch()),
+        provideHttpClientTesting(),
+      ],
     });
     client = TestBed.inject(ApiClient);
     httpMock = TestBed.inject(HttpTestingController);

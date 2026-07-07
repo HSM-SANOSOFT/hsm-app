@@ -10,6 +10,7 @@ import { of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import type { SuccessResponse, UserProfile } from '../../core/api/response';
 import { AuthService } from '../../core/auth/auth.service';
+import { provideTranslocoTestingModule } from '../../core/i18n/transloco-testing';
 import { Profile } from './profile';
 
 const base = environment.apiBaseUrl;
@@ -74,6 +75,7 @@ describe('Profile component', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideAnimationsAsync(),
+        ...provideTranslocoTestingModule(),
         { provide: AuthService, useValue: auth },
       ],
     });

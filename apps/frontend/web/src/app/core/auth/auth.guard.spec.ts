@@ -6,7 +6,7 @@ import {
   type UrlTree,
 } from '@angular/router';
 import { RolesEnum } from '@hsm/common/enums';
-
+import { provideTranslocoTestingModule } from '../i18n/transloco-testing';
 import { authGuard } from './auth.guard';
 import { AuthService } from './auth.service';
 import { adminGuard, roleGuard } from './role.guard';
@@ -33,6 +33,7 @@ describe('auth guards', () => {
   function configure(stub: AuthStub): void {
     TestBed.configureTestingModule({
       providers: [
+        ...provideTranslocoTestingModule(),
         { provide: AuthService, useValue: stub as unknown as AuthService },
       ],
     });

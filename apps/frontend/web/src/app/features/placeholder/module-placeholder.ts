@@ -1,4 +1,5 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import { NavService } from '../../layout/nav/nav.service';
 
@@ -10,34 +11,43 @@ import { NavService } from '../../layout/nav/nav.service';
  */
 @Component({
   selector: 'app-module-placeholder',
+  imports: [TranslocoPipe],
   template: `
     <div class="page">
       <header class="page-header">
         <div>
-          <span class="page-eyebrow" i18n="@@placeholder.module.eyebrow">Módulo</span>
+          <span class="page-eyebrow">{{ 'placeholder.module.eyebrow' | transloco }}</span>
           <h1 class="page-title" data-testid="placeholder-title">
             {{ title() }}
           </h1>
-          <p class="page-subtitle" i18n="@@placeholder.module.subtitle">
-            La navegación y el enrutamiento de esta sección ya están listos; la
-            pantalla en sí es un marcador de posición hasta que se construya el módulo.
+          <p class="page-subtitle">
+            {{ 'placeholder.module.subtitle' | transloco }}
           </p>
         </div>
       </header>
 
       <section class="surface-card empty-state">
         <i class="pi pi-wrench" aria-hidden="true"></i>
-        <p i18n="@@placeholder.module.comingSoon">“{{ title() }}” estará disponible próximamente.</p>
+        <p>{{ 'placeholder.module.comingSoon' | transloco: { value: title() } }}</p>
       </section>
     </div>
   `,
 })
 export class ModulePlaceholder {
   private readonly nav = inject(NavService);
-  /** The label of the landed node, for the heading. */
-  protected readonly title = computed(
-    () =>
-      this.nav.breadcrumbChain().at(-1)?.label ??
-      $localize`:@@placeholder.module.fallbackTitle:Módulo`,
-  );
+  private readonly transloco = inject(TranslocoService);
+
+  /**
+   * The label of the landed node, for the heading. A plain method (not a
+   * `computed()`) so it re-translates on every change-detection pass instead
+   * of memoizing a stale translation across a language switch — the label
+   * itself is a translation KEY (from the nav tree), not display text, so it
+   * must be resolved via `TranslocoService.translate` on every read.
+   */
+  protected title(): string {
+    const label = this.nav.breadcrumbChain().at(-1)?.label;
+    return label
+      ? this.transloco.translate(label)
+      : this.transloco.translate('placeholder.module.fallbackTitle');
+  }
 }

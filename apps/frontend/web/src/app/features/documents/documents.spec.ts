@@ -11,6 +11,7 @@ import { TestScheduler } from 'rxjs/testing';
 
 import { environment } from '../../../environments/environment';
 import type { SuccessResponse } from '../../core/api/response';
+import { provideTranslocoTestingModule } from '../../core/i18n/transloco-testing';
 import {
   DEFAULT_POLL_MAX_ATTEMPTS,
   type DocumentRecord,
@@ -177,6 +178,7 @@ describe('Documents component', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideAnimationsAsync(),
+        ...provideTranslocoTestingModule(),
       ],
     });
     httpMock = TestBed.inject(HttpTestingController);

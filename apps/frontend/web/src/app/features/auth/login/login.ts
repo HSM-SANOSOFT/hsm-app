@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
@@ -34,6 +35,7 @@ const LAST_USERNAME_KEY = 'hsm.lastUsername';
     ButtonModule,
     MessageModule,
     LanguageSwitcher,
+    TranslocoPipe,
   ],
   templateUrl: './login.html',
   styleUrl: '../auth.scss',
@@ -42,6 +44,7 @@ export class Login implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly transloco = inject(TranslocoService);
   protected readonly version = inject(VersionService);
 
   protected readonly form = this.fb.nonNullable.group({
@@ -82,10 +85,7 @@ export class Login implements OnInit {
       error: (err: unknown) => {
         this.submitting.set(false);
         this.errorMessage.set(
-          toErrorMessage(
-            err,
-            $localize`:@@auth.login.error:No se pudo iniciar sesión. Intente de nuevo.`,
-          ),
+          toErrorMessage(err, this.transloco.translate('auth.login.error')),
         );
       },
     });

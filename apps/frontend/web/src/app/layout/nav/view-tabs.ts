@@ -1,5 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { NavService } from './nav.service';
 import { isLeaf } from './nav-node';
 
@@ -17,11 +18,11 @@ import { isLeaf } from './nav-node';
  */
 @Component({
   selector: 'app-view-tabs',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslocoPipe],
   template: `
     @if (tabs().length) {
-      <nav class="tabs" i18n-aria-label="@@layout.viewTabs.ariaLabel" aria-label="Vistas" data-testid="view-tabs">
-        <span class="tabs__label" i18n="@@layout.viewTabs.label">Vistas</span>
+      <nav class="tabs" [attr.aria-label]="'layout.viewTabs.ariaLabel' | transloco" data-testid="view-tabs">
+        <span class="tabs__label">{{ 'layout.viewTabs.label' | transloco }}</span>
         @for (view of tabs(); track view.id) {
           <a
             class="tab"
@@ -30,7 +31,7 @@ import { isLeaf } from './nav-node';
             [routerLink]="view.route"
             [attr.aria-current]="view.id === activeId() ? 'page' : null"
           >
-            {{ view.label }}
+            {{ view.label | transloco }}
           </a>
         }
       </nav>

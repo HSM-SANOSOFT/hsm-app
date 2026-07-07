@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import {
   type AppLang,
@@ -9,7 +10,7 @@ import {
 @Component({
   selector: 'app-language-switcher',
   standalone: true,
-  imports: [SelectButtonModule, FormsModule],
+  imports: [SelectButtonModule, FormsModule, TranslocoPipe],
   templateUrl: './language-switcher.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -20,7 +21,6 @@ export class LanguageSwitcher {
     { label: 'EN', value: 'en' as AppLang },
   ];
   value = this.lang.current();
-  readonly ariaLabel = $localize`:@@layout.languageSwitcher.aria:Idioma`;
 
   choose(locale: AppLang): void {
     this.lang.switch(locale);

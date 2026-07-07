@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SettingsCategoryEnum } from '@hsm/common/enums';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -35,19 +36,19 @@ const CATEGORY_TABS: ReadonlyArray<{
 }> = [
   {
     value: SettingsCategoryEnum.EMAIL,
-    label: $localize`:@@admin.settings.tab.email:Correo electrónico`,
+    label: 'admin.settings.tab.email',
   },
   {
     value: SettingsCategoryEnum.WEBHOOK,
-    label: $localize`:@@admin.settings.tab.webhook:Webhook`,
+    label: 'admin.settings.tab.webhook',
   },
   {
     value: SettingsCategoryEnum.STORAGE,
-    label: $localize`:@@admin.settings.tab.storage:Almacenamiento`,
+    label: 'admin.settings.tab.storage',
   },
   {
     value: SettingsCategoryEnum.APP_BEHAVIOR,
-    label: $localize`:@@admin.settings.tab.appBehavior:Comportamiento de la aplicación`,
+    label: 'admin.settings.tab.appBehavior',
   },
 ];
 
@@ -77,6 +78,7 @@ const CATEGORY_TABS: ReadonlyArray<{
     MessageModule,
     ProgressSpinnerModule,
     ToastModule,
+    TranslocoPipe,
   ],
   providers: [MessageService],
   templateUrl: './settings.html',
@@ -99,6 +101,7 @@ const CATEGORY_TABS: ReadonlyArray<{
 export class AdminSettings {
   private readonly api = inject(ApiClient);
   private readonly messages = inject(MessageService);
+  private readonly transloco = inject(TranslocoService);
 
   protected readonly tabs = CATEGORY_TABS;
   protected readonly activeCategory = signal<SettingsCategoryEnum>(
@@ -127,8 +130,8 @@ export class AdminSettings {
   /** Placeholder for a secret input, based on whether a value is stored. */
   protected secretPlaceholder(item: SettingItem): string {
     return item.isSet
-      ? $localize`:@@admin.settings.secret.placeholderSet:Hay un valor establecido — déjelo en blanco para conservarlo`
-      : $localize`:@@admin.settings.secret.placeholderUnset:No establecido`;
+      ? this.transloco.translate('admin.settings.secret.placeholderSet')
+      : this.transloco.translate('admin.settings.secret.placeholderUnset');
   }
 
   /** Tracks per-field edits, marking the field dirty. */
@@ -157,7 +160,7 @@ export class AdminSettings {
           this.errorMessage.set(
             toErrorMessage(
               err,
-              $localize`:@@admin.settings.error.generic:Algo salió mal. Intente de nuevo.`,
+              this.transloco.translate('admin.settings.error.generic'),
             ),
           );
         },
@@ -192,8 +195,12 @@ export class AdminSettings {
     if (settings.length === 0) {
       this.messages.add({
         severity: 'info',
-        summary: $localize`:@@admin.settings.toast.nothingToSave.summary:Nada que guardar`,
-        detail: $localize`:@@admin.settings.toast.nothingToSave.detail:No hay cambios que aplicar para esta categoría.`,
+        summary: this.transloco.translate(
+          'admin.settings.toast.nothingToSave.summary',
+        ),
+        detail: this.transloco.translate(
+          'admin.settings.toast.nothingToSave.detail',
+        ),
       });
       return;
     }
@@ -210,20 +217,24 @@ export class AdminSettings {
         this.saving.set(false);
         this.messages.add({
           severity: 'success',
-          summary: $localize`:@@admin.settings.toast.saved.summary:Configuración guardada`,
-          detail: $localize`:@@admin.settings.toast.saved.detail:Configuración actualizada correctamente.`,
+          summary: this.transloco.translate(
+            'admin.settings.toast.saved.summary',
+          ),
+          detail: this.transloco.translate('admin.settings.toast.saved.detail'),
         });
       },
       error: (err: unknown) => {
         this.saving.set(false);
         const detail = toErrorMessage(
           err,
-          $localize`:@@admin.settings.error.generic:Algo salió mal. Intente de nuevo.`,
+          this.transloco.translate('admin.settings.error.generic'),
         );
         this.errorMessage.set(detail);
         this.messages.add({
           severity: 'error',
-          summary: $localize`:@@admin.settings.toast.saveFailed.summary:Error al guardar`,
+          summary: this.transloco.translate(
+            'admin.settings.toast.saveFailed.summary',
+          ),
           detail,
         });
       },

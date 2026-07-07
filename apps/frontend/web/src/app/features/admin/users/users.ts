@@ -6,6 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { RolesEnum } from '@hsm/common/enums';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { ButtonModule } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
@@ -89,20 +90,20 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
     InputTextModule,
     PasswordModule,
     Message,
+    TranslocoPipe,
   ],
   template: `
     <div class="page admin-users" data-testid="admin-users">
       <header class="page-header">
         <div>
-          <span class="page-eyebrow" i18n="@@admin.users.page.eyebrow">ADMIN · USUARIOS</span>
-          <h1 class="page-title" i18n="@@admin.users.page.title">Usuarios</h1>
-          <p class="page-subtitle" i18n="@@admin.users.page.subtitle">
-            Revise las cuentas de la consola y administre los roles asignados.
+          <span class="page-eyebrow">{{ 'admin.users.page.eyebrow' | transloco }}</span>
+          <h1 class="page-title">{{ 'admin.users.page.title' | transloco }}</h1>
+          <p class="page-subtitle">
+            {{ 'admin.users.page.subtitle' | transloco }}
           </p>
         </div>
         <p-button
-          i18n-label="@@admin.users.createStaff"
-          label="Crear personal"
+          [label]="'admin.users.createStaff' | transloco"
           icon="pi pi-user-plus"
           (onClick)="openCreate()"
           data-testid="create-staff-open"
@@ -128,12 +129,12 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
         >
           <ng-template pTemplate="header">
             <tr>
-              <th i18n="@@admin.users.table.username">Usuario</th>
-              <th i18n="@@admin.users.table.email">Correo electrónico</th>
-              <th i18n="@@admin.users.table.name">Nombre</th>
-              <th i18n="@@admin.users.table.roles">Rol(es)</th>
-              <th i18n="@@admin.users.table.status">Estado</th>
-              <th i18n="@@admin.users.table.actions">Acciones</th>
+              <th>{{ 'admin.users.table.username' | transloco }}</th>
+              <th>{{ 'admin.users.table.email' | transloco }}</th>
+              <th>{{ 'admin.users.table.name' | transloco }}</th>
+              <th>{{ 'admin.users.table.roles' | transloco }}</th>
+              <th>{{ 'admin.users.table.status' | transloco }}</th>
+              <th>{{ 'admin.users.table.actions' | transloco }}</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-user>
@@ -153,25 +154,22 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
                   <span
                     class="pill pill--pending"
                     [attr.data-testid]="'status-' + user.id"
-                    i18n="@@admin.users.status.pending"
                   >
-                    Pendiente
+                    {{ 'admin.users.status.pending' | transloco }}
                   </span>
                 } @else {
                   <span
                     class="pill pill--ok"
                     [attr.data-testid]="'status-' + user.id"
-                    i18n="@@admin.users.status.active"
                   >
-                    Activo
+                    {{ 'admin.users.status.active' | transloco }}
                   </span>
                 }
               </td>
               <td>
                 <div class="row-actions">
                   <p-button
-                    i18n-label="@@admin.users.row.view"
-                    label="Ver"
+                    [label]="'admin.users.row.view' | transloco"
                     size="small"
                     [text]="true"
                     (onClick)="view(user)"
@@ -181,8 +179,7 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
                     [options]="roleOptions"
                     optionLabel="label"
                     optionValue="value"
-                    i18n-placeholder="@@admin.users.row.changeRole"
-                    placeholder="Cambiar rol"
+                    [placeholder]="'admin.users.row.changeRole' | transloco"
                     [ngModel]="currentRoleValue(user)"
                     (onChange)="changeRole(user, $event.value)"
                     [attr.data-testid]="'role-select-' + user.id"
@@ -196,7 +193,7 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
               <td colspan="6">
                 <div class="empty-state">
                   <i class="pi pi-users"></i>
-                  <span i18n="@@admin.users.table.empty">No se encontraron usuarios.</span>
+                  <span>{{ 'admin.users.table.empty' | transloco }}</span>
                 </div>
               </td>
             </tr>
@@ -205,8 +202,7 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
       </section>
 
       <p-dialog
-        i18n-header="@@admin.users.detail.header"
-        header="Detalle del usuario"
+        [header]="'admin.users.detail.header' | transloco"
         [(visible)]="detailVisible"
         [modal]="true"
         [style]="{ width: '28rem' }"
@@ -215,19 +211,19 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
         @if (selectedUser(); as u) {
           <div class="field-grid" data-testid="user-detail">
             <div class="field">
-              <label i18n="@@admin.users.detail.username.label">Usuario</label>
+              <label>{{ 'admin.users.detail.username.label' | transloco }}</label>
               <span>{{ u.username }}</span>
             </div>
             <div class="field">
-              <label i18n="@@admin.users.detail.email.label">Correo electrónico</label>
+              <label>{{ 'admin.users.detail.email.label' | transloco }}</label>
               <span class="muted">{{ u.email }}</span>
             </div>
             <div class="field">
-              <label i18n="@@admin.users.detail.name.label">Nombre</label>
+              <label>{{ 'admin.users.detail.name.label' | transloco }}</label>
               <span>{{ u.firstName }}</span>
             </div>
             <div class="field">
-              <label i18n="@@admin.users.detail.roles.label">Rol(es)</label>
+              <label>{{ 'admin.users.detail.roles.label' | transloco }}</label>
               <span>
                 @for (role of u.roles; track role.id) {
                   <span class="pill pill--neutral">{{ role.role }}</span>
@@ -241,8 +237,7 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
       </p-dialog>
 
       <p-dialog
-        i18n-header="@@admin.users.create.header"
-        header="Crear cuenta de personal"
+        [header]="'admin.users.create.header' | transloco"
         [(visible)]="createVisible"
         [modal]="true"
         [style]="{ width: '32rem' }"
@@ -250,10 +245,8 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
         (onHide)="onCreateHide()"
         data-testid="create-staff-dialog"
       >
-        <p class="dialog-lede" i18n="@@admin.users.create.lede">
-          Provea una cuenta de consola. Se envía una contraseña temporal por
-          correo electrónico al nuevo miembro del personal, quien establece la
-          suya propia en el primer inicio de sesión.
+        <p class="dialog-lede">
+          {{ 'admin.users.create.lede' | transloco }}
         </p>
 
         <form
@@ -280,7 +273,7 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
 
           <div class="auth-row">
             <div class="field">
-              <label for="cs-firstName" i18n="@@admin.users.create.firstName.label">Nombre</label>
+              <label for="cs-firstName">{{ 'admin.users.create.firstName.label' | transloco }}</label>
               <input
                 pInputText
                 id="cs-firstName"
@@ -293,12 +286,12 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
                 createForm.controls.firstName.invalid &&
                 createForm.controls.firstName.touched
               ) {
-                <small class="field-error" i18n="@@admin.users.create.firstName.error">El nombre es obligatorio.</small>
+                <small class="field-error">{{ 'admin.users.create.firstName.error' | transloco }}</small>
               }
             </div>
 
             <div class="field">
-              <label for="cs-firstLastName" i18n="@@admin.users.create.lastName.label">Apellido</label>
+              <label for="cs-firstLastName">{{ 'admin.users.create.lastName.label' | transloco }}</label>
               <input
                 pInputText
                 id="cs-firstLastName"
@@ -311,61 +304,58 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
                 createForm.controls.firstLastName.invalid &&
                 createForm.controls.firstLastName.touched
               ) {
-                <small class="field-error" i18n="@@admin.users.create.lastName.error">El apellido es obligatorio.</small>
+                <small class="field-error">{{ 'admin.users.create.lastName.error' | transloco }}</small>
               }
             </div>
           </div>
 
           <div class="field">
-            <label for="cs-username" i18n="@@admin.users.create.username.label">Usuario</label>
+            <label for="cs-username">{{ 'admin.users.create.username.label' | transloco }}</label>
             <input
               pInputText
               id="cs-username"
               type="text"
               formControlName="username"
               autocomplete="off"
-              i18n-placeholder="@@admin.users.create.username.placeholder"
-              placeholder="p. ej. jdoe"
+              [placeholder]="'admin.users.create.username.placeholder' | transloco"
               fluid
             />
             @if (
               createForm.controls.username.invalid &&
               createForm.controls.username.touched
             ) {
-              <small class="field-error" i18n="@@admin.users.create.username.error">El usuario es obligatorio.</small>
+              <small class="field-error">{{ 'admin.users.create.username.error' | transloco }}</small>
             }
           </div>
 
           <div class="field">
-            <label for="cs-email" i18n="@@admin.users.create.email.label">Correo electrónico</label>
+            <label for="cs-email">{{ 'admin.users.create.email.label' | transloco }}</label>
             <input
               pInputText
               id="cs-email"
               type="email"
               formControlName="email"
               autocomplete="off"
-              i18n-placeholder="@@admin.users.create.email.placeholder"
-              placeholder="nombre@hospital.org"
+              [placeholder]="'admin.users.create.email.placeholder' | transloco"
               fluid
             />
             @if (
               createForm.controls.email.invalid &&
               createForm.controls.email.touched
             ) {
-              <small class="field-error" i18n="@@admin.users.create.email.error">Ingrese una dirección de correo electrónico válida.</small>
+              <small class="field-error">{{ 'admin.users.create.email.error' | transloco }}</small>
             }
           </div>
 
           <div class="field">
-            <label for="cs-role" i18n="@@admin.users.create.role.label">Rol</label>
+            <label for="cs-role">{{ 'admin.users.create.role.label' | transloco }}</label>
             <p-select
               inputId="cs-role"
               formControlName="role"
               [options]="staffRoleOptions"
               optionLabel="label"
               optionValue="value"
-              i18n-placeholder="@@admin.users.create.role.placeholder"
-              placeholder="Seleccione un rol de personal"
+              [placeholder]="'admin.users.create.role.placeholder' | transloco"
               [filter]="true"
               filterBy="label"
               appendTo="body"
@@ -376,34 +366,32 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
               createForm.controls.role.invalid &&
               createForm.controls.role.touched
             ) {
-              <small class="field-error" i18n="@@admin.users.create.role.error">Seleccione un rol de personal.</small>
+              <small class="field-error">{{ 'admin.users.create.role.error' | transloco }}</small>
             }
           </div>
 
           <div class="field">
-            <label for="cs-tempPassword" i18n="@@admin.users.create.tempPassword.label">Contraseña temporal</label>
+            <label for="cs-tempPassword">{{ 'admin.users.create.tempPassword.label' | transloco }}</label>
             <p-password
               inputId="cs-tempPassword"
               formControlName="tempPassword"
               [feedback]="false"
               [toggleMask]="true"
               autocomplete="off"
-              i18n-placeholder="@@admin.users.create.tempPassword.placeholder"
-              placeholder="Al menos 8 caracteres"
+              [placeholder]="'admin.users.create.tempPassword.placeholder' | transloco"
               fluid
             />
             @if (
               createForm.controls.tempPassword.invalid &&
               createForm.controls.tempPassword.touched
             ) {
-              <small class="field-error" i18n="@@admin.users.create.tempPassword.error">Use al menos 8 caracteres.</small>
+              <small class="field-error">{{ 'admin.users.create.tempPassword.error' | transloco }}</small>
             }
           </div>
 
           <div class="dialog-actions">
             <p-button
-              i18n-label="@@admin.users.create.cancel"
-              label="Cancelar"
+              [label]="'admin.users.create.cancel' | transloco"
               [text]="true"
               type="button"
               (onClick)="createVisible = false"
@@ -411,8 +399,7 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
             />
             <p-button
               type="submit"
-              i18n-label="@@admin.users.createStaff"
-              label="Crear personal"
+              [label]="'admin.users.createStaff' | transloco"
               icon="pi pi-user-plus"
               [loading]="creating()"
               [disabled]="creating()"
@@ -462,6 +449,7 @@ function buildRoleOptions(staffOnly = false): RoleOption[] {
 export class AdminUsers {
   private readonly api = inject(ApiClient);
   private readonly fb = inject(FormBuilder);
+  private readonly transloco = inject(TranslocoService);
 
   /** Flattened `RolesEnum` options for the role-change dropdown (all roles). */
   readonly roleOptions = buildRoleOptions();
@@ -584,7 +572,9 @@ export class AdminUsers {
         this.createForm.reset();
         this.error.set(null);
         this.createSuccess.set(
-          $localize`:@@admin.users.create.success:Se creó la cuenta de personal "${created.username}:USERNAME:". Se envió una contraseña temporal por correo electrónico.`,
+          this.transloco.translate('admin.users.create.success', {
+            value: created.username,
+          }),
         );
         this.refreshCurrentPage();
       },
@@ -593,7 +583,7 @@ export class AdminUsers {
         this.createError.set(
           toErrorMessage(
             err,
-            $localize`:@@admin.users.create.error:No se pudo crear la cuenta de personal.`,
+            this.transloco.translate('admin.users.create.error'),
           ),
         );
       },
@@ -611,7 +601,7 @@ export class AdminUsers {
         this.error.set(
           toErrorMessage(
             err,
-            $localize`:@@admin.users.detail.error:No se pudo cargar el detalle del usuario.`,
+            this.transloco.translate('admin.users.detail.error'),
           ),
         ),
     });
@@ -640,7 +630,7 @@ export class AdminUsers {
         this.error.set(
           toErrorMessage(
             err,
-            $localize`:@@admin.users.role.error:No se pudo cambiar el rol.`,
+            this.transloco.translate('admin.users.role.error'),
           ),
         );
         // Revert the dropdown to the user's current role: re-set the list to a

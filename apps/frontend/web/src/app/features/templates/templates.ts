@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { ButtonModule } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { MessageModule } from 'primeng/message';
@@ -22,7 +23,7 @@ import { TemplateSaveFlow } from './template-save-flow';
  */
 @Component({
   selector: 'app-templates',
-  imports: [TemplateEditor, Dialog, ButtonModule, MessageModule],
+  imports: [TemplateEditor, Dialog, ButtonModule, MessageModule, TranslocoPipe],
   template: `
     <app-template-editor
       [identifier]="identifier()"
@@ -48,8 +49,7 @@ import { TemplateSaveFlow } from './template-save-flow';
     <!-- AE1/AE2: the gate — TRUE server HTML in a sandboxed iframe; persist only
          fires on confirm. -->
     <p-dialog
-      i18n-header="@@templates.confirm.header"
-      header="Confirmar guardado"
+      [header]="'templates.confirm.header' | transloco"
       [(visible)]="confirmVisible"
       [modal]="true"
       [closable]="true"
@@ -57,19 +57,16 @@ import { TemplateSaveFlow } from './template-save-flow';
       (onHide)="onDialogHide()"
       data-testid="confirm-dialog"
     >
-      <p class="confirm-hint" i18n="@@templates.confirm.hint">
-        Esta es la salida real compuesta por el servidor (incluida la
-        composición con la plantilla base). Puede diferir de la vista previa en
-        vivo. Confirme para guardar, o cancele para seguir editando.
+      <p class="confirm-hint">
+        {{ 'templates.confirm.hint' | transloco }}
       </p>
       <div class="confirm-frame-wrap">
         <div class="confirm-frame-header">
-          <span class="confirm-frame-label" i18n="@@templates.confirm.frameLabel">VISTA PREVIA DEL SERVIDOR</span>
+          <span class="confirm-frame-label">{{ 'templates.confirm.frameLabel' | transloco }}</span>
         </div>
         <iframe
           class="confirm-frame"
-          i18n-title="@@templates.confirm.iframeTitle"
-          title="Vista previa compuesta por el servidor"
+          [title]="'templates.confirm.iframeTitle' | transloco"
           sandbox="allow-scripts"
           [srcdoc]="confirmHtml()"
           data-testid="confirm-iframe"
@@ -78,16 +75,14 @@ import { TemplateSaveFlow } from './template-save-flow';
 
       <ng-template pTemplate="footer">
         <p-button
-          i18n-label="@@templates.confirm.cancel"
-          label="Cancelar"
+          [label]="'templates.confirm.cancel' | transloco"
           severity="secondary"
           [text]="true"
           (onClick)="cancelSave()"
           data-testid="confirm-cancel"
         />
         <p-button
-          i18n-label="@@templates.confirm.confirm"
-          label="Confirmar"
+          [label]="'templates.confirm.confirm' | transloco"
           icon="pi pi-check"
           [loading]="persisting()"
           (onClick)="confirmSave()"
@@ -140,6 +135,7 @@ import { TemplateSaveFlow } from './template-save-flow';
 export class Templates {
   private readonly route = inject(ActivatedRoute);
   private readonly saveFlow = inject(TemplateSaveFlow);
+  private readonly transloco = inject(TranslocoService);
 
   protected readonly identifier = signal<string | null>(
     this.route.snapshot.queryParamMap.get('identifier'),
@@ -178,7 +174,7 @@ export class Templates {
         this.saveError.set(
           toErrorMessage(
             err,
-            $localize`:@@templates.save.error.preview:No se pudo renderizar la vista previa.`,
+            this.transloco.translate('templates.save.error.preview'),
           ),
         );
       },
@@ -201,7 +197,7 @@ export class Templates {
         this.confirmVisible = false;
         this.pending.set(null);
         this.savedMessage.set(
-          $localize`:@@templates.save.success:Plantilla guardada.`,
+          this.transloco.translate('templates.save.success'),
         );
       },
       error: (err: unknown) => {
@@ -209,7 +205,7 @@ export class Templates {
         this.saveError.set(
           toErrorMessage(
             err,
-            $localize`:@@templates.save.error.save:No se pudo guardar la plantilla.`,
+            this.transloco.translate('templates.save.error.save'),
           ),
         );
       },

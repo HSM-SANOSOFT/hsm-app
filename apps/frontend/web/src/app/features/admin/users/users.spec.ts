@@ -9,6 +9,7 @@ import type { TableLazyLoadEvent } from 'primeng/table';
 
 import { environment } from '../../../../environments/environment';
 import type { Pagination, SuccessResponse } from '../../../core/api/response';
+import { provideTranslocoTestingModule } from '../../../core/i18n/transloco-testing';
 import { AdminUsers } from './users';
 import type { AdminUser } from './users.types';
 
@@ -85,6 +86,7 @@ describe('AdminUsers component', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideAnimationsAsync(),
+        ...provideTranslocoTestingModule(),
       ],
     });
     httpMock = TestBed.inject(HttpTestingController);

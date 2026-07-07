@@ -1,5 +1,6 @@
 import { Component, inject, type OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { ButtonModule } from 'primeng/button';
 
 import { PwaInstallService } from '../core/pwa/pwa-install.service';
@@ -21,7 +22,14 @@ import { ViewTabs } from './nav/view-tabs';
  */
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, ButtonModule, Rail, Breadcrumb, ViewTabs],
+  imports: [
+    RouterOutlet,
+    ButtonModule,
+    Rail,
+    Breadcrumb,
+    ViewTabs,
+    TranslocoPipe,
+  ],
   template: `
     <div class="shell">
       <app-rail />
@@ -32,8 +40,7 @@ import { ViewTabs } from './nav/view-tabs';
           <div class="topbar-spacer"></div>
           @if (pwa.installAvailable()) {
             <p-button
-              i18n-label="@@layout.shell.installApp"
-              label="Instalar aplicación"
+              [label]="'layout.shell.installApp' | transloco"
               icon="pi pi-download"
               severity="secondary"
               [text]="true"

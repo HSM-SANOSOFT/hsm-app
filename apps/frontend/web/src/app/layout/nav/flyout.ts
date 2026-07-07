@@ -8,6 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { NavService } from './nav.service';
 import { isDestination, type NavNode, rendersAsFlyout } from './nav-node';
 
@@ -37,7 +38,7 @@ interface Column {
  */
 @Component({
   selector: 'app-flyout',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslocoPipe],
   template: `
     @if (visible()) {
       <div class="scrim" aria-hidden="true"></div>
@@ -52,10 +53,10 @@ interface Column {
           <div
             class="fcol"
             role="group"
-            [attr.aria-label]="column.title"
+            [attr.aria-label]="column.title | transloco"
             [attr.data-testid]="'flyout-col'"
           >
-            <p class="fcol__title">{{ column.title }}</p>
+            <p class="fcol__title">{{ column.title | transloco }}</p>
             @for (item of column.items; track item.id) {
               @if (hasChildren(item)) {
                 <button
@@ -69,7 +70,7 @@ interface Column {
                   (focus)="expand(col, item)"
                   (click)="expand(col, item)"
                 >
-                  {{ item.label }}
+                  {{ item.label | transloco }}
                   <i class="fitem__chev pi pi-angle-right" aria-hidden="true"></i>
                 </button>
               } @else {
@@ -79,7 +80,7 @@ interface Column {
                   [routerLink]="leafRoute(item)"
                   (click)="select()"
                 >
-                  {{ item.label }}
+                  {{ item.label | transloco }}
                 </a>
               }
             }

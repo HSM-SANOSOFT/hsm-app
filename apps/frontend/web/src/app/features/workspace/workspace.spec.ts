@@ -9,6 +9,7 @@ import { RolesEnum } from '@hsm/common/enums';
 
 import type { UserProfile } from '../../core/api/response';
 import { AuthService } from '../../core/auth/auth.service';
+import { provideTranslocoTestingModule } from '../../core/i18n/transloco-testing';
 import { Workspace } from './workspace';
 
 function profile(roles: string[]): UserProfile {
@@ -37,6 +38,7 @@ describe('Workspace', () => {
       providers: [
         provideZonelessChangeDetection(),
         provideRouter([]),
+        ...provideTranslocoTestingModule(),
         {
           provide: AuthService,
           useValue: { currentUser: currentUser.asReadonly(), isAdmin },

@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 
 import type { UserProfile } from '../../core/api/response';
 import { AuthService } from '../../core/auth/auth.service';
+import { provideTranslocoTestingModule } from '../../core/i18n/transloco-testing';
 import { Patient } from './patient';
 
 function profile(firstName: string): UserProfile {
@@ -27,6 +28,7 @@ describe('Patient', () => {
       imports: [Patient],
       providers: [
         provideZonelessChangeDetection(),
+        ...provideTranslocoTestingModule(),
         {
           provide: AuthService,
           useValue: { currentUser: currentUser.asReadonly() },

@@ -9,6 +9,7 @@ import { SettingsCategoryEnum } from '@hsm/common/enums';
 
 import { environment } from '../../../../environments/environment';
 import type { SuccessResponse } from '../../../core/api/response';
+import { provideTranslocoTestingModule } from '../../../core/i18n/transloco-testing';
 import { AdminSettings } from './settings';
 import type {
   GetSettingsResponse,
@@ -74,6 +75,7 @@ describe('AdminSettings component', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideAnimationsAsync(),
+        ...provideTranslocoTestingModule(),
       ],
     });
     httpMock = TestBed.inject(HttpTestingController);

@@ -8,6 +8,7 @@ import { RolesEnum } from '@hsm/common/enums';
 
 import { environment } from '../../../environments/environment';
 import type { SuccessResponse, Tokens, UserProfile } from '../api/response';
+import { provideTranslocoTestingModule } from '../i18n/transloco-testing';
 import { AuthService } from './auth.service';
 import { TokenStorage } from './token-storage';
 
@@ -51,7 +52,11 @@ describe('AuthService', () => {
   beforeEach(() => {
     localStorage.clear();
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        ...provideTranslocoTestingModule(),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
     auth = TestBed.inject(AuthService);
     httpMock = TestBed.inject(HttpTestingController);

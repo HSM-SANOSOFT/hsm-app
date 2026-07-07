@@ -11,6 +11,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { TemplateCategoriesEnum } from '@hsm/common/enums';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
@@ -63,6 +64,7 @@ const PREVIEW_DEBOUNCE_MS = 300;
     ButtonModule,
     MessageModule,
     MonacoEditor,
+    TranslocoPipe,
   ],
   templateUrl: './template-editor.html',
   styleUrl: './template-editor.scss',
@@ -70,6 +72,7 @@ const PREVIEW_DEBOUNCE_MS = 300;
 export class TemplateEditor {
   private readonly api = inject(ApiClient);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly transloco = inject(TranslocoService);
 
   /** Identifier (UUID or name) of an existing template to load, if editing. */
   readonly identifier = input<string | null>(null);
@@ -157,7 +160,7 @@ export class TemplateEditor {
       clearTimeout(this.debounceHandle);
     }
     this.debounceHandle = setTimeout(() => {
-      const result = renderPreview(input);
+      const result = renderPreview(this.transloco, input);
       this.previewSrcdoc.set(buildPreviewSrcdoc(result));
     }, PREVIEW_DEBOUNCE_MS);
   }
@@ -200,7 +203,7 @@ export class TemplateEditor {
           this.loadError.set(
             err instanceof Error
               ? err.message
-              : $localize`:@@templates.editor.error.load:No se pudo cargar la plantilla.`,
+              : this.transloco.translate('templates.editor.error.load'),
           );
         },
       });

@@ -7,6 +7,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { environment } from '../../../environments/environment';
 import type { SuccessResponse } from '../api/response';
+import { provideTranslocoTestingModule } from '../i18n/transloco-testing';
 import { API_VERSION_FALLBACK, VersionService } from './version.service';
 
 const base = environment.apiBaseUrl;
@@ -30,7 +31,11 @@ describe('VersionService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        ...provideTranslocoTestingModule(),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
     service = TestBed.inject(VersionService);
     httpMock = TestBed.inject(HttpTestingController);

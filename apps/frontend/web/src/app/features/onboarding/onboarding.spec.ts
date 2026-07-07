@@ -8,6 +8,7 @@ import { vi } from 'vitest';
 import { ApiError } from '../../core/api/api-error';
 import type { OnboardingPayload, UserProfile } from '../../core/api/response';
 import { AuthService } from '../../core/auth/auth.service';
+import { provideTranslocoTestingModule } from '../../core/i18n/transloco-testing';
 import { Onboarding } from './onboarding';
 
 const pendingProfile: UserProfile = {
@@ -54,6 +55,7 @@ function setup(auth: ReturnType<typeof authStub>): {
     providers: [
       provideRouter([]),
       provideAnimationsAsync(),
+      ...provideTranslocoTestingModule(),
       { provide: AuthService, useValue: auth as unknown as AuthService },
     ],
   });

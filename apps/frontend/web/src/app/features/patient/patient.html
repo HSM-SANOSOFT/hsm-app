@@ -1,12 +1,11 @@
 <div class="page patient">
   <header class="patient-hero">
-    <span class="patient-eyebrow" i18n="@@patient.home.eyebrow">Hospital Santa María</span>
-    <h1 class="patient-greeting" data-testid="patient-greeting" i18n="@@patient.home.greeting">
-      Bienvenido/a, {{ firstName() }}.
+    <span class="patient-eyebrow">{{ 'patient.home.eyebrow' | transloco }}</span>
+    <h1 class="patient-greeting" data-testid="patient-greeting">
+      {{ 'patient.home.greetingText' | transloco: { value: firstName() } }}
     </h1>
-    <p class="patient-lede" i18n="@@patient.home.lede">
-      Su cuenta está lista. Estamos dando los últimos toques a sus
-      registros personales — por ahora, así puede comunicarse con nosotros cuando necesite atención.
+    <p class="patient-lede">
+      {{ 'patient.home.lede' | transloco }}
     </p>
   </header>
 
@@ -14,37 +13,35 @@
     <section class="care-card" aria-labelledby="contact-heading">
       <h2 id="contact-heading" class="care-card__title">
         <i class="pi pi-phone care-card__icon" aria-hidden="true"></i>
-        <span i18n="@@patient.home.contact.title">Comuníquese con el hospital</span>
+        <span>{{ 'patient.home.contact.title' | transloco }}</span>
       </h2>
       <dl class="contact-list">
         <div class="contact-row">
-          <dt i18n="@@patient.home.contact.mainLine">Línea principal</dt>
+          <dt>{{ 'patient.home.contact.mainLine' | transloco }}</dt>
           <dd><a href="tel:+10000000000">+1 (000) 000-0000</a></dd>
         </div>
         <div class="contact-row">
-          <dt i18n="@@patient.home.contact.address.label">Dirección</dt>
-          <dd i18n="@@patient.home.contact.address.value">123 Care Avenue, Suite 100, Your City</dd>
+          <dt>{{ 'patient.home.contact.address.label' | transloco }}</dt>
+          <dd>{{ 'patient.home.contact.address.value' | transloco }}</dd>
         </div>
         <div class="contact-row">
-          <dt i18n="@@patient.home.contact.hours.label">Horario</dt>
-          <dd i18n="@@patient.home.contact.hours.value">Recepción abierta todos los días, de 7:00 a. m. a 8:00 p. m.</dd>
+          <dt>{{ 'patient.home.contact.hours.label' | transloco }}</dt>
+          <dd>{{ 'patient.home.contact.hours.value' | transloco }}</dd>
         </div>
         <div class="contact-row contact-row--urgent">
-          <dt i18n="@@patient.home.contact.emergency.label">Emergencia</dt>
-          <dd i18n="@@patient.home.contact.emergency.value">En caso de una emergencia médica, llame a su número de emergencias local.</dd>
+          <dt>{{ 'patient.home.contact.emergency.label' | transloco }}</dt>
+          <dd>{{ 'patient.home.contact.emergency.value' | transloco }}</dd>
         </div>
       </dl>
     </section>
 
     <section class="coming-card" aria-labelledby="coming-heading">
-      <span class="pill pill--pending coming-pill" i18n="@@patient.home.coming.pill">Próximamente</span>
-      <h2 id="coming-heading" class="coming-card__title" i18n="@@patient.home.coming.title">
-        Sus registros están en camino
+      <span class="pill pill--pending coming-pill">{{ 'patient.home.coming.pill' | transloco }}</span>
+      <h2 id="coming-heading" class="coming-card__title">
+        {{ 'patient.home.coming.title' | transloco }}
       </h2>
-      <p class="coming-card__body" i18n="@@patient.home.coming.body">
-        Pronto verá aquí sus citas, documentos y equipo médico, todo en
-        un solo lugar. Le avisaremos en cuanto esté listo — no tiene que
-        hacer nada mientras tanto.
+      <p class="coming-card__body">
+        {{ 'patient.home.coming.body' | transloco }}
       </p>
     </section>
   </div>

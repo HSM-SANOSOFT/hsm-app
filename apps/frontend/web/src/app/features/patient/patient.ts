@@ -1,4 +1,5 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import { AuthService } from '../../core/auth/auth.service';
 
@@ -16,17 +17,25 @@ import { AuthService } from '../../core/auth/auth.service';
  */
 @Component({
   selector: 'app-patient',
-  imports: [],
+  imports: [TranslocoPipe],
   templateUrl: './patient.html',
   styleUrl: './patient.scss',
 })
 export class Patient {
   private readonly auth = inject(AuthService);
+  private readonly transloco = inject(TranslocoService);
 
-  /** First name for the greeting; falls back to a warm generic if absent. */
-  protected readonly firstName = computed(
-    () =>
+  /**
+   * First name for the greeting; falls back to a warm generic if absent.
+   *
+   * A plain method (not a `computed()`) so the fallback re-translates on
+   * every template check instead of being cached at first evaluation — it
+   * must track the active language like the rest of the template.
+   */
+  protected firstName(): string {
+    return (
       this.auth.currentUser()?.firstName?.trim() ||
-      $localize`:@@patient.home.greeting.fallbackName:allí`,
-  );
+      this.transloco.translate('patient.home.greeting.fallbackName')
+    );
+  }
 }

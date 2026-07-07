@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
@@ -40,6 +41,7 @@ import { passwordsMatch } from '../../core/validators/password.validators';
     PasswordModule,
     ButtonModule,
     MessageModule,
+    TranslocoPipe,
   ],
   templateUrl: './onboarding.html',
   styleUrls: ['../auth/auth.scss', './onboarding.scss'],
@@ -48,6 +50,7 @@ export class Onboarding {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly transloco = inject(TranslocoService);
 
   /** The account email — `confirmEmail` must match it (backend-enforced). */
   protected readonly accountEmail = this.auth.currentUser()?.email ?? '';
@@ -113,7 +116,7 @@ export class Onboarding {
           this.errorMessage.set(
             toErrorMessage(
               err,
-              $localize`:@@onboarding.setup.error:No pudimos completar la configuración. Verifique sus datos e intente de nuevo.`,
+              this.transloco.translate('onboarding.setup.error'),
             ),
           );
         },

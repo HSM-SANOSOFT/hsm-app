@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
@@ -28,6 +29,7 @@ import { RecoveryService } from '../recovery.service';
     ButtonModule,
     MessageModule,
     LanguageSwitcher,
+    TranslocoPipe,
   ],
   templateUrl: './recover-username.html',
   styleUrl: '../../auth.scss',

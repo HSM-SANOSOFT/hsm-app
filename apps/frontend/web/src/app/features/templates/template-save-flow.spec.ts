@@ -10,6 +10,7 @@ import { TemplateCategoriesEnum } from '@hsm/common/enums';
 
 import { environment } from '../../../environments/environment';
 import type { SuccessResponse } from '../../core/api/response';
+import { provideTranslocoTestingModule } from '../../core/i18n/transloco-testing';
 import { MONACO_LOADER, type MonacoLike } from './monaco-editor';
 import type { SaveRequest } from './template.types';
 import { deriveSchemaFromSampleData } from './template-preview.util';
@@ -112,6 +113,7 @@ describe('Templates save gate (U14, R17; AE1, AE2)', () => {
         provideHttpClientTesting(),
         provideAnimationsAsync(),
         provideStubMonaco,
+        ...provideTranslocoTestingModule(),
         {
           provide: ActivatedRoute,
           useValue: {
@@ -320,7 +322,11 @@ describe('TemplateSaveFlow service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        ...provideTranslocoTestingModule(),
+      ],
     });
     httpMock = TestBed.inject(HttpTestingController);
     flow = TestBed.inject(TemplateSaveFlow);
