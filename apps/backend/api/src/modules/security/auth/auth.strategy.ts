@@ -6,7 +6,7 @@ import type {
   ISignedUserIntegration,
 } from '@hsm/common/interfaces';
 import { IUnsignedUser } from '@hsm/common/interfaces';
-import { envs } from '@hsm/config';
+import { envs } from '@hsm/config/api';
 import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';

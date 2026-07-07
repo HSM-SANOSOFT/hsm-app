@@ -1,6 +1,6 @@
 import { SendTransactionalEmailJobDto } from '@hsm/common/dtos';
 import { SettingsCategoryEnum } from '@hsm/common/enums';
-import { envs } from '@hsm/config';
+import { envs } from '@hsm/config/worker';
 import { SettingsAccessorService } from '@hsm/database/settings';
 import { Injectable, Logger } from '@nestjs/common';
 import { SmtpTransportProvider } from './smtp-transport.provider';

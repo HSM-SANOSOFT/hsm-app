@@ -263,9 +263,9 @@ describe('TemplatesService (worker)', () => {
       });
       templatesRepo.findOne.mockResolvedValue(nonSmsTemplate);
 
-      await expect(
-        service.parseSms('email-tmpl', {}),
-      ).rejects.toBeInstanceOf(TemplateInvalidHandlebarsError);
+      await expect(service.parseSms('email-tmpl', {})).rejects.toBeInstanceOf(
+        TemplateInvalidHandlebarsError,
+      );
     });
   });
 
@@ -290,9 +290,14 @@ describe('TemplatesService (worker)', () => {
       // parseEmail calls findByIdentifier once, then calls parse() which calls findByIdentifier again
       templatesRepo.findOne
         .mockResolvedValueOnce(emailTemplate) // parseEmail's own findByIdentifier
-        .mockResolvedValueOnce({ ...emailTemplate, schema: { patientName: 'string' } }); // parse's findByIdentifier
+        .mockResolvedValueOnce({
+          ...emailTemplate,
+          schema: { patientName: 'string' },
+        }); // parse's findByIdentifier
 
-      const result = await service.parseEmail('welcome', { patientName: 'Ada' });
+      const result = await service.parseEmail('welcome', {
+        patientName: 'Ada',
+      });
       expect(result.subject).toBe('Hello Ada');
       expect(result.html).toContain('Ada');
       expect(result.templateId).toBe('tmpl-id-1');
@@ -302,9 +307,9 @@ describe('TemplatesService (worker)', () => {
       const nonEmailTemplate = makeTemplate({ comEmail: null });
       templatesRepo.findOne.mockResolvedValue(nonEmailTemplate);
 
-      await expect(
-        service.parseEmail('welcome', {}),
-      ).rejects.toBeInstanceOf(TemplateInvalidHandlebarsError);
+      await expect(service.parseEmail('welcome', {})).rejects.toBeInstanceOf(
+        TemplateInvalidHandlebarsError,
+      );
     });
 
     it('throws TemplateInvalidHandlebarsError when subject template has malformed Handlebars', async () => {
@@ -323,9 +328,9 @@ describe('TemplatesService (worker)', () => {
       });
       templatesRepo.findOne.mockResolvedValue(badSubjectTemplate);
 
-      await expect(
-        service.parseEmail('welcome', {}),
-      ).rejects.toBeInstanceOf(TemplateInvalidHandlebarsError);
+      await expect(service.parseEmail('welcome', {})).rejects.toBeInstanceOf(
+        TemplateInvalidHandlebarsError,
+      );
     });
   });
 });

@@ -1,5 +1,5 @@
 import { SettingsCategoryEnum } from '@hsm/common/enums';
-import { envs } from '@hsm/config';
+import { envs } from '@hsm/config/api';
 import {
   AppSettingAuditEntity,
   AppSettingEntity,

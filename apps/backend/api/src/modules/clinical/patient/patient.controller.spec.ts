@@ -1,4 +1,4 @@
-jest.mock('@hsm/config/envs', () => ({
+jest.mock('@hsm/config/api', () => ({
   envs: { ENVIRONMENT: 'test' },
 }));
 

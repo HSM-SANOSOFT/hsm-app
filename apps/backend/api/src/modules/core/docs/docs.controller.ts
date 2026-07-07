@@ -33,7 +33,10 @@ export class DocsController {
   @ApiDocumentation()
   @Roles()
   @Get()
-  async listDocuments(@Query() query: ListDocumentsQueryDto, @Req() req: Request) {
+  async listDocuments(
+    @Query() query: ListDocumentsQueryDto,
+    @Req() req: Request,
+  ) {
     return await this.docsService.listDocuments(
       query,
       (req.user as ISignedUser)?.id ?? '',

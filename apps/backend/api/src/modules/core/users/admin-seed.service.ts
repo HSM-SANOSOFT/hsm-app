@@ -1,5 +1,5 @@
 import { RolesEnum } from '@hsm/common/enums';
-import { envs } from '@hsm/config';
+import { envs } from '@hsm/config/api';
 import { DatabasesEnum } from '@hsm/database/sources';
 import {
   Injectable,

@@ -9,11 +9,11 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-jest.mock('@hsm/config/envs', () => ({
+jest.mock('@hsm/config/api', () => ({
   envs: { ENVIRONMENT: 'test' },
 }));
 
-import { envs } from '@hsm/config/envs';
+import { envs } from '@hsm/config/api';
 import { ROLES_KEY } from './roles.decorator';
 import { RolesGuard } from './roles.guard';
 

@@ -1,6 +1,6 @@
 import { ApiErrorCode, RolesEnum } from '@hsm/common/enums';
 import type { IUnsignedUser } from '@hsm/common/interfaces';
-import { envs } from '@hsm/config';
+import { envs } from '@hsm/config/api';
 import {
   RefreshTokenUserEntity,
   RefreshTokenUserIntegrationEntity,
@@ -19,7 +19,7 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from '../../core/users/users.service';
 import { AuthService } from './auth.service';
 
-jest.mock('@hsm/config', () => ({
+jest.mock('@hsm/config/api', () => ({
   envs: {
     ENVIRONMENT: 'test',
     JWT_AT_SECRET: 'test-at-secret-32-chars-padding!!',

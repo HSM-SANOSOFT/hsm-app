@@ -56,7 +56,10 @@ describe('DocsController', () => {
     it('delegates query and user id to docsService.listDocuments', async () => {
       const query = { page: 1, limit: 10 } as never;
       const result = await controller.listDocuments(query, makeReq());
-      expect(docsService.listDocuments).toHaveBeenCalledWith(query, 'user-uuid');
+      expect(docsService.listDocuments).toHaveBeenCalledWith(
+        query,
+        'user-uuid',
+      );
       expect(result).toEqual({ data: [], total: 0, page: 1, limit: 20 });
     });
   });

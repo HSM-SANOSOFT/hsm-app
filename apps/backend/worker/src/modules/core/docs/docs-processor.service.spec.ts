@@ -174,7 +174,11 @@ describe('DocsProcessorService', () => {
   describe('handle', () => {
     it('throws for unknown job name without touching entities', async () => {
       await expect(
-        (service as { handle: (job: { name: string; data: unknown }) => Promise<unknown> }).handle({ name: 'unknown-job', data: {} }),
+        (
+          service as {
+            handle: (job: { name: string; data: unknown }) => Promise<unknown>;
+          }
+        ).handle({ name: 'unknown-job', data: {} }),
       ).rejects.toThrow('Unknown document job: unknown-job');
       expect(mockDocsRepo.update).not.toHaveBeenCalled();
     });
@@ -182,7 +186,11 @@ describe('DocsProcessorService', () => {
 
   describe('processGenerateDocument — PDF path', () => {
     it('sets status PROCESSING then COMPLETED on success', async () => {
-      await (service as { handle: (job: { name: string; data: unknown }) => Promise<unknown> }).handle({
+      await (
+        service as {
+          handle: (job: { name: string; data: unknown }) => Promise<unknown>;
+        }
+      ).handle({
         name: 'generate-document',
         data: basePayload,
       });
@@ -196,7 +204,11 @@ describe('DocsProcessorService', () => {
     });
 
     it('calls generatePDF with the parsed HTML', async () => {
-      await (service as { handle: (job: { name: string; data: unknown }) => Promise<unknown> }).handle({
+      await (
+        service as {
+          handle: (job: { name: string; data: unknown }) => Promise<unknown>;
+        }
+      ).handle({
         name: 'generate-document',
         data: basePayload,
       });
@@ -206,7 +218,11 @@ describe('DocsProcessorService', () => {
     });
 
     it('uploads to S3 with correct bucket, folder derived from documentCode, and contentType', async () => {
-      await (service as { handle: (job: { name: string; data: unknown }) => Promise<unknown> }).handle({
+      await (
+        service as {
+          handle: (job: { name: string; data: unknown }) => Promise<unknown>;
+        }
+      ).handle({
         name: 'generate-document',
         data: basePayload,
       });
@@ -220,7 +236,11 @@ describe('DocsProcessorService', () => {
     });
 
     it('persists entities within the transaction (no entityId)', async () => {
-      await (service as { handle: (job: { name: string; data: unknown }) => Promise<unknown> }).handle({
+      await (
+        service as {
+          handle: (job: { name: string; data: unknown }) => Promise<unknown>;
+        }
+      ).handle({
         name: 'generate-document',
         data: basePayload,
       });
@@ -240,7 +260,11 @@ describe('DocsProcessorService', () => {
     };
 
     it('creates DocumentLinkEntity and updates DocumentsEntity when entityId+entityType present', async () => {
-      await (service as { handle: (job: { name: string; data: unknown }) => Promise<unknown> }).handle({
+      await (
+        service as {
+          handle: (job: { name: string; data: unknown }) => Promise<unknown>;
+        }
+      ).handle({
         name: 'generate-document',
         data: payloadWithEntity,
       });
@@ -268,7 +292,11 @@ describe('DocsProcessorService', () => {
     });
 
     it('skips DocumentLinkEntity creation when entityId is absent', async () => {
-      await (service as { handle: (job: { name: string; data: unknown }) => Promise<unknown> }).handle({
+      await (
+        service as {
+          handle: (job: { name: string; data: unknown }) => Promise<unknown>;
+        }
+      ).handle({
         name: 'generate-document',
         data: basePayload,
       });
@@ -296,7 +324,11 @@ describe('DocsProcessorService', () => {
     });
 
     it('sets status PROCESSING then COMPLETED', async () => {
-      await (service as { handle: (job: { name: string; data: unknown }) => Promise<unknown> }).handle({
+      await (
+        service as {
+          handle: (job: { name: string; data: unknown }) => Promise<unknown>;
+        }
+      ).handle({
         name: 'generate-document',
         data: basePayload,
       });
@@ -306,7 +338,11 @@ describe('DocsProcessorService', () => {
     });
 
     it('calls excelService.generate with the parsed workbook definition', async () => {
-      await (service as { handle: (job: { name: string; data: unknown }) => Promise<unknown> }).handle({
+      await (
+        service as {
+          handle: (job: { name: string; data: unknown }) => Promise<unknown>;
+        }
+      ).handle({
         name: 'generate-document',
         data: basePayload,
       });
@@ -314,7 +350,11 @@ describe('DocsProcessorService', () => {
     });
 
     it('uploads with XLSX contentType', async () => {
-      await (service as { handle: (job: { name: string; data: unknown }) => Promise<unknown> }).handle({
+      await (
+        service as {
+          handle: (job: { name: string; data: unknown }) => Promise<unknown>;
+        }
+      ).handle({
         name: 'generate-document',
         data: basePayload,
       });
@@ -331,7 +371,11 @@ describe('DocsProcessorService', () => {
         new TemplateNotFoundError('hcu_001'),
       );
       await expect(
-        (service as { handle: (job: { name: string; data: unknown }) => Promise<unknown> }).handle({
+        (
+          service as {
+            handle: (job: { name: string; data: unknown }) => Promise<unknown>;
+          }
+        ).handle({
           name: 'generate-document',
           data: basePayload,
         }),
@@ -347,7 +391,11 @@ describe('DocsProcessorService', () => {
         isActive: false,
       });
       await expect(
-        (service as { handle: (job: { name: string; data: unknown }) => Promise<unknown> }).handle({
+        (
+          service as {
+            handle: (job: { name: string; data: unknown }) => Promise<unknown>;
+          }
+        ).handle({
           name: 'generate-document',
           data: basePayload,
         }),
@@ -364,7 +412,11 @@ describe('DocsProcessorService', () => {
         ]),
       );
       await expect(
-        (service as { handle: (job: { name: string; data: unknown }) => Promise<unknown> }).handle({
+        (
+          service as {
+            handle: (job: { name: string; data: unknown }) => Promise<unknown>;
+          }
+        ).handle({
           name: 'generate-document',
           data: basePayload,
         }),
@@ -377,7 +429,11 @@ describe('DocsProcessorService', () => {
     it('S3 upload failure', async () => {
       mockS3Service.uploadFiles.mockRejectedValue(new Error('S3 error'));
       await expect(
-        (service as { handle: (job: { name: string; data: unknown }) => Promise<unknown> }).handle({
+        (
+          service as {
+            handle: (job: { name: string; data: unknown }) => Promise<unknown>;
+          }
+        ).handle({
           name: 'generate-document',
           data: basePayload,
         }),
@@ -396,7 +452,11 @@ describe('DocsProcessorService', () => {
         templateId: 'tmpl-xlsx-uuid',
       });
       await expect(
-        (service as { handle: (job: { name: string; data: unknown }) => Promise<unknown> }).handle({
+        (
+          service as {
+            handle: (job: { name: string; data: unknown }) => Promise<unknown>;
+          }
+        ).handle({
           name: 'generate-document',
           data: basePayload,
         }),

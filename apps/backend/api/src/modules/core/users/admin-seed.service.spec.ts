@@ -19,7 +19,7 @@ const mockEnvs: {
   DEFAULT_ADMIN_USERNAME: 'admin',
   DEFAULT_ADMIN_PASSWORD: 'super-secret',
 };
-jest.mock('@hsm/config', () => ({
+jest.mock('@hsm/config/api', () => ({
   get envs() {
     return mockEnvs;
   },

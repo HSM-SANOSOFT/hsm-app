@@ -1,12 +1,26 @@
 # CLAUDE.md — `@hsm/config`
 
-Single export: `envs` — frozen, Joi-validated env vars. **Always import this instead of touching `process.env` directly.**
+Frozen, Joi-validated env vars, **per app**. **Always import this instead of
+touching `process.env` directly.** Each entry point validates only the vars its
+app actually uses (fail-fast on its own env):
 
 ```ts
-import { envs } from '@hsm/config';
-
-const port = envs.DB_POSTGRES_PORT;
+import { envs } from '@hsm/config/api';     // api: base + JWT_*, SWAGGER_FAVICON, DEFAULT_ADMIN_*, APP_BASE_URL
+import { envs } from '@hsm/config/worker';  // worker: the base set
+import { envs } from '@hsm/config';         // = the shared BASE — for the shared packages only
 ```
+
+- **`@hsm/config` (root) = the base** — the vars the shared packages
+  `@hsm/database` / `@hsm/queue` / `@hsm/storage` consume (DB_POSTGRES_*,
+  DB_REDIS_*, STRG_S3_*, SMTP_*, ENVIRONMENT, SWAGGER_SITE_TITLE, COMS_*). Those
+  packages are imported by BOTH apps, so they read the base, never an app config.
+- **`@hsm/config/api`** = base + API-only vars.
+- **`@hsm/config/worker`** = base (add worker-only vars here if they appear).
+- `src/fields.ts` — `FIELDS` (one Joi rule per var) + `validateEnv(keys)`
+  (validates `process.env` for a named subset). The per-app files assemble their
+  subset. `base.ts` also exports `getWebhookSigningKeys()`.
+- **The frontend does NOT use this** — it's Node (dotenv/process). `@hsm/web` has
+  its own browser-safe config (runtime `config.json` + `ConfigService`).
 
 ## Commands
 

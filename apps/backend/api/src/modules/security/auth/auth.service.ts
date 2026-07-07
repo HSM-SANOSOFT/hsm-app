@@ -16,7 +16,7 @@ import {
   IUnsignedUser,
   IUnsignedUserIntegration,
 } from '@hsm/common/interfaces';
-import { envs } from '@hsm/config';
+import { envs } from '@hsm/config/api';
 import {
   RefreshTokenUserEntity,
   RefreshTokenUserIntegrationEntity,

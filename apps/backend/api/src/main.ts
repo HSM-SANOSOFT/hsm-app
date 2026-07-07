@@ -1,6 +1,6 @@
 import { ApiErrorCode } from '@hsm/common/enums';
 import { freePort } from '@hsm/common/utils';
-import { envs } from '@hsm/config';
+import { envs } from '@hsm/config/api';
 import {
   BadRequestException,
   ConsoleLogger,

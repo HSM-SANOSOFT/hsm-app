@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { SendTransactionalEmailJobDto } from '@hsm/common/dtos';
-import { envs } from '@hsm/config';
+import { envs } from '@hsm/config/api';
 import {
   PasswordResetTokenEntity,
   RefreshTokenUserEntity,

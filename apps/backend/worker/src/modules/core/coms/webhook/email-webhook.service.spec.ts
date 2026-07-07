@@ -66,9 +66,7 @@ describe('EmailWebhookService', () => {
     // Build a chainable query builder mock for orIgnore upsert
     const mockExecute = jest.fn().mockResolvedValue(undefined);
     const mockOrIgnore = jest.fn().mockReturnValue({ execute: mockExecute });
-    const mockValues = jest
-      .fn()
-      .mockReturnValue({ orIgnore: mockOrIgnore });
+    const mockValues = jest.fn().mockReturnValue({ orIgnore: mockOrIgnore });
     const mockInto = jest.fn().mockReturnValue({ values: mockValues });
     const mockInsert = jest.fn().mockReturnValue({ into: mockInto });
 
@@ -78,9 +76,13 @@ describe('EmailWebhookService', () => {
     };
 
     dataSource = {
-      transaction: jest.fn().mockImplementation(async (cb: (m: typeof mockManager) => Promise<void>) => {
-        await cb(mockManager);
-      }),
+      transaction: jest
+        .fn()
+        .mockImplementation(
+          async (cb: (m: typeof mockManager) => Promise<void>) => {
+            await cb(mockManager);
+          },
+        ),
     };
 
     webhookEventRepo = { findOne: jest.fn() };
@@ -131,7 +133,9 @@ describe('EmailWebhookService', () => {
   // -------------------------------------------------------------------------
   describe('processWebhookEvent — DELIVERED event', () => {
     it('updates recipient to DELIVERED, links event to recipient, and marks processedAt', async () => {
-      const event = makeEvent({ eventType: EmailWebhookEventTypeEnum.DELIVERED });
+      const event = makeEvent({
+        eventType: EmailWebhookEventTypeEnum.DELIVERED,
+      });
       const recipient = makeRecipient();
       webhookEventRepo.findOne.mockResolvedValue(event);
       recipientRepo.findOne.mockResolvedValue(recipient);
@@ -190,7 +194,10 @@ describe('EmailWebhookService', () => {
 
       // Suppression upsert triggered
       expect(mockManager.createQueryBuilder).toHaveBeenCalled();
-      const insertChain = mockManager.createQueryBuilder().insert().into(EmailSuppressionEntity);
+      const insertChain = mockManager
+        .createQueryBuilder()
+        .insert()
+        .into(EmailSuppressionEntity);
       expect(insertChain.values).toHaveBeenCalledWith(
         expect.objectContaining({
           email: 'ada@example.com',
@@ -233,7 +240,10 @@ describe('EmailWebhookService', () => {
 
       // Suppression upsert with SPAM_COMPLAINT
       expect(mockManager.createQueryBuilder).toHaveBeenCalled();
-      const insertChain = mockManager.createQueryBuilder().insert().into(EmailSuppressionEntity);
+      const insertChain = mockManager
+        .createQueryBuilder()
+        .insert()
+        .into(EmailSuppressionEntity);
       expect(insertChain.values).toHaveBeenCalledWith(
         expect.objectContaining({
           email: 'ada@example.com',
@@ -365,7 +375,9 @@ describe('EmailWebhookService', () => {
   // -------------------------------------------------------------------------
   describe('processWebhookEvent — no matching recipient', () => {
     it('logs a warning, still marks processedAt, and does not crash', async () => {
-      const event = makeEvent({ eventType: EmailWebhookEventTypeEnum.DELIVERED });
+      const event = makeEvent({
+        eventType: EmailWebhookEventTypeEnum.DELIVERED,
+      });
       webhookEventRepo.findOne.mockResolvedValue(event);
       recipientRepo.findOne.mockResolvedValue(null);
 
