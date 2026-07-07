@@ -22,17 +22,10 @@ FROM node:24-bookworm-slim AS runtime
 
 RUN npm install -g serve
 WORKDIR /app
-# The localized build (`ng build --localize`) emits one client bundle per locale
-# under dist/browser/{es,en}. Copy them plus serve.json, which owns the root
-# redirect (/ -> /es/) and the per-locale SPA fallback — so we DON'T pass `-s`
-# (that would force a single top-level index.html and defeat the per-locale
-# rewrites).
+# Single bundle (runtime i18n via Transloco): one dist/browser with the app +
+# public assets (incl. /i18n/{es,en}.json). `-s` gives SPA fallback to
+# index.html for client-side routes.
 COPY --from=builder /app/apps/frontend/web/dist/browser ./dist
-COPY --from=builder /app/apps/frontend/web/serve.json ./dist/serve.json
-# The localized build emits no bundle at the site root; ship the client-side
-# locale chooser (honours persisted hsm.lang) as ./dist/index.html — serve.json
-# routes / and any non-locale-prefixed path to it.
-COPY --from=builder /app/apps/frontend/web/serve-root/index.html ./dist/index.html
 
 EXPOSE 4200
-CMD ["serve", "dist", "-l", "4200"]
+CMD ["serve", "-s", "dist", "-l", "4200"]

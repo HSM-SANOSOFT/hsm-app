@@ -6,7 +6,7 @@ import type { Translation } from 'primeng/api';
  * and must stay complete; `EN` is the optional alternate locale and mirrors it
  * key-for-key. Applied once at bootstrap via `PrimeNG.setTranslation` — the
  * active locale is fixed per build (reload-to-switch), so this reads
- * `activeLocale()` at startup.
+ * the active Transloco lang at startup.
  */
 const ES: Translation = {
   startsWith: 'Empieza por',

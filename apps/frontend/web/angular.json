@@ -16,18 +16,6 @@
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
-      "i18n": {
-        "sourceLocale": {
-          "code": "es-EC",
-          "subPath": "es"
-        },
-        "locales": {
-          "en": {
-            "translation": "src/i18n/en.json",
-            "subPath": "en"
-          }
-        }
-      },
       "architect": {
         "build": {
           "builder": "@angular/build:application",
@@ -90,18 +78,6 @@
                   "with": "src/environments/environment.development.ts"
                 }
               ]
-            },
-            "es": {
-              "localize": [
-                "es-EC"
-              ],
-              "baseHref": "/es/"
-            },
-            "en": {
-              "localize": [
-                "en"
-              ],
-              "baseHref": "/en/"
             }
           },
           "defaultConfiguration": "production"
@@ -113,12 +89,7 @@
               "buildTarget": "web:build:production"
             },
             "development": {
-              "buildTarget": "web:build:development,es",
-              "servePath": "/es"
-            },
-            "en": {
-              "buildTarget": "web:build:development,en",
-              "servePath": "/en"
+              "buildTarget": "web:build:development"
             }
           },
           "defaultConfiguration": "development"

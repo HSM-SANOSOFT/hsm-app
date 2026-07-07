@@ -1,8 +1,11 @@
+import { registerLocaleData } from '@angular/common';
 import {
   provideHttpClient,
   withFetch,
   withInterceptors,
 } from '@angular/common/http';
+import localeEn from '@angular/common/locales/en';
+import localeEsEc from '@angular/common/locales/es-EC';
 import {
   type ApplicationConfig,
   DEFAULT_CURRENCY_CODE,
@@ -24,11 +27,23 @@ import { HsmPreset } from '../theme/hsm-preset';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/auth/auth.interceptor';
 import { AuthService } from './core/auth/auth.service';
-import { activeLocale, registerAppLocales } from './core/i18n/locale-init';
+import { LANG_STORAGE_KEY } from './core/i18n/language.service';
 import { primeNgTranslationFor } from './core/i18n/primeng-translations';
 import { TranslocoHttpLoader } from './core/i18n/transloco-loader';
 
-registerAppLocales();
+// Register locale data for Angular's date/number/currency pipes (independent of
+// Transloco's text i18n). LOCALE_ID below picks which one formats by default.
+registerLocaleData(localeEsEc, 'es-EC');
+registerLocaleData(localeEn, 'en');
+
+/** The persisted UI language at boot, normalized to an Angular LOCALE_ID. */
+function bootLocaleId(): string {
+  try {
+    return localStorage.getItem(LANG_STORAGE_KEY) === 'en' ? 'en' : 'es-EC';
+  } catch {
+    return 'es-EC';
+  }
+}
 
 /**
  * Root application providers.
@@ -59,7 +74,7 @@ export const appConfig: ApplicationConfig = {
       },
       loader: TranslocoHttpLoader,
     }),
-    { provide: LOCALE_ID, useValue: activeLocale() === 'en' ? 'en' : 'es-EC' },
+    { provide: LOCALE_ID, useValue: bootLocaleId() },
     { provide: DEFAULT_CURRENCY_CODE, useValue: 'USD' },
     provideAppInitializer(() => {
       const auth = inject(AuthService);
