@@ -25,57 +25,57 @@ scaffolded in unit U6 of the internal-web-console plan
 All commands run from the repo root (inside the dev container).
 
 ```bash
-pnpm --filter @hsm/web dev      # ng serve (es locale) -> http://localhost:4200/es/
-pnpm --filter @hsm/web dev:en   # ng serve (en locale) -> http://localhost:4200/en/
-pnpm --filter @hsm/web build    # ng build --localize -> dist/browser/{es,en}
+pnpm --filter @hsm/web dev      # ng serve -> http://localhost:4200 (switch lang in-app)
+pnpm --filter @hsm/web build    # ng build -> dist/browser (one bundle)
 pnpm --filter @hsm/web test     # Vitest smoke + future unit specs
 ```
 
-### i18n dev serving (locale in the URL — matches prod)
+### i18n — Transloco (runtime, one bundle)
 
-The app is a compile-time-localized `@angular/localize` build: each locale is a
-separate bundle served under its own subpath (`/es/`, `/en/`), the same in dev
-and prod. `ng serve` can only serve **one** locale per process, so:
+The app uses **Transloco** (`@jsverse/transloco`) runtime i18n: **one** bundle,
+translations loaded from `public/i18n/<lang>.json` at runtime, switched in place
+with **no reload** and no locale in the URL. Spanish (`es`) is the default;
+English (`en`) is the alternate. `ng serve` / `ng build` are plain (no
+`--localize`, no `/es//en/` subpaths, no chooser). HMR works normally.
 
-- `dev` serves the **es** locale under `/es/` (baseHref `/es/`, `--serve-path
-  /es`); hitting `/` 302-redirects to `/es`. HMR/watch is intact.
-- `dev:en` serves the **en** locale under `/en/` the same way.
-- Wiring lives in `angular.json`: composable `es`/`en` build configs (`localize`
-  + per-locale `baseHref`) combined into the `development` serve config as
-  `web:build:development,es`. The plain `development` build config stays
-  locale-free so unit tests (`web:build:development`) are unaffected.
-- The in-app language switcher reloads into the other locale's subpath
-  (`LanguageService.switch` → `/en/...`). In dev only the running locale is
-  served, so switching to the *other* locale 404s until you run its `dev:*`
-  script — an inherent single-locale-per-`ng serve` limit, not a bug. In prod
-  the static server serves both subpaths, so switching works end to end.
-- Prod serving: `serve dist/browser` + `serve.json` (root chooser reads
-  `localStorage['hsm.lang']` → `/es/` or `/en/`; per-locale SPA rewrites).
+- **Templates:** `{{ 'auth.login.title' | transloco }}`; attributes
+  `[placeholder]="'…' | transloco"`; interpolation params
+  `{{ 'workspace.home.greetingText' | transloco: { value: firstName() } }}`.
+  Add `TranslocoPipe` to the component's standalone `imports`.
+- **`.ts` code:** `inject(TranslocoService).translate('key'[, params])`. Prefer a
+  getter/method over a cached field so the value re-translates on switch.
+- **Nav labels:** `nav-node.ts` (a data module, can't inject) stores the KEY
+  string; the renderers (rail/flyout/breadcrumb/view-tabs/profile-card) apply
+  `| transloco`.
+- **Switching:** `LanguageService.switch(lang)` persists `localStorage['hsm.lang']`
+  and calls `TranslocoService.setActiveLang` — instant. `reRenderOnLangChange`
+  is on. `LanguageService` applies the persisted lang at boot.
+- **PrimeNG chrome** (paginator/calendar/table ARIA) follows the active language:
+  `app.config` subscribes `PrimeNG.setTranslation` to `TranslocoService.langChanges$`
+  (`primeng-translations.ts` `ES`/`EN` maps).
+- **Config:** `provideTransloco` in `app.config.ts` (es default/fallback, loader =
+  `core/i18n/transloco-loader.ts` fetching `/i18n/<lang>.json`). `LOCALE_ID` for
+  date/number/currency pipes is set from the persisted boot lang.
+- **Specs:** components whose tree injects `TranslocoService` (via the switcher or
+  the pipe) add `...provideTranslocoTestingModule()` (loads the real catalogs;
+  defaults to `es`) — `core/i18n/transloco-testing.ts`.
 
-**Deployment is ONE instance, not one per language.** `ng build --localize`
-emits every locale into a single `dist/browser` (`es/` + `en/` subdirs); one
-static server serves them all under `/es/` and `/en/`, and the language switch
-is a full reload into the other subpath — same server, same deployment. No
-per-language backend/instance. The API is locale-agnostic (returns
-`ApiErrorCode`s; the frontend localizes them), so it's one instance too.
+**Catalogs** — `public/i18n/{es,en}.json`, **nested**, `{{param}}` interpolation:
+```json
+{ "auth": { "login": { "title": "Bienvenido de nuevo" } } }
+```
+Served as static assets at `/i18n/<lang>.json`. `es.json` is the reference; every
+key needs an entry in each lang file or Transloco logs a missing key (falls back
+to `es`).
 
-**Translation catalogs** are Angular's native **JSON** format (per
-angular.dev/guide/i18n), one file per locale in `src/i18n/`
-(`{ "locale", "translations": { "<id>": "text {$INTERPOLATION}" } }`):
-- `src/i18n/es.json` — source catalog (Spanish), the extract-i18n output;
-  **not consumed by the build** (the `es` source locale renders template text
-  directly). Regenerate with:
-  `ng extract-i18n --format json --output-path src/i18n --out-file es.json`.
-- `src/i18n/en.json` — the `en` **translation** file (referenced by
-  `angular.json` → `i18n.locales.en.translation`); every id needs an entry or
-  the `en` build fails.
+**Deployment is ONE instance.** `ng build` emits one `dist/browser` (app + the
+`i18n/*.json` assets); one static server (`serve -s dist`) serves it; switching
+is client-side. The API is locale-agnostic (returns `ApiErrorCode`s the frontend
+localizes), so one API too.
 
-**Adding a language** (e.g. `pt`): add `"pt": { "translation":
-"src/i18n/pt.json", "subPath": "pt" }` to `angular.json` → `i18n.locales`,
-create `src/i18n/pt.json` (copy `es.json`'s keys, translate the values), add a
-`pt` build/serve config pair mirroring `en`, and add `pt` to the frontend's
-`AppLocale`/`SUPPORTED`/switcher. Then `ng build --localize` emits
-`dist/browser/pt`. Still ONE deployment.
+**Adding a language** (e.g. `pt`): create `public/i18n/pt.json` (copy `es.json`'s
+keys, translate values), add `'pt'` to `availableLangs` in `app.config.ts` and to
+`AppLang`/`SUPPORTED` + the switcher options. No build/serve config changes.
 
 The dev server runs on **4200**. With the API run locally (`pnpm --filter
 @hsm/api start:dev`) it talks to the API on host port **3000**, default `/v1`
