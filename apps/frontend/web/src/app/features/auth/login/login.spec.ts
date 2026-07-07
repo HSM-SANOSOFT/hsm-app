@@ -13,6 +13,7 @@ import type {
   Tokens,
   UserProfile,
 } from '../../../core/api/response';
+import { provideTranslocoTestingModule } from '../../../core/i18n/transloco-testing';
 import { Login } from './login';
 
 const base = environment.apiBaseUrl;
@@ -60,6 +61,7 @@ describe('Login component', () => {
     TestBed.configureTestingModule({
       imports: [Login],
       providers: [
+        ...provideTranslocoTestingModule(),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),

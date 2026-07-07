@@ -12,6 +12,7 @@ import type {
   MessageResponse,
   SuccessResponse,
 } from '../../../../core/api/response';
+import { provideTranslocoTestingModule } from '../../../../core/i18n/transloco-testing';
 import { RequestReset } from './request-reset';
 
 const base = environment.apiBaseUrl;
@@ -43,6 +44,7 @@ describe('RequestReset component', () => {
     TestBed.configureTestingModule({
       imports: [RequestReset],
       providers: [
+        ...provideTranslocoTestingModule(),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),

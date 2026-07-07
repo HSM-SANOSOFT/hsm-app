@@ -12,6 +12,7 @@ import type {
   MessageResponse,
   SuccessResponse,
 } from '../../../../core/api/response';
+import { provideTranslocoTestingModule } from '../../../../core/i18n/transloco-testing';
 import { ResetPassword } from './reset-password';
 
 const base = environment.apiBaseUrl;
@@ -48,6 +49,7 @@ function setup(fragment: string | null): {
   TestBed.configureTestingModule({
     imports: [ResetPassword],
     providers: [
+      ...provideTranslocoTestingModule(),
       provideHttpClient(),
       provideHttpClientTesting(),
       provideRouter([]),

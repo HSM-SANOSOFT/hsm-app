@@ -12,6 +12,7 @@ import type {
   MessageResponse,
   SuccessResponse,
 } from '../../../../core/api/response';
+import { provideTranslocoTestingModule } from '../../../../core/i18n/transloco-testing';
 import { RecoverUsername } from './recover-username';
 
 const base = environment.apiBaseUrl;
@@ -42,6 +43,7 @@ describe('RecoverUsername component', () => {
     TestBed.configureTestingModule({
       imports: [RecoverUsername],
       providers: [
+        ...provideTranslocoTestingModule(),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),

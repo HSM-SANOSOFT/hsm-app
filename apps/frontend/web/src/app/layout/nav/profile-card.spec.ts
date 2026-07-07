@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AuthService } from '../../core/auth/auth.service';
+import { provideTranslocoTestingModule } from '../../core/i18n/transloco-testing';
 import { ProfileCard } from './profile-card';
 
 interface StubUser {
@@ -34,6 +35,7 @@ function setup(
 
   TestBed.configureTestingModule({
     providers: [
+      ...provideTranslocoTestingModule(),
       provideZonelessChangeDetection(),
       provideRouter([]),
       { provide: AuthService, useValue: authStub },

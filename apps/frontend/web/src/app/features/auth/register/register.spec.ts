@@ -13,6 +13,7 @@ import type {
   Tokens,
   UserProfile,
 } from '../../../core/api/response';
+import { provideTranslocoTestingModule } from '../../../core/i18n/transloco-testing';
 import { Register } from './register';
 
 const base = environment.apiBaseUrl;
@@ -60,6 +61,7 @@ describe('Register component', () => {
     TestBed.configureTestingModule({
       imports: [Register],
       providers: [
+        ...provideTranslocoTestingModule(),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),
