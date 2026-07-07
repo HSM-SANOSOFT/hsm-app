@@ -78,8 +78,8 @@ keys, translate values), add `'pt'` to `availableLangs` in `app.config.ts` and t
 `AppLang`/`SUPPORTED` + the switcher options. No build/serve config changes.
 
 The dev server runs on **4200**. With the API run locally (`pnpm --filter
-@hsm/api start:dev`) it talks to the API on host port **3000**, default `/v1`
-URI version (Swagger UI at `http://localhost:3000/api`). Port **10001** is the
+@hsm/api start:dev`) it talks to the API on host port **4201**, default `/v1`
+URI version (Swagger UI at `http://localhost:4201/api`). Port **10001** is the
 API host port only under full-stack `docker compose up`.
 
 ## API base URL / environments
@@ -87,7 +87,7 @@ API host port only under full-stack `docker compose up`.
 - `src/environments/environment.ts` — production / full-stack `docker compose
   up` (`apiBaseUrl: 'http://localhost:10001/v1'`, the compose API mapping).
 - `src/environments/environment.development.ts` — dev override for the local-run
-  model (`apiBaseUrl: 'http://localhost:3000/v1'`), swapped in via
+  model (`apiBaseUrl: 'http://localhost:4201/v1'`), swapped in via
   `fileReplacements` in `angular.json` for the `development` configuration.
 - Import `environment` from `src/environments/environment`; the dev file is
   substituted at build time. Do **not** hardcode the API URL elsewhere.

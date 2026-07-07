@@ -22,7 +22,7 @@ services:
     networks:
       - hsm-app-network
     ports:
-      - 10001:3000
+      - 10001:4201
     # Secrets are written per-app by .devcontainer/script/get-secrets-infisical.sh
     # (root ../.env holds only the Infisical *bootstrap* creds, not app secrets).
     env_file:

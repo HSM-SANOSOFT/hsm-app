@@ -66,17 +66,17 @@ run directly inside the dev container via pnpm:
 docker compose -f docker/docker-compose.yaml up -d postgres redis rustfs
 
 # Apps — run locally, each in its own terminal
-pnpm --filter @hsm/api start:dev     # API on :3000  (wait for "Seeded default admin user")
+pnpm --filter @hsm/api start:dev     # API on :4201  (wait for "Seeded default admin user")
 pnpm --filter @hsm/worker start:dev
 pnpm --filter @hsm/web dev           # Angular dev server on :4200
 ```
 
 The dev container forwards **3000** (API) and **4200** (web) to the host, so the
-browser reaches the API at `localhost:3000` and the app at `localhost:4200`.
+browser reaches the API at `localhost:4201` and the app at `localhost:4200`.
 **The Port map above is the `docker compose up` (full-stack) mapping, not the
 local-run model** — in local-run the frontend dev env
 (`apps/frontend/web/src/environments/environment.development.ts`) targets
-`http://localhost:3000/v1`.
+`http://localhost:4201/v1`.
 
 **Log in** with the seeded default admin: username `admin` (username-based — not
 the email) plus the `DEFAULT_ADMIN_PASSWORD` value from `apps/backend/api/.env`.

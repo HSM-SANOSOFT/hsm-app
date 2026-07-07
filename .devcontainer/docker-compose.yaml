@@ -8,6 +8,14 @@ services:
         USER_GID: ${GID:-1000}
     volumes:
       - ..:/workspace:cached
+    # Publish the dev servers to the host. `devcontainer.json` forwardPorts only
+    # works under VS Code; this repo is driven by the devcontainer CLI (no VS
+    # Code), so the ports are published here. Web on 4200, API on 4201 (the API
+    # now listens on 4201 in the container too — off the commonly-taken 3000,
+    # adjacent to the web port).
+    ports:
+      - "4200:4200"
+      - "4201:4201"
     networks:
       - hsm-app-network
     env_file:

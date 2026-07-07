@@ -2,7 +2,7 @@
 ### /fhir/R4/... WITHOUT the /v1 prefix. {{host}} includes /v1, so these requests
 ### target the host root explicitly.
 
-@fhirBase = http://127.0.0.1:3000/fhir/R4
+@fhirBase = http://127.0.0.1:4201/fhir/R4
 
 ### Create a Patient
 POST {{fhirBase}}/Patient

@@ -1,6 +1,6 @@
 ### FHIR Encounter — VERSION_NEUTRAL, served at /fhir/R4/... (no /v1 prefix).
 
-@fhirBase = http://127.0.0.1:3000/fhir/R4
+@fhirBase = http://127.0.0.1:4201/fhir/R4
 
 ### Create an Encounter referencing an existing Patient
 ### (replace SUBJECT_ID with a Patient uuid returned by Patient create)

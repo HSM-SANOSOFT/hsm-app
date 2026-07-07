@@ -72,7 +72,7 @@
   ],
   "rest-client.environmentVariables": {
     "dev": {
-      "host": "http://127.0.0.1:3000/v1",
+      "host": "http://127.0.0.1:4201/v1",
       "contentType": "application/json",
       "at_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZXYiLCJ1c2VybmFtZSI6ImRldiIsImVtYWlsIjoiZGV2QGxvY2FsaG9zdCIsImZpcnN0TmFtZSI6IkRldiIsImZpcnN0TGFzdE5hbWUiOiJVc2VyIiwicm9sZXMiOlsiZGV2ZWxvcGVyIl0sImlhdCI6MTc3ODYxNDQ0NiwiZXhwIjoxNzgxMjA2NDQ2fQ.Tw6xTuGBANexWena7DqVrPcr66JeQJneKn7dC8k_HxA",
       "rt_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZXYiLCJ1c2VybmFtZSI6ImRldiIsImVtYWlsIjoiZGV2QGxvY2FsaG9zdCIsImZpcnN0TmFtZSI6IkRldiIsImZpcnN0TGFzdE5hbWUiOiJVc2VyIiwicm9sZXMiOlsiZGV2ZWxvcGVyIl0sImlhdCI6MTc3ODYxNDQ0NiwiZXhwIjoxNzgxMjA2NDQ2fQ.Tw6xTuGBANexWena7DqVrPcr66JeQJneKn7dC8k_HxA"

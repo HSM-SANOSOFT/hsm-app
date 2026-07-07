@@ -1,6 +1,6 @@
 ### FHIR ServiceRequest — orders routing spine. VERSION_NEUTRAL, /fhir/R4/...
 
-@fhirBase = http://127.0.0.1:3000/fhir/R4
+@fhirBase = http://127.0.0.1:4201/fhir/R4
 
 ### Create a lab order (replace SUBJECT_ID with a Patient uuid)
 POST {{fhirBase}}/ServiceRequest

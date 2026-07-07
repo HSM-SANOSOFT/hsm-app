@@ -18,14 +18,14 @@ pnpm --filter @hsm/api test -- --testPathPattern=coms.service   # single file
 
 `build` only catches TypeScript errors. NestJS DI failures (missing providers, circular deps) only surface at runtime — run `start:dev` after any module or entity change.
 
-Listens on port 3000 inside the container, exposed as **10001** on the host. Swagger UI at `http://localhost:10001/api`.
+Listens on port 4201 inside the container, exposed as **10001** on the host. Swagger UI at `http://localhost:10001/api`.
 
 ## Bootstrap (`src/main.ts`)
 
 - URI versioning, default version `v1` → routes are `/v1/...`.
 - Global `ValidationPipe` with `transform`, `whitelist`, `forbidNonWhitelisted`.
 - Global `HttpLoggingInterceptor`.
-- `freePort(3000)` is called before `listen` to kill any stale process bound to the port — keep it.
+- `freePort(4201)` is called before `listen` to kill any stale process bound to the port — keep it.
 - Bearer auth schemes registered in Swagger: `access_token`, `refresh_token`.
 
 ## Module tree
@@ -139,7 +139,7 @@ Every controller has a co-located `.http` file (e.g. `auth.controller.ts` → `a
 // .vscode/settings.json
 "rest-client.environmentVariables": {
   "dev": {
-    "host": "http://127.0.0.1:3000/v1",   // container-internal port
+    "host": "http://127.0.0.1:4201/v1",   // container-internal port
     "contentType": "application/json",
     "at_token": "",  // printed to console as DEV_AT on app startup in dev
     "rt_token": ""   // printed to console as DEV_RT on app startup in dev
