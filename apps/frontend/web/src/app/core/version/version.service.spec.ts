@@ -5,12 +5,15 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
-import { environment } from '../../../environments/environment';
+import {
+  provideTestConfig,
+  TEST_API_BASE_URL,
+} from '../../core/config/config-testing';
 import type { SuccessResponse } from '../api/response';
 import { provideTranslocoTestingModule } from '../i18n/transloco-testing';
 import { API_VERSION_FALLBACK, VersionService } from './version.service';
 
-const base = environment.apiBaseUrl;
+const base = TEST_API_BASE_URL;
 
 function wrap<T>(data: T): SuccessResponse<T> {
   return {
@@ -32,6 +35,7 @@ describe('VersionService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        provideTestConfig(),
         ...provideTranslocoTestingModule(),
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -46,7 +50,7 @@ describe('VersionService', () => {
   });
 
   it('exposes the build-time UI version from the environment', () => {
-    expect(service.uiVersion).toBe(environment.appVersion);
+    expect(service.uiVersion).toBe('test');
   });
 
   it('loadApiVersion sets the signal from the API response', () => {

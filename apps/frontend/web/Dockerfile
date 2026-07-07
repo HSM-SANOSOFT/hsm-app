@@ -26,6 +26,9 @@ WORKDIR /app
 # public assets (incl. /i18n/{es,en}.json). `-s` gives SPA fallback to
 # index.html for client-side routes.
 COPY --from=builder /app/apps/frontend/web/dist/browser ./dist
+# gen-config writes config.json from WEB_* env at container start (runtime
+# config, no rebuild). The base image ships node, so run it before serving.
+COPY --from=builder /app/apps/frontend/web/scripts/gen-config.mjs ./gen-config.mjs
 
 EXPOSE 4200
-CMD ["serve", "-s", "dist", "-l", "4200"]
+CMD ["sh", "-c", "node gen-config.mjs dist/config.json && serve -s dist -l 4200"]

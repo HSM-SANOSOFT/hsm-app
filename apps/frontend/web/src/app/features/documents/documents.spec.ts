@@ -8,9 +8,11 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { DocumentStatusEnum } from '@hsm/common/enums';
 import { of, throwError } from 'rxjs';
 import { TestScheduler } from 'rxjs/testing';
-
-import { environment } from '../../../environments/environment';
 import type { SuccessResponse } from '../../core/api/response';
+import {
+  provideTestConfig,
+  TEST_API_BASE_URL,
+} from '../../core/config/config-testing';
 import { provideTranslocoTestingModule } from '../../core/i18n/transloco-testing';
 import {
   DEFAULT_POLL_MAX_ATTEMPTS,
@@ -20,7 +22,7 @@ import {
 } from './document.types';
 import { Documents } from './documents';
 
-const base = environment.apiBaseUrl;
+const base = TEST_API_BASE_URL;
 
 function wrap<T>(data: T): SuccessResponse<T> {
   return {
@@ -175,6 +177,7 @@ describe('Documents component', () => {
     TestBed.configureTestingModule({
       imports: [Documents],
       providers: [
+        provideTestConfig(),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideAnimationsAsync(),

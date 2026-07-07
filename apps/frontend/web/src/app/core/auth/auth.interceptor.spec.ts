@@ -10,14 +10,17 @@ import {
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 
-import { environment } from '../../../environments/environment';
+import {
+  provideTestConfig,
+  TEST_API_BASE_URL,
+} from '../../core/config/config-testing';
 import type { SuccessResponse, Tokens } from '../api/response';
 import { provideTranslocoTestingModule } from '../i18n/transloco-testing';
 import { authInterceptor } from './auth.interceptor';
 import { AuthService } from './auth.service';
 import { TokenStorage } from './token-storage';
 
-const base = environment.apiBaseUrl;
+const base = TEST_API_BASE_URL;
 
 function tokensBody(at: string, rt: string): SuccessResponse<Tokens> {
   return {
@@ -45,6 +48,7 @@ describe('authInterceptor (single in-flight refresh)', () => {
 
     TestBed.configureTestingModule({
       providers: [
+        provideTestConfig(),
         ...provideTranslocoTestingModule(),
         provideHttpClient(withInterceptors([authInterceptor])),
         provideHttpClientTesting(),

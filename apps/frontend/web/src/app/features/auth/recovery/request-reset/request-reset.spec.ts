@@ -6,16 +6,18 @@ import {
 import { TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
-
-import { environment } from '../../../../../environments/environment';
 import type {
   MessageResponse,
   SuccessResponse,
 } from '../../../../core/api/response';
+import {
+  provideTestConfig,
+  TEST_API_BASE_URL,
+} from '../../../../core/config/config-testing';
 import { provideTranslocoTestingModule } from '../../../../core/i18n/transloco-testing';
 import { RequestReset } from './request-reset';
 
-const base = environment.apiBaseUrl;
+const base = TEST_API_BASE_URL;
 
 function wrap<T>(data: T): SuccessResponse<T> {
   return {
@@ -44,6 +46,7 @@ describe('RequestReset component', () => {
     TestBed.configureTestingModule({
       imports: [RequestReset],
       providers: [
+        provideTestConfig(),
         ...provideTranslocoTestingModule(),
         provideHttpClient(),
         provideHttpClientTesting(),

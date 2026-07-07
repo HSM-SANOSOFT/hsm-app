@@ -6,14 +6,16 @@ import {
 import { TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { of } from 'rxjs';
-
-import { environment } from '../../../environments/environment';
 import type { SuccessResponse, UserProfile } from '../../core/api/response';
 import { AuthService } from '../../core/auth/auth.service';
+import {
+  provideTestConfig,
+  TEST_API_BASE_URL,
+} from '../../core/config/config-testing';
 import { provideTranslocoTestingModule } from '../../core/i18n/transloco-testing';
 import { Profile } from './profile';
 
-const base = environment.apiBaseUrl;
+const base = TEST_API_BASE_URL;
 
 function wrap<T>(data: T): SuccessResponse<T> {
   return {
@@ -72,6 +74,7 @@ describe('Profile component', () => {
     TestBed.configureTestingModule({
       imports: [Profile],
       providers: [
+        provideTestConfig(),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideAnimationsAsync(),

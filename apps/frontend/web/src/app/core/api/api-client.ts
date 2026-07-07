@@ -7,7 +7,7 @@ import { Injectable, inject } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { catchError, map, type Observable, throwError } from 'rxjs';
 
-import { environment } from '../../../environments/environment';
+import { ConfigService } from '../config/config.service';
 import { ApiError, issueToMessage } from './api-error';
 import type {
   Pagination,
@@ -44,7 +44,7 @@ export interface PaginatedResult<T> {
 export class ApiClient {
   private readonly http = inject(HttpClient);
   private readonly transloco = inject(TranslocoService);
-  private readonly baseUrl = environment.apiBaseUrl;
+  private readonly config = inject(ConfigService);
 
   get<T>(path: string, options?: ApiRequestOptions): Observable<T> {
     return this.unwrap(
@@ -122,7 +122,7 @@ export class ApiClient {
   /** Joins the configured base URL with a request path. */
   private url(path: string): string {
     const normalized = path.startsWith('/') ? path : `/${path}`;
-    return `${this.baseUrl}${normalized}`;
+    return `${this.config.apiBaseUrl}${normalized}`;
   }
 
   /** Maps a `SuccessResponse<T>` stream to its inner `data`. */

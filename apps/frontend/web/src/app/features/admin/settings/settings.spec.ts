@@ -6,9 +6,11 @@ import {
 import { TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { SettingsCategoryEnum } from '@hsm/common/enums';
-
-import { environment } from '../../../../environments/environment';
 import type { SuccessResponse } from '../../../core/api/response';
+import {
+  provideTestConfig,
+  TEST_API_BASE_URL,
+} from '../../../core/config/config-testing';
 import { provideTranslocoTestingModule } from '../../../core/i18n/transloco-testing';
 import { AdminSettings } from './settings';
 import type {
@@ -16,7 +18,7 @@ import type {
   UpdateSettingsPayload,
 } from './settings.types';
 
-const base = environment.apiBaseUrl;
+const base = TEST_API_BASE_URL;
 
 /** Backend masked-secret placeholder (mirrors `SECRET_MASK`). */
 const SECRET_MASK = '********';
@@ -72,6 +74,7 @@ describe('AdminSettings component', () => {
     TestBed.configureTestingModule({
       imports: [AdminSettings],
       providers: [
+        provideTestConfig(),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideAnimationsAsync(),

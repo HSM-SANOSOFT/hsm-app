@@ -8,7 +8,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "predev": "node scripts/gen-config.mjs public/config.json",
+    "gen-config": "node scripts/gen-config.mjs"
   },
   "dependencies": {
     "@angular/animations": "^21.2.0",
@@ -23,6 +25,7 @@
     "@jsverse/transloco": "^8.4.0",
     "@primeng/themes": "^21.0.4",
     "handlebars": "^4.7.9",
+    "joi": "^18.1.2",
     "monaco-editor": "^0.55.1",
     "primeicons": "^7.0.0",
     "primeng": "^21.1.9",

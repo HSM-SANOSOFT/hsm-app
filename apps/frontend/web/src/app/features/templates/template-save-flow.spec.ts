@@ -7,9 +7,11 @@ import { TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { ActivatedRoute } from '@angular/router';
 import { TemplateCategoriesEnum } from '@hsm/common/enums';
-
-import { environment } from '../../../environments/environment';
 import type { SuccessResponse } from '../../core/api/response';
+import {
+  provideTestConfig,
+  TEST_API_BASE_URL,
+} from '../../core/config/config-testing';
 import { provideTranslocoTestingModule } from '../../core/i18n/transloco-testing';
 import { MONACO_LOADER, type MonacoLike } from './monaco-editor';
 import type { SaveRequest } from './template.types';
@@ -17,7 +19,7 @@ import { deriveSchemaFromSampleData } from './template-preview.util';
 import { TemplateSaveFlow } from './template-save-flow';
 import { Templates } from './templates';
 
-const base = environment.apiBaseUrl;
+const base = TEST_API_BASE_URL;
 
 function wrap<T>(data: T): SuccessResponse<T> {
   return {
@@ -109,6 +111,7 @@ describe('Templates save gate (U14, R17; AE1, AE2)', () => {
     TestBed.configureTestingModule({
       imports: [Templates],
       providers: [
+        provideTestConfig(),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideAnimationsAsync(),
@@ -323,6 +326,7 @@ describe('TemplateSaveFlow service', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        provideTestConfig(),
         provideHttpClient(),
         provideHttpClientTesting(),
         ...provideTranslocoTestingModule(),

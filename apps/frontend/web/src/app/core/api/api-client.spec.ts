@@ -5,7 +5,10 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
-import { environment } from '../../../environments/environment';
+import {
+  provideTestConfig,
+  TEST_API_BASE_URL,
+} from '../../core/config/config-testing';
 import { provideTranslocoTestingModule } from '../i18n/transloco-testing';
 import type { PaginatedResult } from './api-client';
 import { ApiClient } from './api-client';
@@ -16,11 +19,12 @@ describe('ApiClient', () => {
   let client: ApiClient;
   let httpMock: HttpTestingController;
 
-  const base = environment.apiBaseUrl;
+  const base = TEST_API_BASE_URL;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        provideTestConfig(),
         ...provideTranslocoTestingModule(),
         provideHttpClient(withFetch()),
         provideHttpClientTesting(),

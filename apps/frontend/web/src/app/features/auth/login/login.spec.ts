@@ -6,17 +6,19 @@ import {
 import { TestBed } from '@angular/core/testing';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, Router } from '@angular/router';
-
-import { environment } from '../../../../environments/environment';
 import type {
   SuccessResponse,
   Tokens,
   UserProfile,
 } from '../../../core/api/response';
+import {
+  provideTestConfig,
+  TEST_API_BASE_URL,
+} from '../../../core/config/config-testing';
 import { provideTranslocoTestingModule } from '../../../core/i18n/transloco-testing';
 import { Login } from './login';
 
-const base = environment.apiBaseUrl;
+const base = TEST_API_BASE_URL;
 
 function wrap<T>(data: T): SuccessResponse<T> {
   return {
@@ -61,6 +63,7 @@ describe('Login component', () => {
     TestBed.configureTestingModule({
       imports: [Login],
       providers: [
+        provideTestConfig(),
         ...provideTranslocoTestingModule(),
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -102,7 +105,7 @@ describe('Login component', () => {
     const footer = (fixture.nativeElement as HTMLElement).querySelector(
       '.auth-version',
     );
-    expect(footer?.textContent).toContain(`UI v${environment.appVersion}`);
+    expect(footer?.textContent).toContain(`UI v${'test'}`);
     expect(footer?.textContent).toContain('API v2.5.0');
   });
 

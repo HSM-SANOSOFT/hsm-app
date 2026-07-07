@@ -22,11 +22,12 @@ import { provideServiceWorker } from '@angular/service-worker';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { PrimeNG, providePrimeNG } from 'primeng/config';
 import { firstValueFrom } from 'rxjs';
-import { environment } from '../environments/environment';
 import { HsmPreset } from '../theme/hsm-preset';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/auth/auth.interceptor';
 import { AuthService } from './core/auth/auth.service';
+import { validateConfig } from './core/config/config.schema';
+import { ConfigService } from './core/config/config.service';
 import { LANG_STORAGE_KEY } from './core/i18n/language.service';
 import { primeNgTranslationFor } from './core/i18n/primeng-translations';
 import { TranslocoHttpLoader } from './core/i18n/transloco-loader';
@@ -76,6 +77,17 @@ export const appConfig: ApplicationConfig = {
     }),
     { provide: LOCALE_ID, useValue: bootLocaleId() },
     { provide: DEFAULT_CURRENCY_CODE, useValue: 'USD' },
+    // FIRST initializer: load runtime config from /config.json (generated from
+    // env) before anything reads it. Native fetch bypasses the auth interceptor
+    // (which would otherwise read config before it's set).
+    provideAppInitializer(async () => {
+      const config = inject(ConfigService);
+      const res = await fetch('/config.json', { cache: 'no-store' });
+      if (!res.ok) {
+        throw new Error(`Failed to load /config.json (HTTP ${res.status})`);
+      }
+      config.set(validateConfig(await res.json()));
+    }),
     provideAppInitializer(() => {
       const auth = inject(AuthService);
       return firstValueFrom(auth.restoreSession());
@@ -107,7 +119,7 @@ export const appConfig: ApplicationConfig = {
     // server or TestBed. U15 owns the offline caching strategy + SwUpdate flow;
     // here it is asset-only via ngsw-config.json.
     provideServiceWorker('ngsw-worker.js', {
-      enabled: environment.production,
+      enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',
     }),
   ],

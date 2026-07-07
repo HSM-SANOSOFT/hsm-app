@@ -18,9 +18,8 @@ import {
   take,
   throwError,
 } from 'rxjs';
-
-import { environment } from '../../../environments/environment';
 import type { SuccessResponse, Tokens } from '../api/response';
+import { ConfigService } from '../config/config.service';
 import { AuthService } from './auth.service';
 import { TokenStorage } from './token-storage';
 
@@ -69,7 +68,10 @@ function isUnauthorized(error: unknown): error is HttpErrorResponse {
 @Injectable({ providedIn: 'root' })
 export class AuthRefreshClient {
   private readonly http = inject(HttpClient);
-  private readonly url = `${environment.apiBaseUrl}${REFRESH_SUFFIX}`;
+  private readonly config = inject(ConfigService);
+  private get url(): string {
+    return `${this.config.apiBaseUrl}${REFRESH_SUFFIX}`;
+  }
 
   refresh(refreshToken: string): Observable<Tokens> {
     return this.http

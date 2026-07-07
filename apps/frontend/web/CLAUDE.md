@@ -82,15 +82,27 @@ The dev server runs on **4200**. With the API run locally (`pnpm --filter
 URI version (Swagger UI at `http://localhost:4201/api`). Port **10001** is the
 API host port only under full-stack `docker compose up`.
 
-## API base URL / environments
+## Runtime config (env-driven, like the backend)
 
-- `src/environments/environment.ts` — production / full-stack `docker compose
-  up` (`apiBaseUrl: 'http://localhost:10001/v1'`, the compose API mapping).
-- `src/environments/environment.development.ts` — dev override for the local-run
-  model (`apiBaseUrl: 'http://localhost:4201/v1'`), swapped in via
-  `fileReplacements` in `angular.json` for the `development` configuration.
-- Import `environment` from `src/environments/environment`; the dev file is
-  substituted at build time. Do **not** hardcode the API URL elsewhere.
+Config (`apiBaseUrl`, `appVersion`, `production`) is loaded at **runtime** from
+`/config.json`, generated from `WEB_*` env vars — NOT baked into the bundle (no
+`src/environments`, no `fileReplacements`). Change env → restart, no rebuild.
+
+- `scripts/gen-config.mjs` reads `WEB_API_BASE_URL` / `WEB_APP_VERSION` /
+  `WEB_PRODUCTION` and writes `config.json`. Runs at **predev** (→
+  `public/config.json`, gitignored) and at **container start** (→
+  `dist/config.json`, the Dockerfile entrypoint). `public/config.json.example`
+  documents the shape.
+- `core/config/config.service.ts` — `ConfigService` (injectable getters
+  `apiBaseUrl`/`appVersion`/`production`). Seeded once by the FIRST
+  `provideAppInitializer` in `app.config.ts` (native `fetch('/config.json')` →
+  Joi-validated via `config.schema.ts`). **Never read `ConfigService` before
+  bootstrap**; reading unloaded throws.
+- Consume via `inject(ConfigService).apiBaseUrl` (see `core/api/api-client.ts`).
+  Do **not** hardcode the API URL. Specs seed it with
+  `provideTestConfig()` + `TEST_API_BASE_URL` (`core/config/config-testing.ts`).
+- Dev API URL default is `http://localhost:4201/v1` (the devcontainer-published
+  API port). The prod/compose mapping is `http://localhost:10001/v1`.
 
 ## API contract reminders
 

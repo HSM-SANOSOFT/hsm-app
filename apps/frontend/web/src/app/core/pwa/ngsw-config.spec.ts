@@ -1,7 +1,7 @@
 // Import the shipped config directly so this spec stays the single source of
 // truth (esbuild bundles the JSON at its real repo-root path).
 import ngswConfig from '../../../../ngsw-config.json';
-import { environment } from '../../../environments/environment';
+import { TEST_API_BASE_URL } from '../../core/config/config-testing';
 
 /**
  * Regression guard for R13 / KTD7: the service worker caches the app shell and
@@ -45,10 +45,10 @@ describe('ngsw-config.json (PWA cache safety)', () => {
 
   /** Representative authenticated/PHI-shaped API paths derived from the env. */
   const apiPaths = (() => {
-    // environment.apiBaseUrl is a full origin + version prefix, e.g.
+    // TEST_API_BASE_URL is a full origin + version prefix, e.g.
     // 'http://localhost:10001/v1'. The SW sees same-origin request paths, so
     // build path-only candidates under that version prefix.
-    const prefix = new URL(environment.apiBaseUrl).pathname.replace(/\/$/, '');
+    const prefix = new URL(TEST_API_BASE_URL).pathname.replace(/\/$/, '');
     return [
       `${prefix}/auth/profile`,
       `${prefix}/auth/refresh`,
@@ -91,7 +91,7 @@ describe('ngsw-config.json (PWA cache safety)', () => {
     const nav = config.navigationUrls ?? [];
     expect(nav).toContain('/**');
     // The API version prefix is negated, so /v1/... never gets the shell.
-    const prefix = new URL(environment.apiBaseUrl).pathname.replace(/\/$/, '');
+    const prefix = new URL(TEST_API_BASE_URL).pathname.replace(/\/$/, '');
     expect(nav.some(n => n.startsWith('!') && n.includes(prefix))).toBe(true);
     // Files (anything with an extension) are excluded from the shell fallback.
     expect(nav).toContain('!/**/*.*');

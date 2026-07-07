@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 
-import { environment } from '../../../environments/environment';
 import { ApiClient } from '../api/api-client';
+import { ConfigService } from '../config/config.service';
 
 /** Public version endpoint (relative to the `/v1` base URL). */
 export const HEALTH_VERSION_PATH = '/health/version';
@@ -23,8 +23,8 @@ export const API_VERSION_FALLBACK = 'unknown';
 export class VersionService {
   private readonly api = inject(ApiClient);
 
-  /** Build-time UI version (CI build identifier), read from the environment. */
-  readonly uiVersion: string = environment.appVersion;
+  /** UI version, from the runtime config (CI sets WEB_APP_VERSION). */
+  readonly uiVersion: string = inject(ConfigService).appVersion;
 
   private readonly apiVersionSignal = signal<string | null>(null);
 
